@@ -1,0 +1,6 @@
+*.asv
+*.orig
+plots_for_paper/**/*
+*.pdf
+*.eps
+*.m~

@@ -332,11 +332,7 @@ if nargin > 1
     out.fqrs = fqrs;
     out.param = param;
     out.selvcgm = selvcgm;
-    out.selvcgf = selvcgf;
-    
-    if ~isempty(param.fname)
-        save(param.fname,'out');
-    end
+    out.selvcgf = selvcgf;   
 else
     % == if we just want to plot using the inputed parameters
     out = param;
@@ -410,7 +406,7 @@ if debug || debug>1
         end
         linkaxes(ax,'x'); xlim([0 tm(end)]);
         set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
-    end
+     end
     
     if debug>2
         % == plot the projection of mother and foetuse(s) VCGs 
@@ -470,6 +466,10 @@ if debug || debug>1
         set(gca,'FontSize',FONT_SIZE);
         set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
         legend boxoff;
+        % save output abdominal ECG
+        if ~isempty(param.fname)
+            save(param.fname,'out');
+        end
     end
 end
 

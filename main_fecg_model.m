@@ -216,32 +216,3 @@ cmqrs = adjust_mqrs_location(out.mixture(CH_CANC,:),out.mqrs,param.fs,0);
 res = mecg_cancellation(cmqrs,out.mixture(CH_CANC,:),'TS-CERUTTI');
 [qrs_det,~,~] = qrs_detect(res,THR,0.150,param.fs,[],[],debug);
 stats(out.fqrs{1}/param.fs,qrs_det/param.fs,0.05,0.5,out.param.n/param.fs,param.fs);
-
-%% random
-% save2pdf('illustrateVolConductor');
-% save2pdf('illustrateVolConductorUpperView');
-% save2pdf('nstdb_noise_eg')
-% save2pdf('generated_noise_eg')
-% save2pdf('poles_ar_model')
-% save2pdf('psd_nstdb_and_ar_generated')
-% save2pdf('illustration_hrv')
-% save2pdf('umbilicalcordcompression')
-% save2pdf('mhr_tanh_increase')
-% save2pdf('plot_respiration_waveform')
-% save2pdf('ica_stationary')
-% save2pdf('ica_nonstationary')
-% save2pdf('multiple_preg_ica_8chan')
-% save2pdf('multiple_preg_ica_5chan')
-% save2pdf('TRratio')
-
-
-
-
-
-
-
-
-
-
-
-

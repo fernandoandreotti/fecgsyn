@@ -4,3 +4,5 @@ plots_for_paper/**/*
 *.pdf
 *.eps
 *.m~
+aecg.mat
+subfunctions/aecg.mat

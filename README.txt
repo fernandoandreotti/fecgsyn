@@ -3,7 +3,7 @@ Released under the GNU General Public License
 
 Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
-joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+joachim.behar@eng.ox.ac.uk & fernando.andreotti@mailbox.tu-dresden.de
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

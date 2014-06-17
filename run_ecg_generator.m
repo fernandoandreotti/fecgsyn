@@ -147,7 +147,7 @@ if nargin > 1
     if ~any(strcmp('ntype',fieldnames(param))); param.ntype = ''; end;
     if ~any(strcmp('noise_fct',fieldnames(param))); param.noise_fct{1:length(param.ntype)} = 1; end;
     if ~any(strcmp('SNRfm',fieldnames(param))); param.SNRfm = -9; end;
-    if ~any(strcmp('SNRmn',fieldnames(param))); param.SNRmn = 10; end;
+    if ~any(strcmp('SNRmn',fieldnames(param))); param.SNRmn = 5; end;
     if ~any(strcmp('mhr',fieldnames(param))); param.mhr = 90; end;
     if ~any(strcmp('fhr',fieldnames(param))); param.fhr = repmat(150,NB_FOETUSES,1); end;
     if ~any(strcmp('macc',fieldnames(param))); param.macc = 0; end;

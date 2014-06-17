@@ -215,7 +215,7 @@ if nargin > 1
      
     % == electrodes position and reference electrode
     vols.elpos = param.elpos;
-    [Xc,Yc] = pol2cart(vols.elpos(:,2),vols.elpos(:,1)); % converting from polar to cartesian coordinate system
+    [Xc,Yc] = pol2cart(vols.elpos(:,1),vols.elpos(:,2)); % converting from polar to cartesian coordinate system
     epos = [Xc,Yc,vols.elpos(:,3)]; % electrodes position
     
     % = generate MATERNAL heart dipole

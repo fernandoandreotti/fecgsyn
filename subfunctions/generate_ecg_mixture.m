@@ -1,11 +1,13 @@
 % Generate mixture of MECG, FECG and noise
-function [mixture,mecg,fecg,noise] = generate_ecg_mixture(debug,SNRfm,SNRmn,varargin)
+function [mixture,mecg,fecg,noise] = generate_ecg_mixture(debug,SNRfm,SNRmn,mqrs,fqrs,fs,varargin)
 % generate ecg mixture (mecg, fecg and noise).
 %
 % inputs
-%        debug:     debug [bool]
-%        SNRfm:       SNR of fetal signal with respect to maternal signal
-%        SNRmn:       SNR of maternal signal compared to background noise
+%        debug:      debug [bool]
+%        SNRfm:      SNR of fetal signal with respect to maternal signal
+%        SNRmn:      SNR of maternal signal compared to background noise
+%        mqrs:       maternal qrs locations
+%        fqrs:       foetal qrs locations
 %   <optional>
 %   structure as:   <source>.VCG - VCG signal for given source
 %                   <source>.H   - Dower-like matrix H (for propagation of dipole) 
@@ -42,7 +44,7 @@ function [mixture,mecg,fecg,noise] = generate_ecg_mixture(debug,SNRfm,SNRmn,vara
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 % == checking inputs
-if nargin<4; error('No source has been given to model generation'); end;
+if nargin<7; error('No source has been given to model generation'); end;
 
 % == constants
 NB_EL = size(varargin{1}.H,1); % number of electrodes
@@ -54,6 +56,10 @@ for vv=1:NB_SIG2MIX;
     if (varargin{vv}.type==2); NB_FOETUSES = NB_FOETUSES+1; end; 
     if (varargin{vv}.type==3); NB_NOISE = NB_NOISE+1; end;
 end;
+% constants to  help normalize the calibration procedure regarding the
+% number of beats present on the signal.
+MHR = 60; %     [in bpm]
+FHR = 120; %    [in bpm]
 
 % == general
 cpt2 = 0; cpt3 = 0; noise = {};
@@ -90,16 +96,22 @@ end
 mixture = mecg;
 
 % == SNR calculation for different sources
-Pm = sqrt(sum(mixture.^2,2)); % average power of maternal signal throughout channels
+mbeats = 60*fs*length(mqrs)/length(mixture); % now im bpm
+Pm = sqrt(sum(mixture.^2,2))*(MHR/mbeats); % average power of maternal signal throughout channels
 
 % == calibrating FECG (fetal - mother)
 % calibration is done using mean maternal and fetal ECG signal powers are reference
 if ~isempty(signalf)
     fecg = cell(size(signalf,1)/NB_EL,1);
-    powerm = mean(Pm); % mean power of maternal signal accross all channels
-    ampf = reshape(sqrt(sum((signalf).^2,2)),NB_EL,[]); % power of each fetus in one column
-    powerf = mean(ampf); % mean power of EACH fetal signal (since VCGs are not normalized)
-    % run through sources so that every source so that each fetal ECG has SNRfm [dB].
+    powerm = mean(Pm);                      % mean power of maternal signal 
+                                            % accross all channels
+    fbeats = cellfun(@(x) length(x),fqrs);  % multiple foetuses support
+    fbeats = 60*fs*fbeats/length(signalf);
+    ampf = reshape(sqrt(sum((signalf).^2,2)),NB_EL,[])*diag(FHR./fbeats); % power of each fetus in one column
+    powerf = mean(ampf);        % mean power of EACH fetal signal 
+                                % (since VCGs are not normalized)
+    
+     % run through sources so that every source so that each fetal ECG has SNRfm [dB].
     for i = 1:size(signalf,1)/NB_EL
         % calibrating different hearts
         p = 10.^(SNRfm/20*sqrt(powerm./powerf(i)));

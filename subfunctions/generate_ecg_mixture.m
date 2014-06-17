@@ -102,7 +102,7 @@ if ~isempty(signalf)
     % run through sources so that every source so that each fetal ECG has SNRfm [dB].
     for i = 1:size(signalf,1)/NB_EL
         % calibrating different hearts
-        p = sqrt(exp(-log(10)*-SNRfm/10)*powerm/powerf(i));
+        p = 10.^(SNRfm/20*sqrt(powerm./powerf(i)));
         fblock = p*signalf((i-1)*NB_EL+1:i*NB_EL,:);
         mixture = mixture + fblock;
         fecg{i} = fblock;

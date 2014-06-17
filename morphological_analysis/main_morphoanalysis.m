@@ -38,10 +38,10 @@
 
 %% Input parameters
 % saving path
-if strcmp(computer,'PCWIN64')
-    path = ['C:\foobar\fecgdata\' datestr(date,'yyyy.mm.dd') '\'];
-else
+if isunix
     path = ['~/foobar/fecgdata/' datestr(date,'yyyy.mm.dd') '/'];
+else
+    path = ['C:\foobar\fecgdata\' datestr(date,'yyyy.mm.dd') '\'];
 end
 
 generate = 1;   % boolean, data should be generated? 

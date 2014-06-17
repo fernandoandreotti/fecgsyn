@@ -73,8 +73,8 @@ res = mecg_cancellation(cmqrs,out.mixture(CH_CANC,:),'TS-CERUTTI');
 stats(out.fqrs{1}/param.fs,qrs_det/param.fs,0.05,0.5,out.param.n/param.fs,param.fs);
 
 % % multiple noise sources
-% param.ntype = {'MA' 'EM' 'BW'};     % noise types
-% param.noise_fct = {1 1 1};          % constant SNR
+param.ntype = {'MA' 'EM' 'BW'};     % noise types
+param.noise_fct = {1 1 1};          % constant SNR
  
 % % multiple noise sources (varying noise power along measurement)
 % % in order to do so, a modulating function should be given

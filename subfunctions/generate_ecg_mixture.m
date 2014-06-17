@@ -56,7 +56,6 @@ for vv=1:NB_SIG2MIX;
 end;
 
 % == general
-mixture = zeros(NB_EL,NB_SAMPS); 
 cpt2 = 0; cpt3 = 0; noise = {};
 signalf = zeros(NB_FOETUSES*NB_EL,NB_SAMPS);
 signaln = zeros(NB_NOISE*NB_EL,NB_SAMPS);
@@ -87,7 +86,8 @@ for i=1:NB_SIG2MIX
     end
 end
 
-mixture = mixture + mecg;
+% adding maternal signal to mixture
+mixture = mecg;
 
 % == SNR calculation for different sources
 Pm = sqrt(sum(mixture.^2,2)); % average power of maternal signal throughout channels
@@ -115,11 +115,11 @@ if ~isempty(signaln)
     noise = cell(size(signaln,1)/NB_EL);
     ampn = reshape(sqrt(sum((signaln).^2,2)),NB_EL,[]); % power of each source in one column (rows are channels)
     ampnorm = diag(1./sum(ampn,2))*ampn; % normalizing in total signal power (%)
-    Pnoise = 1./(10^(SNRmn/(10))./Pm); % maximum power allowed per channel
+    Pnoise = Pm./10^(SNRmn/10); % maximum power allowed per channel
     Peach = diag(Pnoise)*ampnorm; % desired power per channel and per noise source
     % add noise to mixture signals with amplitude modulation
     for i = 1:size(signaln,1)/NB_EL     
-        p = sqrt(exp(-log(10)*SNRmn./(10*ampnorm(:,i))).*Peach(:,i)./ampn(:,i).^2); % applied gain for each noise signal / channels
+        p = 10.^(-SNRmn/20*sqrt(Pm./Peach(:,i)));  % applied gain for each noise signal / channels
         nblock = diag(p)*signaln((i-1)*NB_EL+1:i*NB_EL,:); % re-scaling signals
         mixture = mixture + nblock; % adding noise to mixture
         noise{i} = nblock; % saving signal separetely

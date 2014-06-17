@@ -147,7 +147,7 @@ if nargin > 1
     if ~any(strcmp('ntype',fieldnames(param))); param.ntype = ''; end;
     if ~any(strcmp('noise_fct',fieldnames(param))); param.noise_fct{1:length(param.ntype)} = 1; end;
     if ~any(strcmp('SNRfm',fieldnames(param))); param.SNRfm = -9; end;
-    if ~any(strcmp('SNRmn',fieldnames(param))); param.SNRmn = -6; end;
+    if ~any(strcmp('SNRmn',fieldnames(param))); param.SNRmn = 10; end;
     if ~any(strcmp('mhr',fieldnames(param))); param.mhr = 90; end;
     if ~any(strcmp('fhr',fieldnames(param))); param.fhr = repmat(150,NB_FOETUSES,1); end;
     if ~any(strcmp('macc',fieldnames(param))); param.macc = 0; end;
@@ -300,9 +300,11 @@ if nargin > 1
     n_model = cell(NB_NOISES,1);
     for n = 1:NB_NOISES
         disp(['Generating model for noise source ' num2str(n) ' ..'])
-        [xn,yn] = pol2cart(2*pi*rand,0.5*rand/2); % random location inside circle (half volume conductor)
-        pos_noise = [xn,yn,rand-0.5]; % noise dipole position inside cylinder with half conductor's volume 
-        n_model{n} = add_noisedipole(param.n,param.fs,param.ntype{n},epos,pos_noise,debug); % generating dipole
+        [xn,yn] = pol2cart(2*pi*rand,0.1*rand); % random location for noise
+        pos_noise = [xn,yn,0.1*rand-0.5];       % inside small semi-sphere
+        % generating dipole
+        n_model{n} = add_noisedipole(param.n,param.fs,param.ntype{n},...
+            epos,pos_noise,debug); 
         n_model{n}.SNRfct = param.noise_fct{n};
         n_model{n}.pos = pos_noise;
         n_model{n}.type = 3;

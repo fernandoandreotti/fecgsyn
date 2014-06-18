@@ -97,9 +97,10 @@ mixture = mecg;
 
 % == SNR calculation for different sources
 mbeats = 60*fs*length(mqrs)/length(mixture); % now im bpm
-Pm = sqrt(sum(mixture.^2,2))*(MHR/mbeats); % average power of maternal 
+Pm = sum(mixture.^2,2)*(MHR/mbeats); % average power of maternal 
                              %  across channels with heart rate correction
-powerm = median(Pm);
+powerm = median(Pm);        % median accross channels for SNRfm calculation
+                            % more robust to reduce reference leads influence 
 % == calibrating FECG (fetal - mother)
 % calibration is done using mean maternal and fetal ECG signal powers are reference
 if ~isempty(signalf)
@@ -107,7 +108,7 @@ if ~isempty(signalf)
     fbeats = cellfun(@(x) length(x),fqrs);  % multiple foetuses support
     fbeats = 60*fs*fbeats/length(signalf);
     ampf = reshape(sum((signalf).^2,2),NB_EL,[])*diag(FHR./fbeats); % power of each fetus in one column
-    powerf = median(ampf);        % mean power of EACH fetal signal 
+    powerf = mean(ampf);        % mean power of EACH fetal signal 
                                 % (since VCGs are not normalized)
      % run through sources so that every source so that each fetal ECG has SNRfm [dB].
     for i = 1:size(signalf,1)/NB_EL

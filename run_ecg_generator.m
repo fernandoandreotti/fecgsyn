@@ -330,17 +330,21 @@ end
 disp('Projecting dipoles...')
 [mixture,mecg,fecg,noise] = generate_ecg_mixture(debug,param.SNRfm,...
     param.SNRmn,mqrs,fqrs,param.fs,m_model,f_model{:},n_model{:});
-mixture = mixture-repmat(mean(mixture),NB_ELEC,1);
-
-
+% using mean body potential as reference (ground electrode)
+ground = repmat(mean(mixture),NB_ELEC,1);
+mixture = mixture - ground;
+mecg = mecg - ground;
+fecg = cellfun(@(x) x - ground,fecg,'UniformOutput',0);
+noise = cellfun(@(x) x - ground,noise,'UniformOutput',0);
+ 
 
 % == FORMATING OUTPUT ARGUMENTS
 out.mixture = mixture;
-out.m_model = m_model;
-out.f_model = f_model;
 out.mecg = mecg;
 out.fecg = fecg;
 out.noise = noise;
+out.m_model = m_model;
+out.f_model = f_model;
 out.vols = vols;
 out.mqrs = mqrs;
 out.fqrs = fqrs;

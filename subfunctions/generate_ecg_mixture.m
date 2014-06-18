@@ -98,8 +98,8 @@ mixture = mecg;
 % == SNR calculation for different sources
 mbeats = 60*fs*length(mqrs)/length(mixture); % now im bpm
 Pm = sqrt(sum(mixture.^2,2))*(MHR/mbeats); % average power of maternal 
-%                       HR correct signal throughout channels
-powerm = mean(Pm);
+                             %  across channels with heart rate correction
+powerm = median(Pm);
 % == calibrating FECG (fetal - mother)
 % calibration is done using mean maternal and fetal ECG signal powers are reference
 if ~isempty(signalf)
@@ -107,7 +107,7 @@ if ~isempty(signalf)
     fbeats = cellfun(@(x) length(x),fqrs);  % multiple foetuses support
     fbeats = 60*fs*fbeats/length(signalf);
     ampf = reshape(sum((signalf).^2,2),NB_EL,[])*diag(FHR./fbeats); % power of each fetus in one column
-    powerf = mean(ampf);        % mean power of EACH fetal signal 
+    powerf = median(ampf);        % mean power of EACH fetal signal 
                                 % (since VCGs are not normalized)
      % run through sources so that every source so that each fetal ECG has SNRfm [dB].
     for i = 1:size(signalf,1)/NB_EL
@@ -119,17 +119,17 @@ if ~isempty(signalf)
     end
 end
 
-% == calibrating NOISE (noise - fetal)
+% == calibrating NOISE (maternal - noise)
 % re-scale so that together, all noise sources have a 1/SNRmn [dB] level
 if ~isempty(signaln)
     noise = cell(size(signaln,1)/NB_EL);
     ampn = reshape(sum((signaln).^2,2),NB_EL,[]); % power of each source in one column (rows are channels)
-    ampnorm = diag(1./sum(ampn,2))*ampn; % normalizing in total signal power (%)
-    Pnoise = Pm./10^(SNRmn/10); % maximum power allowed per channel
-    Peach = diag(Pnoise)*ampnorm; % desired power per channel and per noise source
+    ampnorm = diag(1./sum(ampn,2))*ampn;    % normalizing in total signal power (%)
+                                            % thats just important case we have multiple noise sources    
+    Pn = diag(ampnorm)*ampn;           % power of noise for each channel/source
     % add noise to mixture signals with amplitude modulation
     for i = 1:size(signaln,1)/NB_EL     
-        p = sqrt(Pm./Peach(:,i))*10.^(-SNRmn/20);  % applied gain for each noise signal / channels
+        p = sqrt(Pm./Pn)*10.^(-SNRmn/20);  % applied gain for each noise signal / channels
         nblock = diag(p)*signaln((i-1)*NB_EL+1:i*NB_EL,:); % re-scaling signals
         mixture = mixture + nblock; % adding noise to mixture
         noise{i} = nblock; % saving signal separetely

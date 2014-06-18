@@ -105,13 +105,13 @@ if ~isempty(signalf)
     fecg = cell(size(signalf,1)/NB_EL,1);
     fbeats = cellfun(@(x) length(x),fqrs);  % multiple foetuses support
     fbeats = 60*fs*fbeats/length(signalf);
-    ampf = reshape(sqrt(sum((signalf).^2,2)),NB_EL,[])*diag(FHR./fbeats); % power of each fetus in one column
+    ampf = reshape(sum((signalf).^2,2),NB_EL,[])*diag(FHR./fbeats); % power of each fetus in one column
     powerf = mean(ampf);        % mean power of EACH fetal signal 
                                 % (since VCGs are not normalized)
      % run through sources so that every source so that each fetal ECG has SNRfm [dB].
     for i = 1:size(signalf,1)/NB_EL
         % calibrating different hearts
-        p = 10.^(SNRfm/20*sqrt(Pm./powerf(i)));
+        p = sqrt(Pm./powerf(i))*10.^(SNRfm/20);
         fblock = diag(p)*signalf((i-1)*NB_EL+1:i*NB_EL,:);
         mixture = mixture + fblock;
         fecg{i} = fblock;
@@ -122,13 +122,13 @@ end
 % re-scale so that together, all noise sources have a 1/SNRmn [dB] level
 if ~isempty(signaln)
     noise = cell(size(signaln,1)/NB_EL);
-    ampn = reshape(sqrt(sum((signaln).^2,2)),NB_EL,[]); % power of each source in one column (rows are channels)
+    ampn = reshape(sum((signaln).^2,2),NB_EL,[]); % power of each source in one column (rows are channels)
     ampnorm = diag(1./sum(ampn,2))*ampn; % normalizing in total signal power (%)
     Pnoise = Pm./10^(SNRmn/10); % maximum power allowed per channel
     Peach = diag(Pnoise)*ampnorm; % desired power per channel and per noise source
     % add noise to mixture signals with amplitude modulation
     for i = 1:size(signaln,1)/NB_EL     
-        p = 10.^(-SNRmn/20*sqrt(Pm./Peach(:,i)));  % applied gain for each noise signal / channels
+        p = sqrt(Pm./Peach(:,i))*10.^(-SNRmn/20);  % applied gain for each noise signal / channels
         nblock = diag(p)*signaln((i-1)*NB_EL+1:i*NB_EL,:); % re-scaling signals
         mixture = mixture + nblock; % adding noise to mixture
         noise{i} = nblock; % saving signal separetely

@@ -103,19 +103,16 @@ Pm = sqrt(sum(mixture.^2,2))*(MHR/mbeats); % average power of maternal signal th
 % calibration is done using mean maternal and fetal ECG signal powers are reference
 if ~isempty(signalf)
     fecg = cell(size(signalf,1)/NB_EL,1);
-    powerm = mean(Pm);                      % mean power of maternal signal 
-                                            % accross all channels
     fbeats = cellfun(@(x) length(x),fqrs);  % multiple foetuses support
     fbeats = 60*fs*fbeats/length(signalf);
     ampf = reshape(sqrt(sum((signalf).^2,2)),NB_EL,[])*diag(FHR./fbeats); % power of each fetus in one column
     powerf = mean(ampf);        % mean power of EACH fetal signal 
                                 % (since VCGs are not normalized)
-    
      % run through sources so that every source so that each fetal ECG has SNRfm [dB].
     for i = 1:size(signalf,1)/NB_EL
         % calibrating different hearts
-        p = 10.^(SNRfm/20*sqrt(powerm./powerf(i)));
-        fblock = p*signalf((i-1)*NB_EL+1:i*NB_EL,:);
+        p = 10.^(SNRfm/20*sqrt(Pm./powerf(i)));
+        fblock = diag(p)*signalf((i-1)*NB_EL+1:i*NB_EL,:);
         mixture = mixture + fblock;
         fecg{i} = fblock;
     end

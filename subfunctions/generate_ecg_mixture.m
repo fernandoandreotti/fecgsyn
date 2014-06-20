@@ -126,11 +126,12 @@ if ~isempty(signaln)
     noise = cell(size(signaln,1)/NB_EL);
     ampn = reshape(sum((signaln).^2,2),NB_EL,[]); % power of each source in one column (rows are channels)
     ampnorm = diag(1./sum(ampn,2))*ampn;    % normalizing in total signal power (%)
-                                            % thats just important case we have multiple noise sources    
-    Pn = diag(ampnorm)*ampn;           % power of noise for each channel/source
+                                            % thats just important case we have multiple noise sources 
+    powern = median(sum(ampn,2));           % median overall ammount of noise
+    
     % add noise to mixture signals with amplitude modulation
     for i = 1:size(signaln,1)/NB_EL     
-        p = sqrt(Pm./Pn)*10.^(-SNRmn/20);  % applied gain for each noise signal / channels
+        p = ampnorm(:,i).*sqrt(powerm./powern)*10.^(-SNRmn/20);  % applied gain for each noise signal / channels
         nblock = diag(p)*signaln((i-1)*NB_EL+1:i*NB_EL,:); % re-scaling signals
         mixture = mixture + nblock; % adding noise to mixture
         noise{i} = nblock; % saving signal separetely

@@ -61,7 +61,7 @@ for i = 1:10            % generate 5 cases of each
         paramst = out.param;                     % keeping same parameters
         
     %% adding some noise    
-    for SNRmn = 10:-1:1  
+    for SNRmn = 10:2:20  
         % reseting config
         disp(['Generating for SNRmn=' num2str(SNRmn) ' simulation number ' num2str(i) '.'])
         param = paramst;
@@ -75,16 +75,52 @@ for i = 1:10            % generate 5 cases of each
 %         save([path 'fecgsyn_noise' sprintf('%2.2d_snr%2.2ddB',i,SNRmn)],'out')
         paramnst = out.param;
         %% non-stationary mixture
-%         param.macc = 20; % maternal acceleration in HR [bpm]
-%         param.mtypeacc = 'tanh'; % hyperbolic tangent acceleration
-%         param.facc = -40; % foetal decceleration in HR [bpm]
-%         param.ftypeacc = {'mexhat'}; % gaussian drop and recovery
+        % Case 1: foetal movement
+        param = paramnst;
+        param.ftraj{1} = 'helix'; % giving spiral-like movement to fetus
+        
+        out = run_ecg_generator(param,debug);  % stationary output
+        %         save([path 'fecgsyn_c3' sprintf('%2.2d_snr%2.2ddB',i,SNRmn)],'out')
+        % Case 2: rate rate accelerations
+        param = paramnst;
+        param.macc = 20; % maternal acceleration in HR [bpm]
+        param.mtypeacc = 'tanh'; % hyperbolic tangent acceleration
+        param.facc = -40; % foetal decceleration in HR [bpm]
+        param.ftypeacc = {'mexhat'}; % gaussian drop and recovery
+        
+        out = run_ecg_generator(param,debug);  % stationary output
+        %         save([path 'fecgsyn_c2' sprintf('%2.2d_snr%2.2ddB',i,SNRmn)],'out')
+        % Case 3: contraction
+        param = paramnst;
+        x = linspace(-param.n/10,param.n/10,param.n);
+        mu = 0;
+        gauss = (100/(param.n*sqrt(2*pi)))*exp(-(x-(x(1)*mu)).^2/(2*(param.n/50)^2)); % approximating
+        gauss = gauss/max(gauss);                      % uterine contraction by gaussian modulated MA    
+        param.noise_fct{1} = gauss;
+        param.macc = 40;
+        param.mtypeacc = 'gauss';
+        param.facc = -30;
+        param.ftypeacc = {'mexhat'};
+        param.faccstd{1} = 0.5;
+        
+        out = run_ecg_generator(param,debug);  % stationary output
+        %         save([path 'fecgsyn_c3' sprintf('%2.2d_snr%2.2ddB',i,SNRmn)],'out')
+        % Case 4: ectopic beats
+        param = paramnst;
+        param.mectb = 1; param.fectb = 1; 
+
+        out = run_ecg_generator(param,debug);  % stationary output
+        %         save([path 'fecgsyn_c1' sprintf('%2.2d_snr%2.2ddB',i,SNRmn)],'out')
+        % Case 5: twins
+        param = paramnst;
+        param.fhr(2) = randi([110,160],1,1);
+        param.fres(2) = 0.8 + 1.5*rand/10;
+        param.facc = [0 0];
+        param.ftypeacc = {'none' 'none'};
+        param.fheart{2} = [pi/10 0.4 -0.2];
+
+        out = run_ecg_generator(param,debug);  % stationary output
 % 
-%         param.ftraj{1} = 'spline'; % giving spiral-like movement to fetus
-%        
-%         
-%         out_nst = run_ecg_generator(param,debug); % non-stationary output
-%         plotmix(out_nst)
-%         save([path 'fecgsyn_noise' sprintf('%2.2d',i) sprintf('_snr%2.2ddB_',SNRmn)],'out_nst')
+      %         save([path 'fecgsyn_c1' sprintf('%2.2d_snr%2.2ddB',i,SNRmn)],'out')
     end
 end

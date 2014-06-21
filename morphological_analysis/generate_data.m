@@ -35,7 +35,7 @@ debug = 0;
 % global parameters
 paramorig.fs = 1000;            % sampling frequency [Hz]
 paramorig.n = 60*paramorig.fs;  % number of data points to generate (5 min)
-paramorig.SNRfm = -20;          % fetal SNR [dB]    
+paramorig.SNRfm = -6;          % fetal SNR [dB]    
 
 % electrode positions
 x = pi/12*[3 4 5 6 7 8 9 10]' -pi/2;     % 32 abdominal channels 
@@ -66,7 +66,7 @@ for i = 1:10            % generate 5 cases of each
         disp(['Generating for SNRmn=' num2str(SNRmn) ' simulation number ' num2str(i) '.'])
         param = paramst;
         param.SNRmn = SNRmn;    % varying SNRmn
-        param.ntype = {'MA','EM','BW'}; % noise types
+        param.ntype = {'MA','EM'}; % noise types
         param.noise_fct = {rand,rand,rand}; % constant SNR (each noise may be modulated by a function)
         param.mres = 0.2 + rand/10; % mother respiration frequency
         param.fres = 0.8 + 1.5*rand/10; % foetus respiration frequency

@@ -99,7 +99,7 @@ mixture = mecg;
 mbeats = 60*fs*length(mqrs)/length(mixture); % now im bpm
 Pm = sum(mixture.^2,2)*(MHR/mbeats); % average power of maternal 
                              %  across channels with heart rate correction
-powerm = median(Pm);        % median accross channels for SNRfm calculation
+powerm = mean(Pm);        % median accross channels for SNRfm calculation
                             % more robust to reduce reference leads influence 
 % == calibrating FECG (fetal - mother)
 % calibration is done using mean maternal and fetal ECG signal powers are reference
@@ -123,11 +123,11 @@ end
 % == calibrating NOISE (maternal - noise)
 % re-scale so that together, all noise sources have a 1/SNRmn [dB] level
 if ~isempty(signaln)
-    noise = cell(size(signaln,1)/NB_EL);
+    noise = cell(size(signaln,1)/NB_EL,1);
     ampn = reshape(sum((signaln).^2,2),NB_EL,[]); % power of each source in one column (rows are channels)
     ampnorm = diag(1./sum(ampn,2))*ampn;    % normalizing in total signal power (%)
                                             % thats just important case we have multiple noise sources 
-    powern = median(sum(ampn,2));           % median overall ammount of noise
+    powern = mean(mean(ampn,2));           % median overall ammount of noise
     
     % add noise to mixture signals with amplitude modulation
     for i = 1:size(signaln,1)/NB_EL     

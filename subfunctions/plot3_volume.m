@@ -124,6 +124,12 @@ for i=1:NB_ELECTRODES
     text(Xe(i),Ye(i),Ze(i),int2str(i),'Color','r','FontSize',20,'FontWeight','bold');
 end
 
+% == plot reference electrode
+[Xe, Ye] = pol2cart(vols.refpos(:,1),vols.refpos(:,2));
+Ze = vols.refpos(:,3);
+plot3(Xe,Ye,Ze,'s','MarkerSize',30,'LineWidth',4,'Color','g')
+text(Xe,Ye,Ze,'GD','Color','g','FontSize',20,'FontWeight','bold');
+
 % == set display properties
 xlabel('X','fontsize',FONT_SIZE); 
 ylabel('Y','fontsize',FONT_SIZE); 

@@ -149,6 +149,7 @@ if ~any(strcmp('mheart',fieldnames(param))); param.mheart = [2*pi/3 0.4 0.4]; en
 if ~any(strcmp('fheart',fieldnames(param))); param.fheart{1} = [-pi/10 0.4 -0.3]; end;
 if ~any(strcmp('elpos',fieldnames(param))); param.elpos = [0 0.5 -0.3; -pi/10 0.5 -0.3; -pi/4 0.5 -0.3; -pi/10 0.5 -0.45; -pi/10 0.5 -0.15; ...
         2*pi/3 0.5 0.4; pi/2 0.5 -0.2; 3*pi/2 0.5 0.2]; end;
+if ~any(strcmp('refpos',fieldnames(param))); param.refpos = [pi 0.5 -0.3];end;
 NB_FOETUSES = size(param.fheart,2); % number of foetuses figured out from the number of foetal heart locations entered
 if ~any(strcmp('n',fieldnames(param))); param.n = 60000; end;
 if ~any(strcmp('fs',fieldnames(param))); param.fs = 1000; end;
@@ -191,6 +192,7 @@ end
 NB_ELEC = size(param.elpos,1);
 
 % == MATERNAL heart dipole generation
+param.elpos = [param.elpos; param.refpos];   % calculating reference in same manner as other electrodes
 [gp_m.norm,selvcgm] = load_gparam(param.mvcg,'normal'); % randomly pick VCG model for mother
 if param.mectb; [gp_m.ecto,~] = load_gparam(param.evcg,'ectopic'); end;  % add ectopic beats?
 rm = 0.01; % radius around origin allowed for maternal heart to be
@@ -330,14 +332,15 @@ end
 disp('Projecting dipoles...')
 [mixture,mecg,fecg,noise] = generate_ecg_mixture(debug,param.SNRfm,...
     param.SNRmn,mqrs,fqrs,param.fs,m_model,f_model{:},n_model{:});
-% % % % using mean body potential as reference (ground electrode)
-% % % ground = repmat(mean(mixture),NB_ELEC,1);
-% % % mixture = mixture - ground;
-% % % mecg = mecg - ground;
-% % % fecg = cellfun(@(x) x - ground,fecg,'UniformOutput',0);
-% % % noise = cellfun(@(x) x - ground,noise,'UniformOutput',0);
- 
 
+% % % % using mean body potential as reference (ground electrode)
+ground = mixture(end,:);
+mixture = mixture(1:end-1,:) - repmat(ground,size(mixture,1)-1,1);
+mecg = mecg(1:end-1,:);
+fecg = cellfun(@(x) x(1:end-1,:),fecg,'UniformOutput',0);
+noise = cellfun(@(x) x(1:end-1,:),noise,'UniformOutput',0);
+vols.refpos = param.refpos;
+vols.elpos = vols.elpos(1:end-1,:); % removing ground electrode
 % == FORMATING OUTPUT ARGUMENTS
 out.mixture = mixture;
 out.mecg = mecg;
@@ -487,6 +490,5 @@ if debug>4
     legend boxoff;
 end
 
+
 end
-
-

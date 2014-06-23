@@ -147,8 +147,10 @@ end
 % == default parameters
 if ~any(strcmp('mheart',fieldnames(param))); param.mheart = [2*pi/3 0.4 0.4]; end;
 if ~any(strcmp('fheart',fieldnames(param))); param.fheart{1} = [-pi/10 0.4 -0.3]; end;
-if ~any(strcmp('elpos',fieldnames(param))); param.elpos = [0 0.5 -0.3; -pi/10 0.5 -0.3; -pi/4 0.5 -0.3; -pi/10 0.5 -0.45; -pi/10 0.5 -0.15; ...
-        2*pi/3 0.5 0.4; pi/2 0.5 -0.2; 3*pi/2 0.5 0.2]; end;
+if ~any(strcmp('elpos',fieldnames(param))); x = pi/12*[3 4 5 6 7 8 9 10]' -pi/2;     % 32 abdominal channels 
+    y = .5*ones(8,1); xy = repmat([x y],4,1); z = repmat([-.1 -.2 -.3 -.4],8,1); z = reshape(z,32,1);
+    abdmleads = [xy z]; refs = [-pi/4 0.5 0.4;(5/6-.5)*pi 0.5 0.4];  % + 2 reference leads
+    param.elpos = [abdmleads;refs]; end   
 if ~any(strcmp('refpos',fieldnames(param))); param.refpos = [pi 0.5 -0.3];end;
 NB_FOETUSES = size(param.fheart,2); % number of foetuses figured out from the number of foetal heart locations entered
 if ~any(strcmp('n',fieldnames(param))); param.n = 60000; end;

@@ -154,8 +154,8 @@ NB_FOETUSES = size(param.fheart,2); % number of foetuses figured out from the nu
 if ~any(strcmp('n',fieldnames(param))); param.n = 60000; end;
 if ~any(strcmp('fs',fieldnames(param))); param.fs = 1000; end;
 if ~any(strcmp('ntype',fieldnames(param))); param.ntype = ''; end;
-if ~any(strcmp('noise_fct',fieldnames(param))); param.noise_fct{1:length(param.ntype)} = 1; end;
-if ~any(strcmp('SNRfm',fieldnames(param))); param.SNRfm = -6; end;
+if ~any(strcmp('noise_fct',fieldnames(param))); param.noise_fct(1:length(param.ntype)) = 1; end;
+if ~any(strcmp('SNRfm',fieldnames(param))); param.SNRfm = -9; end;
 if ~any(strcmp('SNRmn',fieldnames(param))); param.SNRmn = 10; end;
 if ~any(strcmp('mhr',fieldnames(param))); param.mhr = 90; end;
 if ~any(strcmp('fhr',fieldnames(param))); param.fhr = repmat(150,NB_FOETUSES,1); end;
@@ -235,7 +235,7 @@ m_model.type = 1; % maternal ecg is type 1
 
 % == FOETAL heart(s)
 L_f = eye(3); % scaling of dipole in each direction
-Rfh = 0.1; % radius allowed for foetal heart to appear
+Rfh = 0.01; % radius allowed for foetal heart to appear
 
 % = foetal dipole generation
 f_model = cell(NB_FOETUSES,1); % allocating memory
@@ -250,7 +250,9 @@ for fet=1:NB_FOETUSES
     
     if param.posdev
         % picking random location around origin for fetus to be
-        [xp,yp,zp] = sph2cart(2*pi*rand,asin(2*rand-1),Rfh*(0.5+.5*rand)); % new random location for fet. heart within sphere, radius = 0.01
+        [xp,yp,zp] = sph2cart(2*pi*rand, ...   % new random location 
+                              asin(2*rand-1),...   % for fet. heart within sphere
+                              Rfh*rand); 
         posf_start = [xp+fh_cart(1),yp+fh_cart(2),zp+fh_cart(3)]; % new foetal start position
     else
         posf_start = [fh_cart(1),fh_cart(2),fh_cart(3)];

@@ -64,7 +64,7 @@ FHR = 120; %    [in bpm]
 % == general
 cpt2 = 0; cpt3 = 0; noise = {};
 signalf = zeros(NB_FOETUSES*NB_EL,NB_SAMPS);
-signaln = zeros(NB_NOISE*NB_EL,NB_SAMPS);
+signaln = {};
 
 % == loop through input dipole structures
 for i=1:NB_SIG2MIX
@@ -88,7 +88,7 @@ for i=1:NB_SIG2MIX
         case 3 % noise source
             cpt3 = cpt3+1; 
             signal = bsxfun(@times,signal,src.SNRfct); % multiplying by modulating function
-            signaln((cpt3-1)*NB_EL+1:cpt3*NB_EL,:) = signal; 
+            signaln{end+1} = signal; 
     end
 end
 
@@ -99,7 +99,7 @@ mixture = mecg;
 mbeats = 60*fs*length(mqrs)/length(mixture); % now im bpm
 Pm = sum(mixture.^2,2)*(MHR/mbeats); % average power of maternal 
                              %  across channels with heart rate correction
-powerm = mean(Pm);        % mean accross channels for SNRfm calculation
+powerm = mean(Pm);        % median accross channels for SNRfm calculation
                             % more robust to reduce reference leads influence 
 % == calibrating FECG (fetal - mother)
 % calibration is done using mean maternal and fetal ECG signal powers are reference
@@ -123,16 +123,19 @@ end
 % == calibrating NOISE (maternal - noise)
 % re-scale so that together, all noise sources have a 1/SNRmn [dB] level
 if ~isempty(signaln)
-    noise = cell(size(signaln,1)/NB_EL,1);
-    ampn = reshape(sum((signaln).^2,2),NB_EL,[]); % power of each source in one column (rows are channels)
-    ampnorm = diag(1./sum(ampn,2))*ampn;    % normalizing in total signal power (%)
-                                            % thats just important case we have multiple noise sources 
-    powern = mean(sum(ampn,2));           % mean overall ammount of noise
+    noise = cell(size(signaln));    % preallocating
+    noisegain = cellfun(@(x) mean(sum(x.^2,2)),signaln); % for noises with different power
+    noisegain = noisegain./sum(noisegain);     % percentual power of each noise source
     
+    sig = cat(3,signaln{:});            % transforms cell in 3D matrix
+    sigpow = sum(sum(sig,3).^2,2);      % total noise power for each channel
+    meannoisepow = mean(sigpow);        % average noise power
+    
+    p = sqrt(powerm./meannoisepow)*10.^(-SNRmn/20);  % applied gain for each noise signal / channels
+
     % add noise to mixture signals with amplitude modulation
-    for i = 1:size(signaln,1)/NB_EL     
-        p = ampnorm(:,i).*sqrt(powerm./powern)*10.^(-SNRmn/20);  % applied gain for each noise signal / channels
-        nblock = diag(p)*signaln((i-1)*NB_EL+1:i*NB_EL,:); % re-scaling signals
+    for i = 1:length(signaln)
+        nblock = noisegain(i)*diag(p)*signaln{i}; % re-scaling signals
         mixture = mixture + nblock; % adding noise to mixture
         noise{i} = nblock; % saving signal separetely
     end

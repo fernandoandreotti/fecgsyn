@@ -45,7 +45,7 @@ z = repmat([-.1 -.2 -.3 -.4],8,1); z = reshape(z,32,1);
 abdmleads = [xy z];
 refs = [-pi/4 0.5 0.4;(5/6-.5)*pi 0.5 0.4];  % + 2 reference leads
 paramorig.elpos = [abdmleads;refs];
-
+cd(path)
 for i = 1:10            % generate 5 cases of each
         close all
         paramst = paramorig;
@@ -59,12 +59,13 @@ for i = 1:10            % generate 5 cases of each
         paramst.ftypeacc = {'none'};    % force constant foetal heart rate
         out = run_ecg_generator(paramst,debug);  % stationary output
         plotmix(out)
-        save([path 'fecgsyn' sprintf('%2.2d_st',i)],'out')
+        save([path 'fecgsyn' sprintf('%2.2d',i)],'out')
         paramst = out.param;                     % keeping same parameters
-        
+            
     %% adding some noise    
-    for SNRmn = 3:3:15
-        for loop = 1:5
+    for SNRmn = -3:3:12 % six noise levels
+        for loop = 1:5 % repeat same setup 
+                       % just recalculating noise five times
             % reseting config
             disp(['Generating for SNRmn=' num2str(SNRmn) ' simulation number ' num2str(i) '.'])
             param = paramst;
@@ -75,7 +76,7 @@ for i = 1:10            % generate 5 cases of each
             param.fres = 0.9 + 0.05*randn; % foetus respiration frequency
             out = run_ecg_generator(param,debug);  % stationary output
             plotmix(out)
-            save([path 'fecgsyn' sprintf('%2.2d_noise_snr%2.2ddB_%d',i,SNRmn,loop)],'out')
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d',i,SNRmn,loop)],'out')
             paramnst = out.param;
             %% non-stationary mixture
             % Case 1: foetal movement
@@ -83,7 +84,7 @@ for i = 1:10            % generate 5 cases of each
             param.ftraj{1} = 'helix'; % giving spiral-like movement to fetus
             
             out = run_ecg_generator(param,debug);  % stationary output
-            %         save([path 'fecgsyn_c3' sprintf('%2.2d_snr%2.2ddB',i,SNRmn)],'out')
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
             % Case 2: rate rate accelerations
             param = paramnst;
             param.macc = 20; % maternal acceleration in HR [bpm]
@@ -92,7 +93,7 @@ for i = 1:10            % generate 5 cases of each
             param.ftypeacc = {'mexhat'}; % gaussian drop and recovery
             
             out = run_ecg_generator(param,debug);  % stationary output
-            %         save([path 'fecgsyn_c2' sprintf('%2.2d_snr%2.2ddB',i,SNRmn)],'out')
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
             % Case 3: contraction
             param = paramnst;
             x = linspace(-param.n/10,param.n/10,param.n);
@@ -107,13 +108,13 @@ for i = 1:10            % generate 5 cases of each
             param.faccstd{1} = 0.5;
             
             out = run_ecg_generator(param,debug);  % stationary output
-            %         save([path 'fecgsyn_c3' sprintf('%2.2d_snr%2.2ddB',i,SNRmn)],'out')
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c3',i,SNRmn,loop)],'out')
             % Case 4: ectopic beats
             param = paramnst;
             param.mectb = 1; param.fectb = 1;
             
             out = run_ecg_generator(param,debug);  % stationary output
-            %         save([path 'fecgsyn_c1' sprintf('%2.2d_snr%2.2ddB',i,SNRmn)],'out')
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c4',i,SNRmn,loop)],'out')
             % Case 5: twins
             param = paramnst;
             param.fhr(2) = 135+25*randn;
@@ -123,8 +124,7 @@ for i = 1:10            % generate 5 cases of each
             param.fheart{2} = [pi/10 0.4 -0.2];
             
             out = run_ecg_generator(param,debug);  % stationary output
-            %
-            %         save([path 'fecgsyn_c1' sprintf('%2.2d_snr%2.2ddB',i,SNRmn)],'out')
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c5',i,SNRmn,loop)],'out')
         end
     end
 end

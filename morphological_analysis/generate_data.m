@@ -122,6 +122,7 @@ for i = 1:10            % generate 5 cases of each
             param.facc = [0 0];
             param.ftypeacc = {'none' 'none'};
             param.fheart{2} = [pi/10 0.4 -0.2];
+            param.fvcg(2) = randi([1,9]);
             
             out = run_ecg_generator(param,debug);  % stationary output
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c5',i,SNRmn,loop)],'out')

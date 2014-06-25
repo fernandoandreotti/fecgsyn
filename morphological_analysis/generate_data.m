@@ -59,8 +59,8 @@ for i = 1:10            % generate 5 cases of each
     paramst.ftypeacc = {'none'};    % force constant foetal heart rate
     out = run_ecg_generator(paramst,debug);  % stationary output
     %plotmix(out)
-    save([path 'fecgsyn' sprintf('%2.2d',i)],'out')
     out = cleansave(out);
+    save([path 'fecgsyn' sprintf('%2.2d',i)],'out')
     paramst = out.param;                     % keeping same parameters
     
     %% adding some noise
@@ -131,7 +131,8 @@ for i = 1:10            % generate 5 cases of each
     end
 end
 end
-
+% this function eliminates some of the substructures from "out" for saving
+% disk space
 function out=cleansave(out)
     out=rmfield(out,{'f_model' 'm_model' 'vols' 'selvcgm' 'selvcgf'});
 end

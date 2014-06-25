@@ -39,7 +39,7 @@
 %% Input parameters
 % saving path
 if isunix
-    path = ['~/foobar/fecgdata/' datestr(date,'yyyy.mm.dd') '/'];
+    path = ['/media/fernando/Data/foobar/fecgdata/' datestr(date,'yyyy.mm.dd') '/'];
 else
     path = ['C:\foobar\fecgdata\' datestr(date,'yyyy.mm.dd') '\'];
 end

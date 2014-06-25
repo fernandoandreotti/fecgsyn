@@ -16,8 +16,10 @@ for i = 1:N
     axes(h(i))
     plot(out.mixture(chan(i),:),'Color',[.6 .6 .6],'LineWidth',LINE_WIDTH)
     hold on
-    valf = 1.2*median(out.mixture(chan(i),out.fqrs{:}))*ones(1,length(out.fqrs));
-    plot(out.fqrs{:},valf,'xr','MarkerSize',MARKER_SIZE,'MarkerFaceColor','r')
+    for j = 1:length(out.fqrs)
+        valf = 1.2*median(out.mixture(chan(j),out.fqrs{j}))*ones(1,length(out.fqrs{j}));
+        plot(out.fqrs{j},valf,'xr','MarkerSize',MARKER_SIZE,'MarkerFaceColor','r')
+    end
     valm = 1.2*median(out.mixture(chan(i),out.mqrs))*ones(1,length(out.mqrs));
     plot(out.mqrs,valm,'dk','MarkerSize',MARKER_SIZE,'MarkerFaceColor','k')   
     ylabel(['ch' num2str(chan(i))],'FontSize',FONT_SIZE)

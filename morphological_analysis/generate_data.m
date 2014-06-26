@@ -135,7 +135,7 @@ end
 % disk space
 function out=clean_compress(out)
     out_tmp=rmfield(out,{'f_model' 'm_model' 'vols' 'selvcgm' 'selvcgf'});
-    out = struct()
+    out = struct();
     out.mecg = int16(round(3000*out_tmp.mecg));
     if ~isempty(out_tmp.fecg)
         for i = 1:length(out_tmp.fecg)

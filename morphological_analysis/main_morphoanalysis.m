@@ -44,7 +44,7 @@ else
     path = ['C:\foobar\fecgdata\' datestr(date,'yyyy.mm.dd') '\'];
 end
 
-generate = 0;   % boolean, data should be generated? 
+generate = 1;   % boolean, data should be generated? 
                 % If not, path should direct to data location
 
 %% Data Generation

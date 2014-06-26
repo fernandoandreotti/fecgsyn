@@ -59,7 +59,7 @@ for i = 1:10            % generate 5 cases of each
     paramst.ftypeacc = {'none'};    % force constant foetal heart rate
     out = run_ecg_generator(paramst,debug);  % stationary output
     %plotmix(out)
-    out = cleansave(out);
+    out = clean_compress(out);
     save([path 'fecgsyn' sprintf('%2.2d',i)],'out')
     paramst = out.param;                     % keeping same parameters
     
@@ -77,7 +77,7 @@ for i = 1:10            % generate 5 cases of each
             param.fres = 0.9 + 0.05*randn; % foetus respiration frequency
             out = run_ecg_generator(param,debug);  % stationary output
             %plotmix(out)
-            out = cleansave(out);
+            out = clean_compress(out);
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d',i,SNRmn,loop)],'out')
             paramnst = out.param;
             %% non-stationary mixture
@@ -85,7 +85,7 @@ for i = 1:10            % generate 5 cases of each
             param = paramnst;
             param.ftraj{1} = 'helix'; % giving spiral-like movement to fetus
             out = run_ecg_generator(param,debug);  % stationary output
-            out = cleansave(out);
+            out = clean_compress(out);
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
             % Case 2: rate rate accelerations
             param = paramnst;
@@ -94,7 +94,7 @@ for i = 1:10            % generate 5 cases of each
             param.facc = -40; % foetal decceleration in HR [bpm]
             param.ftypeacc = {'mexhat'}; % gaussian drop and recovery
             out = run_ecg_generator(param,debug);  % stationary output
-            out = cleansave(out);
+            out = clean_compress(out);
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
             % Case 3: contraction
             param = paramnst;
@@ -109,13 +109,13 @@ for i = 1:10            % generate 5 cases of each
             param.ftypeacc = {'mexhat'};
             param.faccstd{1} = 0.5;
             out = run_ecg_generator(param,debug);  % stationary output
-            out = cleansave(out);
+            out = clean_compress(out);
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c3',i,SNRmn,loop)],'out')
             % Case 4: ectopic beats
             param = paramnst;
             param.mectb = 1; param.fectb = 1;
             out = run_ecg_generator(param,debug);  % stationary output
-            out = cleansave(out);
+            out = clean_compress(out);
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c4',i,SNRmn,loop)],'out')
             % %             % Case 5: twins
             param = paramnst;
@@ -125,7 +125,7 @@ for i = 1:10            % generate 5 cases of each
             param.fvcg(2) = randi([1,9]);
             param=rmfield(param,{'faccmean' 'facc' 'ftypeacc' 'faccstd' 'ftraj'});
             out = run_ecg_generator(param,debug);  % stationary output
-            out = cleansave(out);
+            out = clean_compress(out);
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c5',i,SNRmn,loop)],'out')
         end
     end
@@ -133,6 +133,25 @@ end
 end
 % this function eliminates some of the substructures from "out" for saving
 % disk space
-function out=cleansave(out)
-    out=rmfield(out,{'f_model' 'm_model' 'vols' 'selvcgm' 'selvcgf'});
+function out=clean_compress(out)
+    out_tmp=rmfield(out,{'f_model' 'm_model' 'vols' 'selvcgm' 'selvcgf'});
+    out = struct()
+    out.mecg = int16(round(3000*out_tmp.mecg));
+    if ~isempty(out_tmp.fecg)
+        for i = 1:length(out_tmp.fecg)
+            out.fecg{i} = int16(round(3000*out_tmp.fecg{i}));
+        end
+    else
+        out.fecg = {};
+    end
+    if ~isempty(out_tmp.noise)
+        for i = 1:length(out_tmp.noise)
+            out.noise{i} = int16(round(3000*out_tmp.noise{i}));
+        end
+    else
+        out.noise = {};
+    end
+    out.mqrs = out_tmp.mqrs;
+    out.fqrs = out_tmp.fqrs;
+    out.param = out_tmp.param;
 end

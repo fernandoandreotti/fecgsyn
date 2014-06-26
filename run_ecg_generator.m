@@ -363,6 +363,7 @@ out.fqrs = fqrs;
 out.param = param;
 out.selvcgm = selvcgm;
 out.selvcgf = selvcgf;
+out.param.elpos = out.param.elpos(1:end-1,:);
 
 % == Plotting results
 if debug

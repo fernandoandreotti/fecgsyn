@@ -1,11 +1,9 @@
-%% Main script for FECG morphological analysis
+%% Main script for ICA-FECG morphological analysis
 % 
 % This is the mains script for testing the morphological consistency of
 % extracting the foetal signal using various methods. 
 % Used extraction methods:
 %  - ICA
-%  - PCA
-%  -piCA
 % 
 % Used morphological measures:
 % - T/QRS ratio
@@ -36,37 +34,11 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%% Input parameters
-% saving path
-if isunix
-    path = ['/media/fernando/Data/foobar/fecgdata_test/' datestr(date,'yyyy.mm.dd') '/'];
-else
-    path = ['C:\foobar\fecgdata\' datestr(date,'yyyy.mm.dd') '\'];
-end
+function bestchan = ica_extraction(out)
 
-generate = 0;   % boolean, data should be generated? 
-                % If not, path should direct to data location
+% = normalise data
+trans = bsxfun(@minus,out.mixture,mean(out.mixture,2)); % remove mean
+stmix = bsxfun(@rdivide,trans,std(out.mixture,0,2)); % divide by standard deviation
 
-%% Data Generation
-if generate
-    mkdir(path)
-    generate_data(path)  % generates set of unique simulated data for testing
-else
-    cd(path)
-end
-
-%% Extraction Methods
-fls = dir('*.mat');     % looking for .mat (creating index)
-fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
-for i = 1:length(fls)
-    disp(['Extracting file ' fls{i} '..'])
-    load(fls{i})
-    % = using ICA
-    ica_chan = ica_extraction(out);
-    
-    % = using TSc
-    
-end
-%% Morphological Analysis
-
-
+% = apply JADE
+[~,src_st] = jade(ceil(1000*stmix));    % FIXME: NOT SURE WHY NEED TO MULTIPLY BY 1000

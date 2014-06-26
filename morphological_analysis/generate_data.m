@@ -131,8 +131,8 @@ for i = 1:10            % generate 5 cases of each
     end
 end
 end
-% this function eliminates some of the substructures from "out" for saving
-% disk space
+% this function eliminates some of the substructures from "out" and
+% compresses the variables to int16 for saving disk space
 function out=clean_compress(out)
     out_tmp=rmfield(out,{'f_model' 'm_model' 'vols' 'selvcgm' 'selvcgf'});
     out = struct();

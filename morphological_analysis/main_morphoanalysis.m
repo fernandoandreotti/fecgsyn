@@ -44,7 +44,7 @@ else
     path = ['C:\foobar\fecgdata\' datestr(date,'yyyy.mm.dd') '\'];
 end
 
-generate = 1;   % boolean, data should be generated? 
+generate = 0;   % boolean, data should be generated? 
                 % If not, path should direct to data location
 
 %% Data Generation
@@ -60,9 +60,21 @@ fls = dir('*.mat');     % looking for .mat (creating index)
 fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
 for i = 1:length(fls)
     disp(['Extracting file ' fls{i} '..'])
+    % = loading data
     load(fls{i})
+    noise = sum(cat(3,out.noise{:}),3);
+    if isempty(noise)
+        noise = zeros(size(out.mecg));
+    end
+    mixture = double(out.mecg) + sum(cat(3,out.fecg{:}),3) ...
+        + noise;     % re-creating abdominal mixture
+    
+   
+    
     % = using ICA
-    ica_chan = ica_extraction(out);
+    ch = 1:32;      % channels to be used in ICA
+    loopsec = 30*out.param.fs;
+    ica_chan = ica_extraction(mixture,ch,out.fqrs,loopsec);     % extract using ICA
     
     % = using TSc
     

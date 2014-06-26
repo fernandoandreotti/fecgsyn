@@ -340,12 +340,13 @@ disp('Projecting dipoles...')
 % % % % using mean body potential as reference (ground electrode)
 ground = mixture(end,:);
 mixture = mixture(1:end-1,:) - repmat(ground,size(mixture,1)-1,1);
-mecg = mecg(1:end-1,:);
+ground = mecg(end,:);
+mecg = mecg(1:end-1,:) - repmat(ground,size(mecg,1)-1,1);
 if ~isempty(fecg)
-    fecg = cellfun(@(x) x(1:end-1,:),fecg,'UniformOutput',0);
+    fecg = cellfun(@(x) x(1:end-1,:) - repmat(x(end,:),size(x,1)-1,1),fecg,'UniformOutput',0);
 end
 if ~isempty(noise)
-    noise = cellfun(@(x) x(1:end-1,:),noise,'UniformOutput',0);
+    noise = cellfun(@(x) x(1:end-1,:) - repmat(x(end,:),size(x,1)-1,1),noise,'UniformOutput',0);
 end
 vols.refpos = param.refpos;
 vols.elpos = vols.elpos(1:end-1,:); % removing ground electrode

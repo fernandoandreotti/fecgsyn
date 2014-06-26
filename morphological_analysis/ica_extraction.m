@@ -1,13 +1,14 @@
-function bestsig = ica_extraction(data,chan,refqrs,varargin)
+function bestsig = ica_extraction(data,fs,chan,refqrs,varargin)
 % Uses Independent Component Analysis (ICA) over selected channels input 
 % data and choses best channel based on th F1 measure.
 % 
 % Input
 % data:      Matrix containing signals to serve as input to ICA.
+% fs:        Sampling frequency [Hz]
 % chan:      Channels from data to be used in ICA
 % refqrs:    Array containing reference QRS detections for F1 measure
 % (optional)
-% blength    Iterates ICA every blength (in samples)
+% blength    Iterates ICA every blength (in seconds)
 % 
 % Output
 % bestsig:   Selected unmixed signal
@@ -55,6 +56,7 @@ end
 ssamp = 1;          % starting sample to filter (offset)
 endsamp = ssamp + blength - 1;      % ending sample to filter
 loop = 1;           % allows iterations
+blength = blength * fs;
 
 if size(data,2)<endsamp
     blength = Data.length;
@@ -89,16 +91,7 @@ while (loop)  %quit will be given as soon as complete signal is filtered
 end
 
 %% Calculate F1 measure
-bestsig = ref;
-
-% BxB function by Behar (CinC2013)
- % == core function
- [IndMatch,Dist] = dsearchn(refqrs,testqrs);         % closest ref for each point in test qrs
- IndMatchInWindow = IndMatch(Dist<thres*fs);         % keep only the ones within a certain window
- NB_MATCH_UNIQUE = length(unique(IndMatchInWindow)); % how many unique matching
- TP = NB_MATCH_UNIQUE;                               % number of identified ref QRS
- FN = NB_REF-TP;                                     % number of missed ref QRS
- FP = NB_TEST-TP;                                    % how many extra detection?
- Se  = TP/(TP+FN);
- PPV = TP/(FP+TP);
- F1 = 2*Se*PPV/(Se+PPV);                             % accuracy measure
+interv = 0.05*fs; % acceptance interval
+[F1] = Bxb_compare(refqrs,qrsdet,interv);
+ 
+ bestsig = ref;

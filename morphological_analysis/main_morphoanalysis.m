@@ -73,8 +73,8 @@ for i = 1:length(fls)
     
     % = using ICA
     ch = 1:32;      % channels to be used in ICA
-    loopsec = 30*out.param.fs;
-    ica_chan = ica_extraction(mixture,ch,out.fqrs,loopsec);     % extract using ICA
+    loopsec = 60;   % in seconds
+    ica_chan = ica_extraction(mixture,out.param.fs,ch,out.fqrs,loopsec);     % extract using ICA
     
     % = using TSc
     

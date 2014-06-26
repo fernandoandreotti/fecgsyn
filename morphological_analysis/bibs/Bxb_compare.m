@@ -1,4 +1,4 @@
-function [TP,FN,FP,SE,PPV,ACC,F1] = Bxb_compare(refqrs, testqrs, acceptint)
+function [F1,ACC,PPV,SE,TP,FN,FP1] = Bxb_compare(refqrs, testqrs, acceptint)
 % This function is similar to the function bxb.exe from Physionet. It
 % compares in a beat-by-beat basis if the detections match the reference.
 % The algorithm is based on the entry by Joachim Behar on the Physionet / 
@@ -11,13 +11,50 @@ function [TP,FN,FP,SE,PPV,ACC,F1] = Bxb_compare(refqrs, testqrs, acceptint)
 % 
 % 
 % Output
+% F1:            F1-measure (Joachim Behar - Computing in Cardiology 2013)
+% ACC:           accuracy (by Karvounis 2007)
+% PPV:           positive predictive value
+% SE:            sensitivity
 % TP:            number of true positives
 % FN:            number of false negatives
 % FP:            number of false positives
-% SE:            sensitivity
-% PPV:           positive predictive value
-% ACC:           accuracy (by Karvounis 2007)
-% F1:            F1-measure (Joachim Behar - Computing in Cardiology 2013)
+%
+% References
+%
+% TODO
+% 
+% 
+% NI-FECG simulator toolbox, version 1.0, February 2014
+% Released under the GNU General Public License
+%
+% Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
+% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+%
+% Last updated : 30-06-2014
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+% == input test
+
+if size(refqrs,1) > size(refqrs,2)
+    refqrs = refqrs';
+end
+
+if size(testqrs,1) > size(testqrs,2)
+    testqrs = testqrs';
+end
 
 NB_REF = length(refqrs);
 NB_TEST = length(testqrs);
@@ -27,7 +64,7 @@ NB_TEST = length(testqrs);
  idxmatchwin = idxmatch(dist<acceptint);         % keep only the ones within a certain window
  NB_MATCH_UNIQUE = length(unique(idxmatchwin)); % how many unique matching
  
-% == 
+% == generating output
  TP = NB_MATCH_UNIQUE;             % number of identified ref QRS
  FN = NB_REF-TP;                   % number of missed ref QRS
  FP = NB_TEST-TP;                  % how many extra detection?

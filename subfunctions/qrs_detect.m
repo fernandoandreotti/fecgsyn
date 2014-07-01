@@ -24,20 +24,14 @@ function [qrs_pos,sign,en_thres] = qrs_detect(ecg,varargin)
 %
 %
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% FECG-ESN toolbox, version 1.0
 % Released under the GNU General Public License
 %
-% Copyright (C) 2014  Joachim Behar & Fernando Andreotti
-% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
-% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+% Copyright (C) 2014  Joachim Behar
+% Oxford university, Intelligent Patient Monitoring Group
+% joachim.behar@eng.ox.ac.uk
 %
-% Last updated : 19-01-2014
-%
-% This code was initialy developed by Joachim Behar for the Physionet
-% Challenge 2013. More code available here:
-% http://physionet.org/challenge/2013/sources/joachim.behar@gmail.com/
-%
-%
+% Last updated : 28-01-2014
 %
 % This program is free software; you can redistribute it and/or modify it
 % under the terms of the GNU General Public License as published by the
@@ -49,6 +43,7 @@ function [qrs_pos,sign,en_thres] = qrs_detect(ecg,varargin)
 % Public License for more details.
 
 % == managing inputs
+REF_PERIOD = 0.250; 
 THRES = 0.6; 
 fs = 1000; 
 fid_vec = [];
@@ -92,7 +87,7 @@ if(a>b); NB_SAMP=a; elseif(b>a); NB_SAMP=b; ecg=ecg'; end;
 tm = 1/fs:1/fs:ceil(NB_SAMP/fs);
 
 % == constants
-MED_SMOOTH_NB_COEFF = fs/100;
+MED_SMOOTH_NB_COEFF = round(fs/100);
 INT_NB_COEFF = round(7*fs/256); % length is 7 for fs=256Hz
 LOW_CUT_FREQ = 5;
 HIGH_CUT_FREQ = 45;
@@ -208,12 +203,13 @@ try
     hrv = 60./diff(R_t); % heart rate
 
 catch ME
+    rethrow(ME);
     for enb=1:length(ME.stack); disp(ME.stack(enb)); end;
     qrs_pos = [1 10 20]; sign = 1; en_thres = 0.5; 
 end
 
 % == plots
-if debug>0
+if debug
     figure(1);
     ax(1) = subplot(4,1,1); plot(tm,ecg); hold on;plot(tm,bpfecg,'r')
         title('raw ECG (blue) and zero-pahse FIR filtered ECG (red)'); ylabel('ECG');

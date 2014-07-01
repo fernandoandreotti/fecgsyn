@@ -39,7 +39,8 @@
 %% Input parameters
 % saving path
 if isunix
-    path = ['/media/fernando/Data/foobar/fecgdata_test/' datestr(date,'yyyy.mm.dd') '/'];
+%     path = ['/media/fernando/Data/foobar/fecgdata_test/' datestr(date,'yyyy.mm.dd') '/'];
+ path = '/media/fernando/FetalEKG/2014.06_fecgsyn_simulations';
 else
     path = ['C:\foobar\fecgdata\' datestr(date,'yyyy.mm.dd') '\'];
 end
@@ -74,7 +75,7 @@ for i = 1:length(fls)
     % = using ICA
     ch = 1:32;      % channels to be used in ICA
     loopsec = 60;   % in seconds
-    ica_chan = ica_extraction(mixture,out.param.fs,ch,out.fqrs,loopsec);     % extract using ICA
+    ica_chan = ica_extraction(mixture,out.param.fs,ch,out.fqrs{1},loopsec);     % extract using ICA
     
     % = using TSc
     

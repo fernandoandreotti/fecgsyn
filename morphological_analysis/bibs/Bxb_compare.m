@@ -1,4 +1,4 @@
-function [F1,ACC,PPV,SE,TP,FN,FP1] = Bxb_compare(refqrs, testqrs, acceptint)
+function [F1,RMS,ACC,PPV,SE,TP,FN,FP] = Bxb_compare(refqrs, testqrs, acceptint)
 % This function is similar to the function bxb.exe from Physionet. It
 % compares in a beat-by-beat basis if the detections match the reference.
 % The algorithm is based on the entry by Joachim Behar on the Physionet / 
@@ -48,11 +48,11 @@ function [F1,ACC,PPV,SE,TP,FN,FP1] = Bxb_compare(refqrs, testqrs, acceptint)
 
 % == input test
 
-if size(refqrs,1) > size(refqrs,2)
+if size(refqrs,2) > size(refqrs,1)
     refqrs = refqrs';
 end
 
-if size(testqrs,1) > size(testqrs,2)
+if size(testqrs,2) > size(testqrs,1)
     testqrs = testqrs';
 end
 
@@ -62,7 +62,9 @@ NB_TEST = length(testqrs);
 % == core function
  [idxmatch,dist] = dsearchn(refqrs,testqrs);         % closest ref for each point in test qrs
  idxmatchwin = idxmatch(dist<acceptint);         % keep only the ones within a certain window
+ RMS = mean(dist(dist<acceptint));        % RMS value
  NB_MATCH_UNIQUE = length(unique(idxmatchwin)); % how many unique matching
+ 
  
 % == generating output
  TP = NB_MATCH_UNIQUE;             % number of identified ref QRS

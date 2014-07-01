@@ -1,10 +1,10 @@
-function bestsig = ica_extraction(data,fs,chan,refqrs,varargin)
+function bestsig = ica_extraction(data,FS,chan,refqrs,varargin)
 % Uses Independent Component Analysis (ICA) over selected channels input 
 % data and choses best channel based on th F1 measure.
 % 
 % Input
 % data:      Matrix containing signals to serve as input to ICA.
-% fs:        Sampling frequency [Hz]
+% FS:        Sampling frequency [Hz]
 % chan:      Channels from data to be used in ICA
 % refqrs:    Array containing reference QRS detections for F1 measure
 % (optional)
@@ -51,12 +51,17 @@ switch length(varargin)
     otherwise
         error('ica_extraction: too many inputs given to function')
 end
+% Parameters
+INTERV = round(0.15*FS);    % BxB acceptance interval
+TH = 0.6;   % detector threshold
+REFRAC = round(.25*FS)/1000; % detector refractory period
 
 %% Run ICA on every block
+blength = blength * FS;
 ssamp = 1;          % starting sample to filter (offset)
 endsamp = ssamp + blength - 1;      % ending sample to filter
 loop = 1;           % allows iterations
-blength = blength * fs;
+
 
 if size(data,2)<endsamp
     blength = Data.length;
@@ -74,13 +79,28 @@ while (loop)  %quit will be given as soon as complete signal is filtered
         loop = 0;                           % and be the last loop iteration
     end
     samp2filt = ssamp:endsamp;              % creating a list with samples to filter
+     idx = refqrs>=ssamp & refqrs <= endsamp;
+     refint = refqrs(idx) - ssamp;  % within interval
+    % = apply ICA
+    % not re-using matrices since stationarity is not a possibility
+    [dataICA,~,~] = fastica(X(:,samp2filt),'approach','symm','g','tanh','verbose','off');
+    dataICA = diag(1./max(dataICA'))*dataICA;
+    % = QRS detect each component and take F1, RMS measure
+    qrsdet = cell(1,size(dataICA,1));
+    F1 = zeros(1,size(dataICA,1));
+    RMS = zeros(1,size(dataICA,1));
+    for ch = 1:size(dataICA,1)
+        qrsdet{ch} = qrs_detect(dataICA(ch,:),TH,REFRAC,FS);
+        if ~isempty(qrsdet{ch})
+            [F1(ch),RMS(ch)] = Bxb_compare(refint,qrsdet{ch},INTERV);
+        else
+            F1(ch) = 0;
+            RMS(ch) = Inf;
+        end
+    end
+    % = decide for one component
     
-    % = apply JADE
-    % X = A.S + N
-    tic
-    %     [A,S] = jade(X(:,samp2filt));    % FIXME: NOT SURE WHY NEED TO MULTIPLY BY 1000
-    [dataICA,A,W] = fastica(X(:,samp2filt),'approach','symm','g','tanh','verbose','off');
-    toc
+    % add to qrs detection ssamp
     
     %Saving this part
     %     icasignal(:,samp2filt)= S';
@@ -91,7 +111,7 @@ while (loop)  %quit will be given as soon as complete signal is filtered
 end
 
 %% Calculate F1 measure
-interv = 0.05*fs; % acceptance interval
+interv = 0.05*FS; % acceptance interval
 [F1] = Bxb_compare(refqrs,qrsdet,interv);
  
  bestsig = ref;

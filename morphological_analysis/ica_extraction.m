@@ -1,4 +1,4 @@
-function bestsig = ica_extraction(data,FS,chan,refqrs,varargin)
+function [F1,RMS] = ica_extraction(data,FS,chan,refqrs,varargin)
 % Uses Independent Component Analysis (ICA) over selected channels input 
 % data and choses best channel based on th F1 measure.
 % 
@@ -52,17 +52,17 @@ switch length(varargin)
         error('ica_extraction: too many inputs given to function')
 end
 % Parameters
-INTERV = round(0.15*FS);    % BxB acceptance interval
-TH = 0.6;   % detector threshold
-REFRAC = round(.25*FS)/1000; % detector refractory period
+INTERV = round(0.05*FS);    % BxB acceptance interval
+TH = 0.3;   % detector threshold
+REFRAC = round(.15*FS)/1000; % detector refractory period
 
 %% Run ICA on every block
 blength = blength * FS;
 ssamp = 1;          % starting sample to filter (offset)
 endsamp = ssamp + blength - 1;      % ending sample to filter
 loop = 1;           % allows iterations
-
-
+icamorph = zeros(1,length(data));      % best produced ICA channel
+qrsica = icamorph;                  % resulting qrs detections
 if size(data,2)<endsamp
     blength = Data.length;
     endsamp = size(data,2);
@@ -70,8 +70,8 @@ end
 
 % = normalise data
 trans = bsxfun(@minus,data,mean(data,2)); % remove mean
-X = bsxfun(@rdivide,trans,std(data,0,2)); % divide by standard deviation
-icasignal = zeros(size(X));
+data = bsxfun(@rdivide,trans,std(data,0,2)); % divide by standard deviation
+icasignal = zeros(size(data));
 
 while (loop)  %quit will be given as soon as complete signal is filtered
     if (size(data,2) - ssamp) < 1.5*blength        % if there is less than 1.5x wrapping
@@ -83,8 +83,8 @@ while (loop)  %quit will be given as soon as complete signal is filtered
      refint = refqrs(idx) - ssamp;  % within interval
     % = apply ICA
     % not re-using matrices since stationarity is not a possibility
-    [dataICA,~,~] = fastica(X(:,samp2filt),'approach','symm','g','tanh','verbose','off');
-    dataICA = diag(1./max(dataICA'))*dataICA;
+    [dataICA,~,~] = fastica(data(:,samp2filt),'approach','symm','g','tanh','verbose','off');
+    dataICA = diag(1./max(dataICA'))*dataICA; % may not have the same size as "data"
     % = QRS detect each component and take F1, RMS measure
     qrsdet = cell(1,size(dataICA,1));
     F1 = zeros(1,size(dataICA,1));
@@ -98,20 +98,20 @@ while (loop)  %quit will be given as soon as complete signal is filtered
             RMS(ch) = Inf;
         end
     end
+    
     % = decide for one component
+    %Saving segment
+    [maxF1,maxch] = max(F1);
+    if maxF1 > .8
+        icamorph(samp2filt) = dataICA(maxch,:);
+        qrsica(qrsdet{maxch}+ssamp-1) = 1;
+    end
     
-    % add to qrs detection ssamp
-    
-    %Saving this part
-    %     icasignal(:,samp2filt)= S';
-    icasignal(:,samp2filt)= dataICA;
     %Augment offsets
     ssamp = endsamp+1;
     endsamp = endsamp+blength;
 end
+qrsica = find(qrsica);
 
 %% Calculate F1 measure
-interv = 0.05*FS; % acceptance interval
-[F1] = Bxb_compare(refqrs,qrsdet,interv);
- 
- bestsig = ref;
+[F1,RMS] = Bxb_compare(refqrs,qrsica,INTERV);

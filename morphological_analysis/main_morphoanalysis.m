@@ -45,8 +45,11 @@ else
     path = ['C:\foobar\fecgdata\' datestr(date,'yyyy.mm.dd') '\'];
 end
 
+%% Set-up parameters
 generate = 0;   % boolean, data should be generated? 
                 % If not, path should direct to data location
+                
+ch = 1:32;      % channels to be used in ICA
 
 %% Data Generation
 if generate
@@ -59,7 +62,7 @@ end
 %% Extraction Methods
 fls = dir('*.mat');     % looking for .mat (creating index)
 fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
-for i = 1:length(fls)
+for i = 1:length(fls)       
     disp(['Extracting file ' fls{i} '..'])
     % = loading data
     load(fls{i})
@@ -71,11 +74,22 @@ for i = 1:length(fls)
         + noise;     % re-creating abdominal mixture
     
    
+    % = preprocessing channels
+    fs = out.param.fs;
+    HF_CUT = 100; % high cut frequency
+    LF_CUT = 0.7; % low cut frequency
+    wo = 60/(fs/2); bw = wo/35;
+    [b_lp,a_lp] = butter(5,HF_CUT/(fs/2),'low');
+    [b_bas,a_bas] = butter(3,LF_CUT/(fs/2),'high');
+    for j=ch
+        lpmix = filtfilt(b_lp,a_lp,mixture(j,:));
+        mixture(j,:) = filtfilt(b_bas,a_bas,lpmix);
+    end
     
     % = using ICA
-    ch = 1:32;      % channels to be used in ICA
+    
     loopsec = 60;   % in seconds
-    ica_chan = ica_extraction(mixture,out.param.fs,ch,out.fqrs{1},loopsec);     % extract using ICA
+    [F1,RMS] = ica_extraction(mixture,fs,ch,out.fqrs{1},loopsec);     % extract using ICA
     
     % = using TSc
     

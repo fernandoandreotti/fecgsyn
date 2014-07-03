@@ -1,4 +1,4 @@
-function [F1,RMS,ACC,PPV,SE,TP,FN,FP] = Bxb_compare(refqrs, testqrs, acceptint)
+function [F1,RMS,PPV,SE,TP,FN,FP] = Bxb_compare(refqrs, testqrs, acceptint)
 % This function is similar to the function bxb.exe from Physionet. It
 % compares in a beat-by-beat basis if the detections match the reference.
 % The algorithm is based on the entry by Joachim Behar on the Physionet / 
@@ -12,7 +12,7 @@ function [F1,RMS,ACC,PPV,SE,TP,FN,FP] = Bxb_compare(refqrs, testqrs, acceptint)
 % 
 % Output
 % F1:            F1-measure (Joachim Behar - Computing in Cardiology 2013)
-% ACC:           accuracy (by Karvounis 2007)
+% ACC:           accuracy (by Karvounis 2007) - alternative to F1
 % PPV:           positive predictive value
 % SE:            sensitivity
 % TP:            number of true positives

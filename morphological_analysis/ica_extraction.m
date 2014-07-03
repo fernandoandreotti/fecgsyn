@@ -1,4 +1,4 @@
-function [F1,RMS] = ica_extraction(data,FS,chan,refqrs,varargin)
+function [F1,RMS,PPV,SE] = ica_extraction(data,FS,chan,refqrs,varargin)
 % Uses Independent Component Analysis (ICA) over selected channels input 
 % data and choses best channel based on th F1 measure.
 % 
@@ -95,7 +95,7 @@ while (loop)  %quit will be given as soon as complete signal is filtered
             [F1(ch),RMS(ch)] = Bxb_compare(refint,qrsdet{ch},INTERV);
         else
             F1(ch) = 0;
-            RMS(ch) = Inf;
+            RMS(ch) = NaN;
         end
     end
     
@@ -114,4 +114,4 @@ end
 qrsica = find(qrsica);
 
 %% Calculate F1 measure
-[F1,RMS] = Bxb_compare(refqrs,qrsica,INTERV);
+[F1,RMS,PPV,SE] = Bxb_compare(refqrs,qrsica,INTERV);

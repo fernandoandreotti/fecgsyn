@@ -48,8 +48,10 @@ end
 %% Set-up parameters
 generate = 0;   % boolean, data should be generated? 
                 % If not, path should direct to data location
-                
-ch = 1:32;      % channels to be used in ICA
+
+% channels to be used in ICA                
+% ch = 1:32;      
+ch = [1:2:8 10:2:16 17:2:24 26:2:32];
 
 %% Data Generation
 if generate
@@ -62,6 +64,8 @@ end
 %% Extraction Methods
 fls = dir('*.mat');     % looking for .mat (creating index)
 fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
+stats_ica = zeros(length(fls),4);
+stats_tsc = zeros(length(fls),4);
 for i = 1:length(fls)       
     disp(['Extracting file ' fls{i} '..'])
     % = loading data
@@ -72,8 +76,7 @@ for i = 1:length(fls)
     end
     mixture = double(out.mecg) + sum(cat(3,out.fecg{:}),3) ...
         + noise;     % re-creating abdominal mixture
-    
-   
+       
     % = preprocessing channels
     fs = out.param.fs;
     HF_CUT = 100; % high cut frequency
@@ -87,12 +90,18 @@ for i = 1:length(fls)
     end
     
     % = using ICA
-    
     loopsec = 60;   % in seconds
-    [F1,RMS] = ica_extraction(mixture,fs,ch,out.fqrs{1},loopsec);     % extract using ICA
+    [F1,RMS,PPV,SE] = ica_extraction(mixture,fs,ch,out.fqrs{1},loopsec);     % extract using ICA
+    stats_ica(end+1,:) = [F1,RMS,PPV,SE];
     
     % = using TSc
+    % look for channel with largest SNRfm
+    out.fecg{1}
     
+    mecg_cancellation(out.mqrs,mixture,'TS-CERUTTI')
+    
+    stats_tsc(end+1,:) = [F1,RMS,PPV,SE];
+
 end
 %% Morphological Analysis
 

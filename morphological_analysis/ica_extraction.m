@@ -1,4 +1,4 @@
-function [F1,RMS,PPV,SE] = ica_extraction(data,FS,chan,refqrs,varargin)
+function icamorph = ica_extraction(data,FS,chan,refqrs,varargin)
 % Uses Independent Component Analysis (ICA) over selected channels input 
 % data and choses best channel based on th F1 measure.
 % 
@@ -62,7 +62,6 @@ ssamp = 1;          % starting sample to filter (offset)
 endsamp = ssamp + blength - 1;      % ending sample to filter
 loop = 1;           % allows iterations
 icamorph = zeros(1,length(data));      % best produced ICA channel
-qrsica = icamorph;                  % resulting qrs detections
 if size(data,2)<endsamp
     blength = Data.length;
     endsamp = size(data,2);
@@ -104,14 +103,10 @@ while (loop)  %quit will be given as soon as complete signal is filtered
     [maxF1,maxch] = max(F1);
     if maxF1 > .8
         icamorph(samp2filt) = dataICA(maxch,:);
-        qrsica(qrsdet{maxch}+ssamp-1) = 1;
     end
     
     %Augment offsets
     ssamp = endsamp+1;
     endsamp = endsamp+blength;
 end
-qrsica = find(qrsica);
 
-%% Calculate F1 measure
-[F1,RMS,PPV,SE] = Bxb_compare(refqrs,qrsica,INTERV);

@@ -1,4 +1,4 @@
-function residual = mecg_cancellation(peaks,ecg,method,varargin)
+function residual = mecg_cancellation(peaks,ecg,method,debug,varargin)
 % MECG cancellation algorithms using template subtraction like methods.
 % Five template subtraction techniques are implemented going from the least
 % adaptive to the more adaptive ones:
@@ -46,23 +46,18 @@ function residual = mecg_cancellation(peaks,ecg,method,varargin)
 nbCycles = 20;
 NbPC = 2;
 fs = 1000;
-debug = 1;
+
 switch nargin
-    case 3
     case 4
-        nbCycles = varargin{1};
     case 5
         nbCycles = varargin{1};
-        NbPC = varargin{2};        
     case 6
         nbCycles = varargin{1};
         NbPC = varargin{2};        
-        fs = varargin{3};
     case 7
         nbCycles = varargin{1};
         NbPC = varargin{2};        
         fs = varargin{3};
-        debug = varargin{4};
     otherwise
         error('mecg_cancellation: wrong number of input arguments \n');        
 end

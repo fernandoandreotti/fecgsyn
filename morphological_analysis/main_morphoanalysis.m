@@ -52,6 +52,7 @@ generate = 0;   % boolean, data should be generated?
 % channels to be used in ICA                
 % ch = 1:32;      
 ch = [1:2:8 10:2:16 17:2:24 26:2:32];
+debug = 1;
 
 %% Data Generation
 if generate
@@ -66,7 +67,7 @@ fls = dir('*.mat');     % looking for .mat (creating index)
 fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
 stats_ica = zeros(length(fls),4);
 stats_tsc = zeros(length(fls),4);
-for i = 1:length(fls)       
+for i = 1:length(fls)   
     disp(['Extracting file ' fls{i} '..'])
     % = loading data
     load(fls{i})
@@ -74,11 +75,16 @@ for i = 1:length(fls)
     if isempty(noise)
         noise = zeros(size(out.mecg));
     end
+    fs = out.param.fs;
+    INTERV = round(0.05*fs);    % BxB acceptance interval
+    TH = 0.3;                   % detector threshold
+    REFRAC = round(.15*fs)/1000; % detector refractory period
     mixture = double(out.mecg) + sum(cat(3,out.fecg{:}),3) ...
         + noise;     % re-creating abdominal mixture
        
+    
+    %% Experiment 1
     % = preprocessing channels
-    fs = out.param.fs;
     HF_CUT = 100; % high cut frequency
     LF_CUT = 0.7; % low cut frequency
     wo = 60/(fs/2); bw = wo/35;
@@ -90,17 +96,31 @@ for i = 1:length(fls)
     end
     
     % = using ICA
+    disp('ICA extraction ..')
     loopsec = 60;   % in seconds
-    [F1,RMS,PPV,SE] = ica_extraction(mixture,fs,ch,out.fqrs{1},loopsec);     % extract using ICA
+    icasig = ica_extraction(mixture,fs,ch,out.fqrs{1},loopsec);     % extract using IC
+    
+    % Calculate quality measures
+    qrsica = qrs_detect(icasig,TH,REFRAC,fs);
+    [F1,RMS,PPV,SE] = Bxb_compare(out.fqrs{1},qrsica,INTERV);
     stats_ica(end+1,:) = [F1,RMS,PPV,SE];
     
     % = using TSc
+    disp('TS extraction ..')
     % look for channel with largest SNRfm
-    out.fecg{1}
-    
-    mecg_cancellation(out.mqrs,mixture,'TS-CERUTTI')
-    
+    amps = sum(double(out.fecg{1}).^2,2)./sum(double(out.mecg).^2,2);
+    [~,chts]=max(amps);       % chosing the channel with highest fetal signal ratio
+    residual = mecg_cancellation(out.mqrs,mixture(chts,:),'TS-CERUTTI',debug);
+    qrsts = qrs_detect(residual,TH,REFRAC,fs);
+    [F1,RMS,PPV,SE] = Bxb_compare(out.fqrs{1},qrsts,INTERV);
     stats_tsc(end+1,:) = [F1,RMS,PPV,SE];
+
+    % Debug plots
+    if debug
+        hold on
+        plot(out.fqrs{1}/fs,2000,'og','MarkerSize',7)
+    end
+    clearvars -except stats_ica stats_tsc fls ch debug
 
 end
 %% Morphological Analysis

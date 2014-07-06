@@ -197,10 +197,17 @@ NB_ELEC = size(param.elpos,1);
 param.elpos = [param.elpos; param.refpos];   % calculating reference in same manner as other electrodes
 [gp_m.norm,selvcgm] = load_gparam(param.mvcg,'normal'); % randomly pick VCG model for mother
 if param.mectb              % add ectopic beats?
-    [gp_m.ecto,~] = load_gparam(param.evcg,'ectopic');   
-     gp_m.ecto{2}.x = gp_m.ecto{2}.x./max(abs(gp_m.norm{2}.x)); % normalising the alphai to unsure same scalpe as normal beats
-     gp_m.ecto{2}.y = gp_m.ecto{2}.y./max(abs(gp_m.norm{2}.y));
-     gp_m.ecto{2}.z = gp_m.ecto{2}.z./max(abs(gp_m.norm{2}.z));
+    [gp_m.ecto,~] = load_gparam(param.evcg,'ectopic');
+    % normalising the alphai to unsure same as normal beats
+    VCGect = ecg_model([gp_m.ecto{2}.x gp_m.ecto{3}.x gp_m.ecto{1}.x] ,linspace(-pi,pi,250));
+    VCGnorm = ecg_model([gp_m.norm{2}.x gp_m.norm{3}.x gp_m.norm{1}.x ] ,linspace(-pi,pi,250));
+    gp_m.ecto{2}.x = gp_m.ecto{2}.x.*(max(abs(VCGnorm))/max(abs(VCGect)));
+    VCGect = ecg_model([gp_m.ecto{2}.y gp_m.ecto{3}.y gp_m.ecto{1}.y ] ,linspace(-pi,pi,250));
+    VCGnorm = ecg_model([gp_m.norm{2}.y gp_m.norm{3}.y gp_m.norm{1}.y ] ,linspace(-pi,pi,250));
+    gp_m.ecto{2}.y = gp_m.ecto{2}.y.*(max(abs(VCGnorm))/max(abs(VCGect)));
+    VCGect = ecg_model([gp_m.ecto{2}.z gp_m.ecto{3}.z gp_m.ecto{1}.z ] ,linspace(-pi,pi,250));
+    VCGnorm = ecg_model([gp_m.norm{2}.z gp_m.norm{3}.z gp_m.norm{1}.z ] ,linspace(-pi,pi,250));
+    gp_m.ecto{2}.z = gp_m.ecto{2}.z.*(max(abs(VCGnorm))/max(abs(VCGect)));
 end
 rm = 0.01; % radius around origin allowed for maternal heart to be
 L_m = eye(3); % scaling of dipole in each direction
@@ -275,9 +282,16 @@ for fet=1:NB_FOETUSES
     [gp_f{fet}.norm,selvcgf{fet}] = load_gparam(param.fvcg(fet),'normal');
     if param.fectb;
         [gp_f{fet}.ecto,~] = load_gparam(param.evcg,'ectopic');
-        gp_f{fet}.ecto{2}.x = gp_f{fet}.ecto{2}.x./max(abs(gp_f{fet}.norm{2}.x)); % normalising the alphai to unsure same scalpe as normal beats
-        gp_f{fet}.ecto{2}.y = gp_f{fet}.ecto{2}.y./max(abs(gp_f{fet}.norm{2}.y));
-        gp_f{fet}.ecto{2}.z = gp_f{fet}.ecto{2}.z./max(abs(gp_f{fet}.norm{2}.z));
+        % normalising the alphai to unsure same as normal beats
+        VCGect = ecg_model([gp_f{fet}.ecto{2}.x gp_f{fet}.ecto{3}.x gp_f{fet}.ecto{1}.x] ,linspace(-pi,pi,250));
+        VCGnorm = ecg_model([gp_f{fet}.norm{2}.x gp_f{fet}.norm{3}.x gp_f{fet}.norm{1}.x ] ,linspace(-pi,pi,250));
+        gp_f{fet}.ecto{2}.x = gp_f{fet}.ecto{2}.x.*(max(abs(VCGnorm))/max(abs(VCGect)));
+        VCGect = ecg_model([gp_f{fet}.ecto{2}.y gp_f{fet}.ecto{3}.y gp_f{fet}.ecto{1}.y ] ,linspace(-pi,pi,250));
+        VCGnorm = ecg_model([gp_f{fet}.norm{2}.y gp_f{fet}.norm{3}.y gp_f{fet}.norm{1}.y ] ,linspace(-pi,pi,250));
+        gp_f{fet}.ecto{2}.y = gp_f{fet}.ecto{2}.y.*(max(abs(VCGnorm))/max(abs(VCGect)));
+        VCGect = ecg_model([gp_f{fet}.ecto{2}.z gp_f{fet}.ecto{3}.z gp_f{fet}.ecto{1}.z ] ,linspace(-pi,pi,250));
+        VCGnorm = ecg_model([gp_f{fet}.norm{2}.z gp_f{fet}.norm{3}.z gp_f{fet}.norm{1}.z ] ,linspace(-pi,pi,250));
+        gp_f{fet}.ecto{2}.z = gp_f{fet}.ecto{2}.z.*(max(abs(VCGnorm))/max(abs(VCGect)));           
     end;
     % == rotation
     if param.posdev

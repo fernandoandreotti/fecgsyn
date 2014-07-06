@@ -315,7 +315,9 @@ n_model = cell(NB_NOISES,1);
 for n = 1:NB_NOISES
     disp(['Generating model for noise source ' num2str(n) ' ..'])
     [xn,yn] = pol2cart(2*pi*rand,0.1*rand); % random location for noise
-    pos_noise = [xn,yn,0.1*rand-0.5];       % inside small semi-sphere
+    % each even noise source is going to be around center of cylinder,
+    % while odd sources are around base
+    pos_noise = [xn,yn,0.1*rand-(0.5*mod(n,2))];       % inside small semi-sphere
     % generating dipole
     n_model{n} = add_noisedipole(param.n,param.fs,param.ntype{n},...
         epos,pos_noise,debug);

@@ -196,7 +196,12 @@ NB_ELEC = size(param.elpos,1);
 % == MATERNAL heart dipole generation
 param.elpos = [param.elpos; param.refpos];   % calculating reference in same manner as other electrodes
 [gp_m.norm,selvcgm] = load_gparam(param.mvcg,'normal'); % randomly pick VCG model for mother
-if param.mectb; [gp_m.ecto,~] = load_gparam(param.evcg,'ectopic'); end;  % add ectopic beats?
+if param.mectb              % add ectopic beats?
+    [gp_m.ecto,~] = load_gparam(param.evcg,'ectopic');   
+     gp_m.ecto{2}.x = gp_m.ecto{2}.x./max(abs(gp_m.norm{2}.x)); % normalising the alphai to unsure same scalpe as normal beats
+     gp_m.ecto{2}.y = gp_m.ecto{2}.y./max(abs(gp_m.norm{2}.y));
+     gp_m.ecto{2}.z = gp_m.ecto{2}.z./max(abs(gp_m.norm{2}.z));
+end
 rm = 0.01; % radius around origin allowed for maternal heart to be
 L_m = eye(3); % scaling of dipole in each direction
 teta0_m = pi/3; % inital phase of the model for the MECG
@@ -269,7 +274,7 @@ for fet=1:NB_FOETUSES
     % = randomly pick VCG model for fetus (load Gaussian parameters)
     [gp_f{fet}.norm,selvcgf{fet}] = load_gparam(param.fvcg(fet),'normal');
     if param.fectb;
-        [gp_f{fet}.ecto,~] = load_gparam(param.evcg,'ectopic');                                                                    % FIXME: need to foetus number dependant
+        [gp_f{fet}.ecto,~] = load_gparam(param.evcg,'ectopic');
         gp_f{fet}.ecto{2}.x = gp_f{fet}.ecto{2}.x./max(abs(gp_f{fet}.norm{2}.x)); % normalising the alphai to unsure same scalpe as normal beats
         gp_f{fet}.ecto{2}.y = gp_f{fet}.ecto{2}.y./max(abs(gp_f{fet}.norm{2}.y));
         gp_f{fet}.ecto{2}.z = gp_f{fet}.ecto{2}.z./max(abs(gp_f{fet}.norm{2}.z));

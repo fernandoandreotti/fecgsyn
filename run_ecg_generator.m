@@ -145,7 +145,7 @@ if nargin == 1
 end
 
 % == default parameters
-if ~any(strcmp('mheart',fieldnames(param))); param.mheart = [2*pi/3 0.4 0.4]; end;
+if ~any(strcmp('mheart',fieldnames(param))); param.mheart = [2*pi/3 0.2 0.4]; end;
 if ~any(strcmp('fheart',fieldnames(param))); param.fheart{1} = [-pi/10 0.4 -0.3]; end;
 if ~any(strcmp('elpos',fieldnames(param))); x = pi/12*[3 4 5 6 7 8 9 10]' -pi/2;     % 32 abdominal channels 
     y = .5*ones(8,1); xy = repmat([x y],4,1); z = repmat([-.1 -.2 -.3 -.4],8,1); z = reshape(z,32,1);

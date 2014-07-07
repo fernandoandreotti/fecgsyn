@@ -192,9 +192,11 @@ end
 
 % == format outputs
 dmodel.H = H;
-[B,A] = butter(5,1*2/fs,'high'); % high-pass VCG filter with 1 Hz
+[B,A] = butter(5,.5*2/fs,'low'); % high-pass VCG filter with .5 Hz
 for i = 1:3                      % avoid trends in the VCG (due to non-zero differentials  
-    VCG(i,:) = filtfilt(B,A,VCG(i,:));  % at the end/beggining of cycle)
+    VCG(i,:) = VCG(i,:) - filtfilt(B,A,VCG(i,:));  % at the end/beggining of cycle)
+    % normalizing VCG for propagating
+    VCG(i,:) = VCG(i,:)./max(abs(VCG(i,:)));   
 end
 dmodel.VCG = VCG;
 dmodel.teta = teta;

@@ -1,5 +1,5 @@
 % Generate mixture of MECG, FECG and noise
-function [mixture,mecg,fecg,noise] = generate_ecg_mixture(debug,SNRfm,SNRmn,mqrs,fqrs,fs,varargin)
+function [mixture,mecg,fecg,noise,f_handle] = generate_ecg_mixture(debug,SNRfm,SNRmn,mqrs,fqrs,fs,varargin)
 % generate ecg mixture (mecg, fecg and noise).
 %
 % inputs
@@ -45,6 +45,8 @@ function [mixture,mecg,fecg,noise] = generate_ecg_mixture(debug,SNRfm,SNRmn,mqrs
 
 % == checking inputs
 if nargin<7; error('No source has been given to model generation'); end;
+
+f_handle = [];
 
 % == constants
 NB_EL = size(varargin{1}.H,1); % number of electrodes
@@ -147,7 +149,10 @@ if debug || debug>1
    LINE_WIDTH = 2;
    NB_FET = length(fecg);
    NB_NOISE = length(noise);
-   figure
+   f_handle = figure;
+   if debug == 11 % corresponds to running the code from the gui
+       set(f_handle, 'Visible', 'off')
+   end
    % plot maternal signal
    subplot(NB_FET+NB_NOISE+2,1,1)
    plot(mecg(1,:),'k','LineWidth',LINE_WIDTH)

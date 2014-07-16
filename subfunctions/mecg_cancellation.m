@@ -1,4 +1,4 @@
-function residual = mecg_cancellation(peaks,ecg,method,varargin)
+function [residual, f_handle] = mecg_cancellation(peaks,ecg,method,varargin)
 % MECG cancellation algorithms using template subtraction like methods.
 % Five template subtraction techniques are implemented going from the least
 % adaptive to the more adaptive ones:
@@ -47,6 +47,7 @@ nbCycles = 20;
 NbPC = 2;
 fs = 1000;
 debug = 1;
+gui = 0;
 switch nargin
     case 3
     case 4
@@ -66,6 +67,8 @@ switch nargin
     otherwise
         error('mecg_cancellation: wrong number of input arguments \n');        
 end
+
+f_handle = [];
 
 % check that we have more peaks than nbCycles
 if nbCycles>length(peaks)
@@ -174,7 +177,10 @@ end
 if debug
    FONT_SIZE = 15;
    tm = 1/fs:1/fs:length(residual)/fs;
-   figure('name','MECG cancellation');
+   f_handle = figure('name','MECG cancellation');
+   if debug == 11
+        set(f_handle, 'Visible', 'off');
+   end
    plot(tm,ecg,'LineWidth',3);
    hold on, plot(tm,ecg-residual,'--k','LineWidth',3);
    hold on, plot(tm,residual-1.5,'--r','LineWidth',3);

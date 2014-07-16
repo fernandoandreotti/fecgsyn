@@ -1,4 +1,4 @@
-function dmodel = add_noisedipole(N,fs,ntype,epos,noisepos,debug)
+function [dmodel, f_handles] = add_noisedipole(N,fs,ntype,epos,noisepos,debug)
 % this function is used to generate realistic noise. The MA, EM and BW
 % files from the Physionet NSTDB can be used for that purpose. However there are
 % three main limitations when using these records; 1. their length is
@@ -69,6 +69,8 @@ LG_NSTDB = FS_NSTDB*29; % number of points in NSTDB
 NP_NSTDB = 20*FS_NSTDB; % number of points to select in NSTDB records to generate the AR coefficients
 N_SAMP = floor(N/(fs/FS_NSTDB)); % N samples at fs correspond to N_SAMP at FS_NSTDB
 NB_EL = size(epos,1); % number of electrodes
+
+f_handles = [];
 
 % == randomly select noise interval of size LG_SEL
 start = round(LG_NSTDB*rand);
@@ -156,12 +158,18 @@ if debug>0
         0.8,0.4,1; % light magenta
         0.4,0.4,1]; % lilac
     
-    close all;
+    if debug ~= 11
+        close all;
+    end
     FONT_SIZE = 15;
     LINE_WIDTH = 2;
     % == AR poles analysis
     % will plot the old and new poles for the last generated channel
-    figure('name','Poles before and after being shifted');
+    tmp_handle = figure('name','Poles before and after being shifted');
+    if debug == 11 % corresponds to running the code from the gui
+        set(tmp_handle, 'Visible', 'off');
+    end
+    f_handles = [f_handles, tmp_handle];
     [~,hp_1,~] = zplane(1,roots([1 a(:,1)'])); 
     set(hp_1,'color','b','LineWidth',3,'MarkerSize',10);
     hold on, [~,hp_2,~] = zplane(1,roots([1 a(:,end)']));
@@ -174,7 +182,11 @@ end
 
 if debug>1
     % == selected noise analysis
-    figure('name','real noise');
+    tmp_handle = figure('name','real noise');
+    if debug == 11 % corresponds to running the code from the gui
+        set(tmp_handle, 'Visible', 'off');
+    end
+    f_handles = [f_handles, tmp_handle];
     tm = 1/FS_NSTDB:1/FS_NSTDB:NP_NSTDB/FS_NSTDB;
     for cc=1:2
         subplot(2,1,cc); plot(tm,noise(:,cc),'color',col(cc,:),'LineWidth',LINE_WIDTH);
@@ -191,7 +203,11 @@ end
 
 if debug>2
    % == plot the noise generate using AR model and PCA
-    figure('name','AR+PCA generated noise');
+    tmp_handle = figure('name','AR+PCA generated noise');
+    if debug == 11 % corresponds to running the code from the gui
+        set(tmp_handle, 'Visible', 'off');
+    end
+    f_handles = [f_handles, tmp_handle];
     tm = 1/fs:1/fs:N/fs;
     for cc=1:3
         subplot(3,1,cc); plot(tm,noise_ar(:,cc),'color',col(cc,:),'LineWidth',LINE_WIDTH);
@@ -208,7 +224,11 @@ if debug>3
    % == power spectral density
    
    % = using the AR coeff computed here
-   figure('name','Power Spectral Density plot');
+   tmp_handle = figure('name','Power Spectral Density plot');
+   if debug == 11 % corresponds to running the code from the gui
+        set(tmp_handle, 'Visible', 'off');
+   end
+   f_handles = [f_handles, tmp_handle];
    [h1,f1] = freqz(1,ainit,512,FS_NSTDB);
    P1 = abs(h1).^2; % power
    P1dB = 10*log10(P1/(mean(P1))); % power in decibels

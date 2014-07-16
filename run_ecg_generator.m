@@ -144,6 +144,10 @@ if nargin == 1
     return
 end
 
+f_handles = [];
+noise_f_handles = [];
+ecg_f_handle = [];
+
 % == default parameters
 if ~any(strcmp('mheart',fieldnames(param))); param.mheart = [2*pi/3 0.2 0.4]; end;
 if ~any(strcmp('fheart',fieldnames(param))); param.fheart{1} = [-pi/10 0.35 -0.3]; end;
@@ -338,8 +342,11 @@ for n = 1:NB_NOISES
     % while odd sources are around base
     pos_noise = [xn,yn,0.1*rand-(0.5*mod(n,2))];       % inside small semi-sphere
     % generating dipole
-    n_model{n} = add_noisedipole(param.n,param.fs,param.ntype{n},...
+    [n_model{n}, tmp_handle] = add_noisedipole(param.n,param.fs,param.ntype{n},...
         epos,pos_noise,debug);
+    if ~isempty(tmp_handle)
+        noise_f_handles = [noise_f_handles, tmp_handle];
+    end
     n_model{n}.SNRfct = param.noise_fct{n};
     n_model{n}.pos = pos_noise;
     n_model{n}.type = 3;
@@ -355,7 +362,7 @@ end
 
 % == PROPAGATION onto ELECTRODES
 disp('Projecting dipoles...')
-[mixture,mecg,fecg,noise] = generate_ecg_mixture(debug,param.SNRfm,...
+[mixture,mecg,fecg,noise, ecg_f_handle] = generate_ecg_mixture(debug,param.SNRfm,...
     param.SNRmn,mqrs,fqrs,param.fs,m_model,f_model{:},n_model{:});
 
 % % % % using mean body potential as reference (ground electrode)
@@ -388,11 +395,16 @@ out.param.elpos = out.param.elpos(1:end-1,:);
 
 % == Plotting results
 if debug
-    debug_plots(out,debug)
+    % the gui needs the figure handles
+    f_handles = debug_plots(out,debug); 
 end
+
+out.f_handles = [f_handles, noise_f_handles, ecg_f_handle];
+
 end
 %% This function generates plots for the fecgsyn model
-function debug_plots(out,debug)
+function f_handles = debug_plots(out,debug)
+f_handles = [];
 
 % == debug
 NB_FOETUSES = size(out.f_model,1); % number of foetuses figured out from the number of foetal hea
@@ -403,7 +415,12 @@ end
 
 disp('Generating plots ..')
 % == plots a few final AECG channels
-figure('name','Some generated AECG');
+tmp_handle = figure('name','Some generated AECG');
+if debug == 11 % corresponds to running the code from the gui
+    set(tmp_handle, 'Visible', 'off');
+end
+f_handles = [f_handles, tmp_handle];
+
 col = [1,0,0; % red
     0,0,1; % blue
     0,0.8,0; % green
@@ -436,9 +453,16 @@ end
 
 
 if debug>1
-    close all;
+    if debug ~= 11   % only close all figures if not running in gui mode
+        close all;
+    end
     % == plot mother and foetuse(s) VCGs
-    figure('name','VCG plots');
+    tmp_handle = figure('name','VCG plots');
+    if debug == 11 % corresponds to running the code from the gui
+        set(tmp_handle, 'Visible', 'off');
+    end
+    f_handles = [f_handles, tmp_handle];
+    
     LegCell = cell(NB_FOETUSES*2,1);
     for vv=1:3
         % == plot
@@ -463,7 +487,12 @@ end
 
 if debug>2
     % == plot the projection of mother and foetuse(s) VCGs
-    figure('name','Projected FECG and MECG before being mixed');
+    tmp_handle = figure('name','Projected FECG and MECG before being mixed');
+    if debug == 11 % corresponds to running the code from the gui
+        set(tmp_handle, 'Visible', 'off');
+    end
+    f_handles = [f_handles, tmp_handle];
+    
     LegCell = cell(NB_FOETUSES+1,1);
     GAIN_F = 1;
     if NB_EL2PLOT<NB_EL2PLOT*PACE
@@ -492,7 +521,12 @@ end
 
 if debug>3
     % == plot the volume conductor
-    figure('name','Volume conductor');
+    tmp_handle = figure('name','Volume conductor');
+    if debug == 11 % corresponds to running the code from the gui
+        set(tmp_handle, 'Visible', 'off');
+    end
+    f_handles = [f_handles, tmp_handle];
+    
     plot3_volume(out.vols);
     hold on
     for i=1:NB_FOETUSES         % plotting each foetuses trajectory
@@ -503,7 +537,12 @@ end
 
 if debug>4
     % == plot mother and foetus heart rates
-    figure('name','Heart rate');
+    tmp_handle = figure('name','Heart rate');
+    if debug == 11 % corresponds to running the code from the gui
+        set(tmp_handle, 'Visible', 'off');
+    end
+    f_handles = [f_handles, tmp_handle];
+    
     fhr = cell(NB_FOETUSES,1);
     legstr = cell(NB_FOETUSES+1,1);
     mhr = 60./diff(out.mqrs/1000);
@@ -520,6 +559,5 @@ if debug>4
     set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
     legend boxoff;
 end
-
 
 end

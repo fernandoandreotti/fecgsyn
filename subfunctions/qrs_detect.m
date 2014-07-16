@@ -1,4 +1,4 @@
-function [qrs_pos,sign,en_thres] = qrs_detect(ecg,varargin)
+function [qrs_pos,sign,en_thres, f_handle] = qrs_detect(ecg,varargin)
 % QRS detector based on the P&T method. This is an offline implementation
 % of the detector.
 %
@@ -214,7 +214,10 @@ end
 
 % == plots
 if debug>0
-    figure(1);
+    f_handle = figure;
+    if debug == 11 % corresponds to running the code from the gui
+        set(f_handle, 'Visible', 'off');
+    end
     ax(1) = subplot(4,1,1); plot(tm,ecg); hold on;plot(tm,bpfecg,'r')
         title('raw ECG (blue) and zero-pahse FIR filtered ECG (red)'); ylabel('ECG');
         xlim([0 tm(end)]);  hold off;

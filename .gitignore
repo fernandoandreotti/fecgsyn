@@ -5,3 +5,4 @@
 *.m~
 aecg.mat
 subfunctions/aecg.mat
+GUI/*.mat

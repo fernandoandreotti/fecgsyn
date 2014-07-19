@@ -1,0 +1,7 @@
+# ignore mat files 
+*.mat
+
+# MATLAB autosave files
+*.asv
+*.m~
+fecg_gui.m~

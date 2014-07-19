@@ -6,3 +6,4 @@ plots_for_paper/**/*
 *.m~
 aecg.mat
 subfunctions/aecg.mat
+GUI/*.mat

@@ -16,7 +16,7 @@ mOutputArgs = {};       % Variable for storing output when GUI
                         % returns
 
 % GUI mode: 1 - normal mode, 0 - debug mode using pregenerated 'out' file
-gui_mode = 0;
+gui_mode = 1;
 
 % Create default font-size
 fontSize = 13;
@@ -84,7 +84,6 @@ custom_fetal_help_text = sprintf('Fetal help');
 
 custom_noise_help_text = sprintf('Noise Help \n \nSNR_fm - Signal to noise ratio FECG/MECG (default -10) \n \nSNR_mn - Signal to noise ratio (MECG+FECG)/Noise (default 6) \n \nNoise source: \n \nntype - Noise type (default MA) [string] \n \nnoise_fct - function of modulating noise (each noise may be modulated by a function, e.g param.noise_fct=sin(linspace(-2*pi,2*pi,param.n)))');
 
-
 custom_mother_help_text = sprintf('Mother help \n \nmheart: maternal heart origin - actual location will be picked randomly around it. default [2*pi/3 0.4 0.4]) \n \nmhr - Mother heart rate [bpm] \n \nmacc - maternal acceleration in heart rate \n \nmtypeacc - maternal acceleration type (chosen from switch inside function, e.g. "none", "mexhat", "gauss" or "flattop") [string] \n \nmectb - add ectopic beats to mother [bool] \n \nmres - respiratory frequency of mother [Hz] \n \nevcg - ectopic beat parameters (1-4)');
 
 
@@ -93,10 +92,7 @@ custom_controls_help_text = sprintf('Run - run fecgsyn \nEdit - edit a preset sc
 
 custom_scen_help_text = sprintf('Custom scenarios help \n \nDefault scenarios are provided for the following cases: \n \nSimple -  \n Noise -  \n \nRespiration -  \nFetal Movement - \nHeart Rate Variability -   \nUterine Contraction \nEctopic beats \nMultiple Pregnancies - ');
 
-
 custom_geo_help_text = sprintf('Geometry help');
-
-
 
 %% Create handle to the GUI's main container
 fh = figure('Name', 'fecgsyn GUI' ...      % Set title

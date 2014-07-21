@@ -151,7 +151,7 @@ if debug || debug>1
    LINE_WIDTH = 2;
    NB_FET = length(fecg);
    NB_NOISE = length(noise);
-   f_handle = figure;
+   f_handle = figure('name', 'Generated ECG mixture');
    if debug == 11 % corresponds to running the code from the gui
        set(f_handle, 'Visible', 'off')
    end

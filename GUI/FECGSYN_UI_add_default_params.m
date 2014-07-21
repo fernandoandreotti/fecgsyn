@@ -1,4 +1,4 @@
-function [ output_param ] = add_default_params( param , varargin)
+function [ output_param ] = FECGSYN_UI_add_default_params( param , varargin)
 %add_default_params Adds default parameter values
 %   
 %

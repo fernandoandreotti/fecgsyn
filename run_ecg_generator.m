@@ -352,7 +352,7 @@ for n = 1:NB_NOISES
     % while odd sources are around base
     pos_noise = [xn,yn,0.1*rand-(0.5*mod(n,2))]; % inside small semi-sphere
     % generating dipole
-    [n_model{n}, tmp_handle] = add_noisedipole(param.n,param.fs,param.ntype{n},...
+    [n_model{n}, tmp_handle, noise_misc] = add_noisedipole(param.n,param.fs,param.ntype{n},...
         epos,pos_noise,debug);
     if ~isempty(tmp_handle)
         noise_f_handles = [noise_f_handles, tmp_handle];
@@ -403,6 +403,9 @@ out.param = param;
 out.selvcgm = selvcgm;
 out.selvcgf = selvcgf;
 out.param.elpos = out.param.elpos(1:end-1,:);
+
+noise_misc.n_model = n_model;
+out.noise_misc = noise_misc;
 
 % == Plotting results
 if debug

@@ -1,8 +1,11 @@
-function f_handle = create_electrode_plot(param, out)
+function f_handle = FECGSYN_UI_create_electrode_plot(param, out)
 % CREATE_ELECTRODE_PLOT Generates the plot for visualizing the electrodes
 
 % give priority to the out structure, if it is given. otherwise use the
 % param structure.
+%
+% Mohsan Alvi (mohsan.alvi@eng.ox.ac.uk) - July 2014
+
 if nargin < 2
     NB_FOETUSES = size(param.fheart,1); % number of foetuses figured out from the number of foetal hearts
 else

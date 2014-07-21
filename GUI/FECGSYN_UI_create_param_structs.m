@@ -1,20 +1,9 @@
-function [ recg_out, param ] = eval_scenario( choice , varargin)
-%CHOOSE_SCENARIO Runs scenarios of run_ecg_generator 
-%   INPUTS:
-%       choice (integer) - corresponds to the scenario choice
-%       (optional) THR - threshold of QRS detector
-%       (optional) mVCG - mother VCG (if empty then the simulator randomly choose one within the set of available VCGs)
-%       (optional) fVCG - foetus VCG (ibid)
-%       (optional) debug - debug level
-%       (optional) CH_CANC - channel onto which to perform MECG cancellation
-%       (optional) POS_DEV - slight deviation from default hearts and electrodes positions 
-%                            (0: hard coded values, 1: random deviation and phase initialisation)
-%
-%   OUTPUTS:
-%       recg_out (struct) - the output of run_ecg_generator()
-%
-%
+function [ param_struct ] = FECGSYN_UI_create_param_structs( varargin )
+%CREATE_PARAM_STRUCTS Creates a all param structs for default scenarios
+%   
 % Mohsan Alvi (mohsan.alvi@eng.ox.ac.uk) - July 2014
+
+disp('Creating default scenarios...');
 
 % deal with optional inputs
 if nargin < 2;    THR = 0.2;    else    THR = varargin{1};      end
@@ -24,23 +13,37 @@ if nargin < 5;    debug = 11;   else    debug = varargin{4};    end
 if nargin < 6;    CH_CANC = 5;  else    CH_CANC = varargin{5};  end
 if nargin < 7;    POS_DEV = 0;  else    POS_DEV = varargin{6};  end
 
-% This function will always be called by the gui, so the gui flag is true
-param.gui = 1;
 
-if choice == 10
-    % Simple run
-    disp('---- Example (1): SIMPLE RUN ----');
+%% Create default struct (copied from run_ecg_generator.m)
+default_param = struct;
+
+
+%% Initialise structures for default scenarios
+% 8 default scenarios and one entry for the user-defined scenario
+param_struct = cell(9,1);
+
+for i=1:length(param_struct)
+    param_struct{i} = default_param;
+end
+
+%% DS 1 - Simple run
+param = param_struct{1};
+
+    param.title = 'Simple';
+
     param.fs = 1000; % sampling frequency [Hz]
-
     if ~isempty(mVCG); param.mvcg = mVCG; end;
     if ~isempty(fVCG); param.fvcg = fVCG; end;
     if ~isempty(POS_DEV); param.posdev = 0; end;
 
-    recg_out = run_ecg_generator(param,debug);
+param_struct{1} = param;
 
-elseif choice == 20
-    % Adding noise
-    disp('---- Example (2): ADDING NOISE ----');
+
+%% DS 2 - Adding noise
+param = param_struct{2};
+
+    param.title = 'Noise';
+
     param.fs = 1000;
     param.ntype = {'MA'}; % noise types
     param.noise_fct = {1}; % constant SNR (each noise may be modulated by a function)
@@ -48,11 +51,14 @@ elseif choice == 20
     if ~isempty(fVCG); param.fvcg = fVCG; end;
     if ~isempty(POS_DEV); param.posdev = 0; end;
 
-    recg_out = run_ecg_generator(param,debug);
-        
-elseif choice == 30
-    % Noise + Respiration
-    disp('---- Example (3): ADDING RESPIRATION ----');
+param_struct{2} = param;
+
+%% DS 3 - Respiration
+
+param = param_struct{3};
+
+    param.title = 'Respiration';
+
     param.fs = 1000;
     param.mres = 0.25; % mother respiration frequency
     param.fres = 0.8; % foetus respiration frequency
@@ -60,45 +66,44 @@ elseif choice == 30
     if ~isempty(fVCG); param.fvcg = fVCG; end;
     if ~isempty(POS_DEV); param.posdev = 0; end;
 
-    recg_out = run_ecg_generator(param,debug);
+param_struct{3} = param;
 
-elseif choice == 40
-    % Adding foetal movement
-    disp('---- Example (4): ADDING FOETAL MOVEMENT ----');
+
+%% DS 4 - Adding foetal movement
+
+param = param_struct{4};
+
+    param.title = 'Foetal movement';
+
     param.fs = 1000;
     param.ftraj{1} = 'helix'; % giving spiral-like movement to fetus
     if ~isempty(mVCG); param.mvcg = mVCG; end;
     if ~isempty(fVCG); param.fvcg = fVCG; end;
     if ~isempty(POS_DEV); param.posdev = 0; end;
 
-    recg_out = run_ecg_generator(param,debug);
+param_struct{4} = param;
 
-elseif choice == 50
-    % Adding heart rate variability
-    disp('---- Example (5): ADDING HEART RATE VARIABILITY ----');
+%% DS 5 - Adding heart rate variability
+
+param = param_struct{5};
+
+    param.title = 'Heart rate variability';
+
     param.fs = 1000;
-
-    % Case 4
     param.fhr = 130; param.mhr = 130;
-
-    % Case 5
-    % param.macc = 40; % maternal acceleration in HR [bpm]
-    % param.mtypeacc = 'tanh';
-    % param.mhr = 110;
-    % param.fhr = 140;
-
     if ~isempty(mVCG); param.mvcg = mVCG; end;
     if ~isempty(fVCG); param.fvcg = fVCG; end;
     if ~isempty(POS_DEV); param.posdev = 0; end;
 
-    recg_out = run_ecg_generator(param,debug);
-    
-elseif choice == 60
-    % Adding uterine contraction
-    %
-    % simulating uterus activity (through muscular noise) and heart rate changes for both 
-    % fetus (umbilical cord compression) and mother (acceleration followed by decelleration)
-    disp('---- Example (6): ADDING UTERINE CONTRACTION ----');
+param_struct{5} = param;
+
+%% DS 6 - Adding uterine contraction
+% simulating uterus activity (through muscular noise) and heart rate changes for both 
+% fetus (umbilical cord compression) and mother (acceleration followed by decelleration)
+param = param_struct{6};
+
+    param.title = 'Uterine contraction';
+
     param.fs = 1000;
     param.n = 60000;
     if ~isempty(mVCG); param.mvcg = mVCG; end;
@@ -127,12 +132,14 @@ elseif choice == 60
     param.fhr = 130;
     param.ftypeacc = {'mexhat'};
     param.faccstd{1} = 0.5;
-    
-    recg_out = run_ecg_generator(param,debug);
-    
-elseif choice == 70
-    % Adding ectopic beats
-    disp('---- Example (7): ADDING ECTOPIC BEATS ----');
+
+param_struct{6} = param;
+
+%% DS 7 - Adding ectopic beats
+
+param = param_struct{7};
+
+    param.title = 'Ectopic beats';
 
     param.fs = 1000; % sampling frequency [Hz]
     if ~isempty(mVCG); param.mvcg = mVCG; end;
@@ -140,11 +147,13 @@ elseif choice == 70
     if ~isempty(POS_DEV); param.posdev = 0; end;
     param.mectb = 1; param.fectb = 1; 
 
-    recg_out = run_ecg_generator(param,debug);
-    
-elseif choice == 80
-    % Multiple pregnancies
-    disp('---- Example (8): MULTIPLE PREGNANCIES ----');
+param_struct{7} = param;
+
+%% DS 8 - Multiple pregnancies
+
+param = param_struct{8};
+
+    param.title = 'Multiple pregnancies';
 
     param.fs = 1000;
     param.fhr = [120 150];
@@ -158,10 +167,19 @@ elseif choice == 80
     param.fheart{1} = [-pi/10 0.35 -0.1];
     param.fheart{2} = [pi/10 0.4 -0.2];
 
-    recg_out = run_ecg_generator(param,debug);
-    
-else
-    % Defaults to the simplest example
-    [recg_out, param] = choose_scenario( 10 , varargin);
+param_struct{8} = param;
+
+%% Custom Scenario
+param_struct{9} = param_struct{1};
+param_struct{9}.title = 'Custom';
+
+%% Add missing values
+for i = 1:length(param_struct)
+    param_struct{i} = FECGSYN_UI_add_default_params(param_struct{i}, varargin);
+end
+
+disp('Default scenarios ready.');
+
+
 end
 

@@ -120,6 +120,8 @@ param.fs = 1000;
 
 % Case 5a (similar FHR/MHR rates)
 param.fhr = 135; param.mhr = 130;
+param.mtypeacc = 'nsr';
+param.ftypeacc = {'nsr'};
 
 % Case 5b (heart rates cross-over)
 % param.macc = 40; % maternal acceleration in HR [bpm]

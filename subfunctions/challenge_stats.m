@@ -22,7 +22,7 @@ function [F1,Se,PPV,Nb] = challenge_stats(refqrs,testqrs,thres,margin,windowlen,
 %     a Kalman filter." Physiological measurement 29.1 (2008): 15.
 %
 %
-% FECG-ESN toolbox, version 1.0, Oct 2013
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2013  Joachim Behar

@@ -23,14 +23,14 @@ function bwa = generate_breathing(fs,N,fres,debug)
 % [description for generating the breathing waveform for rotation matrix modulation]
 %
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-06-2014
+% Last updated : 31-07-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

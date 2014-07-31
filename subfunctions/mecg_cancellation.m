@@ -1,9 +1,7 @@
 function [residual, f_handle] = mecg_cancellation(peaks,ecg,method,varargin)
 % MECG cancellation algorithms using template subtraction like methods.
 % Five template subtraction techniques are implemented going from the least
-% adaptive to the more adaptive ones:
-% TS,TS-CERUTTI,TS-SUZANNA,TS-LP,TS-PCA. If a more adaptive technique is
-% required then an the EKF technique as in Sameni et al. is the best.
+% adaptive to the more adaptive ones: TS,TS-CERUTTI,TS-SUZANNA,TS-LP,TS-PCA.
 %
 % inputs
 %   peaks:      MQRS markers in ms. Each marker corresponds to the
@@ -19,14 +17,21 @@ function [residual, f_handle] = mecg_cancellation(peaks,ecg,method,varargin)
 %   residual:   residual containing the FECG
 %
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% When using this subfunction please also reference the original paper
+%
+%    Behar Joachim, Oster Julien, Clifford Gari D. 
+%    Combining and benchmarking methods of foetal ECG extraction without maternal or scalp electrode data. 
+%    Physiological Measurement. 35 1569-1589. 2014.
+%
+%
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-06-2014
+% Last updated : 31-07-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

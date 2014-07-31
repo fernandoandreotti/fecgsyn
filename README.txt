@@ -1,9 +1,10 @@
-NI-FECG simulator toolbox, version 1.0, February 2014
+fecgsyn toolbox, version 1.0, July 2014
 Released under the GNU General Public License
 
 Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 joachim.behar@eng.ox.ac.uk & fernando.andreotti@mailbox.tu-dresden.de
+
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -12,23 +13,40 @@ the Free Software Foundation, either version 3 of the License, or
  
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-For further reference:
+When using this software please reference the following original paper:
 
-Behar, Joachim, Fernando Andreotti, Sebastian Zaunseder, Qiao Li, Julien Oster, and Gari D Clifford. 2014. 
-“An ECG Model for Simulating Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings.” 
-Physiol Meas (Accepted for publication - Focus issue: Noninvasive Fetal ECG).
+    Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+    An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+    Physiological Measurement.35 1537-1550. 2014.
 
-Bibtex
+Bibtex:
 
-@article{Behar_Andreotti_Zaunseder_Li_Oster_Clifford_2014, 
-title={An ECG Model for Simulating Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings}, 
-author={Behar, Joachim and Andreotti, Fernando and Zaunseder, Sebastian and Li, Qiao and Oster, Julien and Clifford, Gari D}, 
-number={Focus issue: Noninvasive Fetal ECG}, 
-journal={Physiol Meas (Accepted for publication)}, 
-year={2014}}
+    @article{BeharAndreotti2014, 
+    title={{An ECG Model for Simulating Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings}}, 
+    author={Joachim Behar and Fernando Andreotti and Sebastian Zaunseder and Qiao Li and Julien Oster and Gari D Clifford}, 
+    number={Focus issue: Noninvasive Fetal ECG}, 
+    journal={Physiological Measurement}, 
+    volume={35}, 
+    pages={1537-1550},
+    year={2014}
+    }
+
+
+LOG:
+Release of fecgsyn v1 - 31/07/2014
+
+
+
+
+
+
+
+
+
+

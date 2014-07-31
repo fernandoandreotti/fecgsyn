@@ -6,21 +6,22 @@ function [gp,selvcg] = load_gparam(vcgmodel,type)
 %
 % input
 %   vcgmodel: ID of Gaussian parameters to load
-%   type: type of ECG ('normal','ectopic')
+%   type:     type of ECG ('normal','ectopic')
+%
 % outputs
 %   gp: Gaussian parameters for ECG [cell]
 %       gp{1} = tetai
 %       gp{2} = alphai
 %       gp{3} = bi 
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-06-2014
+% Last updated : 31-07-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

@@ -16,20 +16,28 @@ function [F1,Se,PPV,Nb] = stats(refqrs,testqrs,thres,margin,windowlen,fs)
 %     depending on what you are looking for (can be Se, PPV or F1 measure).
 %     See at the end of the function.
 %
+%
+%
+% When using this subfunction please also reference the original paper
+%
+%    Behar Joachim, Oster Julien, Clifford Gari D. 
+%    Combining and benchmarking methods of foetal ECG extraction without maternal or scalp electrode data. 
+%    Physiological Measurement. 35 1569-1589. 2014.
+%
 % Reference: inspired from
 %     Li, Qiao, Roger G. Mark, and Gari D. Clifford. "Robust heart rate estimation 
 %     from multiple asynchronous noisy sources using signal quality indices and 
 %     a Kalman filter." Physiological measurement 29.1 (2008): 15.
 %
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-06-2014
+% Last updated : 31-07-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

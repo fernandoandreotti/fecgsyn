@@ -20,7 +20,7 @@ function [P1dB,P2dB] = plot_psd(y_1,y_2,fs,method,leg)
 % hard-coded below. You need to play with them for your application.
 %
 % 
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti

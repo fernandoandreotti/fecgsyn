@@ -4,20 +4,16 @@
 % mecg-fecg model. For each example only one of these events is used. 
 % This is in order to better highlight the effect of each individual event
 % on the ECG morphology.
-
-% TODO: Joachim - change the 'isempty' to 'any'
-% FIXME: in load_param NEED TO MAKE SENSE OF THE VCG 2-4 for the ECTOPIC
-% BEATS
+%
 % 
-% 
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-06-2014
+% Last updated : 31-08-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -31,6 +27,7 @@
 % 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 %% == GLOBAL
 clear all; close all; clc;
 THR = 0.2; % threshold of QRS detector
@@ -152,7 +149,6 @@ if ~isempty(POS_DEV); param.posdev = 0; end;
 
 % Case 6 (early deceleration)
 x = linspace(-param.n/10,param.n/10,param.n);
-mu = 0;
 
 % Case 6b (late deceleration)
  mu = 0.5; % distance from center-beginning [%]

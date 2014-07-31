@@ -25,17 +25,17 @@ function [teta w] = generate_hrv(strhrv,n,fs,teta0)
 %   teta0:                  initial phase of the synthetic dipole
 %
 % output
-%   teta:                      generated phase signal teta(t)
-%   w:                         angular frequency
+%   teta:                   generated phase signal teta(t)
+%   w:                      angular frequency
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-06-2014
+% Last updated : 31-07-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ if nargin<3; fs=1000; end;
 NB_SUB = ceil(strhrv.hr*(n/fs)/60); % number of subdivisions
 RRtemp = rrprocess(NB_SUB, strhrv.hr, strhrv.lfhfr, strhrv.hrstd,[], strhrv.flo, strhrv.fhi,[],[]); % generate RR
 NB_SUB = length(RRtemp); % NB_SUB can change from +/- 1 so adjust
-HRV  = 60./RRtemp;
+HRV = 60./RRtemp;
 
 % == core function to modulate heart rate
 % the example functions always perform the modulation around the half of the measurement

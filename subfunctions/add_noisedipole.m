@@ -31,14 +31,14 @@ function [dmodel, f_handles] = add_noisedipole(N,fs,ntype,epos,noisepos,debug)
 %        dmodel.SNRfct - function which modulates SNR of noise. E.g. 
 %                             sin(linspace(-pi,pi,N)
 % 
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-06-2014
+% Last updated : 31-07-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -199,7 +199,6 @@ if debug>1
     set(gca,'FontSize',FONT_SIZE);
     set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);    
 end
-
 
 if debug>2
    % == plot the noise generate using AR model and PCA

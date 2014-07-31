@@ -16,14 +16,14 @@ function cMQRS = adjust_mqrs_location(ecg,MQRS,fs,debug)
 %   (if nargout is empty then plot the initial and corrected time series)
 %
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-06-2014
+% Last updated : 31-07-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ try
             end
         elseif MQRS(i)<WINDOW
             % managing left boder
-             if SIGN>0
+            if SIGN>0
                 [~,indm] = max(ecg(1:MQRS(i)+WINDOW));
                 cMQRS(i) = MQRS(i)+indm-1;
             else
@@ -93,7 +93,7 @@ try
             end           
         elseif MQRS(i)+WINDOW>NB_SAMPLES
             % managing right border
-             if SIGN>0
+            if SIGN>0
                 [~,indm] = max(ecg(MQRS(i)-WINDOW:end));
                 cMQRS(i) = MQRS(i)+indm-WINDOW-1;
             else

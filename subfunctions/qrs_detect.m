@@ -24,7 +24,7 @@ function [qrs_pos,sign,en_thres, f_handle] = qrs_detect(ecg,varargin)
 %
 %
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti

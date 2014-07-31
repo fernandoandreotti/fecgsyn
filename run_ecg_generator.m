@@ -10,9 +10,17 @@ function out = run_ecg_generator(param,debug)
 % the volume conductor). As a consequence, electodes location, hearts
 % location are defined relative to each other (relative coordinate system).
 %
+%
+% Referencing this work
+%
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Physiological Measurement.35 1537-1550. 2014.
+%
+%
 % list of abbreviation used in the toolbox:
 %   ECG:        electrocardiogram
-%   MECG:       mother ECG
+%   MECG:       maternal ECG
 %   FECG:       foetal ECG
 %   NI-FECG:    non invasive FECG
 %   HR:         heart rate
@@ -57,10 +65,15 @@ function out = run_ecg_generator(param,debug)
 %       param.posdev:   position deviation (bool). 1: the position of the
 %                       electrodes and hearts are slightly varied around
 %                       their specified or default positions. 0: no variation.
-%       param.mectb:    add ectopic beats to mother ECG (bool)
-%       param.fectb:    add ectopic beats to foeus ECG (bool)
+%       param.mectb:    add ectopic beats to maternal ECG (bool)
+%       param.fectb:    add ectopic beats to foetal ECG (bool)
 %
 %   debug:          debug level (1-5), (default: 1)
+%       1:              Some generated AECG
+%       2:              VCG plots
+%       3:              Projected FECG and MECG before being mixed
+%       4:              Volume conductor
+%       5:              Heart rate
 %
 % * This is in order to be able to produce many simulations with the heart
 % position changing at every iteration without having to respecify a
@@ -98,8 +111,9 @@ function out = run_ecg_generator(param,debug)
 %       selvcgm:    selected maternal vcg [cell]
 %       selvcgf:    selected foetal vcg [cell]
 %
-%
-% references
+% History
+% the simulator is based on the following two scientific contributions
+% 
 % [1] Sameni, Reza, et al. Multichannel ECG and noise modeling: application to
 % maternal and foetal ECG signals. EURASIP Journal on Advances in Signal Processing
 % 2007 (2007).
@@ -109,14 +123,14 @@ function out = run_ecg_generator(param,debug)
 % on Biomedical Engineering,  50(3) 2003.
 %
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-06-2014
+% Last updated : 31-07-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -135,18 +149,14 @@ function out = run_ecg_generator(param,debug)
 addpath(genpath('subfunctions'));
 addpath(genpath('noise_sources'));
 
-
-% == Input test
-
 % == if we just want to plot using the inputed parameters
 if nargin == 1
-    debug_plots(param,5)
-    return
+    debug_plots(param,5);
+    return;
 end
 
 f_handles = [];
 noise_f_handles = [];
-ecg_f_handle = [];
 
 % == default parameters
 if ~any(strcmp('mheart',fieldnames(param))); param.mheart = [2*pi/3 0.2 0.4]; end;
@@ -154,7 +164,8 @@ if ~any(strcmp('fheart',fieldnames(param))); param.fheart{1} = [-pi/10 0.35 -0.3
 if ~any(strcmp('elpos',fieldnames(param))); x = pi/12*[3 4 5 6 7 8 9 10]' -pi/2;     % 32 abdominal channels 
     y = .5*ones(8,1); xy = repmat([x y],4,1); z = repmat([-.1 -.2 -.3 -.4],8,1); z = reshape(z,32,1);
     abdmleads = [xy z]; refs = [-pi/4 0.5 0.4;(5/6-.5)*pi 0.5 0.4];  % + 2 reference leads
-    param.elpos = [abdmleads;refs]; end   
+    param.elpos = [abdmleads;refs]; 
+end   
 if ~any(strcmp('refpos',fieldnames(param))); param.refpos = [pi 0.5 -0.3];end;
 NB_FOETUSES = size(param.fheart,2); % number of foetuses figured out from the number of foetal heart locations entered
 if ~any(strcmp('n',fieldnames(param))); param.n = 60000; end;
@@ -186,7 +197,7 @@ if ~any(strcmp('fectb',fieldnames(param))); param.fectb = 0; end;
 if isempty(debug); debug = 1; end;
 
 % == check that parameters make sense
-if size(param.elpos,2)~=3; error('run_ecg_generator: the number of dimensions for the electrodes MUST be 3 \n'); end;
+if size(param.elpos,2)~=3; error('run_ecg_generator: an electrode location must be defined using 3D polar coordinates \n'); end;
 if param.fs>param.n; error('run_ecg_generator: the number of data point requested is inferior to the sampling frequency \n'); end;
 
 % == constants
@@ -195,12 +206,11 @@ if any(strcmp('ntype',fieldnames(param)))
 else
     NB_NOISES = 0;
 end
-NB_ELEC = size(param.elpos,1);
 
 % == MATERNAL heart dipole generation
-param.elpos = [param.elpos; param.refpos];   % calculating reference in same manner as other electrodes
+param.elpos = [param.elpos; param.refpos]; % calculating reference in same manner as other electrodes
 [gp_m.norm,selvcgm] = load_gparam(param.mvcg,'normal'); % randomly pick VCG model for mother
-if param.mectb              % add ectopic beats?
+if param.mectb % add ectopic beats?
     [gp_m.ecto,~] = load_gparam(param.evcg,'ectopic');
     % normalising the alphai to unsure same as normal beats
     VCGect = ecg_model([gp_m.ecto{2}.x gp_m.ecto{3}.x gp_m.ecto{1}.x] ,linspace(-pi,pi,250));
@@ -251,7 +261,7 @@ disp('Generating maternal model...')
 m_model = add_cardiacdipole(param.n,param.fs,gp_m,L_m,teta_m,w_m,param.mres,vols.Rm,epos,mh_cart,0);
 m_model.type = 1; % maternal ecg is type 1
 
-% == FOETAL heart(s)
+% == foetal heart(s)
 L_f = eye(3); % scaling of dipole in each direction
 Rfh = 0.01; % radius allowed for foetal heart to appear
 
@@ -278,7 +288,7 @@ for fet=1:NB_FOETUSES
     
     % picking location for final position (translation)
     xl=linspace(0,posf_start(1));yl=linspace(0,posf_start(2));zl=linspace(0,posf_start(3)); % line towards origin
-    idx=randi([50,100],1,3);     % picking three coordinates on second half
+    idx=randi([50,100],1,3); % picking three coordinates on second half
     posf_end = [xl(idx(1)) yl(idx(2)) zl(idx(3))];
     
     [vols.fheart{fet}(1), vols.fheart{fet}(2), vols.fheart{fet}(3)] = cart2pol(posf_start(1),posf_start(2),posf_start(3));
@@ -340,7 +350,7 @@ for n = 1:NB_NOISES
     [xn,yn] = pol2cart(2*pi*rand,0.1*rand); % random location for noise
     % each even noise source is going to be around center of cylinder,
     % while odd sources are around base
-    pos_noise = [xn,yn,0.1*rand-(0.5*mod(n,2))];       % inside small semi-sphere
+    pos_noise = [xn,yn,0.1*rand-(0.5*mod(n,2))]; % inside small semi-sphere
     % generating dipole
     [n_model{n}, tmp_handle] = add_noisedipole(param.n,param.fs,param.ntype{n},...
         epos,pos_noise,debug);
@@ -359,25 +369,26 @@ for ff=1:NB_FOETUSES
     fqrs{ff} = phase2qrs(f_model{ff}.teta);
 end
 
-
 % == PROPAGATION onto ELECTRODES
 disp('Projecting dipoles...')
 [mixture,mecg,fecg,noise, ecg_f_handle] = generate_ecg_mixture(debug,param.SNRfm,...
     param.SNRmn,mqrs,fqrs,param.fs,m_model,f_model{:},n_model{:});
 
-% % % % using mean body potential as reference (ground electrode)
+% == an electrode in the back of the cylinder is used as the reference 
+%    electrode (i.e. ground, location: [pi 0.5 -0.3])
 ground = mixture(end,:);
-mixture = mixture(1:end-1,:) - repmat(ground,size(mixture,1)-1,1);
+mixture = mixture(1:end-1,:)-repmat(ground,size(mixture,1)-1,1);
 ground = mecg(end,:);
-mecg = mecg(1:end-1,:) - repmat(ground,size(mecg,1)-1,1);
+mecg = mecg(1:end-1,:)-repmat(ground,size(mecg,1)-1,1);
 if ~isempty(fecg)
-    fecg = cellfun(@(x) x(1:end-1,:) - repmat(x(end,:),size(x,1)-1,1),fecg,'UniformOutput',0);
+    fecg = cellfun(@(x) x(1:end-1,:)-repmat(x(end,:),size(x,1)-1,1),fecg,'UniformOutput',0);
 end
 if ~isempty(noise)
-    noise = cellfun(@(x) x(1:end-1,:) - repmat(x(end,:),size(x,1)-1,1),noise,'UniformOutput',0);
+    noise = cellfun(@(x) x(1:end-1,:)-repmat(x(end,:),size(x,1)-1,1),noise,'UniformOutput',0);
 end
 vols.refpos = param.refpos;
 vols.elpos = vols.elpos(1:end-1,:); % removing ground electrode
+
 % == FORMATING OUTPUT ARGUMENTS
 out.mixture = mixture;
 out.mecg = mecg;
@@ -402,6 +413,8 @@ end
 out.f_handles = [f_handles, noise_f_handles, ecg_f_handle];
 
 end
+
+
 %% This function generates plots for the fecgsyn model
 function f_handles = debug_plots(out,debug)
 f_handles = [];
@@ -450,7 +463,6 @@ if NB_EL2PLOT<NB_EL2PLOT*PACE
 else
     error('not enough input channel for plotting with default configuration \n');
 end
-
 
 if debug>1
     if debug ~= 11   % only close all figures if not running in gui mode
@@ -529,7 +541,7 @@ if debug>3
     
     plot3_volume(out.vols);
     hold on
-    for i=1:NB_FOETUSES         % plotting each foetuses trajectory
+    for i=1:NB_FOETUSES % plotting each foetuses trajectory
         plot3(out.f_model{i}.traj(:,1),out.f_model{i}.traj(:,2),out.f_model{i}.traj(:,3),'--g','LineWidth',2);
     end
     axis square

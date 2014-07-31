@@ -1,5 +1,5 @@
-% Generate mixture of MECG, FECG and noise
-function [mixture,mecg,fecg,noise,f_handle] = generate_ecg_mixture(debug,SNRfm,SNRmn,mqrs,fqrs,fs,varargin)
+function [mixture,mecg,fecg,noise,f_handle] = ...
+    generate_ecg_mixture(debug,SNRfm,SNRmn,mqrs,fqrs,fs,varargin)
 % generate ecg mixture (mecg, fecg and noise).
 %
 % inputs
@@ -15,20 +15,20 @@ function [mixture,mecg,fecg,noise,f_handle] = generate_ecg_mixture(debug,SNRfm,S
 %                   Obs: first source is taken as reference for SNR calculus
 %                   <source>.type - Maternal (1), Fetal (2) or Noise (3)
 % output
-%       mixture: mixture of MECG, FECG and noise
-%       mecg:    matrix containing projected maternal ECG signal
-%       fecg:    cell array containing projected fetal ECG signal(s)
-%       noise:   cell array containing projected noise sources
+%        mixture: mixture of MECG, FECG and noise
+%        mecg:    matrix containing projected maternal ECG signal
+%        fecg:    cell array containing projected fetal ECG signal(s)
+%        noise:   cell array containing projected noise sources
 %
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-06-2014
+% Last updated : 31-07-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -45,7 +45,6 @@ function [mixture,mecg,fecg,noise,f_handle] = generate_ecg_mixture(debug,SNRfm,S
 
 % == checking inputs
 if nargin<7; error('No source has been given to model generation'); end;
-
 f_handle = [];
 
 % == constants
@@ -100,18 +99,18 @@ mixture = mecg;
 % == SNR calculation for different sources
 mbeats = 60*fs*length(mqrs)/length(mixture); % now im bpm
 Pm = sum(mixture.^2,2)*(MHR/mbeats); % average power of maternal 
-                             %  across channels with heart rate correction
-powerm = mean(Pm);        % median accross channels for SNRfm calculation
-                            % more robust to reduce reference leads influence 
+                                     % across channels with heart rate correction
+powerm = mean(Pm);
+
 % == calibrating FECG (fetal - mother)
 % calibration is done using mean maternal and fetal ECG signal powers are reference
 if ~isempty(signalf)
     fecg = cell(size(signalf,1)/NB_EL,1);
-    fbeats = cellfun(@(x) length(x),fqrs);  % multiple foetuses support
+    fbeats = cellfun(@(x) length(x),fqrs); % multiple foetuses support
     fbeats = 60*fs*fbeats/length(signalf);
     ampf = reshape(sum((signalf).^2,2),NB_EL,[])*diag(FHR./fbeats); % power of each fetus in one column
-    powerf = mean(ampf);        % mean power of EACH fetal signal 
-                                % (since VCGs are not normalized)
+    powerf = mean(ampf); % mean power of EACH fetal signal 
+                         % (since VCGs are not normalized)
      % run through sources so that every source so that each fetal ECG has SNRfm [dB].
     for i = 1:size(signalf,1)/NB_EL
         % calibrating different hearts
@@ -125,15 +124,15 @@ end
 % == calibrating NOISE (maternal - noise)
 % re-scale so that together, all noise sources have a 1/SNRmn [dB] level
 if ~isempty(signaln)
-    noise = cell(size(signaln));    % preallocating
+    noise = cell(size(signaln)); % preallocating
     noisegain = cellfun(@(x) mean(sum(x.^2,2)),signaln); % for noises with different power
-    noisegain = noisegain./sum(noisegain);     % percentual power of each noise source
+    noisegain = noisegain./sum(noisegain); % percentual power of each noise source
     
     sig = cat(3,signaln{:});            % transforms cell in 3D matrix
     sigpow = sum(sum(sig,3).^2,2);      % total noise power for each channel
     meannoisepow = mean(sigpow);        % average noise power
     
-    p = sqrt(powerm./meannoisepow)*10.^(-SNRmn/20);  % applied gain for each noise signal / channels
+    p = sqrt(powerm./meannoisepow)*10.^(-SNRmn/20); % applied gain for each noise signal / channels
 
     % add noise to mixture signals with amplitude modulation
     for i = 1:length(signaln)

@@ -120,10 +120,11 @@ function [h,yy,zz] = arrow(varargin)
 % Permission is granted to Dr. Josef Bigun to distribute ARROW with his
 % software to reproduce the figures in his image analysis text.
 
-% Permission was granted to for releasing the arrow.m function with the 
+
+% Permission was granted for releasing the arrow.m function with the 
 % NI-FECG simulator toolbox. 2013/2014
 % 
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti

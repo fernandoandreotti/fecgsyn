@@ -15,7 +15,7 @@ function dmodel = add_cardiacdipole(N,fs,gp_all,L,...
 % inputs
 %        N:     signal length [number of points]
 %       fs:     sampling rate [Hz]
-%       gp_all:     Gaussian parameters [cell of cells]
+%       gp_all: Gaussian parameters [cell of cells]
 %           gp{1}{:}: Gaussian parameters of mother/foetus ecg - normal beats
 %               gp{i}{1}:  structure contaning the phase of Gaussian functions used for
 %                   modeling the x, y, and z coordinates of the cardiac
@@ -66,14 +66,14 @@ function dmodel = add_cardiacdipole(N,fs,gp_all,L,...
 % cardiology 2013.
 %
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-06-2014
+% Last updated : 31-07-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

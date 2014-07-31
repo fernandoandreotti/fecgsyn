@@ -1,4 +1,4 @@
-function rr = rrprocess(n, hrmean, lfhfr, hrstd, sfrr, flo, fhi, flostd, fhistd)
+function rr = rrprocess(n,hrmean,lfhfr,hrstd,sfrr,flo,fhi,flostd,fhistd)
 % this function simulates realistic hr time series
 %
 % inputs

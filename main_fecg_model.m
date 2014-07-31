@@ -119,7 +119,7 @@ disp('---- Example (5): ADDING HEART RATE VARIABILITY ----');
 param.fs = 1000;
 
 % Case 5a (similar FHR/MHR rates)
-param.fhr = 130; param.mhr = 130;
+param.fhr = 135; param.mhr = 130;
 
 % Case 5b (heart rates cross-over)
 % param.macc = 40; % maternal acceleration in HR [bpm]

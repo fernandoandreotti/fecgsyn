@@ -20,14 +20,14 @@ gui_mode = 1;
 
 % Create default font-size
 fontSize = 13;
-fontSizeHelp = 10;
+fontSizeHelp = 8;
                         
 % Create constants for the calculations
 THR = 0.2; % threshold of QRS detector
 mVCG = 5; % choose mother VCG (if empty then the simulator randomly choose one within the set of available VCGs)
 fVCG = 4; % choose fetus VCG (ibid)
 debug = 11; % debug level. 11 corresponds to the gui
-CH_CANC = 5; % channel onto which to perform MECG cancellation
+CH_CANC = 10; % max channel onto which to perform MECG cancellation
 POS_DEV = 0; % slight deviation from default hearts and electrodes positions 
              % (0: hard coded values, 1: random deviation and phase initialisation)
 
@@ -62,7 +62,8 @@ dscen_choice = 1;
 active_plot_handle = [];
 
 % Contains the list of plots that can be displayed
-plot_strings = {};
+plot_titles = {};
+plot_titles_children = {};
 
 % All figure handles
 f_handles = [];
@@ -75,24 +76,27 @@ elpos_page = 1;
 elpos_page_size = 7; % number of electrodes shown on one page
 elpos_displayed_idx = 1:elpos_page_size;
 
+
+% Title stuff
+gui_title = 'fecgsyn GUI';
+fontSizeTitle = 24;
+
 % initialising the help texts
-custom_general_help_text = sprintf('General help');
+general_help_text = sprintf('Select a preset scenario from the dropdown menu, or create a custom simulation by pressing the custom button. Once a selection is made, click the run button to compute. The export button allows you to save a .mat file fo results, and the import button opens a saved simulation. \n \nPlease direct any queries related to the GUI to Mohsan Alvi (mohsan.alvi@eng.ox.ac.uk) or Joachim Behar (joachim.behar@gmail.com)');
 
+custom_general_help_text = sprintf('General help \n \nn - number of samples \n \nfs - sampling frequency');
 
-custom_fetal_help_text = sprintf('Fetal help');
-
+custom_fetal_help_text = sprintf('Fetal help \n \nfheart - foetus heart origin - actual location will be picked randomly around it (default [-pi/10 0.4 -0.3])\n \nfhr - fetal heart rate [bpm] \n \nfacc - fetal acceleration in heart rate\n \nftypeacc - fetal acceleration type (chosen from switch inside function, e.g. "none", "mexhat", "gauss" or "flattop") [string] \n \nfectb - add ectopic beats to fetus [bool] \n \nfres - respiratory frequency of fetus [Hz] \n \nevcg - ectopic beat parameters (1-4)');
 
 custom_noise_help_text = sprintf('Noise Help \n \nSNR_fm - Signal to noise ratio FECG/MECG (default -10) \n \nSNR_mn - Signal to noise ratio (MECG+FECG)/Noise (default 6) \n \nNoise source: \n \nntype - Noise type (default MA) [string] \n \nnoise_fct - function of modulating noise (each noise may be modulated by a function, e.g param.noise_fct=sin(linspace(-2*pi,2*pi,param.n)))');
 
-custom_mother_help_text = sprintf('Mother help \n \nmheart: maternal heart origin - actual location will be picked randomly around it. default [2*pi/3 0.4 0.4]) \n \nmhr - Mother heart rate [bpm] \n \nmacc - maternal acceleration in heart rate \n \nmtypeacc - maternal acceleration type (chosen from switch inside function, e.g. "none", "mexhat", "gauss" or "flattop") [string] \n \nmectb - add ectopic beats to mother [bool] \n \nmres - respiratory frequency of mother [Hz] \n \nevcg - ectopic beat parameters (1-4)');
+custom_mother_help_text = sprintf('Mother help \n \nmheart: maternal heart origin - actual location will be picked randomly around it. default [2*pi/3 0.4 0.4]) \n \nmhr - mother heart rate [bpm] \n \nmacc - maternal acceleration in heart rate \n \nmtypeacc - maternal acceleration type (chosen from switch inside function, e.g. "none", "mexhat", "gauss" or "flattop") [string] \n \nmectb - add ectopic beats to mother [bool] \n \nmres - respiratory frequency of mother [Hz] \n \nevcg - ectopic beat parameters (1-4)');
 
+custom_controls_help_text = sprintf('Run - run fecgsyn \nEdit - edit a preset scenario \nBack - back to front face');
 
-custom_controls_help_text = sprintf('Run - run fecgsyn \nEdit - edit a preset scenario \nBack - switch to front');
+custom_scen_help_text = sprintf('Custom scenarios help \n \nDefault scenarios are provided for a variety of cases. These aim to illustrate the effects of changing input variables.');
 
-
-custom_scen_help_text = sprintf('Custom scenarios help \n \nDefault scenarios are provided for the following cases: \n \nSimple -  \n Noise -  \n \nRespiration -  \nFetal Movement - \nHeart Rate Variability -   \nUterine Contraction \nEctopic beats \nMultiple Pregnancies - ');
-
-custom_geo_help_text = sprintf('Geometry help');
+custom_geo_help_text = sprintf('Geometry help \n \nEnter electrode positions in spherical coordinates: \n \nth - rotation angle about z-axis \n \nz - height along z-axis \n \nThe preview button opens a graphical representation of the electrode positions. Click refresh to preview any changes made to electrode positions.');
 
 %% Create handle to the GUI's main container
 fh = figure('Name', 'fecgsyn GUI' ...      % Set title
@@ -102,15 +106,20 @@ fh = figure('Name', 'fecgsyn GUI' ...      % Set title
           , 'Visible', 'off' ...        % Start off with the GUI hidden
           , 'Tag', 'FECG_GUI' ...
           );
+                
+ 
+                           
 
+                           
 %% Construct the main window components
 fh_main = uipanel('Parent', fh ...
                     , 'Position', [0 0 1.0 1.0] ...
                     , 'Visible', 'on');
 
+                
 % Main plot axis
 axes_plots = uipanel('Parent', fh_main ...
-                    , 'Position', [.05 .25 .9 .7] ...
+                    , 'Position', [.02 .25 .96 .64] ...
                     );
 
 
@@ -121,7 +130,18 @@ list_plots = uicontrol(fh_main ...
                        , 'min', 0 ...
                        , 'max', 1  ...
                        , 'Callback', @cb_list_plots ...
-                       , 'string', plot_strings ...
+                       , 'string', plot_titles ...
+                       , 'tooltip','Choose a plot to be displayed' ...
+                       );
+
+list_plots_children = uicontrol(fh_main ...
+                       , 'style', 'list' ...
+                       , 'unit', 'pix' ...
+                       , 'position', [296 20 245 120] ...
+                       , 'min', 0 ...
+                       , 'max', 1  ...
+                       , 'Callback', @cb_list_plots_children ...
+                       , 'string', plot_titles_children ...
                        , 'tooltip','Choose a plot to be displayed' ...
                        );
                    
@@ -133,7 +153,7 @@ label_gui_busy = uicontrol(axes_plots,'Style','text'...
 
 % Default Scenario and Run
 panel_defaults = uipanel('Parent', fh_main ...
-                           , 'Position', [.65 .025 .3 .2] ...
+                           , 'Position', [.65 .03 .3 .2] ...
                            , 'Title', 'Default Scenarios' ...
                            );
 panel_defaults_help = uipanel('Parent', fh_main ...
@@ -211,7 +231,7 @@ panel_defaults_help = uipanel('Parent', fh_main ...
     
     % Help text
     label_defaults_help = uicontrol(panel_defaults_help,'Style','text'...
-                               ,'String',custom_general_help_text...
+                               ,'String',general_help_text...
                                ,'fontsize',fontSizeHelp ...        
                                ,'HorizontalAlignment','left'...  
                                ,'Visible','on' ...        
@@ -923,6 +943,38 @@ list_scenarios = uicontrol(panel_custom_scenarios,'style','list',...
                     ,'tooltip','Help' ...
             );        
                         
+        
+        
+%% title
+
+panel_title = uipanel('Parent', fh ...
+                    , 'Position', [0.02 0.89 0.96 0.10] ...
+                    , 'Visible', 'on' ...
+                    , 'BorderType', 'none' ...
+                    );
+                
+      
+
+title_label = uicontrol(panel_title,'Style','text'...
+                               ,'String',gui_title...
+                               ,'fontsize',fontSizeTitle ...        
+                               ,'HorizontalAlignment','left'...  
+                               ,'Visible','on' ...        
+                               ,'Position',[270 10 250 45]);   
+
+
+logo1_axes = axes('Parent', panel_title ...
+                , 'Position', [-.15 0 0.40 1] ...
+                );
+axes(logo1_axes)
+imshow('fecgsyn_logo.png')
+
+logo2_axes = axes('Parent', panel_title ...
+                , 'Position', [0.675 0 0.40 1] ...
+                );
+axes(logo2_axes)
+imshow('oxlogo.png')
+
 %% Utility functions for MYGUI
 % Updates the target_handle to display the contents of the source_handle
 function new_handle = update_axes(target_ui_element, source_handle, persistent_handle)
@@ -1021,19 +1073,30 @@ function show_main_plots(f, selection)
     if nargin < 2
         selection = 1;
     end
-
+    
     % display the first plot
-    %active_plot_handle = update_axes(axes_plots, f(1), active_plot_handle);
-    active_plot_handle = update_axes(axes_plots, f(1), active_plot_handle);
+    active_plot_handle = update_axes(axes_plots, f{1}.plots(1), active_plot_handle);
     
     % Update the list of plots in list_plots
-    plot_strings = {};
+    plot_titles = {};
     for i = 1:length(f)
-        plot_strings{i} = get(f(i),'name');
+        plot_titles{i} = f{i}.title;
     end
-
-    set(list_plots, 'string', plot_strings);
+    plot_titles_children = {};
+    for i = 1:length(f{selection}.plots)
+        plot_titles_children{i} = get(f{selection}.plots(i),'name');
+    end
+    
+    set(list_plots, 'string', plot_titles);
     set(list_plots, 'value', selection);
+    set(list_plots_children, 'string', plot_titles_children);
+    set(list_plots_children, 'value', 1);
+    
+    if length(get(list_plots_children, 'string')) > 1
+        set(list_plots_children, 'Visible', 'on');
+    else
+        set(list_plots_children, 'Visible', 'off');
+    end
 end
 
 
@@ -1357,12 +1420,37 @@ function cb_default_scenario_popup_menu(hObject, eventdata)
 end
 
 function cb_list_plots(hObject, eventdata)
-    % Get the tag of the selected radio button. This is used to decide
-    % which plot is to be displayed on the plotting axes
-    curr_obj = get(hObject,'Value');
+    if ~isempty(get(list_plots, 'String'))
+        % Get the tag of the selected radio button. This is used to decide
+        % which plot is to be displayed on the plotting axes
+        curr_obj = get(list_plots,'Value');
 
-    active_plot_handle = update_axes(axes_plots, f_handles(curr_obj), active_plot_handle);
-    
+        plot_titles_children = {};
+        for i = 1:length(f_handles{curr_obj}.plots)
+            plot_titles_children{i} = get(f_handles{curr_obj}.plots(i),'name');
+        end
+        
+        set(list_plots_children, 'string', plot_titles_children);
+        set(list_plots_children, 'value', 1);
+        
+        cb_list_plots_children([],[]);
+        if length(get(list_plots_children, 'string')) > 1
+            set(list_plots_children, 'Visible', 'on');
+        else
+            set(list_plots_children, 'Visible', 'off');
+        end
+    end
+end
+
+function cb_list_plots_children(hObject, eventdata)
+    if ~isempty(get(list_plots_children, 'String'))
+        % Get the tag of the selected radio button. This is used to decide
+        % which plot is to be displayed on the plotting axes
+        curr_parent = get(list_plots,'Value');
+        curr_obj = get(list_plots_children,'Value');
+
+        active_plot_handle = update_axes(axes_plots, f_handles{curr_parent}.plots(curr_obj), active_plot_handle);
+    end
 end
 
 % Callback for the run button. For now it should read in the user's
@@ -1370,14 +1458,17 @@ end
 function cb_run_button(hObject, eventdata)
     
     % Close any old figures in the background before generating new ones
-    if ~isempty(f_handles)
-        for i = 1:length(f_handles)
-            close(f_handles(i))
-        end
-    end
+%     if ~isempty(f_handles)
+%         for ii = 1:length(f_handles)
+%             for jj = 1:length(f_handles{ii}.plots)
+%                 close(f_handles{ii}.plots(jj))
+%             end
+%         end
+%     end
     
     % Remove all options in the list box to indicate that the GUI is busy
     set(list_plots, 'String', {});
+    set(list_plots_children, 'String', {});
     
     % Clear the plotting axes and display the 'Busy ...' label
     if ishandle(active_plot_handle)
@@ -1406,7 +1497,7 @@ function cb_run_button(hObject, eventdata)
         stats(out.fqrs{1}/param.fs,qrs_det/param.fs,0.05,0.5,out.param.n/param.fs,param.fs);
 
         % Update the figure handles
-        [h1, h2, h3, h4] = FECGSYN_UI_create_fecg_plots( out );
+        [h1, h2, h3, h4] = FECGSYN_UI_create_fecg_plots( out, [1, 1, 1, 1], CH_CANC );
         f_handles = [h1, h2, h3, h4];
         
     else
@@ -1433,7 +1524,7 @@ function cb_run_button(hObject, eventdata)
         %ld = load('out_noise.mat');
         ld = load('out_noise_multiple_preg.mat');
         out = ld.out;
-        [h1, h2, h3, h4] = FECGSYN_UI_create_fecg_plots( out , [1, 1, 1, 1] );
+        [h1, h2, h3, h4] = FECGSYN_UI_create_fecg_plots( out , [1, 0, 0, 0], CH_CANC);
         f_handles = [h1, h2, h3, h4];
     end
 
@@ -1583,12 +1674,12 @@ function cb_add_fetus(hObject,eventdata)
     set(list_fetus, 'String', fetus_str);
     set(list_fetus, 'Value', new_num_fetus);
     
-    set(input_fetal_1_1, 'String', 0);
-    set(input_fetal_1_2, 'String', 0);
-    set(input_fetal_1_3, 'String', 0);
-    set(input_fetal_2, 'String', 0);
+    set(input_fetal_1_1, 'String', -0.31416);
+    set(input_fetal_1_2, 'String', 0.35);
+    set(input_fetal_1_3, 'String', -0.3);
+    set(input_fetal_2, 'String', 150);
     set(input_fetal_3, 'String', 0);
-    set(input_fetal_4, 'String', '');
+    set(input_fetal_4, 'String', 'none');
     set(input_fetal_5, 'String', 0);
     set(input_fetal_6, 'String', 0);
     
@@ -1644,10 +1735,10 @@ function cb_add_noise(hObject,eventdata)
     set(list_noise_sources, 'String', noise_str);
     set(list_noise_sources, 'Value', new_num_noise);
     
-    set(input_noise_1, 'String', 0);
-    set(input_noise_2, 'String', 0);
-    set(input_noise_3, 'String', '');
-    set(input_noise_4, 'String', '');
+    set(input_noise_1, 'String', -9);
+    set(input_noise_2, 'String', 10);
+    set(input_noise_3, 'String', 'MA');
+    set(input_noise_4, 'String', 1);
     
     selected_ns = new_num_noise;
     
@@ -1832,6 +1923,7 @@ end
     function cb_bt_run_help(hObject,eventdata)
         set(panel_defaults_help,'Visible','on')
         set(panel_defaults,'Visible','off')
+        set(list_plots_children,'Visible','off')
     end
     function cb_bt_custom_general_help(hObject,eventdata)
         set(panel_general_params_help,'Visible','on')
@@ -1872,6 +1964,7 @@ end
     function cb_bt_run_help_x(hObject,eventdata)
         set(panel_defaults_help,'Visible','off')
         set(panel_defaults,'Visible','on')
+        set(list_plots_children,'Visible','on')
     end
     function cb_bt_custom_general_help_x(hObject,eventdata)
         set(panel_general_params_help,'Visible','off')

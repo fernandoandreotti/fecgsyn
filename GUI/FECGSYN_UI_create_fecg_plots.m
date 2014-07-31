@@ -13,10 +13,10 @@ if nargin < 3
     CH_CANC = 5;
 end
 
-f_handles = [];
-noise_handles = [];
-gen_ecg_handle = [];
-mecg_handle = [];
+f_handles = {};
+noise_handles = {};
+gen_ecg_handle = {};
+mecg_handle = {};
 param = out.param;
 debug = 11;
 
@@ -44,9 +44,11 @@ PACE = 2;
 %% Standard plot: Abdominal ECG mixture
 if choice(1)
     % == plots a few final AECG channels
-    tmp_handle = figure('name','Abdominal ECG mixture');
-    set(tmp_handle, 'Visible', 'off');
-    f_handles = [f_handles, tmp_handle];
+    tmp_handle = struct;
+    tmp_handle.title = 'Abdominal ECG mixture';
+    tmp_handle.plots = figure('name','Abdominal ECG mixture');
+    set(tmp_handle.plots, 'Visible', 'off');
+    f_handles{end+1} = tmp_handle;
 
         if NB_EL2PLOT<NB_EL2PLOT*PACE
             compt = 0;
@@ -57,10 +59,10 @@ if choice(1)
                 ax(compt) = subplot(NB_EL2PLOT,1,compt);plot(tm,out.mixture(ee,:),...
                     'color',col(compt,:),'LineWidth',LINE_WIDTH);
                 %xlabel('Time [sec]'); ylabel('Amplitude [NU]');
-                set(gca,'FontSize',FONT_SIZE);
+                set(gca,'FontSize',FONT_SIZE_SMALL);
             end
             xlabel(ax(end), 'Time [sec]'); ylabel(ax(2), 'Amplitude [NU]');
-            set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
+            set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
             linkaxes(ax,'x');
         else
             error('not enough input channel for plotting with default configuration \n');
@@ -68,38 +70,57 @@ if choice(1)
 
     %% Standard plot: Vectorcardiogram
     % == plot mother and foetuse(s) VCGs
-    tmp_handle = figure('name','Vectorcardiogram');
-    set(tmp_handle, 'Visible', 'off');
-    f_handles = [f_handles, tmp_handle];
+    tmp_handle = struct;
+    tmp_handle.title = 'Vectorcardiogram';
+    tmp_handle.plots = -1 * ones(6,1);
+%     set(tmp_handle.plots, 'Visible', 'off');
 
-        LegCell = cell(NB_FOETUSES*2,1);
-        for vv=1:3
-            % == plot
-            ax(2*vv-1)=subplot(3,2,2*vv-1); plot(tm,out.m_model.VCG(vv,:),'color',col(2*vv-1,:),'LineWidth',LINE_WIDTH);
-            hold on, plot(tm(out.mqrs),out.m_model.VCG(vv,out.mqrs),'+k','LineWidth',LINE_WIDTH);
-            lgnd = legend(['mother VCG channel: ' int2str(vv)],'MQRS');
-            set(gca,'FontSize',FONT_SIZE_SMALL);
-            %set(lgnd,'FontSize', FONT_SIZE_SMALL);
-            %xlabel('Time [sec]'); ylabel('Amplitude [NU]');
-            for fet=1:NB_FOETUSES
-                ax(2*vv)=subplot(3,2,2*vv); plot(tm,out.f_model{fet}.VCG(vv,:),'color',col(2*vv+fet,:),'LineWidth',LINE_WIDTH);
-                hold on, plot(tm(out.fqrs{fet}),out.f_model{fet}.VCG(vv,out.fqrs{fet}),'+k','LineWidth',LINE_WIDTH);
-                LegCell(2*(fet-1)+1) = {['foetus ' int2str(fet) ' VCG channel: ' int2str(vv)]};
-                LegCell(2*fet) = {['FQRS ' int2str(fet)]};
-            end
-            legend(LegCell);
-            set(gca,'FontSize',FONT_SIZE_SMALL);
-            xlabel('Time [sec]'); ylabel('Amplitude [NU]');
+    % Initialising the figures
+    for vv = 1:3
+        tmp_handle.plots(2*vv-1) = figure('name',['Mother VCG channel ' int2str(vv)]);
+        set(tmp_handle.plots(2*vv-1), 'visible', 'off')
+        tmp_handle.plots(2*vv) = figure('name', ['Foetus VCG channel: ' int2str(vv)] );
+        set(tmp_handle.plots(2*vv), 'visible', 'off')
+    end
+
+    LegCell = cell(NB_FOETUSES*2,1);
+
+    for vv=1:3
+        % == plot
+        figure(tmp_handle.plots(2*vv-1))
+        set(tmp_handle.plots(2*vv-1), 'visible', 'off')
+        plot(tm,out.m_model.VCG(vv,:),'color',col(2*vv-1,:),'LineWidth',LINE_WIDTH);
+        hold on, plot(tm(out.mqrs),out.m_model.VCG(vv,out.mqrs),'+k','LineWidth',LINE_WIDTH);
+        lgnd = legend(['mother VCG channel: ' int2str(vv)],'MQRS');
+        set(gca,'FontSize',FONT_SIZE_SMALL);
+        xlabel('Time [sec]'); ylabel('Amplitude [NU]');
+        %set(lgnd,'FontSize', FONT_SIZE_SMALL);
+
+        for fet=1:NB_FOETUSES
+            figure(tmp_handle.plots(2*vv))
+            set(tmp_handle.plots(2*vv), 'visible', 'off')
+            plot(tm,out.f_model{fet}.VCG(vv,:),'color',col(2*vv+fet,:),'LineWidth',LINE_WIDTH);
+            hold on, plot(tm(out.fqrs{fet}),out.f_model{fet}.VCG(vv,out.fqrs{fet}),'+k','LineWidth',LINE_WIDTH);
+            LegCell(2*(fet-1)+1) = {['foetus ' int2str(fet) ' VCG channel: ' int2str(vv)]};
+            LegCell(2*fet) = {['FQRS ' int2str(fet)]};
+            ylabel('Amplitude [NU]'); xlabel('Time [sec]');
         end
-        linkaxes(ax,'x'); xlim([0 tm(end)]);
-        set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
+        legend(LegCell);
+        set(gca,'FontSize',FONT_SIZE_SMALL);
+    end
+%         linkaxes(ax,'x'); xlim([0 tm(end)]);
+%         set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
 
-
+    f_handles{end+1} = tmp_handle;  
+    
+    
     %% Standard plot: Projected FECG and MECG before being mixed
     % == plot the projection of mother and foetuse(s) VCGs
-    tmp_handle = figure('name','Projected FECG and MECG before being mixed');
-    set(tmp_handle, 'Visible', 'off');
-    f_handles = [f_handles, tmp_handle];
+    tmp_handle = struct;
+    tmp_handle.title = 'Projected FECG and MECG before being mixed';
+    tmp_handle.plots = figure('name','Projected FECG and MECG before being mixed');
+    set(tmp_handle.plots, 'Visible', 'off');
+    f_handles{end+1} = tmp_handle;
 
         LegCell = cell(NB_FOETUSES+1,1);
         GAIN_F = 1;
@@ -117,10 +138,10 @@ if choice(1)
                     LegCell(1+fet) = {['FECG ' int2str(fet) ', Gain: ' int2str(GAIN_F)]};
                 end
                 xlabel('Time [sec]'); ylabel('Amplitude [NU]');
-                set(gca,'FontSize',FONT_SIZE);
+                set(gca,'FontSize',FONT_SIZE_SMALL);
                 legend(LegCell);
             end
-            set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
+            set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
             linkaxes(ax,'x');
         else
             error('not enough input channel for plotting with default configuration \n');
@@ -128,15 +149,20 @@ if choice(1)
 
 
     %% Standard plot: Volume conductor
-    tmp_handle = FECGSYN_UI_create_electrode_plot(param, out);
-
-    f_handles = [f_handles, tmp_handle];
+%     tmp_handle = struct;
+%     tmp_handle.title = 'Volume conductor';
+%     tmp_handle.plots = FECGSYN_UI_create_electrode_plot(param, out);
+%     set(tmp_handle.plots, 'Visible', 'off');
+%     f_handles{end+1} = tmp_handle;
+    
 
     %% Standard plot: Heart rate
     % == plot mother and foetus heart rates
-    tmp_handle = figure('name','Heart rate');
-    set(tmp_handle, 'Visible', 'off');
-    f_handles = [f_handles, tmp_handle];
+    tmp_handle = struct;
+    tmp_handle.title = 'Heart rate';
+    tmp_handle.plots = figure('name','Heart rate');
+    set(tmp_handle.plots, 'Visible', 'off');
+    f_handles{end+1} = tmp_handle;
 
         fhr = cell(NB_FOETUSES,1);
         legstr = cell(NB_FOETUSES+1,1);
@@ -150,8 +176,8 @@ if choice(1)
         end
         legend(legstr);
         xlabel('Time [sec]'); ylabel('FHR [bpm]')
-        set(gca,'FontSize',FONT_SIZE);
-        set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
+        set(gca,'FontSize',FONT_SIZE_SMALL);
+        set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
         legend boxoff;
 
 
@@ -184,9 +210,11 @@ if choice(2)
 
 
         %% Noise plot: Poles before and after being shifted
-        tmp_handle = figure('name','Poles before and after being shifted');
-        set(tmp_handle, 'Visible', 'off');
-        noise_handles = [noise_handles, tmp_handle];
+        tmp_handle = struct;
+        tmp_handle.title = 'Poles before and after being shifted';
+        tmp_handle.plots = figure('name','Poles before and after being shifted');
+        set(tmp_handle.plots, 'Visible', 'off');
+        noise_handles{end+1} = tmp_handle;
 
         % TODO: add 'a' to the out struct and then use it here
         [~,hp_1,~] = zplane(1,roots([1 a(:,1)'])); 
@@ -197,28 +225,31 @@ if choice(2)
         % set(gca,'FontSize',FONT_SIZE);
         % set(findall(gcf,'type','text'),'fontSize',FONT_SIZE); 
         xlim([-1 1]); ylim([-1 1]);
-
+    
+        set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
 
 
 
         %% Noise plot: AR+PCA generated noise
 
         % == plot the noise generate using AR model and PCA
-        tmp_handle = figure('name','AR+PCA generated noise');
-        set(tmp_handle, 'Visible', 'off');
-        noise_handles = [noise_handles, tmp_handle];
+        tmp_handle = struct;
+        tmp_handle.title = 'AR+PCA generated noise';
+        tmp_handle.plots = figure('name','AR+PCA generated noise');
+        set(tmp_handle.plots, 'Visible', 'off');
+        noise_handles{end+1} = tmp_handle;
 
         tm = 1/fs:1/fs:N/fs;
         ax = -1*ones(3,1);
         for cc=1:3
             ax(cc) = subplot(3,1,cc); plot(tm,noise_ar(:,cc),'color',col(cc,:),'LineWidth',LINE_WIDTH);
             xlim([0 10]);
-            set(gca,'FontSize',FONT_SIZE);
-            set(findall(gcf,'type','text'),'fontSize',FONT_SIZE); 
+            set(gca,'FontSize',FONT_SIZE_SMALL);
+            set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL); 
         end
         xlabel(ax(end), 'Time [sec]'); ylabel(ax(2), 'Amplitude [NU]');
-        set(gca,'FontSize',FONT_SIZE);
-        set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);  
+        set(gca,'FontSize',FONT_SIZE_SMALL);
+        set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);  
 
 
 
@@ -226,9 +257,11 @@ if choice(2)
         %% Noise plot: Power Spectral Density plot
         
         % = using the AR coeff computed here
-        tmp_handle = figure('name','Power Spectral Density plot');
-        set(tmp_handle, 'Visible', 'off');
-        noise_handles = [noise_handles, tmp_handle];
+        tmp_handle = struct;
+        tmp_handle.title = 'Power Spectral Density plot';
+        tmp_handle.plots = figure('name','Power Spectral Density plot');
+        set(tmp_handle.plots, 'Visible', 'off');
+        noise_handles{end+1} = tmp_handle;
         
         [h1,f1] = freqz(1,ainit,512,FS_NSTDB);
         P1 = abs(h1).^2; % power
@@ -242,8 +275,8 @@ if choice(2)
 
         xlabel('Frequency [Hz]');
         ylabel('Power [db]');
-        set(gca,'FontSize',FONT_SIZE);
-        set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);   
+        set(gca,'FontSize',FONT_SIZE_SMALL);
+        set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);   
         legend('initial AR coefficients','average AR coefficients');
         box off;
         legend boxoff;
@@ -263,33 +296,51 @@ if choice(3)
     m_model = out.m_model;
     
     %% Generated ECG plot: 
-
-    [~,~,~,~, gen_ecg_handle] = generate_ecg_mixture(debug,param.SNRfm,...
-            param.SNRmn,mqrs,fqrs,param.fs,m_model,f_model{:},n_model{:});
         
+    tmp_handle = struct;
+    tmp_handle.title = 'Generated ECG Mixture';
+    [~,~,~,~, tmp_handle.plots] = generate_ecg_mixture(debug,param.SNRfm,...
+            param.SNRmn,mqrs,fqrs,param.fs,m_model,f_model{:},n_model{:});
+    %set(tmp_handle.plots, 'Visible', 'off');
+    
+    gen_ecg_handle = tmp_handle;
 end
 
 %% MECG Preparation
 if choice(4)
+    channels = 1:CH_CANC;
+    tmp_handle = struct;
+    tmp_handle.title = 'Maternal ECG cancellation';
+    tmp_handle.plots = -1*ones(length(channels),1);
+    %set(tmp_handle.plots, 'Visible', 'off');
+    %noise_handles{end+1} = tmp_handle;
+        
+        
     fs = 1000;
     param = out.param;
-    peaks = adjust_mqrs_location(out.mixture(CH_CANC,:),out.mqrs,param.fs,0);
-    [residual, ~] = mecg_cancellation(peaks,out.mixture(CH_CANC,:),'TS-CERUTTI',20,2,1000,11);
-    tm = 1/fs:1/fs:length(residual)/fs;
-    ecg = out.mixture(CH_CANC,:);
-    %% MECG Plot: Maternal ECG cancellation
-    mecg_handle = figure('name','Maternal ECG cancellation');
-    set(mecg_handle, 'Visible', 'off');
+    
+    for ch=1:length(channels)
+        peaks = adjust_mqrs_location(out.mixture(channels(ch),:),out.mqrs,param.fs,0);
+        [residual, ~] = mecg_cancellation(peaks,out.mixture(channels(ch),:),'TS-CERUTTI',20,2,1000,11);
+        tm = 1/fs:1/fs:length(residual)/fs;
+        ecg = out.mixture(channels(ch),:);
+        %% MECG Plot: Maternal ECG cancellation
+        %tmp_handle.plots(ch) = figure('name',sprintf('Maternal ECG cancellation, Channel %d',channels(ch)));
+        tmp_handle.plots(ch) = figure('name',sprintf('Channel %d',channels(ch)));
+        set(tmp_handle.plots(ch), 'Visible', 'off');
 
-    plot(tm,ecg,'LineWidth',3);
-    hold on, plot(tm,ecg-residual,'--k','LineWidth',3);
-    hold on, plot(tm,residual-1.5,'--r','LineWidth',3);
-    hold on, plot(tm(peaks),ecg(peaks),'+r','LineWidth',2);
-    hold off
-    legend('mixture','template','residual','MQRS'); 
-    title('Template subtraction for extracting the FECG');
-    xlabel('Time [sec]'); ylabel('Amplitude [NU]')
-
+        plot(tm,ecg,'LineWidth',3);
+        hold on, plot(tm,ecg-residual,'--k','LineWidth',3);
+        hold on, plot(tm,residual-1.5,'--r','LineWidth',3);
+        hold on, plot(tm(peaks),ecg(peaks),'+r','LineWidth',2);
+        hold off
+        legend('mixture','template','residual','MQRS'); 
+        title('Template subtraction for extracting the FECG');
+        xlabel('Time [sec]'); ylabel('Amplitude [NU]')
+    end
+    
+    mecg_handle = tmp_handle;
+    
 end
 
 

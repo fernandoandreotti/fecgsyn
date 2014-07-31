@@ -146,39 +146,74 @@ end
 % == debug
 if debug || debug>1 
    FONT_SIZE = 15;
+   FONT_SIZE_SMALL = 9;
    LINE_WIDTH = 2;
    NB_FET = length(fecg);
    NB_NOISE = length(noise);
-   f_handle = figure('name', 'Generated ECG mixture');
-   if debug == 11 % corresponds to running the code from the gui
-       set(f_handle, 'Visible', 'off')
+   
+   if debug ~= 11
+       f_handle = figure('name', 'Generated ECG mixture');
+       % plot maternal signal
+       subplot(NB_FET+NB_NOISE+2,1,1)
+       plot(mecg(1,:),'k','LineWidth',LINE_WIDTH)
+       %%%title('Maternal signal ch1')
+       ylabel('Maternal signal ch1')
+   else
+       f_handle(end+1) = figure('name', 'Maternal signal ch1');
+       set(f_handle(end), 'Visible', 'off')
+       plot(mecg(1,:),'k','LineWidth',LINE_WIDTH)
+       xlabel('Sample Number','FontSize',FONT_SIZE_SMALL)
    end
-   % plot maternal signal
-   subplot(NB_FET+NB_NOISE+2,1,1)
-   plot(mecg(1,:),'k','LineWidth',LINE_WIDTH)
-   title('Maternal signal ch1')
-   set(gca,'FontSize',FONT_SIZE)
+   
+   
+   %%%set(gca,'FontSize',FONT_SIZE)
    % plot fetal signals
    for i=1:NB_FET
-       subplot(NB_FET+NB_NOISE+2,1,1+i)
-       plot(fecg{i}(1,:),'b','LineWidth',LINE_WIDTH)
-       title(['Fetal signal ' num2str(i) ' ch1'])
-       set(gca,'FontSize',FONT_SIZE)
+       if debug ~= 11
+           subplot(NB_FET+NB_NOISE+2,1,1+i)
+           plot(fecg{i}(1,:),'b','LineWidth',LINE_WIDTH)
+           %%%title(['Fetal signal ' num2str(i) ' ch1'])
+           ylabel(['Fetal signal ' num2str(i) ' ch1'])
+           %%%set(gca,'FontSize',FONT_SIZE)
+       else
+           f_handle(end+1) = figure('name', ['Fetal signal ' num2str(i) ' ch1']);
+           set(f_handle(end), 'Visible', 'off')
+           plot(fecg{i}(1,:),'b','LineWidth',LINE_WIDTH)
+           xlabel('Sample Number','FontSize',FONT_SIZE_SMALL)
+       end
    end
    % plot noises
    for i = 1:NB_NOISE
-       subplot(NB_FET+NB_NOISE+2,1,1+NB_FET+i)
-       plot(noise{i}(1,:),'r','LineWidth',LINE_WIDTH)
-       title(['Noise signal ' num2str(i) ' ch1'])
-       set(gca,'FontSize',FONT_SIZE)
+       if debug ~= 11
+           subplot(NB_FET+NB_NOISE+2,1,1+NB_FET+i)
+           plot(noise{i}(1,:),'r','LineWidth',LINE_WIDTH)
+           %%%title(['Noise signal ' num2str(i) ' ch1'])
+           ylabel(['Noise signal ' num2str(i) ' ch1'])
+           %%%set(gca,'FontSize',FONT_SIZE)
+       else
+           f_handle(end+1) = figure('name', ['Noise signal ' num2str(i) ' ch1']);
+           set(f_handle(end), 'Visible', 'off')
+           plot(noise{i}(1,:),'r','LineWidth',LINE_WIDTH)
+           xlabel('Sample Number','FontSize',FONT_SIZE_SMALL)
+       end
    end
+   
    % plot resulting signal
-   subplot(NB_FET+NB_NOISE+2,1,NB_FET+NB_NOISE+2)
-   plot(mixture(1,:),'m','LineWidth',LINE_WIDTH)
-   title('Resulting signal for ch1')
-   set(gca,'FontSize',FONT_SIZE);
-   xlabel('Sample Number','FontSize',FONT_SIZE)
-   set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);   
+   if debug ~= 11
+       subplot(NB_FET+NB_NOISE+2,1,NB_FET+NB_NOISE+2)
+       plot(mixture(1,:),'m','LineWidth',LINE_WIDTH)
+       %%%title('Resulting signal for ch1')
+       ylabel('Resulting signal for ch1')
+       %%%set(gca,'FontSize',FONT_SIZE);
+       xlabel('Sample Number','FontSize',FONT_SIZE)
+       %%%set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);  
+   else
+       f_handle(end+1) = figure('name', 'Resulting signal for ch1');
+       set(f_handle(end), 'Visible', 'off')
+       plot(mixture(1,:),'m','LineWidth',LINE_WIDTH)
+       xlabel('Sample Number','FontSize',FONT_SIZE_SMALL)
+       
+   end
 end
 
 end

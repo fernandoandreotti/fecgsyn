@@ -1,5 +1,5 @@
 function out = run_ecg_generator(param,debug)
-% generate a realistic FECG-MECG mixture. The Physiological phenomenon that
+% generate a realistic FECG-MECG mixture. The physiological phenomenon that
 % are modelled include: heart rate variability and sudden change in hr,
 % rotation of the heart axis with respect to breathing rate, translation
 % of the foetal heart modelling foetal movement and realistic noise.

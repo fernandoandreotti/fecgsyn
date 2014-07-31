@@ -13,7 +13,7 @@
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 31-08-2014
+% Last updated : 31-07-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@ res = mecg_cancellation(cmqrs,out.mixture(CH_CANC,:),'TS-CERUTTI');
 stats(out.fqrs{1}/param.fs,qrs_det/param.fs,0.05,0.5,out.param.n/param.fs,param.fs);
 
 % % multiple noise sources
+% This commented script is an example of how multiple sources can be added
 % param.ntype = {'MA' 'EM' 'BW'};     % noise types
 % param.noise_fct = {1 1 1};          % constant SNR
  
@@ -117,10 +118,10 @@ close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
 disp('---- Example (5): ADDING HEART RATE VARIABILITY ----');
 param.fs = 1000;
 
-% Case 4
+% Case 5a (similar FHR/MHR rates)
 param.fhr = 130; param.mhr = 130;
 
-% Case 5
+% Case 5b (heart rates cross-over)
 % param.macc = 40; % maternal acceleration in HR [bpm]
 % param.mtypeacc = 'tanh';
 % param.mhr = 110;
@@ -147,7 +148,7 @@ if ~isempty(mVCG); param.mvcg = mVCG; end;
 if ~isempty(fVCG); param.fvcg = fVCG; end;
 if ~isempty(POS_DEV); param.posdev = 0; end;
 
-% Case 6 (early deceleration)
+% Case 6a (early deceleration)
 x = linspace(-param.n/10,param.n/10,param.n);
 
 % Case 6b (late deceleration)

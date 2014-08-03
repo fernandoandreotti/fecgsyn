@@ -20,7 +20,7 @@ default_param = struct;
 
 %% Initialise structures for default scenarios
 % 8 default scenarios and one entry for the user-defined scenario
-param_struct = cell(9,1);
+param_struct = cell(8,1);
 
 for i=1:length(param_struct)
     param_struct{i} = default_param;
@@ -97,47 +97,47 @@ param = param_struct{5};
 
 param_struct{5} = param;
 
-%% DS 6 - Adding uterine contraction
-% simulating uterus activity (through muscular noise) and heart rate changes for both 
-% fetus (umbilical cord compression) and mother (acceleration followed by decelleration)
-param = param_struct{6};
-
-    param.title = 'Uterine contraction';
-
-    param.fs = 1000;
-    param.n = 60000;
-    if ~isempty(mVCG); param.mvcg = mVCG; end;
-    if ~isempty(fVCG); param.fvcg = fVCG; end;
-    if ~isempty(POS_DEV); param.posdev = 0; end;
-
-    % Case 6 (early deceleration)
-    x = linspace(-param.n/10,param.n/10,param.n);
-    mu = 0;
-
-    % Case 6b (late deceleration)
-     mu = 0.5; % distance from center-beginning [%]
-    param.maccmean = -mu;
-
-    gauss = (100/(param.n*sqrt(2*pi)))*exp(-(x-(x(1)*mu)).^2/(2*(param.n/50)^2)); % approximating
-    gauss = gauss/max(gauss);                      % uterine contraction by gaussian modulated MA    
-
-    param.ntype = {'MA'};   
-    param.noise_fct = {gauss};
-    param.SNRmn = -10;
-
-    % heart rate changes
-    param.macc = 40;
-    param.mtypeacc = 'gauss';
-    param.facc = -30;
-    param.fhr = 130;
-    param.ftypeacc = {'mexhat'};
-    param.faccstd{1} = 0.5;
-
-param_struct{6} = param;
+% %% DS 6 - Adding uterine contraction
+% % simulating uterus activity (through muscular noise) and heart rate changes for both 
+% % fetus (umbilical cord compression) and mother (acceleration followed by decelleration)
+% param = param_struct{6};
+% 
+%     param.title = 'Uterine contraction';
+% 
+%     param.fs = 1000;
+%     param.n = 60000;
+%     if ~isempty(mVCG); param.mvcg = mVCG; end;
+%     if ~isempty(fVCG); param.fvcg = fVCG; end;
+%     if ~isempty(POS_DEV); param.posdev = 0; end;
+% 
+%     % Case 6 (early deceleration)
+%     x = linspace(-param.n/10,param.n/10,param.n);
+%     mu = 0;
+% 
+%     % Case 6b (late deceleration)
+%      mu = 0.5; % distance from center-beginning [%]
+%     param.maccmean = -mu;
+% 
+%     gauss = (100/(param.n*sqrt(2*pi)))*exp(-(x-(x(1)*mu)).^2/(2*(param.n/50)^2)); % approximating
+%     gauss = gauss/max(gauss);                      % uterine contraction by gaussian modulated MA    
+% 
+%     param.ntype = {'MA'};   
+%     param.noise_fct = {gauss};
+%     param.SNRmn = -10;
+% 
+%     % heart rate changes
+%     param.macc = 40;
+%     param.mtypeacc = 'gauss';
+%     param.facc = -30;
+%     param.fhr = 130;
+%     param.ftypeacc = {'mexhat'};
+%     param.faccstd{1} = 0.5;
+% 
+% param_struct{6} = param;
 
 %% DS 7 - Adding ectopic beats
 
-param = param_struct{7};
+param = param_struct{6};
 
     param.title = 'Ectopic beats';
 
@@ -147,11 +147,11 @@ param = param_struct{7};
     if ~isempty(POS_DEV); param.posdev = 0; end;
     param.mectb = 1; param.fectb = 1; 
 
-param_struct{7} = param;
+param_struct{6} = param;
 
 %% DS 8 - Multiple pregnancies
 
-param = param_struct{8};
+param = param_struct{7};
 
     param.title = 'Multiple pregnancies';
 
@@ -167,11 +167,11 @@ param = param_struct{8};
     param.fheart{1} = [-pi/10 0.35 -0.1];
     param.fheart{2} = [pi/10 0.4 -0.2];
 
-param_struct{8} = param;
+param_struct{7} = param;
 
 %% Custom Scenario
-param_struct{9} = param_struct{1};
-param_struct{9}.title = 'Custom';
+param_struct{8} = param_struct{1};
+param_struct{8}.title = 'Custom';
 
 %% Add missing values
 for i = 1:length(param_struct)

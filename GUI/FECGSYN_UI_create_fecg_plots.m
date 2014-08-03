@@ -38,36 +38,77 @@ FONT_SIZE = 15;
 FONT_SIZE_SMALL = 10;
 NB_EL2PLOT = 3; % number of electodes to plot
 PACE = 2;
+NB_EL = 34; % There are 34 electrodes
 
+tm_idx = 15000; % plot elements 1:15000 for first 15 seconds
+mqrs_1t15 = out.mqrs(out.mqrs<tm_idx);  % mqrs up to 15 seconds
+
+for i = 1:numel(out.fqrs)
+    fqrs_1t15{i} = out.fqrs{i}(out.fqrs{i}<tm_idx);  % fqrs up to 15 seconds for each fetus
+end
 
 
 %% Standard plot: Abdominal ECG mixture
 if choice(1)
-    % == plots a few final AECG channels
+    % == plots AECG channels
+    NB_PLOTS = ceil(NB_EL/3); % 3 electrodes shown on each plot
+    
     tmp_handle = struct;
     tmp_handle.title = 'Abdominal ECG mixture';
-    tmp_handle.plots = figure('name','Abdominal ECG mixture');
-    set(tmp_handle.plots, 'Visible', 'off');
-    f_handles{end+1} = tmp_handle;
+    tmp_handle.plots = -1 * ones(NB_PLOTS, 1);
+    
+        tm = 1/out.param.fs:1/out.param.fs:(out.param.n/out.param.fs);
 
-        if NB_EL2PLOT<NB_EL2PLOT*PACE
-            compt = 0;
-            tm = 1/out.param.fs:1/out.param.fs:out.param.n/out.param.fs;
-            ax = zeros(NB_EL2PLOT,1);
-            for ee=1:PACE:PACE*NB_EL2PLOT
-                compt = compt+1;
-                ax(compt) = subplot(NB_EL2PLOT,1,compt);plot(tm,out.mixture(ee,:),...
-                    'color',col(compt,:),'LineWidth',LINE_WIDTH);
-                %xlabel('Time [sec]'); ylabel('Amplitude [NU]');
-                set(gca,'FontSize',FONT_SIZE_SMALL);
+        for pp=1:NB_PLOTS
+            if pp == 1 % which electrodes are being plotted
+                el = linspace(1, 3, 3);
+            else
+                el = el + 3;
+                el = el(el <= NB_EL);
             end
-            xlabel(ax(end), 'Time [sec]'); ylabel(ax(2), 'Amplitude [NU]');
-            set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
-            linkaxes(ax,'x');
-        else
-            error('not enough input channel for plotting with default configuration \n');
-        end
 
+            tmp_handle.plots(pp) = figure('name', sprintf('Electrodes %d - %d', [el(1), el(end)]));
+            set(tmp_handle.plots(pp), 'Visible', 'off');
+
+            compt = 0;
+            for ee = 1: length(el) % looping through length of ee to stop correctly at 34th electrode 
+                compt = compt+1;
+                subplot(3,1,compt);plot(tm(1:tm_idx),out.mixture(el(ee),1:tm_idx),...
+                'color',col(compt,:),'LineWidth',LINE_WIDTH);
+                if ee == 2
+                    ylabel('Amplitude [NU]');
+                elseif ee == 3
+                    xlabel('Time [sec]')
+                end
+            end
+            set(gca,'FontSize',FONT_SIZE_SMALL);
+        end
+        set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
+        %linkaxes(ax,'x');
+
+    
+
+%         if NB_EL2PLOT<NB_EL2PLOT*PACE
+%             compt = 0;
+%             tm = 1/out.param.fs:1/out.param.fs:out.param.n/out.param.fs;
+%             ax = zeros(NB_EL2PLOT,1);
+%             for ee=1:PACE:PACE*NB_EL2PLOT
+%                 compt = compt+1;
+%                 ax(compt) = subplot(NB_EL2PLOT,1,compt);plot(tm,out.mixture(ee,:),...
+%                     'color',col(compt,:),'LineWidth',LINE_WIDTH);
+%                 %xlabel('Time [sec]'); ylabel('Amplitude [NU]');
+%                 set(gca,'FontSize',FONT_SIZE_SMALL);
+%             end
+%             xlabel(ax(end), 'Time [sec]'); ylabel(ax(2), 'Amplitude [NU]');
+%             set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
+%             linkaxes(ax,'x');
+%         else
+%             error('not enough input channel for plotting with default configuration \n');
+%         end    
+    
+    f_handles{end+1} = tmp_handle;
+    
+    
     %% Standard plot: Vectorcardiogram
     % == plot mother and foetuse(s) VCGs
     tmp_handle = struct;
@@ -75,79 +116,114 @@ if choice(1)
     tmp_handle.plots = -1 * ones(6,1);
 %     set(tmp_handle.plots, 'Visible', 'off');
 
-    % Initialising the figures
-    for vv = 1:3
-        tmp_handle.plots(2*vv-1) = figure('name',['Mother VCG channel ' int2str(vv)]);
-        set(tmp_handle.plots(2*vv-1), 'visible', 'off')
-        tmp_handle.plots(2*vv) = figure('name', ['Foetus VCG channel: ' int2str(vv)] );
-        set(tmp_handle.plots(2*vv), 'visible', 'off')
-    end
-
-    LegCell = cell(NB_FOETUSES*2,1);
-
-    for vv=1:3
-        % == plot
-        figure(tmp_handle.plots(2*vv-1))
-        set(tmp_handle.plots(2*vv-1), 'visible', 'off')
-        plot(tm,out.m_model.VCG(vv,:),'color',col(2*vv-1,:),'LineWidth',LINE_WIDTH);
-        hold on, plot(tm(out.mqrs),out.m_model.VCG(vv,out.mqrs),'+k','LineWidth',LINE_WIDTH);
-        lgnd = legend(['mother VCG channel: ' int2str(vv)],'MQRS');
-        set(gca,'FontSize',FONT_SIZE_SMALL);
-        xlabel('Time [sec]'); ylabel('Amplitude [NU]');
-        %set(lgnd,'FontSize', FONT_SIZE_SMALL);
-
-        for fet=1:NB_FOETUSES
-            figure(tmp_handle.plots(2*vv))
+        % Initialising the figures
+        for vv = 1:3
+            tmp_handle.plots(2*vv-1) = figure('name',['Mother VCG channel ' int2str(vv)]);
+            set(tmp_handle.plots(2*vv-1), 'visible', 'off')
+            tmp_handle.plots(2*vv) = figure('name', ['Foetus VCG channel: ' int2str(vv)] );
             set(tmp_handle.plots(2*vv), 'visible', 'off')
-            plot(tm,out.f_model{fet}.VCG(vv,:),'color',col(2*vv+fet,:),'LineWidth',LINE_WIDTH);
-            hold on, plot(tm(out.fqrs{fet}),out.f_model{fet}.VCG(vv,out.fqrs{fet}),'+k','LineWidth',LINE_WIDTH);
-            LegCell(2*(fet-1)+1) = {['foetus ' int2str(fet) ' VCG channel: ' int2str(vv)]};
-            LegCell(2*fet) = {['FQRS ' int2str(fet)]};
-            ylabel('Amplitude [NU]'); xlabel('Time [sec]');
         end
-        legend(LegCell);
-        set(gca,'FontSize',FONT_SIZE_SMALL);
-    end
-%         linkaxes(ax,'x'); xlim([0 tm(end)]);
-%         set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
+
+        LegCell = cell(NB_FOETUSES*2,1);
+
+        for vv=1:3
+            % == plot
+            figure(tmp_handle.plots(2*vv-1))
+            set(tmp_handle.plots(2*vv-1), 'visible', 'off')
+            plot(tm(1:tm_idx),out.m_model.VCG(vv,1:tm_idx),'color',col(2*vv-1,:),'LineWidth',LINE_WIDTH);
+            hold on, plot(tm(mqrs_1t15),out.m_model.VCG(vv,mqrs_1t15),'+k','LineWidth',LINE_WIDTH);
+            lgnd = legend(['mother VCG channel: ' int2str(vv)],'MQRS');
+            set(gca,'FontSize',FONT_SIZE_SMALL);
+            xlabel('Time [sec]'); ylabel('Amplitude [NU]');
+            %set(lgnd,'FontSize', FONT_SIZE_SMALL);
+
+            for fet=1:NB_FOETUSES
+                figure(tmp_handle.plots(2*vv))
+                set(tmp_handle.plots(2*vv), 'visible', 'off')
+                plot(tm(1:tm_idx),out.f_model{fet}.VCG(vv,1:tm_idx),'color',col(2*vv+fet,:),'LineWidth',LINE_WIDTH);
+                hold on, plot(tm(fqrs_1t15{fet}),out.f_model{fet}.VCG(vv,fqrs_1t15{fet}),'+k','LineWidth',LINE_WIDTH);
+                LegCell(2*(fet-1)+1) = {['foetus ' int2str(fet) ' VCG channel: ' int2str(vv)]};
+                LegCell(2*fet) = {['FQRS ' int2str(fet)]};
+                ylabel('Amplitude [NU]'); xlabel('Time [sec]');
+            end
+            legend(LegCell);
+            set(gca,'FontSize',FONT_SIZE_SMALL);
+        end
+    %         linkaxes(ax,'x'); xlim([0 tm(end)]);
+    %         set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
 
     f_handles{end+1} = tmp_handle;  
     
     
     %% Standard plot: Projected FECG and MECG before being mixed
     % == plot the projection of mother and foetuse(s) VCGs
+    NB_PLOTS = ceil(NB_EL/3); % 3 electrodes shown on each plot
+    
     tmp_handle = struct;
     tmp_handle.title = 'Projected FECG and MECG before being mixed';
-    tmp_handle.plots = figure('name','Projected FECG and MECG before being mixed');
-    set(tmp_handle.plots, 'Visible', 'off');
-    f_handles{end+1} = tmp_handle;
+    tmp_handle.plots = -1 * ones(NB_PLOTS, 1);
 
-        LegCell = cell(NB_FOETUSES+1,1);
-        GAIN_F = 1;
-        if NB_EL2PLOT<NB_EL2PLOT*PACE
+        for curr_plot = 1:NB_PLOTS
+            if curr_plot == 1 % which electrodes are being plotted
+                el = linspace(1, 3, 3);
+            else
+                el = el + 3;
+                el = el(el <= NB_EL);
+            end
+            
+            tmp_handle.plots(curr_plot) = figure('name', sprintf('Electrodes %d - %d', [el(1), el(end)]));
+            set(tmp_handle.plots(curr_plot), 'Visible', 'off');
+            
+            LegCell = cell(NB_FOETUSES+1,1);
+            GAIN_F = 1;
+
             compt = 0;
-            tm = 1/out.param.fs:1/out.param.fs:out.param.n/out.param.fs;
+
             ax = zeros(NB_EL2PLOT,1);
-            for ee=1:PACE:PACE*NB_EL2PLOT
+            for pp=1:PACE:PACE*NB_EL2PLOT
                 compt = compt+1;
-                ax(compt) = subplot(NB_EL2PLOT,1,compt);plot(tm,out.mecg(ee,:),...
+                ax(compt) = subplot(NB_EL2PLOT,1,compt);plot(tm(1:tm_idx),out.mecg(pp,1:tm_idx),...
                     'color','b','LineWidth',LINE_WIDTH);
                 LegCell(1) = {'MECG'};
                 for fet=1:NB_FOETUSES
-                    hold on, plot(tm,GAIN_F*out.fecg{fet}(ee,:),'color',col(fet+3,:),'LineWidth',LINE_WIDTH);
+                    hold on, plot(tm(1:tm_idx),GAIN_F*out.fecg{fet}(pp,1:tm_idx),'color',col(fet+3,:),'LineWidth',LINE_WIDTH);
                     LegCell(1+fet) = {['FECG ' int2str(fet) ', Gain: ' int2str(GAIN_F)]};
                 end
                 xlabel('Time [sec]'); ylabel('Amplitude [NU]');
                 set(gca,'FontSize',FONT_SIZE_SMALL);
                 legend(LegCell);
             end
-            set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
-            linkaxes(ax,'x');
-        else
-            error('not enough input channel for plotting with default configuration \n');
+            %set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
+            %linkaxes(ax,'x');
         end
+%         LegCell = cell(NB_FOETUSES+1,1);
+%         GAIN_F = 1;
+%         if NB_EL2PLOT<NB_EL2PLOT*PACE
+%             compt = 0;
+%             tm = 1/out.param.fs:1/out.param.fs:out.param.n/out.param.fs;
+%             ax = zeros(NB_EL2PLOT,1);
+%             for pp=1:PACE:PACE*NB_EL2PLOT
+%                 compt = compt+1;
+%                 ax(compt) = subplot(NB_EL2PLOT,1,compt);plot(tm,out.mecg(pp,:),...
+%                     'color','b','LineWidth',LINE_WIDTH);
+%                 LegCell(1) = {'MECG'};
+%                 for fet=1:NB_FOETUSES
+%                     hold on, plot(tm,GAIN_F*out.fecg{fet}(pp,:),'color',col(fet+3,:),'LineWidth',LINE_WIDTH);
+%                     LegCell(1+fet) = {['FECG ' int2str(fet) ', Gain: ' int2str(GAIN_F)]};
+%                 end
+%                 xlabel('Time [sec]'); ylabel('Amplitude [NU]');
+%                 set(gca,'FontSize',FONT_SIZE_SMALL);
+%                 legend(LegCell);
+%             end
+%             set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
+%             linkaxes(ax,'x');
+%         else
+%             error('not enough input channel for plotting with default configuration \n');
+%         end
 
-
+    f_handles{end+1} = tmp_handle;
+    
+    
     %% Standard plot: Volume conductor
 %     tmp_handle = struct;
 %     tmp_handle.title = 'Volume conductor';
@@ -239,10 +315,11 @@ if choice(2)
         set(tmp_handle.plots, 'Visible', 'off');
         noise_handles{end+1} = tmp_handle;
 
-        tm = 1/fs:1/fs:N/fs;
+        tm = 1/fs:1/fs:N/fs;    % time up to 60s
+        
         ax = -1*ones(3,1);
         for cc=1:3
-            ax(cc) = subplot(3,1,cc); plot(tm,noise_ar(:,cc),'color',col(cc,:),'LineWidth',LINE_WIDTH);
+            ax(cc) = subplot(3,1,cc); plot(tm(1:tm_idx),noise_ar(1:tm_idx,cc),'color',col(cc,:),'LineWidth',LINE_WIDTH);
             xlim([0 10]);
             set(gca,'FontSize',FONT_SIZE_SMALL);
             set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL); 
@@ -286,32 +363,32 @@ end
 
 
 %% Generated ECG plot preparation
-% generate_ecg_mixture()
-if choice(3)    
-
-    f_model = out.f_model;
-    n_model = out.noise_misc.n_model;
-    mqrs = out.mqrs;
-    fqrs = out.fqrs;
-    m_model = out.m_model;
-    
-    %% Generated ECG plot: 
-        
-    tmp_handle = struct;
-    tmp_handle.title = 'Generated ECG Mixture';
-    [~,~,~,~, tmp_handle.plots] = generate_ecg_mixture(debug,param.SNRfm,...
-            param.SNRmn,mqrs,fqrs,param.fs,m_model,f_model{:},n_model{:});
-    %set(tmp_handle.plots, 'Visible', 'off');
-    
-    gen_ecg_handle = tmp_handle;
-end
+% % generate_ecg_mixture()
+% if choice(3)    
+% 
+%     f_model = out.f_model;
+%     n_model = out.noise_misc.n_model;
+%     mqrs = out.mqrs;
+%     fqrs = out.fqrs;
+%     m_model = out.m_model;
+%     
+%     %% Generated ECG plot: 
+%         
+%     tmp_handle = struct;
+%     tmp_handle.title = 'Generated ECG Mixture';
+%     [~,~,~,~, tmp_handle.plots] = generate_ecg_mixture(debug,param.SNRfm,...
+%             param.SNRmn,mqrs,fqrs,param.fs,m_model,f_model{:},n_model{:});
+%     %set(tmp_handle.plots, 'Visible', 'off');
+%     
+%     gen_ecg_handle = tmp_handle;
+% end
 
 %% MECG Preparation
 if choice(4)
-    channels = 1:CH_CANC;
+    el = 1:CH_CANC;
     tmp_handle = struct;
     tmp_handle.title = 'Maternal ECG cancellation';
-    tmp_handle.plots = -1*ones(length(channels),1);
+    tmp_handle.plots = -1*ones(length(el),1);
     %set(tmp_handle.plots, 'Visible', 'off');
     %noise_handles{end+1} = tmp_handle;
         
@@ -319,20 +396,21 @@ if choice(4)
     fs = 1000;
     param = out.param;
     
-    for ch=1:length(channels)
-        peaks = adjust_mqrs_location(out.mixture(channels(ch),:),out.mqrs,param.fs,0);
-        [residual, ~] = mecg_cancellation(peaks,out.mixture(channels(ch),:),'TS-CERUTTI',20,2,1000,11);
-        tm = 1/fs:1/fs:length(residual)/fs;
-        ecg = out.mixture(channels(ch),:);
+    for ch=1:length(el)
+        peaks = adjust_mqrs_location(out.mixture(el(ch),:),out.mqrs,param.fs,0);
+        peaks_1to15 = peaks(peaks<tm_idx);
+        [residual, ~] = mecg_cancellation(peaks,out.mixture(el(ch),:),'TS-CERUTTI',20,2,1000,11);
+        tm = 1/fs:1/fs:length(residual)/fs;        
+        ecg = out.mixture(el(ch),:);
         %% MECG Plot: Maternal ECG cancellation
         %tmp_handle.plots(ch) = figure('name',sprintf('Maternal ECG cancellation, Channel %d',channels(ch)));
-        tmp_handle.plots(ch) = figure('name',sprintf('Channel %d',channels(ch)));
+        tmp_handle.plots(ch) = figure('name',sprintf('Channel %d',el(ch)));
         set(tmp_handle.plots(ch), 'Visible', 'off');
 
-        plot(tm,ecg,'LineWidth',3);
-        hold on, plot(tm,ecg-residual,'--k','LineWidth',3);
-        hold on, plot(tm,residual-1.5,'--r','LineWidth',3);
-        hold on, plot(tm(peaks),ecg(peaks),'+r','LineWidth',2);
+        plot(tm(1:tm_idx),ecg(1:tm_idx),'LineWidth',3);
+        hold on, plot(tm(1:tm_idx),ecg(1:tm_idx)-residual(1:tm_idx),'--k','LineWidth',3);
+        hold on, plot(tm(1:tm_idx),residual(1:tm_idx)-1.5,'--r','LineWidth',3);
+        hold on, plot(tm(peaks_1to15),ecg(peaks_1to15),'+r','LineWidth',2);
         hold off
         legend('mixture','template','residual','MQRS'); 
         title('Template subtraction for extracting the FECG');

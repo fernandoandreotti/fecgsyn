@@ -82,14 +82,43 @@ elpos_page = 1;
 elpos_page_size = 7; % number of electrodes shown on one page
 elpos_displayed_idx = 1:elpos_page_size;
 
+% Allowed choices for the dropdown variables in the custom view
+ftypeacc_strings =   {'none' ...
+                    , 'mexhat' ...
+                    , 'gauss' ...
+                    , 'flattop' ...
+                    , '' };
 
+ftraj_strings =  {'none' ...
+                , 'linear' ...
+                , 'helix' ...
+                , 'spline' ...
+                , 'spiral' };
+
+mtypeacc_strings =   {'none' ...
+                    , 'mexhat' ...
+                    , 'gauss' ...
+                    , 'flattop' };
+                    
+ntype_strings =  {'MA' ...
+                , 'EM' ...
+                , 'BW' }; % list found in add_noisedipole.m
+            
+noise_fct_strings =  {'1' ...
+                    , '2' ...
+                    , '3' ...
+                    , '4' ...
+                    , '5' };
+                    
+                    
+                    
 % Title stuff
 gui_title = 'fecgsyn GUI';
 
 % initialising the long texts
 general_help_text = sprintf('Select a preset scenario from the dropdown menu, or create a custom simulation by pressing the custom button. Once a selection is made, click the run button to compute. The export button allows you to save a .mat file for results, and the import button opens a previously saved simulation. \n \nPlease direct any queries related to the GUI to Mohsan Alvi (mohsan.alvi@eng.ox.ac.uk) or Joachim Behar (joachim.behar@gmail.com) ');
 
-about_text = {'Please cite as follows: ', '', '== GUI ==', '<insert citation here>', '', '== FECGSYN Code ==', 'Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. An ECG Model for Simulating Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings. Accepted for publication in Physiological Measurement'};
+about_text = {'Please cite as follows: ', '', '== GUI ==', 'Alvi Mohsan, Andreotti Fernando, Oster Julien, Clifford Gari D., Behar Joachim. Fecgsyn: A Graphical User Interface for the Simulation of Maternal-Foetal Activity Mixtures on Abdominal Electrocardiogram Recordings.Accepted for Computing in Cardiology conference 2014.', '', '== FECGSYN Code ==', 'Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. Physiological Measurement.35 1537-1550. 2014.'};
 
 custom_general_help_text = sprintf('General help \n \nn - number of samples \n \nfs - sampling frequency');
 
@@ -108,7 +137,7 @@ custom_geo_help_text = sprintf('Geometry help \n \nEnter electrode positions in 
 %% Create handle to the GUI's main container
 fh = figure('Name', 'fecgsyn GUI' ...      % Set title
           , 'NumberTitle', 'off' ...    % Hide "Figure 1:" from title
-          , 'Position', [-1200 320 900 650] ...    % Position & size (x,y)
+          , 'Position', [200 320 900 650] ...    % Position & size (x,y)
           , 'Resize', 'off' ...         % Disable resizing of the GUI
           , 'Visible', 'off' ...        % Start off with the GUI hidden
           , 'Tag', 'FECG_GUI' ...
@@ -116,7 +145,7 @@ fh = figure('Name', 'fecgsyn GUI' ...      % Set title
                 
 %% Construct the main window components
 fh_main = uipanel('Parent', fh ...
-                    , 'Position', [0 0 1.0 1.0] ...
+                    , 'Position', [0 0 1.0 1.0] ... 
                     , 'Visible', 'on');
 
                 
@@ -399,9 +428,14 @@ x_input_width_3 = (x_input_width - 2*buf)/3;
                                ,'HorizontalAlignment','left'...
                                ,'Position',[x_offset, y_input+(y_input_diff+y_input_height)*5-2, x_input_width-20, y_input_height]);  
 
-    input_mother_4 = uicontrol(panel_mother_params, 'Style', 'edit' ...
-                               ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*4, x_input_width, y_input_height] ...
-                               , 'KeyPressFcn',@cb_enter_key); 
+    %input_mother_4 = uicontrol(panel_mother_params, 'Style', 'edit' ...
+%                                ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*4, x_input_width, y_input_height] ...
+%                                , 'KeyPressFcn',@cb_enter_key); 
+    popup_mother_mtypeacc = uicontrol(panel_mother_params,'Style','popupmenu',...
+                    'String',mtypeacc_strings, ...
+                    'Value',1, ...
+                    'Position',[x_input, y_input+(y_input_diff+y_input_height)*4, x_input_width, y_input_height], ...
+                    'Callback',@cb_popup_mother_mtypeacc);
     label_mother_4 = uicontrol(panel_mother_params,'Style','text'...
                                ,'String','mtypeacc'...
                                ,'fontsize',fontSize ...   
@@ -479,18 +513,30 @@ x_input_width_3 = (x_input_width - 2*buf)/3;
                                ,'fontsize',fontSize ...                
                                ,'Position',[x_offset, y_input+(y_input_diff+y_input_height)*6-2, x_input_width-20, y_input_height]);                             
                            
-    input_noise_3 = uicontrol(panel_noise_params, 'Style', 'edit' ...
-                               ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*5, x_input_width, y_input_height] ...
-                               , 'KeyPressFcn',@cb_enter_key);
+    %input_noise_3 = uicontrol(panel_noise_params, 'Style', 'edit' ...
+%                                ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*5, x_input_width, y_input_height] ...
+%                                , 'KeyPressFcn',@cb_enter_key);
+    popup_noise_ntype = uicontrol(panel_noise_params,'Style','popupmenu',...
+                    'String',ntype_strings, ...
+                    'Value',1, ...
+                    'Position',[x_input, y_input+(y_input_diff+y_input_height)*5, x_input_width, y_input_height], ...
+                    'Callback',@cb_popup_noise_ntype);
+    
     label_noise_3 = uicontrol(panel_noise_params,'Style','text'...
                                ,'String','ntype'...
                                ,'fontsize',fontSize ...         
                                ,'HorizontalAlignment','left'...         
                                ,'Position',[x_offset, y_input+(y_input_diff+y_input_height)*5-2, x_input_width-20, y_input_height]);                            
                            
-    input_noise_4 = uicontrol(panel_noise_params, 'Style', 'edit' ...
-                               ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*4, x_input_width, y_input_height] ...
-                               , 'KeyPressFcn',@cb_enter_key); 
+
+    %input_noise_4 = uicontrol(panel_noise_params, 'Style', 'edit' ...
+%                                ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*4, x_input_width, y_input_height] ...
+%                                , 'KeyPressFcn',@cb_enter_key); 
+    popup_noise_fct = uicontrol(panel_noise_params,'Style','popupmenu',...
+                    'String',noise_fct_strings, ...
+                    'Value',1, ...
+                    'Position',[x_input, y_input+(y_input_diff+y_input_height)*4, x_input_width, y_input_height], ...
+                    'Callback',@cb_popup_noise_fct);
     label_noise_4 = uicontrol(panel_noise_params,'Style','text'...
                                ,'String','noise_fct'...
                                ,'fontsize',fontSize ...      
@@ -746,9 +792,14 @@ x_input_width_3 = (x_input_width - 2*buf)/3;
                                ,'HorizontalAlignment','left'...          
                                ,'Position',[x_offset, y_input+(y_input_diff+y_input_height)*11-2, x_input_width-20, y_input_height]); 
                            
-    input_fetal_4 = uicontrol(panel_fetal_params, 'Style', 'edit' ...
-                               ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*10, x_input_width, y_input_height] ...
-                               , 'KeyPressFcn',@cb_enter_key); 
+%     input_fetal_4 = uicontrol(panel_fetal_params, 'Style', 'edit' ...
+%                                ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*10, x_input_width, y_input_height] ...
+%                                , 'KeyPressFcn',@cb_enter_key); 
+    popup_fetal_ftypeacc = uicontrol(panel_fetal_params,'Style','popupmenu',...
+                    'String',ftypeacc_strings, ...
+                    'Value',1, ...
+                    'Position',[x_input, y_input+(y_input_diff+y_input_height)*10, x_input_width, y_input_height], ...
+                    'Callback',@cb_popup_fetal_ftypeacc);
     label_fetal_4 = uicontrol(panel_fetal_params,'Style','text'...
                                ,'String','ftypeacc'...
                                ,'fontsize',fontSize ...    
@@ -791,9 +842,14 @@ x_input_width_3 = (x_input_width - 2*buf)/3;
 %                                ,'HorizontalAlignment','left'...
 %                                ,'Position',[x_offset, y_input+(y_input_diff+y_input_height)*6-2, x_input_width-20, y_input_height]); 
                                  
-    input_fetal_9 = uicontrol(panel_fetal_params, 'Style', 'edit' ...
-                               ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*7, x_input_width, y_input_height] ...
-                               , 'KeyPressFcn',@cb_enter_key); 
+%     input_fetal_9 = uicontrol(panel_fetal_params, 'Style', 'edit' ...
+%                                ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*7, x_input_width, y_input_height] ...
+%                                , 'KeyPressFcn',@cb_enter_key); 
+    popup_fetal_ftraj = uicontrol(panel_fetal_params,'Style','popupmenu',...
+                    'String',ftraj_strings, ...
+                    'Value',1, ...
+                    'Position',[x_input, y_input+(y_input_diff+y_input_height)*7, x_input_width, y_input_height], ...
+                    'Callback',@cb_popup_fetal_ftraj);
     label_fetal_9 = uicontrol(panel_fetal_params,'Style','text'...
                                ,'String','ftraj'...
                                ,'fontsize',fontSize ...
@@ -1231,12 +1287,16 @@ function populate_custom_view(p, fetus, ns)
         set(input_fetal_1_3, 'String', num2str(p.fheart{fetus}(3)));
         set(input_fetal_2, 'String', num2str(p.fhr(fetus)));
         set(input_fetal_3, 'String', num2str(p.facc(fetus)));
-        set(input_fetal_4, 'String', p.ftypeacc{fetus});
+        %set(input_fetal_4, 'String', p.ftypeacc{fetus});
+        idx = find(strcmp(param_struct{get(list_scenarios, 'Value')}.ftypeacc{fetus}, ftypeacc_strings));
+        set(popup_fetal_ftypeacc, 'Value', idx);
         set(input_fetal_5, 'String', p.fectb);
         set(input_fetal_6, 'String', p.fres(fetus));
 %         set(input_fetal_7, 'String', p.faccmean{fetus});
 %         set(input_fetal_8, 'String', p.faccstd{fetus});
-        set(input_fetal_9, 'String', p.ftraj{fetus});
+%         set(input_fetal_9, 'String', p.ftraj{fetus});
+        idx = find(strcmp(param_struct{get(list_scenarios, 'Value')}.ftraj{fetus}, ftraj_strings));
+        set(popup_fetal_ftraj, 'Value', idx);
         set(input_fetal_10, 'String', p.fvcg(fetus));
     else
         set(input_fetal_1_1, 'String', 'N/A');
@@ -1244,25 +1304,33 @@ function populate_custom_view(p, fetus, ns)
         set(input_fetal_1_3, 'String', 'N/A');
         set(input_fetal_2, 'String', 'N/A');
         set(input_fetal_3, 'String', 'N/A');
-        set(input_fetal_4, 'String', 'N/A');
+        %set(input_fetal_4, 'String', 'N/A');
+        set(popup_fetal_ftypeacc, 'Value', 1);
         set(input_fetal_5, 'String', 'N/A');
         set(input_fetal_6, 'String', 'N/A');
 %         set(input_fetal_7, 'String', 'N/A');
 %         set(input_fetal_8, 'String', 'N/A');
-        set(input_fetal_9, 'String', 'N/A');
+%         set(input_fetal_9, 'String', 'N/A');
+        set(popup_fetal_ftraj, 'Value', 1);
         set(input_fetal_10, 'String', 'N/A');
     end
     
     
     % populate noise params
     if ns > 0
-        set(input_noise_3, 'String', p.ntype{ns});
-        set(input_noise_4, 'String', p.noise_fct{ns});
+        %set(input_noise_3, 'String', p.ntype{ns});
+        idx = find(strcmp(param_struct{get(list_scenarios, 'Value')}.ntype{ns}, ntype_strings));
+        set(popup_noise_ntype, 'Value', idx);
+        %set(input_noise_4, 'String', p.noise_fct{ns});
+        idx = find(strcmp(num2str(param_struct{get(list_scenarios, 'Value')}.noise_fct{ns}), noise_fct_strings));
+        set(popup_noise_fct, 'Value', idx);
     else
 %         set(input_noise_1, 'String', 'N/A');
 %         set(input_noise_2, 'String', 'N/A');
-        set(input_noise_3, 'String', 'N/A');
-        set(input_noise_4, 'String', 'N/A');
+        %set(input_noise_3, 'String', 'N/A');
+        set(popup_noise_ntype, 'Value', 1);
+        %set(input_noise_4, 'String', 'N/A');
+        set(popup_noise_fct, 'Value', 1);
     end
     set(input_noise_1, 'String', num2str(p.SNRfm));
     set(input_noise_2, 'String', num2str(p.SNRmn));
@@ -1273,7 +1341,9 @@ function populate_custom_view(p, fetus, ns)
     set(input_mother_1_3, 'String', num2str(p.mheart(3)));
     set(input_mother_2, 'String', num2str(p.mhr));
     set(input_mother_3, 'String', num2str(p.macc));
-    set(input_mother_4, 'String', num2str(p.mtypeacc));
+    %set(input_mother_4, 'String', p.mtypeacc);
+    idx = find(strcmp(param_struct{get(list_scenarios, 'Value')}.mtypeacc, mtypeacc_strings));
+    set(popup_mother_mtypeacc, 'Value', idx);
     set(input_mother_5, 'String', num2str(p.mectb));
     set(input_mother_6, 'String', num2str(p.mres));
     set(input_mother_7, 'String', num2str(p.evcg));
@@ -1376,13 +1446,14 @@ function save_custom_params(validate, fetus_choice, ns_choice)
 
             temp.fhr(fetus_choice) = str2double(get(input_fetal_2, 'String'));
             temp.facc(fetus_choice) = str2double(get(input_fetal_3, 'String'));
-            temp.ftypeacc{fetus_choice} = get(input_fetal_4, 'String');
+            %temp.ftypeacc{fetus_choice} = get(input_fetal_4, 'String');
+            temp.ftypeacc{fetus_choice} = ftypeacc_strings{get(popup_fetal_ftypeacc, 'Value')};
             temp.fres(fetus_choice) = str2double(get(input_fetal_6, 'String'));
             %temp.faccmean{fetus_choice} = str2double(get(input_fetal_7, 'String'));
             %temp.faccstd{fetus_choice} = str2double(get(input_fetal_8, 'String'));
             temp.faccmean{fetus_choice} = 0;
             temp.faccstd{fetus_choice} = 1;
-            temp.ftraj{fetus_choice} = get(input_fetal_9, 'String');
+            temp.ftraj{fetus_choice} = ftraj_strings{get(popup_fetal_ftraj, 'Value')};
             temp.fectb = str2double(get(input_fetal_5, 'String'));
             temp.fvcg(fetus_choice) = str2double(get(input_fetal_10, 'String')); 
             
@@ -1395,8 +1466,10 @@ function save_custom_params(validate, fetus_choice, ns_choice)
             %ns_choice = get(list_noise_sources, 'Value');
             temp.SNRfm = str2double(get(input_noise_1, 'String'));
             temp.SNRmn = str2double(get(input_noise_2, 'String'));
-            temp.ntype{ns_choice} = get(input_noise_3, 'String');
-            temp.noise_fct{ns_choice} = str2num(get(input_noise_4, 'String'));
+            %temp.ntype{ns_choice} = get(input_noise_3, 'String');
+            temp.ntype{ns_choice} = ntype_strings{get(popup_noise_ntype, 'Value')};
+            %temp.noise_fct{ns_choice} = str2num(get(input_noise_4, 'String'));
+            temp.noise_fct{ns_choice} = noise_fct_strings{get(popup_noise_fct, 'Value')};
         end
         
         
@@ -1407,7 +1480,8 @@ function save_custom_params(validate, fetus_choice, ns_choice)
         temp.mheart(3) = str2double(get(input_mother_1_3, 'String'));
         temp.mhr = str2double(get(input_mother_2, 'String'));
         temp.macc = str2double(get(input_mother_3, 'String'));
-        temp.mtypeacc = get(input_mother_4, 'String');
+        %temp.mtypeacc = get(input_mother_4, 'String');
+        temp.mtypeacc = mtypeacc_strings{get(popup_mother_mtypeacc, 'Value')};
         temp.mectb = str2double(get(input_mother_5, 'String'));
         temp.mres = str2double(get(input_mother_6, 'String'));
         temp.evcg = str2double(get(input_mother_7, 'String'));
@@ -1768,12 +1842,14 @@ function cb_add_fetus(hObject,eventdata)
     set(input_fetal_1_3, 'String', -0.3);
     set(input_fetal_2, 'String', 150);
     set(input_fetal_3, 'String', 0);
-    set(input_fetal_4, 'String', 'none');
+    %set(input_fetal_4, 'String', 'none');
+    set(popup_fetal_ftypeacc, 'Value', 1);
     set(input_fetal_5, 'String', 0);
     set(input_fetal_6, 'String', 0);
 %     set(input_fetal_7, 'String', 0);
 %     set(input_fetal_8, 'String', 1);
-    set(input_fetal_9, 'String', 'none');
+%     set(input_fetal_9, 'String', 'none');
+    set(popup_fetal_ftraj, 'Value', 1);
     set(input_fetal_10, 'String', fVCG);
     
     selected_fetus = new_num_fetus;
@@ -1823,8 +1899,10 @@ function cb_add_noise(hObject,eventdata)
     % Save custom parameters inputted so far
     save_custom_params(0, selected_fetus, selected_ns);
     
-    set(input_noise_3, 'String', 'MA');
-    set(input_noise_4, 'String', 1);
+    %set(input_noise_3, 'String', 'MA');
+    set(popup_noise_ntype, 'Value', 1);
+    %set(input_noise_4, 'String', 1);
+    set(popup_noise_fct, 'Value', 1);
         
     % Increase number of noise in the custom param structure
     noise_str = get(list_noise_sources, 'String');
@@ -1985,6 +2063,38 @@ function cb_bt_import_custom(hObject,eventdata)
         disp('An error occurred while importing parameters');
     end
 
+   
+    % populate fetus and noise source lists
+    p = temp;
+    if ~isempty(p.fhr);
+        n_fetus = length(p.fhr);
+        fetus_list = cell(n_fetus,1);
+        for i = 1:n_fetus
+            fetus_list{i} = sprintf('Fetus %d',i);
+        end
+        set(list_fetus, 'String', fetus_list);
+        set(list_fetus, 'Value', 1);
+    else 
+        fetus_list = {};
+        set(list_fetus, 'String', fetus_list);
+    end
+    if ~isempty(p.noise_fct);
+        n_ns = length(p.noise_fct);
+        ns_list = cell(n_ns,1);
+        for i = 1:n_ns
+            ns_list{i} = sprintf('Noise Source %d',i);
+        end
+        set(list_noise_sources, 'String', ns_list);
+        set(list_noise_sources, 'Value', 1);
+    else
+        ns_list = {};
+        set(list_noise_sources, 'String', ns_list);
+    end
+    
+    
+    
+    
+    
     set(list_scenarios, 'Value', length(param_struct));
     cb_list_scenarios(hObject,eventdata);
     %disp('TODO: cb_bt_import_custom()');
@@ -2113,6 +2223,34 @@ end
     function cb_bt_about(hObject,eventdata)
         msgbox(about_text, 'About');
     end
+
+
+    function cb_popup_mother_mtypeacc(hObject,eventdata)
+        save_custom_params();
+    end
+
+    function cb_popup_noise_ntype(hObject,eventdata)
+        save_custom_params();
+    end
+
+    function cb_popup_noise_fct(hObject,eventdata)
+        save_custom_params();
+    end
+
+    function cb_popup_fetal_ftypeacc(hObject,eventdata)
+        save_custom_params();
+    end
+
+    function cb_popup_fetal_ftraj(hObject,eventdata)
+        save_custom_params();
+    end
+
+
+
+
+
+
+
 %% Make the GUI visible when everything is loaded
 
 % display the param struct of the first scenario in the custom view

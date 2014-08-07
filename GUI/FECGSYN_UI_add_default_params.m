@@ -27,6 +27,7 @@ if ~any(strcmp('n',fieldnames(param))); param.n = 60000; end;
 if ~any(strcmp('fs',fieldnames(param))); param.fs = 1000; end;
 if ~any(strcmp('ntype',fieldnames(param))); param.ntype = ''; end;
 if ~any(strcmp('noise_fct',fieldnames(param))); param.noise_fct(1:length(param.ntype)) = {1}; end;
+if ~any(strcmp('noise_fct_str',fieldnames(param))); param.noise_fct_str{1:length(param.ntype)} = '1'; end; % new
 if ~any(strcmp('SNRfm',fieldnames(param))); param.SNRfm = -9; end;
 if ~any(strcmp('SNRmn',fieldnames(param))); param.SNRmn = 10; end;
 if ~any(strcmp('mhr',fieldnames(param))); param.mhr = 90; end;

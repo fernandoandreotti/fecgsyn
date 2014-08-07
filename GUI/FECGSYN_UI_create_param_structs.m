@@ -47,6 +47,7 @@ param = param_struct{2};
     param.fs = 1000;
     param.ntype = {'MA'}; % noise types
     param.noise_fct = {1}; % constant SNR (each noise may be modulated by a function)
+    param.noise_fct_str = {'1'};
     if ~isempty(mVCG); param.mvcg = mVCG; end;
     if ~isempty(fVCG); param.fvcg = fVCG; end;
     if ~isempty(POS_DEV); param.posdev = 0; end;

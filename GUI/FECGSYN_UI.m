@@ -26,7 +26,7 @@ if ismac
 else
     fontSize = 13;
     fontSizeHelp = 8;
-    fontSizeTitle = 24;
+    fontSizeTitle = 18;
 end
 % Create constants for the calculations
 THR = 0.2; % threshold of QRS detector
@@ -87,7 +87,7 @@ ftypeacc_strings =   {'none' ...
                     , 'mexhat' ...
                     , 'gauss' ...
                     , 'flattop' ...
-                    , '' };
+                    };
 
 ftraj_strings =  {'none' ...
                 , 'linear' ...
@@ -104,11 +104,11 @@ ntype_strings =  {'MA' ...
                 , 'EM' ...
                 , 'BW' }; % list found in add_noisedipole.m
             
-noise_fct_strings =  {'1' ...
-                    , '2' ...
-                    , '3' ...
-                    , '4' ...
-                    , '5' };
+% noise_fct_strings =  {'1' ...
+%                     , '2' ...
+%                     , '3' ...
+%                     , '4' ...
+%                     , '5' };
                     
                     
                     
@@ -116,21 +116,21 @@ noise_fct_strings =  {'1' ...
 gui_title = 'fecgsyn GUI';
 
 % initialising the long texts
-general_help_text = sprintf('Select a preset scenario from the dropdown menu, or create a custom simulation by pressing the custom button. Once a selection is made, click the run button to compute. The export button allows you to save a .mat file for results, and the import button opens a previously saved simulation. \n \nPlease direct any queries related to the GUI to Mohsan Alvi (mohsan.alvi@eng.ox.ac.uk) or Joachim Behar (joachim.behar@gmail.com) ');
+general_help_text = sprintf('Select a preset scenario from the dropdown menu, or create a custom simulation by pressing the custom button. Once a selection is made, click the run button to compute. The export button allows you to save a .mat file for results, and the import button opens a previously saved simulation.');
 
 about_text = {'Please cite as follows: ', '', '== GUI ==', 'Alvi Mohsan, Andreotti Fernando, Oster Julien, Clifford Gari D., Behar Joachim. Fecgsyn: A Graphical User Interface for the Simulation of Maternal-Foetal Activity Mixtures on Abdominal Electrocardiogram Recordings.Accepted for Computing in Cardiology conference 2014.', '', '== FECGSYN Code ==', 'Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. Physiological Measurement.35 1537-1550. 2014.'};
 
 custom_general_help_text = sprintf('General help \n \nn - number of samples \n \nfs - sampling frequency');
 
-custom_fetal_help_text = sprintf('Fetal help \n \nfheart - foetus heart origin - actual location will be picked randomly around it (default [-pi/10 0.4 -0.3])\n \nfhr - fetal heart rate [bpm] \n \nfacc - fetal acceleration in heart rate\n \nftypeacc - fetal acceleration type (chosen from switch inside function, e.g. "none", "mexhat", "gauss" or "flattop") [string] \n \nfectb - add ectopic beats to fetus [bool] \n \nfres - respiratory frequency of fetus [Hz] \n \nftraj - trajectory given to fetus heart (e.g. none,linear, spline, spiral) \n \nfvcg - foetus vcg chosen (1-9)');
+custom_fetal_help_text = sprintf('Fetal help \n \nfheart - foetus heart origin - actual location will be picked randomly around it (default [-pi/10 0.4 -0.3])\n \nfhr - fetal heart rate [bpm] \n \nfacc - fetal acceleration in heart rate\n \nftypeacc - fetal acceleration type \n \nfectb - add ectopic beats to fetus [bool] \n \nfres - respiratory frequency of fetus [Hz] \n \nftraj - trajectory given to fetus heart \n \nfvcg - foetus vcg chosen (1-9)');
 
-custom_noise_help_text = sprintf('Noise Help \n \nSNR_fm - Signal to noise ratio FECG/MECG (default -10) \n \nSNR_mn - Signal to noise ratio (MECG+FECG)/Noise (default 6) \n \nNoise source: \n \nntype - Noise type (default MA) [string] \n \nnoise_fct - function of modulating noise (each noise may be modulated by a function, e.g param.noise_fct=sin(linspace(-2*pi,2*pi,param.n)))');
+custom_noise_help_text = sprintf('Noise Help \n \nSNR_fm - Signal to noise ratio FECG/MECG (default -10) \n \nSNR_mn - Signal to noise ratio (MECG+FECG)/Noise (default 6) \n \nNoise source: \n \nntype - Noise type (default MA) \n \nnoise_fct - function of modulating noise (each noise may be modulated by a function of t, e.g sin(t))');
 
-custom_mother_help_text = sprintf('Mother help \n \nmheart: maternal heart origin - actual location will be picked randomly around it. default [2*pi/3 0.4 0.4]) \n \nmhr - mother heart rate [bpm] \n \nmacc - maternal acceleration in heart rate \n \nmtypeacc - maternal acceleration type (chosen from switch inside function, e.g. "none", "mexhat", "gauss" or "flattop") [string] \n \nmectb - add ectopic beats to mother [bool] \n \nmres - respiratory frequency of mother [Hz] \n \nevcg - ectopic beat parameters (1-4)');
+custom_mother_help_text = sprintf('Mother help \n \nmheart: maternal heart origin - actual location will be picked randomly around it. default [2*pi/3 0.4 0.4]) \n \nmhr - mother heart rate [bpm] \n \nmacc - maternal acceleration in heart rate \n \nmtypeacc - maternal acceleration type \n \nmectb - add ectopic beats to mother [bool] \n \nmres - respiratory frequency of mother [Hz] \n \nevcg - ectopic beat parameters (1-4)');
 
 custom_controls_help_text = sprintf('Run - run fecgsyn \nEdit - edit a preset scenario \nBack - back to front face');
 
-custom_scen_help_text = sprintf('Custom scenarios help \n \nDefault scenarios are provided for a variety of cases. These aim to illustrate the effect of different types of non-stationarities.');
+custom_scen_help_text = sprintf('Custom scenarios help \n \nDefault scenarios are provided for a variety of cases. These aim to illustrate the effect of different types of non-stationarities. If you wish to customize these, please press the edit button in the panel above.');
 
 custom_geo_help_text = sprintf('Geometry help \n \nEnter electrode positions in spherical coordinates: \n \nth - rotation angle about z-axis \n \nz - height along z-axis \n \nThe preview button opens a graphical representation of the electrode positions. Click refresh to preview any changes made to electrode positions.');
 
@@ -529,14 +529,14 @@ x_input_width_3 = (x_input_width - 2*buf)/3;
                                ,'Position',[x_offset, y_input+(y_input_diff+y_input_height)*5-2, x_input_width-20, y_input_height]);                            
                            
 
-    %input_noise_4 = uicontrol(panel_noise_params, 'Style', 'edit' ...
-%                                ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*4, x_input_width, y_input_height] ...
-%                                , 'KeyPressFcn',@cb_enter_key); 
-    popup_noise_fct = uicontrol(panel_noise_params,'Style','popupmenu',...
-                    'String',noise_fct_strings, ...
-                    'Value',1, ...
-                    'Position',[x_input, y_input+(y_input_diff+y_input_height)*4, x_input_width, y_input_height], ...
-                    'Callback',@cb_popup_noise_fct);
+    input_noise_4 = uicontrol(panel_noise_params, 'Style', 'edit' ...
+                                ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*4, x_input_width, y_input_height] ...
+                                , 'KeyPressFcn',@cb_enter_key); 
+%     popup_noise_fct = uicontrol(panel_noise_params,'Style','popupmenu',...
+%                     'String',noise_fct_strings, ...
+%                     'Value',1, ...
+%                     'Position',[x_input, y_input+(y_input_diff+y_input_height)*4, x_input_width, y_input_height], ...
+%                     'Callback',@cb_popup_noise_fct);
     label_noise_4 = uicontrol(panel_noise_params,'Style','text'...
                                ,'String','noise_fct'...
                                ,'fontsize',fontSize ...      
@@ -1072,6 +1072,36 @@ list_scenarios = uicontrol(panel_custom_scenarios,'style','list',...
                     ,'tooltip','Help' ...
             );        
                         
+% For setting enabling/disabling (custom enable, other scenarios disable)
+all_custom_inputs = [input_mother_1_1;
+                    input_mother_1_2;
+                    input_mother_1_3;
+                    input_mother_2;
+                    input_mother_3;
+                    popup_mother_mtypeacc;
+                    input_mother_5;
+                    input_mother_6;
+                    input_mother_7;
+                    input_general_1;
+                    input_general_2;
+                    input_noise_1;
+                    input_noise_2;
+                    popup_noise_ntype;
+                    input_noise_4;
+                    bt_add_noise;
+                    bt_remove_noise;
+                    input_fetal_1_1;
+                    input_fetal_1_2;
+                    input_fetal_1_3;
+                    input_fetal_2;
+                    input_fetal_3;
+                    popup_fetal_ftypeacc;
+                    input_fetal_5;
+                    input_fetal_6;
+                    popup_fetal_ftraj
+                    input_fetal_10;
+                    bt_add_fetus;
+                    bt_remove_fetus];        
         
         
 %% title
@@ -1321,16 +1351,16 @@ function populate_custom_view(p, fetus, ns)
         %set(input_noise_3, 'String', p.ntype{ns});
         idx = find(strcmp(param_struct{get(list_scenarios, 'Value')}.ntype{ns}, ntype_strings));
         set(popup_noise_ntype, 'Value', idx);
-        %set(input_noise_4, 'String', p.noise_fct{ns});
-        idx = find(strcmp(num2str(param_struct{get(list_scenarios, 'Value')}.noise_fct{ns}), noise_fct_strings));
-        set(popup_noise_fct, 'Value', idx);
+        set(input_noise_4, 'String', p.noise_fct_str{ns});
+%         idx = find(strcmp(num2str(param_struct{get(list_scenarios, 'Value')}.noise_fct{ns}), noise_fct_strings));
+%         set(popup_noise_fct, 'Value', idx);
     else
 %         set(input_noise_1, 'String', 'N/A');
 %         set(input_noise_2, 'String', 'N/A');
         %set(input_noise_3, 'String', 'N/A');
         set(popup_noise_ntype, 'Value', 1);
-        %set(input_noise_4, 'String', 'N/A');
-        set(popup_noise_fct, 'Value', 1);
+        set(input_noise_4, 'String', 'N/A');
+        %set(popup_noise_fct, 'Value', 1);
     end
     set(input_noise_1, 'String', num2str(p.SNRfm));
     set(input_noise_2, 'String', num2str(p.SNRmn));
@@ -1468,8 +1498,9 @@ function save_custom_params(validate, fetus_choice, ns_choice)
             temp.SNRmn = str2double(get(input_noise_2, 'String'));
             %temp.ntype{ns_choice} = get(input_noise_3, 'String');
             temp.ntype{ns_choice} = ntype_strings{get(popup_noise_ntype, 'Value')};
-            %temp.noise_fct{ns_choice} = str2num(get(input_noise_4, 'String'));
-            temp.noise_fct{ns_choice} = noise_fct_strings{get(popup_noise_fct, 'Value')};
+            temp.noise_fct_str{ns_choice} = get(input_noise_4, 'String');
+            temp.noise_fct{ns_choice} = eval_noise_fct(temp);  % evaluate the noise_fct string
+            %temp.noise_fct{ns_choice} = noise_fct_strings{get(popup_noise_fct, 'Value')};
         end
         
         
@@ -1569,6 +1600,19 @@ function toggle_custom_buttons()
     else
         set(bt_geo_previous, 'Visible', 'on')
     end
+end
+
+% takes in the param struct (in) and evaluates the noise_fct_str string at
+% the time values defined by param.n
+function nf = eval_noise_fct(p)
+    n = p.n; % num of samples
+    fs = p.fs; % frequency
+    t_max = n/fs; % upper limit of time, starting at t=0
+    ns = get(list_noise_sources, 'Value');
+    %t = linspace(0, t_max, n);
+    t = 1/fs:1/fs:(n/fs);
+    nf = eval(p.noise_fct_str{ns});
+    
 end
 
 %% Callbacks for MYGUI. 
@@ -1901,8 +1945,8 @@ function cb_add_noise(hObject,eventdata)
     
     %set(input_noise_3, 'String', 'MA');
     set(popup_noise_ntype, 'Value', 1);
-    %set(input_noise_4, 'String', 1);
-    set(popup_noise_fct, 'Value', 1);
+    set(input_noise_4, 'String', 1);
+    %set(popup_noise_fct, 'Value', 1);
         
     % Increase number of noise in the custom param structure
     noise_str = get(list_noise_sources, 'String');
@@ -1931,6 +1975,7 @@ function cb_remove_noise(hObject,eventdata)
     
     % Delete relevant data
     temp.ntype(ns_choice) = [];
+    temp.noise_fct_str(ns_choice) = '';
     temp.noise_fct(ns_choice) = [];
        
     % Update custom param struct
@@ -1994,7 +2039,16 @@ function cb_list_scenarios(hObject,eventdata)
         set(panel_geometry_no_edit, 'Visible', 'on')
         set(panel_geometry, 'Visible', 'off')
     end
-        
+    
+    if get(list_scenarios,'value') == length(param_struct)
+        for i = 1:length(all_custom_inputs)
+        set(all_custom_inputs(i),'enable','on')
+        end
+    else
+        for i = 1:length(all_custom_inputs)
+        set(all_custom_inputs(i),'enable','off')
+        end
+    end
     
     % display the data
     populate_custom_view(param);
@@ -2233,9 +2287,9 @@ end
         save_custom_params();
     end
 
-    function cb_popup_noise_fct(hObject,eventdata)
-        save_custom_params();
-    end
+%     function cb_popup_noise_fct(hObject,eventdata)
+%         save_custom_params();
+%     end
 
     function cb_popup_fetal_ftypeacc(hObject,eventdata)
         save_custom_params();

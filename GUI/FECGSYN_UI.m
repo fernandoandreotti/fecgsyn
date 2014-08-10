@@ -8,7 +8,7 @@ function varargout = FECGSYN_UI(varargin)
 %% Initialization tasks
 
 % Add files in parent folder and its subfolders to path
-addpath(genpath('..'));
+% addpath(genpath('..'));
 
 mInputArgs = varargin;  % Command line arguments when invoking
                         % the GUI
@@ -137,12 +137,14 @@ custom_geo_help_text = sprintf('Geometry help \n \nEnter electrode positions in 
 %% Create handle to the GUI's main container
 fh = figure('Name', 'fecgsyn GUI' ...      % Set title
           , 'NumberTitle', 'off' ...    % Hide "Figure 1:" from title
-          , 'Position', [200 320 900 650] ...    % Position & size (x,y)
+          , 'Position', [200 100 900 650] ...    % Position & size (x,y)
           , 'Resize', 'off' ...         % Disable resizing of the GUI
           , 'Visible', 'off' ...        % Start off with the GUI hidden
           , 'Tag', 'FECG_GUI' ...
           );
                 
+movegui(fh,'northwest');
+      
 %% Construct the main window components
 fh_main = uipanel('Parent', fh ...
                     , 'Position', [0 0 1.0 1.0] ... 
@@ -442,9 +444,13 @@ x_input_width_3 = (x_input_width - 2*buf)/3;
                                ,'HorizontalAlignment','left'...                        
                                ,'Position',[x_offset, y_input+(y_input_diff+y_input_height)*4-2, x_input_width-20, y_input_height]); 
 
-    input_mother_5 = uicontrol(panel_mother_params, 'Style', 'edit' ...
-                               ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*3, x_input_width, y_input_height] ...
-                               , 'KeyPressFcn',@cb_enter_key);
+%     input_mother_5 = uicontrol(panel_mother_params, 'Style', 'edit' ...
+%                                ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*3, x_input_width, y_input_height] ...
+%                                , 'KeyPressFcn',@cb_enter_key);
+    chk_mother_mecbt = uicontrol(panel_mother_params, 'Style', 'checkbox' ...
+                               ,'String', '' ...
+                               ,'Position',[x_input+4/3*x_input_width_3+buf, y_input+(y_input_diff+y_input_height)*3, x_input_width_3, y_input_height] ...
+                               , 'Callback',@cb_chk_fetal_fecbt);
     label_mother_5 = uicontrol(panel_mother_params,'Style','text'...
                                ,'String','mectb'...
                                ,'fontsize',fontSize ...
@@ -806,9 +812,13 @@ x_input_width_3 = (x_input_width - 2*buf)/3;
                                ,'HorizontalAlignment','left'...              
                                ,'Position',[x_offset, y_input+(y_input_diff+y_input_height)*10-2, x_input_width-20, y_input_height]); 
                            
-    input_fetal_5 = uicontrol(panel_fetal_params, 'Style', 'edit' ...
-                               ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*9, x_input_width, y_input_height] ...
-                               , 'KeyPressFcn',@cb_enter_key);
+%     input_fetal_5 = uicontrol(panel_fetal_params, 'Style', 'edit' ...
+%                                ,'Position',[x_input, y_input+(y_input_diff+y_input_height)*9, x_input_width, y_input_height] ...
+%                                , 'KeyPressFcn',@cb_enter_key);
+    chk_fetal_fecbt = uicontrol(panel_fetal_params, 'Style', 'checkbox' ...
+                               ,'String', '' ...
+                               ,'Position',[x_input+4/3*x_input_width_3+buf, y_input+(y_input_diff+y_input_height)*9, x_input_width_3, y_input_height] ...
+                               , 'Callback',@cb_chk_fetal_fecbt);
     label_fetal_5 = uicontrol(panel_fetal_params,'Style','text'...
                                ,'String','fectb'...
                                ,'fontsize',fontSize ...    
@@ -1079,7 +1089,8 @@ all_custom_inputs = [input_mother_1_1;
                     input_mother_2;
                     input_mother_3;
                     popup_mother_mtypeacc;
-                    input_mother_5;
+%                     input_mother_5;
+                    chk_mother_mecbt;
                     input_mother_6;
                     input_mother_7;
                     input_general_1;
@@ -1096,7 +1107,8 @@ all_custom_inputs = [input_mother_1_1;
                     input_fetal_2;
                     input_fetal_3;
                     popup_fetal_ftypeacc;
-                    input_fetal_5;
+%                     input_fetal_5;
+                    chk_fetal_fecbt;
                     input_fetal_6;
                     popup_fetal_ftraj
                     input_fetal_10;
@@ -1320,7 +1332,8 @@ function populate_custom_view(p, fetus, ns)
         %set(input_fetal_4, 'String', p.ftypeacc{fetus});
         idx = find(strcmp(param_struct{get(list_scenarios, 'Value')}.ftypeacc{fetus}, ftypeacc_strings));
         set(popup_fetal_ftypeacc, 'Value', idx);
-        set(input_fetal_5, 'String', p.fectb);
+%         set(input_fetal_5, 'String', p.fectb);
+        set(chk_fetal_fecbt, 'Value', p.fectb);
         set(input_fetal_6, 'String', p.fres(fetus));
 %         set(input_fetal_7, 'String', p.faccmean{fetus});
 %         set(input_fetal_8, 'String', p.faccstd{fetus});
@@ -1336,7 +1349,8 @@ function populate_custom_view(p, fetus, ns)
         set(input_fetal_3, 'String', 'N/A');
         %set(input_fetal_4, 'String', 'N/A');
         set(popup_fetal_ftypeacc, 'Value', 1);
-        set(input_fetal_5, 'String', 'N/A');
+%         set(input_fetal_5, 'String', 'N/A');
+        set(chk_fetal_fecbt, 'Value', 0);
         set(input_fetal_6, 'String', 'N/A');
 %         set(input_fetal_7, 'String', 'N/A');
 %         set(input_fetal_8, 'String', 'N/A');
@@ -1374,7 +1388,8 @@ function populate_custom_view(p, fetus, ns)
     %set(input_mother_4, 'String', p.mtypeacc);
     idx = find(strcmp(param_struct{get(list_scenarios, 'Value')}.mtypeacc, mtypeacc_strings));
     set(popup_mother_mtypeacc, 'Value', idx);
-    set(input_mother_5, 'String', num2str(p.mectb));
+%     set(input_mother_5, 'String', num2str(p.mectb));
+    set(chk_mother_mecbt, 'Value', p.mectb);
     set(input_mother_6, 'String', num2str(p.mres));
     set(input_mother_7, 'String', num2str(p.evcg));
     
@@ -1484,7 +1499,8 @@ function save_custom_params(validate, fetus_choice, ns_choice)
             temp.faccmean{fetus_choice} = 0;
             temp.faccstd{fetus_choice} = 1;
             temp.ftraj{fetus_choice} = ftraj_strings{get(popup_fetal_ftraj, 'Value')};
-            temp.fectb = str2double(get(input_fetal_5, 'String'));
+%             temp.fectb = str2double(get(input_fetal_5, 'String'));
+            temp.fectb = get(chk_fetal_fecbt, 'Value');
             temp.fvcg(fetus_choice) = str2double(get(input_fetal_10, 'String')); 
             
         end
@@ -1513,7 +1529,8 @@ function save_custom_params(validate, fetus_choice, ns_choice)
         temp.macc = str2double(get(input_mother_3, 'String'));
         %temp.mtypeacc = get(input_mother_4, 'String');
         temp.mtypeacc = mtypeacc_strings{get(popup_mother_mtypeacc, 'Value')};
-        temp.mectb = str2double(get(input_mother_5, 'String'));
+%         temp.mectb = str2double(get(input_mother_5, 'String'));
+        temp.mectb = get(chk_mother_mecbt, 'Value');
         temp.mres = str2double(get(input_mother_6, 'String'));
         temp.evcg = str2double(get(input_mother_7, 'String'));
 
@@ -1888,7 +1905,8 @@ function cb_add_fetus(hObject,eventdata)
     set(input_fetal_3, 'String', 0);
     %set(input_fetal_4, 'String', 'none');
     set(popup_fetal_ftypeacc, 'Value', 1);
-    set(input_fetal_5, 'String', 0);
+    %set(input_fetal_5, 'String', 0);
+    set(chk_fetal_fecbt, 'Value', 0);
     set(input_fetal_6, 'String', 0);
 %     set(input_fetal_7, 'String', 0);
 %     set(input_fetal_8, 'String', 1);
@@ -2299,7 +2317,9 @@ end
         save_custom_params();
     end
 
-
+    function cb_chk_fetal_fecbt(hObject,eventdata)
+        save_custom_params();
+    end
 
 
 

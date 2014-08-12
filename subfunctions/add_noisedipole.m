@@ -93,7 +93,7 @@ end
 % considered baseline-free and some baseline (BW) noise can be speficied on
 % top by the user.
 if strcmp('MA',ntype) || strcmp('EM',ntype)
-    [B,A] = butter(5,1*2/fs,'high'); % high-pass filter with 1 Hz
+    [B,A] = butter(5,1*2/FS_NSTDB,'high'); % high-pass filter with 1 Hz
     noise(:,1) = filtfilt(B,A,noise(:,1));
     noise(:,2) = filtfilt(B,A,noise(:,2));
 end

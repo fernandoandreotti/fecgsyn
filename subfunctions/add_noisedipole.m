@@ -38,7 +38,7 @@ function [dmodel, f_handles] = add_noisedipole(N,fs,ntype,epos,noisepos,debug)
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 31-07-2014
+% Last updated : 12-08-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -65,8 +65,8 @@ if sum(find(strcmp(ntype,{'MA','EM','BW'})))==0; error('add_noisedipole: this no
 % == constants
 AR_ORDER = 12; % number of poles
 FS_NSTDB = 360; % sampling frequency of NSTDB
-LG_NSTDB = FS_NSTDB*29; % number of points in NSTDB
 NP_NSTDB = 20*FS_NSTDB; % number of points to select in NSTDB records to generate the AR coefficients
+LG_NSTDB = FS_NSTDB*29*60-NP_NSTDB; % number of points in NSTDB
 N_SAMP = floor(N/(fs/FS_NSTDB)); % N samples at fs correspond to N_SAMP at FS_NSTDB
 NB_EL = size(epos,1); % number of electrodes
 
@@ -105,7 +105,7 @@ noise_ar = zeros(N,3);
 y = zeros(N_SAMP+AR_ORDER,1);          
 st = -0.001; % start
 ed = 0.001; % end
-rdNb = st + (ed-st).*rand(AR_ORDER,2*N,2); % generate rd number in [st ed]
+rdNb = st + (ed-st).*rand(AR_ORDER,2*N_SAMP,2); % generate rd number in [st ed]
                                            % generating for both noise channels
 for cc=1:2
     % for each channel vary the poles in the same fashion

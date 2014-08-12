@@ -105,7 +105,7 @@ noise_ar = zeros(N,3);
 y = zeros(N_SAMP+AR_ORDER,1);          
 st = -0.001; % start
 ed = 0.001; % end
-rdNb = st + (ed-st).*rand(AR_ORDER,2*N_SAMP,2); % generate rd number in [st ed]
+rdNb = st + (ed-st).*rand(AR_ORDER,2*max(N,N_SAMP),2); % generate rd number in [st ed]
                                            % generating for both noise channels
 for cc=1:2
     % for each channel vary the poles in the same fashion

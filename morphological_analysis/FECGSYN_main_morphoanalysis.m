@@ -38,7 +38,7 @@
 
 %% Input parameters
 % importing path
-clear all; close all; clc;
+% clear all; close all; clc;
 slashchar = char('/'*isunix + '\'*(~isunix));
 [status,result] = system('hostname');
 if status~=0
@@ -63,7 +63,7 @@ end
 
 
 %% Set-up parameters
-generate = 0;   % boolean, data should be generated?
+generate = 1;   % boolean, data should be generated?
 % If not, path should direct to data location
 debug = 0;
 

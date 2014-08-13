@@ -54,8 +54,8 @@ for i = 1:10            % generate 5 cases of each
     % mean = 80, std = 20 [bpm]
     
     %% stationary mixture
-    paramst.mtypeacc = 'none';      % force constant mother heart rate
-    paramst.ftypeacc = {'none'};    % force constant foetal heart rate
+    paramst.mtypeacc = 'nsr';      % force constant mother heart rate
+    paramst.ftypeacc = {'nsr'};    % force constant foetal heart rate
     paramst.SNRfm = -9 + 2*randn;
     out = run_ecg_generator(paramst,debug);  % stationary output
     %plotmix(out)

@@ -10,7 +10,7 @@ if nargin < 2
     choice = [1,1,1,1];
 end
 if nargin < 3
-    CH_CANC = 5;
+    CH_CANC = 10;
 end
 
 f_handles = {};
@@ -36,9 +36,11 @@ NB_FOETUSES = size(out.f_model,1); % number of foetuses figured out from the num
 LINE_WIDTH = 2;
 FONT_SIZE = 15;
 FONT_SIZE_SMALL = 10;
-NB_EL2PLOT = 3; % number of electodes to plot
-PACE = 2;
-NB_EL = 34; % There are 34 electrodes
+
+PACE = 1;
+%NB_EL = 34; % There are 34 electrodes
+NB_EL = size(out.param.elpos, 1); % There are 34 electrodes
+NB_EL2PLOT = min([3, NB_EL]); % number of electodes to plot
 
 tm_idx = 15000; % plot elements 1:15000 for first 15 seconds
 mqrs_1t15 = out.mqrs(out.mqrs<tm_idx);  % mqrs up to 15 seconds
@@ -281,7 +283,7 @@ if choice(2)
         LG_NSTDB = FS_NSTDB*29; % number of points in NSTDB
         NP_NSTDB = 20*FS_NSTDB; % number of points to select in NSTDB records to generate the AR coefficients
         N_SAMP = floor(N/(fs/FS_NSTDB)); % N samples at fs correspond to N_SAMP at FS_NSTDB
-        NB_EL = size(epos,1); % number of electrodes
+%         NB_EL = size(epos,1); % number of electrodes
         
 
 
@@ -385,7 +387,7 @@ end
 
 %% MECG Preparation
 if choice(4)
-    el = 1:CH_CANC;
+    el = 1:min([CH_CANC, NB_EL]);
     tmp_handle = struct;
     tmp_handle.title = 'Maternal ECG cancellation';
     tmp_handle.plots = -1*ones(length(el),1);
@@ -425,4 +427,5 @@ end
 
 
 end
+
 

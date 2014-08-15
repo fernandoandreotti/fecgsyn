@@ -1,4 +1,4 @@
-function [teta w] = generate_hrv(strhrv,n,fs,teta0)
+function [theta w] = generate_hrv(strhrv,n,fs,theta0)
 % generate variable heart rate (HR). Add suddent change of HR 
 % in the middle of a time interval. This is meant, as an example, 
 % to model high HR variation to test the robustness of a NI-FECG 
@@ -22,10 +22,10 @@ function [teta w] = generate_hrv(strhrv,n,fs,teta0)
 %       - strhrv.accstd     standard deviation (case necessary) 
 %   n:                      number of samples   
 %   fs:                     sampling frequency    
-%   teta0:                  initial phase of the synthetic dipole
+%   theta0:                  initial phase of the synthetic dipole
 %
 % output
-%   teta:                   generated phase signal teta(t)
+%   theta:                   generated phase signal theta(t)
 %   w:                      angular frequency
 %
 % fecgsyn toolbox, version 1.0, July 2014
@@ -52,7 +52,7 @@ function [teta w] = generate_hrv(strhrv,n,fs,teta0)
 
 % == checking inputs
 if nargin<=2; error('generate_hrv: not enough input arguments'); end;
-if nargin<3; fs=1000; end;
+if nargin<3; fs=250; end;
 
 % == constants
 NB_SUB = ceil(strhrv.hr*(n/fs)/60); % number of subdivisions
@@ -105,7 +105,8 @@ switch strhrv.typeacc
 end
 
 % == Generating a phase trend w(t)
-csum = cumsum(RR); RR(csum>n/fs)=[];
+csum = cumsum(RR); RR(csum>n/fs)=[]; 
+csum(csum*fs>n) = [];
 RR_rs = interp1(cumsum(RR),RR,RR(1):1/fs:sum(RR));
 nbm_str = ceil(RR(1)*fs);               % number of points missed at the begining
 nbm_end = ceil(n-sum(RR)*fs);           % number of points missed at the end
@@ -113,17 +114,9 @@ RR_rs = [repmat(RR_rs(1),1,nbm_str) RR_rs repmat(RR_rs(end),1,nbm_end)];
 hr = 1./RR_rs(1:n);             % heart rate in Hz
 w = 2*pi*hr;                    % angular frequency
 
-% == Account for HRV
-dt = 1/fs;       % time pace
-teta = w*dt;     % w=dtheta/dt
-teta(1) = teta0;
-teta = cumsum(teta);
-teta = mod(teta,2*pi)-pi;       % phase teta(t)
+% == Generating theta
+theta = FECGx_kf_PhaseCalc(round(csum*fs),n);
+nshift = find(theta>theta0,1,'first'); % considering theta0
+theta = FECGx_kf_PhaseCalc(round(csum*fs),n+nshift-1);
+theta(1:nshift-1) = [];
 end
-    
-
-
-
-
-
-

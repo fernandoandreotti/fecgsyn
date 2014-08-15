@@ -1,5 +1,5 @@
 function dmodel = add_cardiacdipole(N,fs,gp_all,L,...
-    teta,w,fres,R0,epos,traj,debug)
+    theta,w,fres,R0,epos,traj,debug)
 % synthetic cardiac dipole generator using the 'direct form' of the cardiac
 % dipole equation. This function generates the vectocardiogram (VCG) of 
 % the mother or foetus as well as the Dower-like matrix that allows the 
@@ -27,7 +27,7 @@ function dmodel = add_cardiacdipole(N,fs,gp_all,L,...
 %           gp{2}{:}: Gaussian parameters of moether/foetus ecg - ectopic beat
 %               
 %       L:      scaling of dipole in each direction [3x3 matrix]
-%     teta:     phase for heart dipole model
+%     theta:     phase for heart dipole model
 %        w:     angular frequency
 %     fres:     respiration frequency (for heart dipole rotation) [Hz]
 %       R0:     initial rotation angles
@@ -116,7 +116,7 @@ NB_EL = size(epos,1); % number of electrodes
 
 dt = 1/fs; % time pace
 VCG = zeros(3,N);
-ncy = find(diff(teta)<0); % new cycle's locations
+ncy = find(diff(theta)<0); % new cycle's locations
 
 % == generates breathing waveform for rotation matrix modulation
 if fres==0
@@ -158,26 +158,26 @@ for i=1:N
        end 
     end
     
-    dtetaix = mod(teta(ones(length(gp{crst}{1}.x),1),i)' - gp{crst}{1}.x + pi , 2*pi) - pi;
-    dtetaiy = mod(teta(ones(length(gp{crst}{1}.y),1),i)' - gp{crst}{1}.y + pi , 2*pi) - pi;
-    dtetaiz = mod(teta(ones(length(gp{crst}{1}.z),1),i)' - gp{crst}{1}.z + pi , 2*pi) - pi;
+    dthetaix = mod(theta(ones(length(gp{crst}{1}.x),1),i)' - gp{crst}{1}.x + pi , 2*pi) - pi;
+    dthetaiy = mod(theta(ones(length(gp{crst}{1}.y),1),i)' - gp{crst}{1}.y + pi , 2*pi) - pi;
+    dthetaiz = mod(theta(ones(length(gp{crst}{1}.z),1),i)' - gp{crst}{1}.z + pi , 2*pi) - pi;
     
     % = differential expression
-     X = X - dt*sum(w(i)*gp{crst}{2}.x ./ (gp{crst}{3}.x .^ 2) .* dtetaix .* exp(-dtetaix .^2 ./ (2*gp{crst}{3}.x .^ 2)),2);
-     Y = Y - dt*sum(w(i)*gp{crst}{2}.y ./ (gp{crst}{3}.y .^ 2) .* dtetaiy .* exp(-dtetaiy .^2 ./ (2*gp{crst}{3}.y .^ 2)),2);
-     Z = Z - dt*sum(w(i)*gp{crst}{2}.z ./ (gp{crst}{3}.z .^ 2) .* dtetaiz .* exp(-dtetaiz .^2 ./ (2*gp{crst}{3}.z .^ 2)),2);
+     X = X - dt*sum(w(i)*gp{crst}{2}.x ./ (gp{crst}{3}.x .^ 2) .* dthetaix .* exp(-dthetaix .^2 ./ (2*gp{crst}{3}.x .^ 2)),2);
+     Y = Y - dt*sum(w(i)*gp{crst}{2}.y ./ (gp{crst}{3}.y .^ 2) .* dthetaiy .* exp(-dthetaiy .^2 ./ (2*gp{crst}{3}.y .^ 2)),2);
+     Z = Z - dt*sum(w(i)*gp{crst}{2}.z ./ (gp{crst}{3}.z .^ 2) .* dthetaiz .* exp(-dthetaiz .^2 ./ (2*gp{crst}{3}.z .^ 2)),2);
     
     % = analytical expression
-    % X = sum(gp{crst}{2}.x .* exp(-dtetaix .^2 ./ (2*gp{crst}{3}.x .^ 2)),2);
-    % Y = sum(gp{crst}{2}.y .* exp(-dtetaiy .^2 ./ (2*gp{crst}{3}.y .^ 2)),2);
-    % Z = sum(gp{crst}{2}.z .* exp(-dtetaiz .^2 ./ (2*gp{crst}{3}.z .^ 2)),2);
+    % X = sum(gp{crst}{2}.x .* exp(-dthetaix .^2 ./ (2*gp{crst}{3}.x .^ 2)),2);
+    % Y = sum(gp{crst}{2}.y .* exp(-dthetaiy .^2 ./ (2*gp{crst}{3}.y .^ 2)),2);
+    % Z = sum(gp{crst}{2}.z .* exp(-dthetaiz .^2 ./ (2*gp{crst}{3}.z .^ 2)),2);
     
     % rotation due to respiration     
-    tetax = R0.x + RESP_ANG_X*brwave(i);
-    tetay = R0.y + RESP_ANG_Y*brwave(i);
-    tetaz = R0.z + RESP_ANG_Z*brwave(i);
+    thetax = R0.x + RESP_ANG_X*brwave(i);
+    thetay = R0.y + RESP_ANG_Y*brwave(i);
+    thetaz = R0.z + RESP_ANG_Z*brwave(i);
    
-    R = rotatexyz(tetax,tetay,tetaz); % rotation matrix
+    R = rotatexyz(thetax,thetay,thetaz); % rotation matrix
     
     VCG(:,i) = R*L*[X; Y; Z]; % VCG with rotation
     
@@ -199,7 +199,7 @@ for i = 1:3                      % avoid trends in the VCG (due to non-zero diff
     VCG(i,:) = VCG(i,:)./max(abs(VCG(i,:)));   
 end
 dmodel.VCG = VCG;
-dmodel.teta = teta;
+dmodel.theta = theta;
 dmodel.traj = traj;
 if ect; dmodel.stm = STM; end;
 dmodel.rax = RESP_ANG_X;

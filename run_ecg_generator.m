@@ -225,7 +225,7 @@ if param.mectb % add ectopic beats?
 end
 rm = 0.01; % radius around origin allowed for maternal heart to be
 L_m = eye(3); % scaling of dipole in each direction
-teta0_m = pi/3; % inital phase of the model for the MECG
+theta0_m = pi/3; % inital phase of the model for the MECG
 vols.Rm = struct('x', 0, 'y', 0, 'z', 0); % rotation matrix
 
 mh_cart = param.mheart;
@@ -249,7 +249,7 @@ strhrv.acc = param.macc;
 strhrv.typeacc = param.mtypeacc;
 strhrv.accmean = param.maccmean;
 strhrv.accstd = param.maccstd;
-[teta_m,w_m] = generate_hrv(strhrv,param.n,param.fs,teta0_m);
+[theta_m,w_m] = generate_hrv(strhrv,param.n,param.fs,theta0_m);
 
 % == electrodes position and reference electrode
 vols.elpos = param.elpos;
@@ -258,7 +258,7 @@ epos = [Xc,Yc,vols.elpos(:,3)]; % electrodes position
 
 % = generate MATERNAL heart dipole
 disp('Generating maternal model...')
-m_model = add_cardiacdipole(param.n,param.fs,gp_m,L_m,teta_m,w_m,param.mres,vols.Rm,epos,mh_cart,0);
+m_model = add_cardiacdipole(param.n,param.fs,gp_m,L_m,theta_m,w_m,param.mres,vols.Rm,epos,mh_cart,0);
 m_model.type = 1; % maternal ecg is type 1
 
 % == foetal heart(s)
@@ -267,7 +267,7 @@ Rfh = 0.01; % radius allowed for foetal heart to appear
 
 % = foetal dipole generation
 f_model = cell(NB_FOETUSES,1); % allocating memory
-w_f = f_model; teta_f = f_model; gp_f = f_model; vols.param.fheart = f_model;
+w_f = f_model; theta_f = f_model; gp_f = f_model; vols.param.fheart = f_model;
 selvcgf = cell(NB_FOETUSES,1);
 for fet=1:NB_FOETUSES
     disp(['Generating model for fetus ' num2str(fet) ' ..'])
@@ -309,11 +309,11 @@ for fet=1:NB_FOETUSES
     end;
     % == rotation
     if param.posdev
-        teta0_f = (2*rand-1)*pi; % inital phase of the model for the foetus ECG (random [-pi,pi])
+        theta0_f = (2*rand-1)*pi; % inital phase of the model for the foetus ECG (random [-pi,pi])
         r0 = (2*rand(1,3)-[1 1 1]).*pi; % initial rotation angles
         vols.Rf{fet} = struct('x', r0(1), 'y', r0(2), 'z', r0(3));
     else
-        teta0_f = -pi/2;
+        theta0_f = -pi/2;
         vols.Rf{fet} = struct('x', -3*pi/4, 'y', 0, 'z', -pi/2);
     end
     
@@ -328,13 +328,13 @@ for fet=1:NB_FOETUSES
     strhrv.accmean = param.faccmean{fet};
     strhrv.accstd = param.faccstd{fet};
     
-    [teta_f{fet},w_f{fet}] = generate_hrv(strhrv,param.n,param.fs,teta0_f);
+    [theta_f{fet},w_f{fet}] = generate_hrv(strhrv,param.n,param.fs,theta0_f);
     
     % = translation
     traj = traject_generator(param.n,posf_start,posf_end,param.ftraj{fet}); % defining a trajectory to foetal movement
     
     % = Generating foetal dipole
-    f_model{fet} = add_cardiacdipole(param.n,param.fs,gp_f{fet},L_f,teta_f{fet},w_f{fet},...
+    f_model{fet} = add_cardiacdipole(param.n,param.fs,gp_f{fet},L_f,theta_f{fet},w_f{fet},...
         param.fres(fet),vols.Rf{fet},epos,traj,0);
     f_model{fet}.type = 2; % foetal ecg is type 2
 end
@@ -364,9 +364,9 @@ end
 
 % == Obtaining information about peak locations
 fqrs = cell(NB_FOETUSES,1);
-mqrs = phase2qrs(m_model.teta);
+mqrs = phase2qrs(m_model.theta);
 for ff=1:NB_FOETUSES
-    fqrs{ff} = phase2qrs(f_model{ff}.teta);
+    fqrs{ff} = phase2qrs(f_model{ff}.theta);
 end
 
 % == PROPAGATION onto ELECTRODES

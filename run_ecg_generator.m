@@ -242,7 +242,7 @@ end
 % == maternal heart rate variability
 strhrv.hr = param.mhr;
 strhrv.lfhfr = 0.5;
-strhrv.hrstd = 1;
+strhrv.hrstd = 3;
 strhrv.flo = param.mres;
 strhrv.fhi = 0.25;
 strhrv.acc = param.macc;
@@ -320,7 +320,7 @@ for fet=1:NB_FOETUSES
     % == heart cycle parameters
     strhrv.hr = param.fhr(fet);
     strhrv.lfhf = 0.5;
-    strhrv.hrstd = 1;
+    strhrv.hrstd = 3;
     strhrv.flo = param.fres(fet);
     strhrv.flhi = 0.25;
     strhrv.acc = param.facc(fet);

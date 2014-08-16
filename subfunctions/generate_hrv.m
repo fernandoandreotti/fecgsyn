@@ -1,4 +1,4 @@
-function [theta w] = generate_hrv(strhrv,n,fs,theta0)
+function [theta,w] = generate_hrv(strhrv,n,fs,theta0)
 % generate variable heart rate (HR). Add suddent change of HR 
 % in the middle of a time interval. This is meant, as an example, 
 % to model high HR variation to test the robustness of a NI-FECG 

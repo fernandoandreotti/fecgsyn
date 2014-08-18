@@ -44,8 +44,11 @@ function [mixture,mecg,fecg,noise,f_handle] = ...
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 % == checking inputs
-if nargin<7; error('No source has been given to model generation'); end;
+if nargin<5; error('No source has been given to model generation'); end;
 f_handle = [];
+mecg = [];
+fecg = [];
+noise = {};
 
 % == constants
 NB_EL = size(varargin{1}.H,1); % number of electrodes
@@ -63,7 +66,7 @@ MHR = 60; %     [in bpm]
 FHR = 120; %    [in bpm]
 
 % == general
-cpt2 = 0; cpt3 = 0; noise = {};
+cpt2 = 0; cpt3 = 0;
 signalf = zeros(NB_FOETUSES*NB_EL,NB_SAMPS);
 signaln = {};
 

@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 For further reference:
 
 Behar, Joachim, Fernando Andreotti, Sebastian Zaunseder, Qiao Li, Julien Oster, and Gari D Clifford. 2014. 
-?An ECG Model for Simulating Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings.? 
+"An ECG Model for Simulating Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings." 
 Physiol Meas (Accepted for publication - Focus issue: Noninvasive Fetal ECG).
 
 Bibtex

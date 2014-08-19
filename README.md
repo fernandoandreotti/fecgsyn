@@ -1,6 +1,7 @@
 NI-FECG simulator toolbox, version 1.0, February 2014
-Released under the GNU General Public License
 ====
+Released under the GNU General Public License
+
 
 Copyright (C) 2014 
 Intelligent Patient Monitoring Group - Oxford 2014

@@ -71,6 +71,19 @@ switch method
         error('kf_extraction: method not implemented.')
 end
 
+% == Re-aligning peaks to match channel's peaks
+win = round(0.1*fs);       % max window for beat alignment (ms)
+y = sort(ecg);
+minmax = mean(abs(y(end-floor(0.1*length(y)):end)))>mean(abs(y(1:floor(0.1*length(y))))); % 1 = max, 0 = min
+interv = arrayfun(@(x) ecg(1,x-win:x+win)',peaks(2:end-1),'UniformOutput',false);       % creates a maternal beat matrix
+if minmax
+    [~,delay]=cellfun(@(x) max(x), interv);
+else
+     [~,delay]=cellfun(@(x) min(x), interv);
+end
+delay = round(median(delay));
+peaks = (delay-win-1) + peaks;
+
 % == MECG estimation using KF
 % try   
     ecg_filt = FECGx_kf_ECGfiltering(ecg,peaks,nbCycles,fs,flag,debug);

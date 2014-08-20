@@ -92,7 +92,7 @@ if(a>b); NB_SAMP=a; elseif(b>a); NB_SAMP=b; ecg=ecg'; end;
 tm = 1/fs:1/fs:ceil(NB_SAMP/fs);
 
 % == constants
-MED_SMOOTH_NB_COEFF = fs/100;
+MED_SMOOTH_NB_COEFF = round(fs/100);
 INT_NB_COEFF = round(7*fs/256); % length is 7 for fs=256Hz
 LOW_CUT_FREQ = 5;
 HIGH_CUT_FREQ = 45;

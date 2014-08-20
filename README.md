@@ -1,4 +1,4 @@
-NI-FECG simulator toolbox, version 1.0, February 2014
+NI-FECG simulator toolbox, version 1.0, August 2014
 ====
 Released under the GNU General Public License
 

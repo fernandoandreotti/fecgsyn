@@ -45,7 +45,7 @@ abdmleads = [xy z];
 refs = [-pi/4 0.5 0.4;(5/6-.5)*pi 0.5 0.4];  % + 2 reference leads
 paramorig.elpos = [abdmleads;refs];
 cd(path)
-for i = 1:10            % generate 5 cases of each
+for i = 2:10            % generate 5 cases of each
     close all
     paramst = paramorig;
     paramst.fhr = 135+25*randn;   % choosing foetal heart rate

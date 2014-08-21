@@ -1,4 +1,4 @@
-function [dmodel, f_handles] = add_noisedipole(N,fs,ntype,epos,noisepos,debug)
+function [dmodel, f_handles, misc] = add_noisedipole(N,fs,ntype,epos,noisepos,debug)
 % this function is used to generate realistic noise. The MA, EM and BW
 % files from the Physionet NSTDB can be used for that purpose. However there are
 % three main limitations when using these records; 1. their length is
@@ -251,5 +251,12 @@ if debug>3
    %leg{2} = 'AR segment PSD';
    %plot_psd(noise(:,1),y(:,1),FS_NSTDB,'welch',leg);
 end
+
+
+misc.a = a;
+misc.noise = noise;
+misc.epos = epos;
+misc.ainit = ainit;
+
 
 

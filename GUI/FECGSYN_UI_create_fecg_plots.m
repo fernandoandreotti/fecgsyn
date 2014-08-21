@@ -344,7 +344,11 @@ if choice(2)
         ax = -1*ones(3,1);
         for cc=1:3
             ax(cc) = subplot(3,1,cc); plot(tm(1:tm_idx),noise_ar(1:tm_idx,cc),'color',col(cc,:),'LineWidth',LINE_WIDTH);
+<<<<<<< HEAD
 %             xlim([0 10]);
+=======
+            xlim([0 10]);
+>>>>>>> 46bcdfefe0ffa7fb73af438ef57b746f39bfdef5
             set(gca,'FontSize',FONT_SIZE_SMALL);
             set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL); 
         end

@@ -1,10 +1,29 @@
+% FECGSYN_UI.
+% FECGSYN Graphical user interface.
+%
+% FECGSYN is fruit of the collaboration between the Department of Engineering 
+% Science, University of Oxford (DES-OX) and the Institute of Biomedical Engineering, 
+% TU Dresden (IBMT-TUD). The authors are Joachim Behar (DES-OX), Fernando Andreotti 
+% (IBMT-TUD), Julien Oster (DES-OX), Sebastian Zaunseder (IBMT-TUD) and 
+% Gari Clifford (DES-OX). 
+%
+% The present user interface was contributed by Mohsan Alvi (DES-OX) under
+% the supervision of Joachim Behar (DES-OX) and Fernando Andreotti (IBMT-TUD).
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 function varargout = FECGSYN_UI(varargin)
-% MYGUI Brief description of GUI.
-%FECG_GUI Graphical front end
-%   Detailed explanation goes here
-%
-%
-% Mohsan Alvi (mohsan.alvi@eng.ox.ac.uk) - July 2014
 %% Initialization tasks
 
 % Add files in parent folder and its subfolders to path
@@ -1147,20 +1166,19 @@ title_label = uicontrol(panel_title,'Style','text'...
                                ,'fontsize',fontSizeTitle ...        
                                ,'HorizontalAlignment','left'...  
                                ,'Visible','on' ...        
-                               ,'Position',[270 10 250 30]);   
+                               ,'Position',[350 10 250 30]);   
 
-
-logo1_axes = axes('Parent', panel_title ...
-                , 'Position', [-.15 0 0.4 1] ...
-                );
-axes(logo1_axes)
-imshow('FrenchFlag.png')
-
-logo2_axes = axes('Parent', panel_title ...
-                , 'Position', [0.68 0 0.45 1] ...
-                );
-axes(logo2_axes)
-imshow('oxlogo_big.png')
+% logo1_axes = axes('Parent', panel_title ...
+%                 , 'Position', [-.15 0 0.4 1] ...
+%                 );
+% axes(logo1_axes)
+% imshow('FrenchFlag.png')
+% 
+% logo2_axes = axes('Parent', panel_title ...
+%                 , 'Position', [0.68 0 0.45 1] ...
+%                 );
+% axes(logo2_axes)
+% imshow('oxlogo_big.png')
 
 %% Utility functions for MYGUI
 % Updates the target_handle to display the contents of the source_handle
@@ -1568,13 +1586,13 @@ function save_custom_params(validate, fetus_choice, ns_choice)
         
     % Checks if all input values are in a realistic range. If so, then the
     % custom parameter structure is overwritten.
-    if validate
-        [temp, valid] = validate_param(temp);
-    else 
-        valid = 1;
-    end
+%     if validate
+%         [temp, valid] = validate_param(temp);
+%     else 
+%         valid = 1;
+%     end
     
-    if valid
+    if 1
         param_struct{end} = temp;
     else
         disp('Error when saving custom parameters');

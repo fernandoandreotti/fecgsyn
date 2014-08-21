@@ -1,3 +1,25 @@
+% FECGSYN is fruit of the collaboration between the Department of Engineering 
+% Science, University of Oxford (DES-OX) and the Institute of Biomedical Engineering, 
+% TU Dresden (IBMT-TUD). The authors are Joachim Behar (DES-OX), Fernando Andreotti 
+% (IBMT-TUD), Julien Oster (DES-OX), Sebastian Zaunseder (IBMT-TUD) and 
+% Gari Clifford (DES-OX). 
+%
+% The present user interface was contributed by Mohsan Alvi (DES-OX) under
+% the supervision of Joachim Behar (DES-OX) and Fernando Andreotti (IBMT-TUD).
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 function [ f_handles , noise_handles, gen_ecg_handle, mecg_handle] = FECGSYN_UI_create_fecg_plots( out , choice, CH_CANC)
 %CREATE_FECG_PLOTS Creates plots based on out_struct for the GUI
 %   choice is a 4-element binary vector corresponding to choosing which of
@@ -42,7 +64,7 @@ PACE = 1;
 NB_EL = size(out.param.elpos, 1); % There are 34 electrodes
 NB_EL2PLOT = min([3, NB_EL]); % number of electodes to plot
 
-tm_idx = 15000; % plot elements 1:15000 for first 15 seconds
+tm_idx = 3000; % plot elements 1:15000 for first 15 seconds
 mqrs_1t15 = out.mqrs(out.mqrs<tm_idx);  % mqrs up to 15 seconds
 
 for i = 1:numel(out.fqrs)

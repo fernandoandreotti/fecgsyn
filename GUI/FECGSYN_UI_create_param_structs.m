@@ -1,3 +1,25 @@
+% FECGSYN is fruit of the collaboration between the Department of Engineering 
+% Science, University of Oxford (DES-OX) and the Institute of Biomedical Engineering, 
+% TU Dresden (IBMT-TUD). The authors are Joachim Behar (DES-OX), Fernando Andreotti 
+% (IBMT-TUD), Julien Oster (DES-OX), Sebastian Zaunseder (IBMT-TUD) and 
+% Gari Clifford (DES-OX). 
+%
+% The present user interface was contributed by Mohsan Alvi (DES-OX) under
+% the supervision of Joachim Behar (DES-OX) and Fernando Andreotti (IBMT-TUD).
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 function [ param_struct ] = FECGSYN_UI_create_param_structs( varargin )
 %CREATE_PARAM_STRUCTS Creates a all param structs for default scenarios
 %   

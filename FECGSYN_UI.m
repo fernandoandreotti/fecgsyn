@@ -38,7 +38,7 @@ mOutputArgs = {};       % Variable for storing output when GUI
                         % returns
 
 % GUI mode: 1 - normal mode, 0 - debug mode using pregenerated 'out' file
-gui_mode = 01;
+gui_mode = 1;
 
 % Create default font-size
 if ismac
@@ -178,7 +178,7 @@ fh_main = uipanel('Parent', fh ...
                 
 % Main plot axis
 axes_plots = uipanel('Parent', fh_main ...
-                    , 'Position', [.02 .25 .96 .67] ...
+                    , 'Position', [.02 .25 .96 .74] ...
                     );                
                                     
 panel_about = uipanel('Parent', fh_main ...
@@ -1201,22 +1201,22 @@ all_custom_inputs = [input_mother_1_1;
                     bt_remove_fetus];        
         
         
-%% title
-
-panel_title = uipanel('Parent', fh ...
-                    , 'Position', [0.02 0.92 0.96 0.07] ...
-                    , 'Visible', 'on' ...
-                    , 'BorderType', 'none' ...
-                    );
-                
-      
-
-title_label = uicontrol(panel_title,'Style','text'...
-                               ,'String',gui_title...
-                               ,'fontsize',fontSizeTitle ...        
-                               ,'HorizontalAlignment','left'...  
-                               ,'Visible','on' ...        
-                               ,'Position',[350 10 250 30]);   
+% %% title
+% 
+% panel_title = uipanel('Parent', fh ...
+%                     , 'Position', [0.02 0.92 0.96 0.07] ...
+%                     , 'Visible', 'on' ...
+%                     , 'BorderType', 'none' ...
+%                     );
+%                 
+%       
+% 
+% title_label = uicontrol(panel_title,'Style','text'...
+%                                ,'String',gui_title...
+%                                ,'fontsize',fontSizeTitle ...        
+%                                ,'HorizontalAlignment','left'...  
+%                                ,'Visible','on' ...        
+%                                ,'Position',[350 10 250 30]);   
 
 %% Utility functions for MYGUI
 % Updates the target_handle to display the contents of the source_handle
@@ -1754,13 +1754,13 @@ end
 function cb_run_button(hObject, eventdata)
     
     % Close any old figures in the background before generating new ones
-%     if ~isempty(f_handles)
-%         for ii = 1:length(f_handles)
-%             for jj = 1:length(f_handles{ii}.plots)
-%                 close(f_handles{ii}.plots(jj))
-%             end
-%         end
-%     end
+    if ~isempty(f_handles)
+        for ii = 1:length(f_handles)
+            for jj = 1:length(f_handles{ii}.plots)
+                close(f_handles{ii}.plots(jj))
+            end
+        end
+    end
     
     % Remove all options in the list box to indicate that the GUI is busy
     set(list_plots, 'String', {});

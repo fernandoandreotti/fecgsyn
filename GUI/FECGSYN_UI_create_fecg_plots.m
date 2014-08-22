@@ -64,7 +64,7 @@ PACE = 1;
 NB_EL = size(out.param.elpos, 1); % There are 34 electrodes
 NB_EL2PLOT = min([3, NB_EL]); % number of electodes to plot
 
-tm_idx = 3000; % plot elements 1:15000 for first 15 seconds
+tm_idx = 60000; % plot elements 1:15000 for first 15 seconds
 mqrs_1t15 = out.mqrs(out.mqrs<tm_idx);  % mqrs up to 15 seconds
 
 for i = 1:numel(out.fqrs)
@@ -99,9 +99,14 @@ if choice(1)
                 compt = compt+1;
                 subplot(3,1,compt);plot(tm(1:tm_idx),out.mixture(el(ee),1:tm_idx),...
                 'color',col(compt,:),'LineWidth',LINE_WIDTH);
+                xlim([1 4]);
                 if ee == 2
                     ylabel('Amplitude [NU]');
-                elseif ee == 3
+                elseif length(el)==1 && ee == 1
+                    ylabel('Amplitude [NU]');
+                end
+                
+                if ee == length(el)
                     xlabel('Time [sec]')
                 end
             end
@@ -159,6 +164,7 @@ if choice(1)
             lgnd = legend(['mother VCG channel: ' int2str(vv)],'MQRS');
             set(gca,'FontSize',FONT_SIZE_SMALL);
             xlabel('Time [sec]'); ylabel('Amplitude [NU]');
+            xlim([1 4]);
             %set(lgnd,'FontSize', FONT_SIZE_SMALL);
 
             for fet=1:NB_FOETUSES
@@ -169,6 +175,7 @@ if choice(1)
                 LegCell(2*(fet-1)+1) = {['foetus ' int2str(fet) ' VCG channel: ' int2str(vv)]};
                 LegCell(2*fet) = {['FQRS ' int2str(fet)]};
                 ylabel('Amplitude [NU]'); xlabel('Time [sec]');
+                xlim([1 4]);
             end
             legend(LegCell);
             set(gca,'FontSize',FONT_SIZE_SMALL);
@@ -204,16 +211,26 @@ if choice(1)
             compt = 0;
 
             ax = zeros(NB_EL2PLOT,1);
-            for pp=1:PACE:PACE*NB_EL2PLOT
+            for ee= 1: length(el) % looping through length of ee to stop correctly at 34th electrode 
                 compt = compt+1;
-                ax(compt) = subplot(NB_EL2PLOT,1,compt);plot(tm(1:tm_idx),out.mecg(pp,1:tm_idx),...
+                ax(compt) = subplot(NB_EL2PLOT,1,compt);plot(tm(1:tm_idx),out.mecg(el(ee),1:tm_idx),...
                     'color','b','LineWidth',LINE_WIDTH);
                 LegCell(1) = {'MECG'};
                 for fet=1:NB_FOETUSES
-                    hold on, plot(tm(1:tm_idx),GAIN_F*out.fecg{fet}(pp,1:tm_idx),'color',col(fet+3,:),'LineWidth',LINE_WIDTH);
+                    hold on, plot(tm(1:tm_idx),GAIN_F*out.fecg{fet}(el(ee),1:tm_idx),'color',col(fet+3,:),'LineWidth',LINE_WIDTH);
                     LegCell(1+fet) = {['FECG ' int2str(fet) ', Gain: ' int2str(GAIN_F)]};
                 end
-                xlabel('Time [sec]'); ylabel('Amplitude [NU]');
+                %xlabel('Time [sec]'); ylabel('Amplitude [NU]');
+                if ee == 2
+                    ylabel('Amplitude [NU]');
+                elseif length(el)==1 && ee == 1
+                    ylabel('Amplitude [NU]');
+                end
+                
+                if ee == length(el)
+                    xlabel('Time [sec]')
+                end
+                xlim([1 4]);
                 set(gca,'FontSize',FONT_SIZE_SMALL);
                 legend(LegCell);
             end
@@ -275,7 +292,8 @@ if choice(1)
             legstr{ff+1} = ['FQRS' int2str(ff)];
         end
         legend(legstr);
-        xlabel('Time [sec]'); ylabel('FHR [bpm]')
+        xlabel('Time [sec]'); ylabel('FHR [bpm]');
+        xlim([1 4]);
         set(gca,'FontSize',FONT_SIZE_SMALL);
         set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL);
         legend boxoff;
@@ -344,11 +362,7 @@ if choice(2)
         ax = -1*ones(3,1);
         for cc=1:3
             ax(cc) = subplot(3,1,cc); plot(tm(1:tm_idx),noise_ar(1:tm_idx,cc),'color',col(cc,:),'LineWidth',LINE_WIDTH);
-<<<<<<< HEAD
-%             xlim([0 10]);
-=======
-            xlim([0 10]);
->>>>>>> 46bcdfefe0ffa7fb73af438ef57b746f39bfdef5
+            xlim([1 4]);
             set(gca,'FontSize',FONT_SIZE_SMALL);
             set(findall(gcf,'type','text'),'fontSize',FONT_SIZE_SMALL); 
         end
@@ -443,6 +457,7 @@ if choice(4)
         legend('mixture','template','residual','MQRS'); 
         title('Template subtraction for extracting the FECG');
         xlabel('Time [sec]'); ylabel('Amplitude [NU]')
+        xlim([1 4]);
     end
     
     mecg_handle = tmp_handle;

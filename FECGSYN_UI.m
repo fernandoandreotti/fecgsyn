@@ -53,7 +53,7 @@ end
 % Create constants for the calculations
 THR = 0.2; % threshold of QRS detector
 mVCG = 5; % choose mother VCG (if empty then the simulator randomly choose one within the set of available VCGs)
-fVCG = 4; % choose fetus VCG (ibid)
+fVCG = 4; % choose foetus VCG (ibid)
 debug = 11; % debug level. 11 corresponds to the gui
 CH_CANC = 10; % max channel onto which to perform MECG cancellation
 POS_DEV = 0; % slight deviation from default hearts and electrodes positions 
@@ -68,10 +68,10 @@ out = struct;
 % busy flag
 busy_flag = 0;
 
-% global variables holding the selected fetus and noise source so that the
+% global variables holding the selected foetus and noise source so that the
 % correct values can be saved when the user changes the selected object in
 % the custom view list
-selected_fetus = 1;
+selected_foetus = 1;
 selected_ns = -1;
 
 % Create master data for the default scenarios
@@ -147,7 +147,7 @@ about_text = sprintf('FECGSYN is fruit of the collaboration between the Departme
 
 custom_general_help_text = sprintf('General help \n \nn - number of samples \n \nfs - sampling frequency');
 
-custom_fetal_help_text = sprintf('Fetal help \n \nfheart - foetus heart origin - actual location will be picked randomly around it (default [-pi/10 0.4 -0.3])\n \nfhr - fetal heart rate [bpm] \n \nfacc - fetal acceleration in heart rate\n \nftypeacc - fetal acceleration type \n \nfectb - add ectopic beats to fetus [bool] \n \nfres - respiratory frequency of fetus [Hz] \n \nftraj - trajectory given to fetus heart \n \nfvcg - foetus vcg chosen (1-9)');
+custom_fetal_help_text = sprintf('foetal help \n \nfheart - foetus heart origin - actual location will be picked randomly around it (default [-pi/10 0.4 -0.3])\n \nfhr - foetal heart rate [bpm] \n \nfacc - foetal acceleration in heart rate\n \nftypeacc - foetal acceleration type \n \nfectb - add ectopic beats to foetus [bool] \n \nfres - respiratory frequency of foetus [Hz] \n \nftraj - trajectory given to foetus heart \n \nfvcg - foetus vcg chosen (1-9)');
 
 custom_noise_help_text = sprintf('Noise Help \n \nSNR_fm - Signal to noise ratio FECG/MECG (default -10) \n \nSNR_mn - Signal to noise ratio (MECG+FECG)/Noise (default 6) \n \nNoise source: \n \nntype - Noise type (default MA) \n \nnoise_fct - function of modulating noise (each noise may be modulated by a function of t, e.g sin(t))');
 
@@ -367,7 +367,7 @@ fh_custom = uipanel('Parent', fh ...
 
     panel_fetal_params = uipanel('Parent', fh_custom ...
                                , 'Position', [.02 .1 .3 .6] ...
-                               , 'Title', 'fetal Params');
+                               , 'Title', 'Foetal Params');
 
     panel_noise_params = uipanel('Parent', fh_custom ...
                                , 'Position', [.34 .5 .3 .4] ...
@@ -822,7 +822,7 @@ x_input_width_3 = (x_input_width - 2*buf)/3;
                     ,'Callback',@cb_bt_geo_preview ...
             ); 
                     
-    % List of noise sources. These can be added and removed using buttons add fetus and remove fetus. Adding a noise source
+    % List of noise sources. These can be added and removed using buttons add foetus and remove foetus. Adding a noise source
     % will create an entry in this list. When the noise source is selected, its parameters should be visible.
     list_noise_sources = uicontrol(panel_noise_params,'style','list',...
                      'unit','pix',...
@@ -960,30 +960,30 @@ x_input_width_3 = (x_input_width - 2*buf)/3;
                                ,'HorizontalAlignment','left'...
                                ,'Position',[x_offset, y_input+(y_input_diff+y_input_height)*6-2, x_input_width-20, y_input_height]); 
                                  
-    % List of fetuses. These can be added and removed using buttons add fetus and remove fetus. Adding a fetus will create an entry in this list.
-    % When the fetus is selected, its parameters should be visible.
-    list_fetus = uicontrol(panel_fetal_params,'style','list',...
+    % List of foetuses. These can be added and removed using buttons add foetus and remove foetus. Adding a foetus will create an entry in this list.
+    % When the foetus is selected, its parameters should be visible.
+    list_foetus = uicontrol(panel_fetal_params,'style','list',...
                      'unit','pix',...
                      'position',[10 50 245 90],...
                      'min',0,'max',2,...
                      'fontsize',fontSize,...
-                     'Callback', @cb_list_fetus, ...
-                     'string',{'fetus 1', 'fetus 2'});
+                     'Callback', @cb_list_foetus, ...
+                     'string',{'foetus 1', 'foetus 2'});
 
-    % Add fetus button
-    bt_add_fetus = uicontrol(panel_fetal_params...
+    % Add foetus button
+    bt_add_foetus = uicontrol(panel_fetal_params...
                     ,'Style','pushbutton'...
-                    ,'String','Add fetus'...
+                    ,'String','Add foetus'...
                     ,'Position',[10 10 100 30]...
-                    ,'Callback',@cb_add_fetus ...
+                    ,'Callback',@cb_add_foetus ...
             );
 
-    % Remove fetus button
-    bt_remove_fetus = uicontrol(panel_fetal_params...
+    % Remove foetus button
+    bt_remove_foetus = uicontrol(panel_fetal_params...
                     ,'Style','pushbutton'...
-                    ,'String','Remove fetus'...
+                    ,'String','Remove foetus'...
                     ,'Position',[120 10 100 30]...
-                    ,'Callback',@cb_remove_fetus ...
+                    ,'Callback',@cb_remove_foetus ...
             ); 
 
         
@@ -1197,8 +1197,8 @@ all_custom_inputs = [input_mother_1_1;
                     input_fetal_6;
                     popup_fetal_ftraj
                     input_fetal_10;
-                    bt_add_fetus;
-                    bt_remove_fetus];        
+                    bt_add_foetus;
+                    bt_remove_foetus];        
         
         
 % %% title
@@ -1345,21 +1345,21 @@ end
 
 % populates the custom view given the param struct
 % Inputs: p (struct) = param as passed to run_ecg_generator
-%         fetus (integer) = choice of fetus to display
+%         foetus (integer) = choice of foetus to display
 %         np (integer) = choice of noise source to display
-function populate_custom_view(p, fetus, ns)
+function populate_custom_view(p, foetus, ns)
     
     % Optional inputs
     if nargin < 1 || isempty(p)
-        % Set fetus to 1 if there is at least one fetus
+        % Set foetus to 1 if there is at least one foetus
         p = param_struct{get(list_scenarios, 'Value')};
     end
     if nargin < 2 
-        % Set fetus to 1 if there is at least one fetus
+        % Set foetus to 1 if there is at least one foetus
         if ~isempty(p.fhr);
-            fetus = get(list_fetus, 'Value');
+            foetus = get(list_foetus, 'Value');
         else
-            fetus = 0;
+            foetus = 0;
         end
     end
     if nargin < 3
@@ -1371,19 +1371,19 @@ function populate_custom_view(p, fetus, ns)
         end
     end
     
-    n_fetus = length(p.fhr);
+    n_foetus = length(p.fhr);
     n_ns = length(p.noise_fct);
     
-    % populate fetus and noise source lists
-    fetus_list = cell(n_fetus,1);
-    for i = 1:n_fetus
-        fetus_list{i} = sprintf('Fetus %d',i);
+    % populate foetus and noise source lists
+    foetus_list = cell(n_foetus,1);
+    for i = 1:n_foetus
+        foetus_list{i} = sprintf('Foetus %d',i);
     end
     ns_list = cell(n_ns,1);
     for i = 1:n_ns
         ns_list{i} = sprintf('Noise Source %d',i);
     end
-    set(list_fetus, 'String', fetus_list);
+    set(list_foetus, 'String', foetus_list);
     set(list_noise_sources, 'String', ns_list);
     
     
@@ -1394,25 +1394,25 @@ function populate_custom_view(p, fetus, ns)
     
     
     % populate fetal params
-    if fetus > 0
-        % populate fetus params
-        set(input_fetal_1_1, 'String', num2str(p.fheart{fetus}(1)));
-        set(input_fetal_1_2, 'String', num2str(p.fheart{fetus}(2)));
-        set(input_fetal_1_3, 'String', num2str(p.fheart{fetus}(3)));
-        set(input_fetal_2, 'String', num2str(p.fhr(fetus)));
-        set(input_fetal_3, 'String', num2str(p.facc(fetus)));
-        %set(input_fetal_4, 'String', p.ftypeacc{fetus});
-        idx = find(strcmp(param_struct{get(list_scenarios, 'Value')}.ftypeacc{fetus}, ftypeacc_strings));
+    if foetus > 0
+        % populate foetus params
+        set(input_fetal_1_1, 'String', num2str(p.fheart{foetus}(1)));
+        set(input_fetal_1_2, 'String', num2str(p.fheart{foetus}(2)));
+        set(input_fetal_1_3, 'String', num2str(p.fheart{foetus}(3)));
+        set(input_fetal_2, 'String', num2str(p.fhr(foetus)));
+        set(input_fetal_3, 'String', num2str(p.facc(foetus)));
+        %set(input_fetal_4, 'String', p.ftypeacc{foetus});
+        idx = find(strcmp(param_struct{get(list_scenarios, 'Value')}.ftypeacc{foetus}, ftypeacc_strings));
         set(popup_fetal_ftypeacc, 'Value', idx);
 %         set(input_fetal_5, 'String', p.fectb);
         set(chk_fetal_fecbt, 'Value', p.fectb);
-        set(input_fetal_6, 'String', p.fres(fetus));
-%         set(input_fetal_7, 'String', p.faccmean{fetus});
-%         set(input_fetal_8, 'String', p.faccstd{fetus});
-%         set(input_fetal_9, 'String', p.ftraj{fetus});
-        idx = find(strcmp(param_struct{get(list_scenarios, 'Value')}.ftraj{fetus}, ftraj_strings));
+        set(input_fetal_6, 'String', p.fres(foetus));
+%         set(input_fetal_7, 'String', p.faccmean{foetus});
+%         set(input_fetal_8, 'String', p.faccstd{foetus});
+%         set(input_fetal_9, 'String', p.ftraj{foetus});
+        idx = find(strcmp(param_struct{get(list_scenarios, 'Value')}.ftraj{foetus}, ftraj_strings));
         set(popup_fetal_ftraj, 'Value', idx);
-        set(input_fetal_10, 'String', p.fvcg(fetus));
+        set(input_fetal_10, 'String', p.fvcg(foetus));
     else
         set(input_fetal_1_1, 'String', 'N/A');
         set(input_fetal_1_2, 'String', 'N/A');
@@ -1522,9 +1522,9 @@ end
 
 % populates the custom view given the param struct
 % Inputs: p (struct) = param as passed to run_ecg_generator
-%         fetus (integer) = choice of fetus to display
+%         foetus (integer) = choice of foetus to display
 %         np (integer) = choice of noise source to display
-function save_custom_params(validate, fetus_choice, ns_choice)
+function save_custom_params(validate, foetus_choice, ns_choice)
 % On opening the custom view, the user is presented with the values of a
 % default scenario. When the user chooses to edit the scenario of choice,
 % the scenario's parameter struct is copied to the last entry in
@@ -1532,15 +1532,15 @@ function save_custom_params(validate, fetus_choice, ns_choice)
 % displayed. Any user inputs will be saved to the custom param struct when
 % one of the save or confirm buttons is pressed.
 %
-% the fetus and ns inputs are used for when the user changes the fetus or
-% ns list selection and we want to save the values of the old fetus or ns.
+% the foetus and ns inputs are used for when the user changes the foetus or
+% ns list selection and we want to save the values of the old foetus or ns.
     % The 'validate' flag checks whether the input should be checked by
     % validate_input()
     if nargin < 1
         validate = 0;
     end
     if nargin < 2
-        fetus_choice = get(list_fetus, 'Value');
+        foetus_choice = get(list_foetus, 'Value');
     end
     if nargin < 3
         ns_choice = get(list_noise_sources, 'Value');
@@ -1552,28 +1552,28 @@ function save_custom_params(validate, fetus_choice, ns_choice)
         temp.fs = str2double(get(input_general_2, 'String'));
         %tmp.elpos = assert_num(get(input_general_3, 'String'));
         
-        % Check if any fetuses exist
-        if ~isempty(get(list_fetus, 'String'))
+        % Check if any foetuses exist
+        if ~isempty(get(list_foetus, 'String'))
             % save fetal params
-            %temp.fheart = cell(length(get(list_fetus, 'String')), 1);
-            temp.fheart{fetus_choice} = -1 * ones(1,3);
-            temp.fheart{fetus_choice}(1) = str2double(get(input_fetal_1_1, 'String'));
-            temp.fheart{fetus_choice}(2) = str2double(get(input_fetal_1_2, 'String'));
-            temp.fheart{fetus_choice}(3) = str2double(get(input_fetal_1_3, 'String'));
+            %temp.fheart = cell(length(get(list_foetus, 'String')), 1);
+            temp.fheart{foetus_choice} = -1 * ones(1,3);
+            temp.fheart{foetus_choice}(1) = str2double(get(input_fetal_1_1, 'String'));
+            temp.fheart{foetus_choice}(2) = str2double(get(input_fetal_1_2, 'String'));
+            temp.fheart{foetus_choice}(3) = str2double(get(input_fetal_1_3, 'String'));
 
-            temp.fhr(fetus_choice) = str2double(get(input_fetal_2, 'String'));
-            temp.facc(fetus_choice) = str2double(get(input_fetal_3, 'String'));
-            %temp.ftypeacc{fetus_choice} = get(input_fetal_4, 'String');
-            temp.ftypeacc{fetus_choice} = ftypeacc_strings{get(popup_fetal_ftypeacc, 'Value')};
-            temp.fres(fetus_choice) = str2double(get(input_fetal_6, 'String'));
-            %temp.faccmean{fetus_choice} = str2double(get(input_fetal_7, 'String'));
-            %temp.faccstd{fetus_choice} = str2double(get(input_fetal_8, 'String'));
-            temp.faccmean{fetus_choice} = 0;
-            temp.faccstd{fetus_choice} = 1;
-            temp.ftraj{fetus_choice} = ftraj_strings{get(popup_fetal_ftraj, 'Value')};
+            temp.fhr(foetus_choice) = str2double(get(input_fetal_2, 'String'));
+            temp.facc(foetus_choice) = str2double(get(input_fetal_3, 'String'));
+            %temp.ftypeacc{foetus_choice} = get(input_fetal_4, 'String');
+            temp.ftypeacc{foetus_choice} = ftypeacc_strings{get(popup_fetal_ftypeacc, 'Value')};
+            temp.fres(foetus_choice) = str2double(get(input_fetal_6, 'String'));
+            %temp.faccmean{foetus_choice} = str2double(get(input_fetal_7, 'String'));
+            %temp.faccstd{foetus_choice} = str2double(get(input_fetal_8, 'String'));
+            temp.faccmean{foetus_choice} = 0;
+            temp.faccstd{foetus_choice} = 1;
+            temp.ftraj{foetus_choice} = ftraj_strings{get(popup_fetal_ftraj, 'Value')};
 %             temp.fectb = str2double(get(input_fetal_5, 'String'));
             temp.fectb = get(chk_fetal_fecbt, 'Value');
-            temp.fvcg(fetus_choice) = str2double(get(input_fetal_10, 'String')); 
+            temp.fvcg(foetus_choice) = str2double(get(input_fetal_10, 'String')); 
             
         end
         
@@ -1639,28 +1639,28 @@ function save_custom_params(validate, fetus_choice, ns_choice)
 end
 
 
-% Checks number of fetuses and noise sources as well as the page of the
+% Checks number of foetuses and noise sources as well as the page of the
 % electrodes panel so that only relevant buttons are displayed
 function toggle_custom_buttons()
-    % Make the add and remove fetus and noise source buttons active only if
+    % Make the add and remove foetus and noise source buttons active only if
     % the custom scenario is selected
     
     % If a default scenario is selected
     if get(list_scenarios, 'Value') < length(param_struct)
-        set(bt_add_fetus, 'Visible', 'off');
-        set(bt_remove_fetus, 'Visible', 'off');
+        set(bt_add_foetus, 'Visible', 'off');
+        set(bt_remove_foetus, 'Visible', 'off');
         set(bt_add_noise, 'Visible', 'off');
         set(bt_remove_noise, 'Visible', 'off');
         
     elseif get(list_scenarios, 'Value') == length(param_struct)
-        set(bt_add_fetus, 'Visible', 'on');
+        set(bt_add_foetus, 'Visible', 'on');
         set(bt_add_noise, 'Visible', 'on');
         
-        num_fetus = length(get(list_fetus, 'String'));
-        if num_fetus == 0
-            set(bt_remove_fetus, 'Visible', 'off');
+        num_foetus = length(get(list_foetus, 'String'));
+        if num_foetus == 0
+            set(bt_remove_foetus, 'Visible', 'off');
         else
-            set(bt_remove_fetus, 'Visible', 'on');
+            set(bt_remove_foetus, 'Visible', 'on');
         end
         num_ns = length(get(list_noise_sources, 'String'));
         if num_ns == 0
@@ -1924,7 +1924,7 @@ function cb_save_edit_custom(hObject,eventdata)
         
     elseif strcmp(curr_str, 'Save')
         % save all inputs to the custom scenario and validate input
-        save_custom_params(1, selected_fetus, selected_ns);
+        save_custom_params(1, selected_foetus, selected_ns);
         
     else
         disp('Oops in cb_save_edit_custom()');
@@ -1947,7 +1947,7 @@ function cb_back_custom(hObject,eventdata)
     % If the custom scenario is active, then save the latest parameter
     % values 
 %     if get(list_scenarios, 'Value') == length(param_struct)
-%         save_custom_params(0, selected_fetus, selected_ns);
+%         save_custom_params(0, selected_foetus, selected_ns);
 %     end
     
     % Set the selected value of the popup menu to the selected scenario
@@ -1958,18 +1958,18 @@ function cb_back_custom(hObject,eventdata)
     set(fh_custom, 'Visible', 'off');
 end
 
-% Callback for adding fetus
-function cb_add_fetus(hObject,eventdata)
+% Callback for adding foetus
+function cb_add_foetus(hObject,eventdata)
     % Save custom parameters inputted so far
-    save_custom_params(0, selected_fetus, selected_ns);
+    save_custom_params(0, selected_foetus, selected_ns);
     
-    % Increase number of fetuses in the custom param structure
-    fetus_str = get(list_fetus, 'String');
-    old_num_fetus = length(fetus_str);
-    new_num_fetus = old_num_fetus + 1;
-    fetus_str{new_num_fetus} = sprintf('Fetus %d', new_num_fetus);
-    set(list_fetus, 'String', fetus_str);
-    set(list_fetus, 'Value', new_num_fetus);
+    % Increase number of foetuses in the custom param structure
+    foetus_str = get(list_foetus, 'String');
+    old_num_foetus = length(foetus_str);
+    new_num_foetus = old_num_foetus + 1;
+    foetus_str{new_num_foetus} = sprintf('foetus %d', new_num_foetus);
+    set(list_foetus, 'String', foetus_str);
+    set(list_foetus, 'Value', new_num_foetus);
     
     set(input_fetal_1_1, 'String', -0.31416);
     set(input_fetal_1_2, 'String', 0.35);
@@ -1987,42 +1987,42 @@ function cb_add_fetus(hObject,eventdata)
     set(popup_fetal_ftraj, 'Value', 1);
     set(input_fetal_10, 'String', fVCG);
     
-    selected_fetus = new_num_fetus;
+    selected_foetus = new_num_foetus;
     
-    % Save new fetus in case user switches fetus immediately
-    save_custom_params(0, selected_fetus, selected_ns);
+    % Save new foetus in case user switches foetus immediately
+    save_custom_params(0, selected_foetus, selected_ns);
     
     % Make sure the buttons are displayed correctly after this change
     toggle_custom_buttons();
 
 end
 
-% Callback for removing fetus
-function cb_remove_fetus(hObject,eventdata)
-    fetus_choice = get(list_fetus, 'Value');
+% Callback for removing foetus
+function cb_remove_foetus(hObject,eventdata)
+    foetus_choice = get(list_foetus, 'Value');
 
     temp = param_struct{end};
     
-    temp.fheart(fetus_choice) = [];
-    temp.fhr(fetus_choice) = [];
-    temp.facc(fetus_choice) = [];
-    temp.ftypeacc{fetus_choice} = [];
-    temp.fres(fetus_choice) = [];
+    temp.fheart(foetus_choice) = [];
+    temp.fhr(foetus_choice) = [];
+    temp.facc(foetus_choice) = [];
+    temp.ftypeacc{foetus_choice} = [];
+    temp.fres(foetus_choice) = [];
     %temp.fectb = [];
     
     % Update custom param struct
     param_struct{end} = temp;
     
-    % Update the list of fetuses
-    if fetus_choice > 1
-        selected_fetus = fetus_choice - 1;
+    % Update the list of foetuses
+    if foetus_choice > 1
+        selected_foetus = foetus_choice - 1;
     else
-        selected_fetus = 1;
+        selected_foetus = 1;
     end
-    fetus_str = get(list_fetus, 'String');
-    fetus_str(end) = [];
-    set(list_fetus, 'Value', selected_fetus);
-    set(list_fetus, 'String', fetus_str);
+    foetus_str = get(list_foetus, 'String');
+    foetus_str(end) = [];
+    set(list_foetus, 'Value', selected_foetus);
+    set(list_foetus, 'String', foetus_str);
     populate_custom_view();
     
     % Make sure the buttons are displayed correctly after this change
@@ -2032,7 +2032,7 @@ end
 % Callback for adding noise
 function cb_add_noise(hObject,eventdata)
     % Save custom parameters inputted so far
-    save_custom_params(0, selected_fetus, selected_ns);
+    save_custom_params(0, selected_foetus, selected_ns);
     
     %set(input_noise_3, 'String', 'MA');
     set(popup_noise_ntype, 'Value', 1);
@@ -2049,8 +2049,8 @@ function cb_add_noise(hObject,eventdata)
     
     selected_ns = new_num_noise;
     
-    % Save new fetus in case user switches fetus immediately
-    save_custom_params(0, selected_fetus, selected_ns);
+    % Save new foetus in case user switches foetus immediately
+    save_custom_params(0, selected_foetus, selected_ns);
     
     % Make sure the buttons are displayed correctly after this change
     toggle_custom_buttons();
@@ -2072,7 +2072,7 @@ function cb_remove_noise(hObject,eventdata)
     % Update custom param struct
     param_struct{end} = temp;
     
-    % Update the list of fetuses
+    % Update the list of foetuses
     if ns_choice > 1
         selected_ns = ns_choice - 1;
     else
@@ -2089,16 +2089,16 @@ function cb_remove_noise(hObject,eventdata)
     toggle_custom_buttons();
 end
 
-function cb_list_fetus(hObject,eventdata)
-    save_custom_params( 0, selected_fetus, selected_ns);
-    selected_fetus = get(list_fetus, 'Value');
-    populate_custom_view([], selected_fetus, selected_ns);
+function cb_list_foetus(hObject,eventdata)
+    save_custom_params( 0, selected_foetus, selected_ns);
+    selected_foetus = get(list_foetus, 'Value');
+    populate_custom_view([], selected_foetus, selected_ns);
 end
 
 function cb_list_noise_sources(hObject,eventdata)
-    save_custom_params( 0, selected_fetus, selected_ns);
+    save_custom_params( 0, selected_foetus, selected_ns);
     selected_ns = get(list_noise_sources, 'Value');
-    populate_custom_view([], selected_fetus, selected_ns);
+    populate_custom_view([], selected_foetus, selected_ns);
 end
 
 function cb_list_scenarios(hObject,eventdata)
@@ -2116,7 +2116,7 @@ function cb_list_scenarios(hObject,eventdata)
     % get the relevant param struct
     param = param_struct{scen_id};
     
-    selected_fetus = ~isempty(get(list_fetus,'String'));
+    selected_foetus = ~isempty(get(list_foetus,'String'));
     selected_ns = ~isempty(get(list_noise_sources,'String'));
     elpos_page = 1;
     
@@ -2209,19 +2209,19 @@ function cb_bt_import_custom(hObject,eventdata)
     end
 
    
-    % populate fetus and noise source lists
+    % populate foetus and noise source lists
     p = temp;
     if ~isempty(p.fhr);
-        n_fetus = length(p.fhr);
-        fetus_list = cell(n_fetus,1);
-        for i = 1:n_fetus
-            fetus_list{i} = sprintf('Fetus %d',i);
+        n_foetus = length(p.fhr);
+        foetus_list = cell(n_foetus,1);
+        for i = 1:n_foetus
+            foetus_list{i} = sprintf('foetus %d',i);
         end
-        set(list_fetus, 'String', fetus_list);
-        set(list_fetus, 'Value', 1);
+        set(list_foetus, 'String', foetus_list);
+        set(list_foetus, 'Value', 1);
     else 
-        fetus_list = {};
-        set(list_fetus, 'String', fetus_list);
+        foetus_list = {};
+        set(list_foetus, 'String', foetus_list);
     end
     if ~isempty(p.noise_fct);
         n_ns = length(p.noise_fct);

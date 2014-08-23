@@ -83,6 +83,9 @@ else
 end
 delay = round(median(delay));
 peaks = (delay-win-1) + peaks;
+% test borders
+if peaks(1)<1;peaks(1) = 1; end;
+if peaks(end)>length(ecg);peaks(end) = length(ecg); end;
 
 % == MECG estimation using KF
 % try   

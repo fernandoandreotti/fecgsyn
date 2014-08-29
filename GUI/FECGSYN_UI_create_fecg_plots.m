@@ -64,7 +64,8 @@ PACE = 1;
 NB_EL = size(out.param.elpos, 1); % There are 34 electrodes
 NB_EL2PLOT = min([3, NB_EL]); % number of electodes to plot
 
-tm_idx = 60000; % plot elements 1:15000 for first 15 seconds
+tm_idx = out.param.n; % plot elements 1:15000 for first 15 seconds
+%tm_idx = 60000; % plot elements 1:15000 for first 15 seconds
 mqrs_1t15 = out.mqrs(out.mqrs<tm_idx);  % mqrs up to 15 seconds
 
 for i = 1:numel(out.fqrs)

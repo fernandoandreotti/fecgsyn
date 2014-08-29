@@ -1785,6 +1785,79 @@ function cb_run_button(hObject, eventdata)
         dscen_choice = get(popup_default_scenario, 'Value');
         %disp(['Running run_ecg_generator() with scenario ', num2str(dscen_choice)]);
         param = param_struct{ dscen_choice };
+        
+        % check values are within bounds
+        fhrflag = 0; mhrflag = 0; fresflag = 0; mresflag = 0; timeflag = 0;
+        fhrstring = ''; mhrstring = ''; fresstring = ''; mresflag = ''; timestring = ''; 
+        
+            % time
+            if param.n/param.fs < 10
+                param.n = 10000;
+                param.fs = 1000;
+                timeflag = 1;
+                timestring = sprintf('\n Minimum time of simulation = 10 seconds!');
+            end
+        
+            % mhr
+            if param.mhr < 60
+                param.mhr = 60;
+                mhrflag = 1;
+                mhrstring = sprintf('\n Minimum mhr = 60 bpm!');
+            elseif param.mhr > 200
+                param.mhr = 200;
+                mhrflag = 1;
+                mhrstring = sprintf('\n Maximum mhr = 200 bpm!');
+            end
+
+            % fhr
+            nb_foetuses = length(param.fhr);
+            if nb_foetuses > 0
+                for NF = 1:nb_foetuses
+                    if param.fhr(NF) < 60
+                        param.fhr(NF) = 60;
+                        fhrflag = 1;
+                        fhrstring = sprintf('\n Minimum fhr = 60 bpm!');
+                    elseif param.fhr(NF) > 200
+                        param.fhr(NF) = 200;
+                        fhrflag = 1;
+                        fhrstring = sprintf('\n Maximum fhr = 200 bpm!');
+                    end
+                end
+            end
+            
+            % fres
+            nb_foetuses = length(param.fres);
+            if nb_foetuses > 0
+                for NF = 1:nb_foetuses
+                    if param.fres(NF) < 0.7
+                        param.fres(NF) = 0.7;
+                        fresflag = 1;
+                        fresstring = sprintf('\n Minimum fres = 0.7 Hz!');
+                    elseif param.fres(NF) > 1
+                        param.fres(NF) = 1;
+                        fresflag = 1;
+                        fresstring = sprintf('\n Maximum fres = 1 Hz!');
+                    end
+                end
+            end
+            
+            % mres
+            if param.mres < 0.1
+                param.mres = 0.1;
+                mresflag = 1;
+                mresstring = sprintf('\n Minimum mres = 0.1 Hz!');
+            elseif param.mhr > 0.4
+                param.mhr = 0.4;
+                mresflag = 1;
+                mresstring = sprintf('\n Maximum mres = 0.4 Hz!');                
+            end
+            
+        msgstring = ['The following variables were set out of bounds and have been set to the nearest legal value:' timestring fhrstring mhrstring fresstring mresstring];
+            
+        if fhrflag || mhrflag || mresflag || fresflag || timeflag
+            msgbox(msgstring)
+        end
+            
         out = run_ecg_generator(param,0);
 
 %         cmqrs = adjust_mqrs_location(out.mixture(CH_CANC,:),out.mqrs,param.fs,0);
@@ -2117,7 +2190,13 @@ function cb_list_scenarios(hObject,eventdata)
     param = param_struct{scen_id};
     
     selected_foetus = ~isempty(get(list_foetus,'String'));
+    if selected_foetus
+        set(list_foetus, 'Value', selected_foetus)
+    end
     selected_ns = ~isempty(get(list_noise_sources,'String'));
+    if selected_ns
+        set(list_noise_sources, 'Value', selected_ns)
+    end
     elpos_page = 1;
     
     % Update add/remove buttons

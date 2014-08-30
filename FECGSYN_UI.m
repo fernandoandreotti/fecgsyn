@@ -110,6 +110,7 @@ ftypeacc_strings =   {'none' ...
                     , 'mexhat' ...
                     , 'gauss' ...
                     , 'flattop' ...
+                    , 'nsr' ...
                     };
 
 ftraj_strings =  {'none' ...
@@ -121,7 +122,8 @@ ftraj_strings =  {'none' ...
 mtypeacc_strings =   {'none' ...
                     , 'mexhat' ...
                     , 'gauss' ...
-                    , 'flattop' };
+                    , 'flattop' ...
+                    , 'nsr'};
                     
 ntype_strings =  {'MA' ...
                 , 'EM' ...
@@ -1788,11 +1790,11 @@ function cb_run_button(hObject, eventdata)
         
         % check values are within bounds
         fhrflag = 0; mhrflag = 0; fresflag = 0; mresflag = 0; timeflag = 0;
-        fhrstring = ''; mhrstring = ''; fresstring = ''; mresflag = ''; timestring = ''; 
+        fhrstring = ''; mhrstring = ''; mresstring = ''; fresstring = ''; timestring = ''; 
         
             % time
             if param.n/param.fs < 10
-                param.n = 10000;
+                param.n = 15000;
                 param.fs = 1000;
                 timeflag = 1;
                 timestring = sprintf('\n Minimum time of simulation = 10 seconds!');
@@ -1829,27 +1831,31 @@ function cb_run_button(hObject, eventdata)
             nb_foetuses = length(param.fres);
             if nb_foetuses > 0
                 for NF = 1:nb_foetuses
-                    if param.fres(NF) < 0.7
-                        param.fres(NF) = 0.7;
-                        fresflag = 1;
-                        fresstring = sprintf('\n Minimum fres = 0.7 Hz!');
-                    elseif param.fres(NF) > 1
-                        param.fres(NF) = 1;
-                        fresflag = 1;
-                        fresstring = sprintf('\n Maximum fres = 1 Hz!');
+                    if param.fres(NF) ~= 0    % don't do anything if there is no respiration                     
+                        if param.fres(NF) < 0.7
+                            param.fres(NF) = 0.7;
+                            fresflag = 1;
+                            fresstring = sprintf('\n Minimum fres = 0.7 Hz!');
+                        elseif param.fres(NF) > 1
+                            param.fres(NF) = 1;
+                            fresflag = 1;
+                            fresstring = sprintf('\n Maximum fres = 1 Hz!');
+                        end
                     end
                 end
             end
             
             % mres
-            if param.mres < 0.1
-                param.mres = 0.1;
-                mresflag = 1;
-                mresstring = sprintf('\n Minimum mres = 0.1 Hz!');
-            elseif param.mhr > 0.4
-                param.mhr = 0.4;
-                mresflag = 1;
-                mresstring = sprintf('\n Maximum mres = 0.4 Hz!');                
+            if param.mres ~= 0    % don't do anything if there is no respiration
+                if param.mres < 0.1 
+                    param.mres = 0.1;
+                    mresflag = 1;
+                    mresstring = sprintf('\n Minimum mres = 0.1 Hz!');
+                elseif param.mres > 0.4
+                    param.mres = 0.4;
+                    mresflag = 1;
+                    mresstring = sprintf('\n Maximum mres = 0.4 Hz!');                
+                end
             end
             
         msgstring = ['The following variables were set out of bounds and have been set to the nearest legal value:' timestring fhrstring mhrstring fresstring mresstring];

@@ -111,9 +111,12 @@ param_struct{4} = param;
 param = param_struct{5};
 
     param.title = 'Heart rate variability';
+    
+    param.fhr = 135; param.mhr = 130;
+    param.mtypeacc = 'nsr';
+    param.ftypeacc = {'nsr'};
 
     param.fs = 1000;
-    param.fhr = 130; param.mhr = 130;
     if ~isempty(mVCG); param.mvcg = mVCG; end;
     if ~isempty(fVCG); param.fvcg = fVCG; end;
     if ~isempty(POS_DEV); param.posdev = 0; end;

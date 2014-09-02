@@ -27,13 +27,19 @@ TU Dresden (IBMT-TUD). The authors are Joachim Behar (DES-OX), Fernando Andreott
 Gari Clifford (DES-OX). 
 
 History
-FECGSYN is built upon the work from McSharry et al. and Sameni et al. 
+FECGSYN is built upon the work from McSharry et al. [1] and Sameni et al. [2] 
 The original code from McSharry et al. is available in MATLAB and in 
 C on PhysioNet. The code developed by Sameni et al. 
 is part of the OSET toolbox, also available online in MATLAB.
 Links to these work are available at: 
 http://physionet.incor.usp.br/physiotools/ipmcode/
 
+[1] McSharry, Patrick E and Clifford, Gari D and Tarassenko, Lionel and Smith, Leonard A.
+A dynamical model for generating synthetic electrocardiogram signals. IEEE Transactions
+on Biomedical Engineering,  50(3) 2003.
+[2] Sameni, Reza, et al. Multichannel ECG and noise modeling: application to
+maternal and foetal ECG signals. EURASIP Journal on Advances in Signal Processing
+2007 (2007).
 
 
 This program is free software: you can redistribute it and/or modify

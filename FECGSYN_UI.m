@@ -1582,10 +1582,10 @@ function save_custom_params(validate, foetus_choice, ns_choice)
         
         % save noise params
         % Check if any noise sources exist
+        temp.SNRfm = str2double(get(input_noise_1, 'String'));
+        temp.SNRmn = str2double(get(input_noise_2, 'String'));
         if ~isempty(get(list_noise_sources, 'String'))
             %ns_choice = get(list_noise_sources, 'Value');
-            temp.SNRfm = str2double(get(input_noise_1, 'String'));
-            temp.SNRmn = str2double(get(input_noise_2, 'String'));
             %temp.ntype{ns_choice} = get(input_noise_3, 'String');
             temp.ntype{ns_choice} = ntype_strings{get(popup_noise_ntype, 'Value')};
             temp.noise_fct_str{ns_choice} = get(input_noise_4, 'String');

@@ -41,7 +41,7 @@ param.mvcg = 5;
 param.fs = 1000;
 param.n = 60000; % number of data points to generate
 param.SNRfm = -30; % signal to noise ratio between foetus and mother ECG 
-debug = 5;
+debug = 0;
 tm = 1/param.fs:1/param.fs:param.n/param.fs;
 
 % = (a) stationary case
@@ -142,7 +142,7 @@ param.fheart{2} = [-pi/1.1 0.3 -0.1];
 param.fhr = [120 150]; % foetuses mean heart rate
 param.posdev = 0; % no random deviation from default hearts and electrodes positions
 param.fs = 1000;
-debug = 5;
+debug = 0;
 param.n = 10000;
 tm = 1/param.fs:1/param.fs:param.n/param.fs;
 

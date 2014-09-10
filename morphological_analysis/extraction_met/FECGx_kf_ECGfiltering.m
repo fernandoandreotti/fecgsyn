@@ -1,4 +1,4 @@
-function [ output,Data] = FECGx_kf_ECGfiltering(x,fs,flag,indicepeaks,Data,debug)
+function [ output,Data] = FECGx_kf_ECGfiltering(x,fs,flag,indicepeaks,debug)
 %ECG FILTERING BLOCK Generates a model and call EKF/EKS
 %   INPUTS:
 %
@@ -90,7 +90,7 @@ amax = max(abs(ECGmean));
 amin = amax/100;
 
 % Stationary Wavelet Transform (as in Andreotti CINC2014)
-load('wtFilterCoefs.mat'); % loading quadratic spline coeff
+load('FECGx_kf_wtFilterCoefs.mat'); % loading quadratic spline coeff
 clear bi s gp scalex
 gp = zeros(1,Nkernels);
 scalex = zeros(scala,NB_BINS);

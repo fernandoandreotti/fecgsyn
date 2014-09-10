@@ -1,4 +1,4 @@
-function [ output,Data] = FECGx_ECGfiltering(x,fs,flag,indicepeaks,Data,debug)
+function [ output,Data] = FECGx_kf_ECGfiltering(x,fs,flag,indicepeaks,Data,debug)
 %ECG FILTERING BLOCK Generates a model and call EKF/EKS
 %   INPUTS:
 %

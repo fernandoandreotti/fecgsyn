@@ -52,7 +52,8 @@ end
 param = param_struct{1};
 
     param.title = 'Simple';
-
+    
+    param.n = 15000;    
     param.fs = 1000; % sampling frequency [Hz]
     if ~isempty(mVCG); param.mvcg = mVCG; end;
     if ~isempty(fVCG); param.fvcg = fVCG; end;
@@ -66,6 +67,7 @@ param = param_struct{2};
 
     param.title = 'Noise';
 
+    param.n = 15000;    
     param.fs = 1000;
     param.ntype = {'MA'}; % noise types
     param.noise_fct = {1}; % constant SNR (each noise may be modulated by a function)
@@ -82,6 +84,7 @@ param = param_struct{3};
 
     param.title = 'Respiration';
 
+    param.n = 30000;
     param.fs = 1000;
     param.mres = 0.25; % mother respiration frequency
     param.fres = 0.8; % foetus respiration frequency
@@ -98,6 +101,7 @@ param = param_struct{4};
 
     param.title = 'Foetal movement';
 
+    param.n = 30000;
     param.fs = 1000;
     param.ftraj{1} = 'helix'; % giving spiral-like movement to fetus
     if ~isempty(mVCG); param.mvcg = mVCG; end;
@@ -116,6 +120,7 @@ param = param_struct{5};
     param.mtypeacc = 'nsr';
     param.ftypeacc = {'nsr'};
 
+    param.n = 30000;
     param.fs = 1000;
     if ~isempty(mVCG); param.mvcg = mVCG; end;
     if ~isempty(fVCG); param.fvcg = fVCG; end;
@@ -167,6 +172,7 @@ param = param_struct{6};
 
     param.title = 'Ectopic beats';
 
+    param.n = 15000;    
     param.fs = 1000; % sampling frequency [Hz]
     if ~isempty(mVCG); param.mvcg = mVCG; end;
     if ~isempty(fVCG); param.fvcg = fVCG; end;
@@ -181,6 +187,7 @@ param = param_struct{7};
 
     param.title = 'Multiple pregnancies';
 
+    param.n = 15000;    
     param.fs = 1000;
     param.fhr = [120 150];
     param.fres = [0 0];

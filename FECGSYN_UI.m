@@ -1452,6 +1452,15 @@ function populate_custom_view(p, foetus, ns)
     end
     set(input_noise_1, 'String', num2str(p.SNRfm));
     set(input_noise_2, 'String', num2str(p.SNRmn));
+    % grey out the SNRmn if there is no noise source
+    if ns > 0 
+        % if there is a noise source, then share the enable property with
+        % the SNRfm field. This makes sure that it stays greyed out when
+        % default scenarios are displayed
+        set(input_noise_2, 'enable', get(input_noise_1, 'enable'));
+    else
+        set(input_noise_2, 'enable', 'off')
+    end
     
     % populate mother params
     set(input_mother_1_1, 'String', num2str(p.mheart(1)));
@@ -2126,6 +2135,9 @@ function cb_add_noise(hObject,eventdata)
     set(list_noise_sources, 'String', noise_str);
     set(list_noise_sources, 'Value', new_num_noise);
     
+    % Make SNRmn accessible, as we now have a noise source
+    set(input_noise_2, 'enable', 'on')
+    
     selected_ns = new_num_noise;
     
     % Save new foetus in case user switches foetus immediately
@@ -2161,6 +2173,16 @@ function cb_remove_noise(hObject,eventdata)
     ns_str(end) = [];
     set(list_noise_sources, 'Value', selected_ns);
     set(list_noise_sources, 'String', ns_str);
+    
+    % grey out the SNRmn if there is no noise source
+    if ~isempty(ns_str)
+        % if there is a noise source, then share the enable property with
+        % the SNRfm field. This makes sure that it stays greyed out when
+        % default scenarios are displayed
+        set(input_noise_2, 'enable', get(input_noise_1, 'enable'));
+    else
+        set(input_noise_2, 'enable', 'off')
+    end
     
     populate_custom_view();
     

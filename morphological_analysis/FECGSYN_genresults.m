@@ -61,8 +61,8 @@ morph_kf = zeros(length(fls_orig),3);
 morph_esn = zeros(length(fls_orig),3);
 
 
-for i = 1:length(fls_ext)
-    disp(i)
+for i = 6:length(fls_ext)
+    disp(fls_ext{i})
     [rec,met] = strtok(fls_ext(i),'_');
     file = strcat(path_ext,fls_ext(i)); 
     load(file{:})
@@ -103,23 +103,25 @@ for i = 1:length(fls_ext)
             fqrs = fqrs{maxch};
             residual = residual(maxch,:);
             fecg = double(out.fecg{1}(maxch,:));
-            % generating statistics
+            % generating QRS detection statistics
             [F1,MAD,PPV,SE] = Bxb_compare(out.fqrs{1},fqrs,INTERV);
             stats_tsc(origrec,:) = [F1,MAD,PPV,SE];
             
-            %             % Loop for templates generation and morphological analysis
-            %             for j = 1:TEMP_SEC:length(residual)
-            %                 if j+TEMP_SEC > length(residual)
-            %                     endsamp = length(residual);
-            %                 else
-            %                     endsamp = j + TEMP_SEC;
-            %                 end
-            %                 qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
-            %                 phase = FECGx_kf_PhaseCalc(qrstmp,endsamp-j);
-            %                 temp_abdm = FECGSYN_tgen(residual(j:endsamp),qrstmp,phase,BINS,fs,0,0);
-            %                 temp_ref = FECGSYN_tgen(fecg(j:endsamp),qrstmp,phase,BINS,fs,0,0);
-            %                 [qt{end+1},theight{end+1}]FECGSYN_manalysis(temp_abdm,temp_ref,fs)
-            %             end
+            % morphological statistics
+            for j = 1:TEMP_SEC:length(residual)
+                % checking borders
+                if j+TEMP_SEC > length(residual)
+                    endsamp = length(residual);
+                else
+                    endsamp = j + TEMP_SEC;
+                end
+                
+                qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
+                phase = FECGx_kf_PhaseCalc(qrstmp,endsamp-j);
+                temp_abdm = FECGSYN_tgen(residual(j:endsamp),qrstmp,phase,BINS,fs,0,0);
+                temp_ref = FECGSYN_tgen(fecg(j:endsamp),qrstmp,phase,BINS,fs,0,0);
+                [qt{end+1},theight{end+1}] = FECGSYN_manalysis(temp_abdm,temp_ref,fs)
+            end
              clear fqrs F1 MAD PPV SE
             
         case 'tspca'

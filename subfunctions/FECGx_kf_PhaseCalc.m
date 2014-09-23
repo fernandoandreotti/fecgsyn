@@ -61,5 +61,4 @@ else
     phase(peaks(end):end) = linspace(0,L*2*pi/m(end),L+1);
 end
 phase = mod(phase,2*pi);
-phase(phase>pi) = phase(phase>pi)- 2*pi;
-end
+phase(find(phase>pi)) = phase(find(phase>pi))- 2*pi;

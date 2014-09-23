@@ -117,9 +117,8 @@ for i = 6:length(fls_ext)
                 end
                 
                 qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
-                phase = FECGx_kf_PhaseCalc(qrstmp,endsamp-j);
-                temp_abdm = FECGSYN_tgen(residual(j:endsamp),qrstmp,phase,BINS,fs,0,0);
-                temp_ref = FECGSYN_tgen(fecg(j:endsamp),qrstmp,phase,BINS,fs,0,0);
+                temp_abdm = FECGSYN_tgen(residual(j:endsamp),qrstmp,fs,0);
+                temp_ref = FECGSYN_tgen(fecg(j:endsamp),qrstmp,fs,0);
                 [qt{end+1},theight{end+1}] = FECGSYN_manalysis(temp_abdm,temp_ref,fs)
             end
              clear fqrs F1 MAD PPV SE

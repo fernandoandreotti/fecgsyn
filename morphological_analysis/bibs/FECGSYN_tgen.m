@@ -1,12 +1,32 @@
-function [ecgme,ecgsd,phaseme,nbcyc] = FECGSYN_tgen(ecg,qrs,phase,bins,fs,flag,debug)
-% this function is used to contruct a template ECG. The steps for building.
-% Different methods were tested.
+function [relevantMode,status] = FECGSYN_tgen(ecg,qrs,fs,debug)
+% this function is used to contruct a template ecg based on the location of
+% the R-peaks. A series of peaks that match with each other are stacked to
+% build a template. This template can then be used for ecg morphological
+% analysis or further processing. Note that the qrs location inputed must
+% be as precise as possible. This approach for building the template ECG
+% seems to be the best of the alternatives that were tested and leaves the 
+% freedom of having more than one mode (i.e. multiple ECG template can be 
+% built if there are different cycle morphology such as PVC)  but it is not
+% particularly fast.
 % The procedure for building the template is:
-% 1. identify the beats that have similar RR
-% 2. apply Reza's phase wrapping between [-pi pi]
-% Note: the median is used to build the template accross the cyles. This
-% naturally remove the outliers noisy cycles and turned to work better than
-% using corcoeff.
+% 1. create average wrapped template
+% 2. identify different modes present
+% 
+% inputs
+%   ecg:            the ecg channel(s)
+%   qrs:            qrs location [number of samples]
+% 
+% outputs
+%   relevantMode:   structure containing cycle, cycleMean and cycleStd
+%                   representing how many cycles have been selected to build the stack, the
+%                   mean ecg cycle that is built upon these selected cycles and the
+%                   standard deviation for each point of the template cycle as an indicator
+%                   of the precision of the estimation. *Only the dominant mode is outputted
+%                   for this application.*
+%   status:         bool, success or failed to extract a dominant mode
+% 
+% 
+% Dependencies: FECGSYN_phase_wrap.m
 %
 %
 % inputs
@@ -46,109 +66,108 @@ function [ecgme,ecgsd,phaseme,nbcyc] = FECGSYN_tgen(ecg,qrs,phase,bins,fs,flag,d
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
 % Public License for more details.
 
+% == manage inputs
+if nargin<2; error('ecg_template_build: wrong number of input arguments \n'); end;
+if nargin==3; debug=varargin{1}; else debug=0; end;
+
 % == constants
-qrs_cut = qrs(2:end-2); % remove first and last QRS to account for border effects
-RR = diff(qrs_cut)/fs;
-RRm = median(RR);
-TOL_RR = 0.015; % cycles that are TOL_RR different from the min RR are excluded to prevent innacurate linear phase stretching
-NB_CYC = length(qrs_cut); % number of cycles
-WINDOW = round((RRm/2)*fs); % window either way of the R-peak
+NB_BINS = 250; % number of beans onto which to wrap a cycle
+NB_LEADS = size(ecg,1);
+NB_SAMPLES = size(ecg,2);
+NB_REL = 10; % number relevance. How many cycles minimum to consider that a mode is relevant? - UPDATE ME DEPENDING ON APPLICATION
+MIN_NB_CYC = 20; % mininum number of cycles (will decrease THRES until this number of cycles is achieved) - UPDATE ME DEPENDING ON APPLICATION
+THRES = 0.95; % threshold at which to decide whether the cycle match or not - UPDATE ME DEPENDING ON APPLICATION
+PACE = 0.05;
+MIN_THRES = 0.5;
+cycle = zeros(NB_LEADS,NB_BINS);
+startCycle = 2;    
+NbModes = 1; % initialisation variable
+relevantModeInd = []; % - UPDATE ME DEPENDING ON APPLICATION
+relevantMode.NbCycles = 0;
 
-% == baseline (make sure baseline wander has been cancelled)
-LF_CUT = 0.7;
-[bs,as] = butter(3,LF_CUT/(fs/2),'high');
-ecg = filtfilt(bs,as,ecg);
+% == linear phase wrapping
+phase = FECGx_kf_PhaseCalc(qrs,NB_SAMPLES);
+PhaseChangePoints = find(phase(2:end)<0&phase(1:end-1)>0);
+NB_CYCLES = length(PhaseChangePoints);
 
-% == only select beat with similar RR interval (i.e. HR)
-indrr = 0;
-while sum(indrr)<ceil(NB_CYC/1.5)
-    indrr = abs(RR-RRm)<TOL_RR;
-    TOL_RR = TOL_RR + 0.005; % be more tolerant if not enough beats
+% ==== core function ====
+% == creating the different modes
+cycleIndex = (PhaseChangePoints(startCycle)+1:PhaseChangePoints(startCycle+1));
+for j=1:NB_LEADS
+    cycle(j,:) = interp1(phase(cycleIndex),ecg(j,cycleIndex),linspace(-pi,pi,NB_BINS),'spline');
 end
-indrr = ~indrr; % the one to remove
-rposrem = qrs_cut(indrr); % position of the R-peaks of the cycles to remove
+Mode{NbModes}.cycles = zeros(NB_LEADS,NB_BINS,1);
+Mode{NbModes}.cycles(:,:,1) = cycle;
+Mode{NbModes}.cycleMean = cycle;
+Mode{NbModes}.cycleStd = zeros(3,NB_BINS);
+Mode{NbModes}.NbCycles = 1;
 
-% == now build the template
-phaseme = zeros(1,bins);
-ecgme = zeros(1,bins);
-ecgsd = zeros(1,bins);
+while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
+    % the THRES is lowered until a mode with mode than MIN_NB_CYC cycles is
+    % detected or the THREShold is too low (which means no mode can be identified)
+    for i=startCycle+1:NB_CYCLES-2
+        cycleIndex = (PhaseChangePoints(i)+1:PhaseChangePoints(i+1));
+        for j=1:NB_LEADS
+            cycle(j,:) = interp1(phase(cycleIndex),ecg(j,cycleIndex),linspace(-pi,pi,NB_BINS),'spline');
+        end
+        match = 0;
+        indMode = 1;
+        while (~match&&indMode<=NbModes)
+            match = FECGSYN_crosscor(cycle,Mode{indMode}.cycleMean,THRES);
+            indMode = indMode+1;
+        end
+        if ~match  % if the new cycle does not match with the average cycle of any mode
+                  % then create a new mode 
+            NbModes=NbModes+1;
+            Mode{NbModes}.cycles = zeros(NB_LEADS,NB_BINS,1);
+            Mode{NbModes}.cycles(:,:,1) = cycle;
+            Mode{NbModes}.cycleMean = cycle;
+            Mode{NbModes}.cycleStd = zeros(3,NB_BINS);
+            Mode{NbModes}.NbCycles = 1;
+        else % it it correlates then integrate it to the corresponding mode
+            Mode{indMode-1}.NbCycles = Mode{indMode-1}.NbCycles+1;
+            temp = Mode{indMode-1}.cycles ;
+            Mode{indMode-1}.cycles = zeros(NB_LEADS,NB_BINS,Mode{indMode-1}.NbCycles);
+            Mode{indMode-1}.cycles(:,:,1:end-1)= temp;
+            Mode{indMode-1}.cycles(:,:,end)= cycle;
+            Mode{indMode-1}.cycleMean = mean(Mode{indMode-1}.cycles,3);
+            Mode{indMode-1}.cycleStd = std(Mode{indMode-1}.cycles,0,3);
+        end
 
-I = find( phase>=(pi-pi/bins)  | phase<(-pi+pi/bins) );
-if ~isempty(rposrem)
-    [~,D] = dsearchn(rposrem',I');
-    I = I(D>1.2*WINDOW);
-end
-
-if(~isempty(I))
-    phaseme(1) = -pi;
-    ecgme(1) = median(ecg(I));
-    ecgsd(1) = std(ecg(I));
-else
-    phaseme(1) = 0;
-    ecgme(1) = 0;
-    ecgsd(1) = -1;
-end
-
-for i = 1 : bins-1;
-    I = find( phase >= 2*pi*(i-0.5)/bins-pi & phase < 2*pi*(i+0.5)/bins-pi );
-    if ~isempty(rposrem)
-        [~,D] = dsearchn(rposrem',I');
-        I = I(D>1.2*WINDOW);
     end
-   
-    if(~isempty(I))
-        phaseme(i + 1) = median(phase(I));
-        ecgme(i + 1) = median(ecg(I));
-        ecgsd(i + 1) = std(ecg(I)); 
+
+    % == detecting what mode is relevant
+    for i=1:length(Mode)
+        if Mode{i}.NbCycles>NB_REL
+            relevantModeInd = [relevantModeInd i];
+        end
+    end
+    relevantMode = Mode(relevantModeInd);
+
+    if isempty(relevantMode)
+        % if we did not catch anything then output rubbish
+        relevantMode.cycleMean = ones(NB_BINS,1);
+        relevantMode.NbCycles  = 0;
+        status = 0;
     else
-        phaseme(i + 1) = 0;
-        ecgme(i + 1) = 0;
-        ecgsd(i + 1) = -1;
+        relevantModeStruc = [relevantMode{:}];
+        [~,pos] = max([relevantModeStruc.NbCycles]); % look for dominant mode
+        relevantMode = relevantMode{pos}; % only return the dominant mode for this application
+        status = 1;
     end
+    THRES = THRES-PACE;
 end
 
-K = find(ecgsd==-1);
-for i = 1:length(K),
-    switch K(i)
-        case 1
-            phaseme(K(i)) = -pi;
-            ecgme(K(i)) = ecgme(K(i)+1);
-            ecgsd(K(i)) = ecgsd(K(i)+1);
-        case bins
-            phaseme(K(i)) = pi;
-            ecgme(K(i)) = ecgme(K(i)-1);
-            ecgsd(K(i)) = ecgsd(K(i)-1);
-        otherwise
-            phaseme(K(i)) = mean([phaseme(K(i)-1),phaseme(K(i)+1)]);
-            ecgme(K(i)) = mean([ecgme(K(i)-1),ecgme(K(i)+1)]);
-            ecgsd(K(i)) = mean([ecgsd(K(i)-1),ecgsd(K(i)+1)]);
-    end
-end
+% == Converting template from bins to samples
 
-if(flag==1)
-    ecgme = ecgme - mean(ecgme(1:ceil(length(ecgme)/10)));
-end
-
-nbcyc = NB_CYC-sum(indrr);
-
-% == debug
-if debug>=1
-    fprintf('Number of cycles detected: %f \n',length(qrs_cut));
-    fprintf('Number of cycles selected: %f \n',NB_CYC-sum(indrr));
-    if isnan(ecgme); disp('WARNING: Not able to produce ecgme, low correlation'); end  
-elseif debug>=2
-    LINEWIDTH = 2;
-    FONTSIZE = 20;
-    ph = linspace(-pi,pi,bins);
-    plot(ph,ecgme,'LineWidth',LINEWIDTH);
-    xlim([-pi pi]);
-    xlabel('Phase [rad]');
-    ylabel('Amplitude [NU]');
-    set(findall(gcf,'type','text'),'fontSize',FONTSIZE);
-    set(gca,'FontSize',FONTSIZE);
+if debug
+   fprintf('The number of cycles constituting the dominant mode was %f \n',relevantMode.NbCycles);
+   fprintf('The correlation threshold at which this happened was    %f \n',THRES+PACE);
+   fprintf('========================================================== \n');
 end
 
 
+end
 
 
 

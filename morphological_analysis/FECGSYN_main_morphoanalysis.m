@@ -386,5 +386,5 @@ if extract
 end
 
 %% Generate Results
-dunno = FECGSYN_genresults(path,path2save,fs_new,debug)
+FECGSYN_genresults(path,path2save,fs_new,ch,debug)
 

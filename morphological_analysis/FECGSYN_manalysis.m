@@ -60,7 +60,6 @@ wrann('refsig','qrs',qrsref,repmat('N',20,1));
 % ref signal
 debug = 1;
 ecgpuwave('refsig','edr',[],[],'qrs'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
-tref = rdann('refsig','edr',[],[],[],'t');
 [allref,alltypes_r] = rdann('refsig','edr');
 if debug
     close all
@@ -73,7 +72,6 @@ if debug
 end
 % test signal
 ecgpuwave('absig','edr',[],[],'qrs'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
-ttest = rdann('absig','edr',[],[],[],'t');
 [alltest,alltypes_t] = rdann('absig','edr');
 if debug
     figure(1)
@@ -87,12 +85,23 @@ end
 
 % == Calculate error on morphological analysis made by extracted data
 qt_err = 0;
-% qt-intervals from ref
+% = qt-intervals from ref
+% Q
+quus = arrayfun(@(x) strcmp(x,'N'),alltypes_r);
+obrackts = arrayfun(@(x) strcmp(x,'('),alltypes_r);
 
-for i = 1:length(tref)
-   
-    
-end
+% T
+tees = arrayfun(@(x) strcmp(x,'t'),alltypes_r);
+cbrackts = arrayfun(@(x) strcmp(x,')'),alltypes_r);
+biphasic = filter([1 1],1,tees);    % looking for T-waves detected as biphasic
+idxbi = biphasic==2; idxbi = circshift(idxbi,1);
+tees(idxbi) = 0;    % only considering second T
+idxcbrackt = find(tees)+1;
+idxcbrackt = idxcbrackt(cbrackts(idxcbrackt)); % which c-brackts come right after T's
+tends = allref(idxcbrackt); % T-end locations
+
+
+
 % qt-intervals from test
 for i = 1:length(ttest)
     

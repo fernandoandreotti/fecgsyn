@@ -1,4 +1,4 @@
-function [outsig,qrsmethod] = FECGSYN_genresults(path_orig,path_ext,fs)
+function [outsig,qrsmethod] = FECGSYN_genresults(path_orig,path_ext,fs,debug)
 %
 % Input:
 %  path_orig:       Path for original dataset
@@ -101,8 +101,8 @@ for i = 6:length(fls_ext)
         case 'tsc'
             % discarding channels that are not the best
             fqrs = fqrs{maxch};
-            residual = residual(maxch,:);
-            fecg = double(out.fecg{1}(maxch,:));
+            residual = double(residual(maxch,:))./3000;
+            fecg = double(out.fecg{1}(ch(maxch),:))./3000;
             % generating QRS detection statistics
             [F1,MAD,PPV,SE] = Bxb_compare(out.fqrs{1},fqrs,INTERV);
             stats_tsc(origrec,:) = [F1,MAD,PPV,SE];
@@ -117,8 +117,8 @@ for i = 6:length(fls_ext)
                 end
                 
                 qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
-                temp_abdm = FECGSYN_tgen(residual(j:endsamp),qrstmp,fs,0);
-                temp_ref = FECGSYN_tgen(fecg(j:endsamp),qrstmp,fs,0);
+                temp_abdm = FECGSYN_tgen(residual(j:endsamp),qrstmp,debug);
+                temp_ref = FECGSYN_tgen(fecg(j:endsamp),qrstmp,debug);
                 [qt{end+1},theight{end+1}] = FECGSYN_manalysis(temp_abdm,temp_ref,fs)
             end
              clear fqrs F1 MAD PPV SE

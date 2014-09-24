@@ -1,4 +1,4 @@
-function [relevantMode,status] = FECGSYN_tgen(ecg,qrs,fs,debug)
+function [template,status] = FECGSYN_tgen(ecg,qrs,debug)
 % this function is used to contruct a template ecg based on the location of
 % the R-peaks. A series of peaks that match with each other are stacked to
 % build a template. This template can then be used for ecg morphological
@@ -68,7 +68,7 @@ function [relevantMode,status] = FECGSYN_tgen(ecg,qrs,fs,debug)
 
 % == manage inputs
 if nargin<2; error('ecg_template_build: wrong number of input arguments \n'); end;
-if nargin==3; debug=varargin{1}; else debug=0; end;
+
 
 % == constants
 NB_BINS = 250; % number of beans onto which to wrap a cycle
@@ -76,7 +76,7 @@ NB_LEADS = size(ecg,1);
 NB_SAMPLES = size(ecg,2);
 NB_REL = 10; % number relevance. How many cycles minimum to consider that a mode is relevant? - UPDATE ME DEPENDING ON APPLICATION
 MIN_NB_CYC = 20; % mininum number of cycles (will decrease THRES until this number of cycles is achieved) - UPDATE ME DEPENDING ON APPLICATION
-THRES = 0.95; % threshold at which to decide whether the cycle match or not - UPDATE ME DEPENDING ON APPLICATION
+THRES = 0.9; % threshold at which to decide whether the cycle match or not - UPDATE ME DEPENDING ON APPLICATION
 PACE = 0.05;
 MIN_THRES = 0.5;
 cycle = zeros(NB_LEADS,NB_BINS);
@@ -96,11 +96,12 @@ cycleIndex = (PhaseChangePoints(startCycle)+1:PhaseChangePoints(startCycle+1));
 for j=1:NB_LEADS
     cycle(j,:) = interp1(phase(cycleIndex),ecg(j,cycleIndex),linspace(-pi,pi,NB_BINS),'spline');
 end
-Mode{NbModes}.cycles = zeros(NB_LEADS,NB_BINS,1);
+Mode{NbModes}.cycles = zeros(NB_LEADS,NB_BINS,1);       % cycles included
 Mode{NbModes}.cycles(:,:,1) = cycle;
-Mode{NbModes}.cycleMean = cycle;
-Mode{NbModes}.cycleStd = zeros(3,NB_BINS);
-Mode{NbModes}.NbCycles = 1;
+Mode{NbModes}.cycleMean = cycle;                        % average cycle
+Mode{NbModes}.cycleStd = zeros(3,NB_BINS);              % standard deviation from cycles
+Mode{NbModes}.NbCycles = 1;                             % number of cycles present
+Mode{NbModes}.cycleLen = [];                            % length of cycles (in samples)
 
 while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
     % the THRES is lowered until a mode with mode than MIN_NB_CYC cycles is
@@ -124,6 +125,7 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
             Mode{NbModes}.cycleMean = cycle;
             Mode{NbModes}.cycleStd = zeros(3,NB_BINS);
             Mode{NbModes}.NbCycles = 1;
+            Mode{NbModes}.cycleLen = length(cycleIndex);
         else % it it correlates then integrate it to the corresponding mode
             Mode{indMode-1}.NbCycles = Mode{indMode-1}.NbCycles+1;
             temp = Mode{indMode-1}.cycles ;
@@ -132,6 +134,7 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
             Mode{indMode-1}.cycles(:,:,end)= cycle;
             Mode{indMode-1}.cycleMean = mean(Mode{indMode-1}.cycles,3);
             Mode{indMode-1}.cycleStd = std(Mode{indMode-1}.cycles,0,3);
+            Mode{indMode-1}.cycleLen = [Mode{indMode-1}.cycleLen length(cycleIndex)];
         end
 
     end
@@ -158,7 +161,14 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
     THRES = THRES-PACE;
 end
 
-% == Converting template from bins to samples
+% == Adjusting peak at 1/6 of the total interval
+template.avg = circshift(relevantMode.cycleMean',-round(NB_BINS/6))';
+template.stdev = circshift(relevantMode.cycleStd',-round(NB_BINS/6))';
+
+% == Converting template from bins back to samples
+phase2samp = round(mean(relevantMode.cycleLen));
+template.avg = resample(template.avg,phase2samp,NB_BINS);
+template.stdev = resample(template.stdev,phase2samp,NB_BINS);
 
 if debug
    fprintf('The number of cycles constituting the dominant mode was %f \n',relevantMode.NbCycles);

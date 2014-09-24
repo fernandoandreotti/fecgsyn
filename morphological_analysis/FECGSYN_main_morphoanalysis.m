@@ -79,10 +79,10 @@ end
 fls = dir('*.mat');     % looking for .mat (creating index)
 fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
 
-% % % %% Experiment 1
-% % % % PCA&ICA and number of channels. Testing how the number of channels
-% % % % available is affecting the results of PCA and ICA.
-% % %
+%% Experiment 1
+% PCA&ICA and number of channels. Testing how the number of channels
+% available is affecting the results of PCA and ICA.
+%
 % % % % == experiments param
 % % %
 % % % ch = {[11 22],[1 11 22 32],[1 8 11 22 25 32],[1 8 11 14 19 22 25 32], ...
@@ -386,5 +386,5 @@ if extract
 end
 
 %% Generate Results
-dunno = FECGSYN_genresults(path,path2save,fs_new)
+dunno = FECGSYN_genresults(path,path2save,fs_new,debug)
 

@@ -1,4 +1,4 @@
-function [outsig,qrsmethod] = FECGSYN_genresults(path_orig,path_ext,fs,ch,debug)
+function FECGSYN_genresults(path_orig,path_ext,fs,ch,debug)
 %
 % Input:
 %  path_orig:       Path for original dataset
@@ -75,25 +75,34 @@ for i = 200:length(fls_ext)
             % generating statistics
             [F1,MAD,PPV,SE] = Bxb_compare(out.fqrs{1},fqrs,INTERV);
             stats_ica(origrec,:) = [F1,MAD,PPV,SE];
-            %             if morph
-            %             % generating reference template
-            %             % begin(workaround) while not regenerating data at 250 Hz
-            %             for j = 1:length(ch)
-            %                 fecg(j,:) = double(out.fecg{1}(ch(j),:));
-            %             end
-            %             % end(workaround)
-            %             %  fecg = double(out.fecg{1}(ch,:));   when workaround is undone
-            %             W = fecg*pinv(outdata);
-            %             srcfecg = W*fecg;
-            %
-            %             % templates generation
-            %             for j = 1:length(maxch)
-            %                 ssamp = (j-1)*round(length(outdata)/length(maxch))+1;
-            %                 endsamp = j*round(length(outdata)/length(maxch))-1;
-            %                 qrstmp = fqrs(fqrs>ssamp&fqrs<endsamp);
-            %
-            %             end
-            %             end
+            if morph
+                % generating reference template
+                fecg = double(out.fecg{1}(ch,:));
+                W = fecg*pinv(outdata);
+                srcfecg = W*fecg;
+                
+                qt_err = []; theight_err = [];
+                block = 1;
+                for j = 1:TEMP_SEC:length(outdata)
+                    % checking borders
+                    if j+TEMP_SEC > length(outdata)
+                        endsamp = length(outdata);
+                    else
+                        endsamp = j + TEMP_SEC;
+                    end
+                    % qrs complexes in interval
+                    qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
+                    % abdominal signal template
+                    temp_abdm = FECGSYN_tgen(outdata(maxch(block),j:endsamp),qrstmp,debug);
+                    % reference template
+                    temp_ref = FECGSYN_tgen(srcfecg(maxch(block),j:endsamp),qrstmp,debug);
+                    temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
+                    % evaluating morphological features
+                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
+                    block = block+1;
+                end
+                
+            end
             clear fqrs F1 MAD PPV SE
         case 'PCA'
             % generating statistics
@@ -140,8 +149,8 @@ for i = 200:length(fls_ext)
                     % evaluating morphological features
                     [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
                 end
+                morph_tspca(end+1,:) = [mean(qt_err); mean(theight_err)];
             end
-            morph_tspca(end+1,:) = [mean(qt_err); mean(theight_err)];
             
             clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
         case 'tsekf'

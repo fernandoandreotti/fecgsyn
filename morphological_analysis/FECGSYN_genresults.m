@@ -60,7 +60,7 @@ morph_tskf = zeros(length(fls_orig),2);
 morph_aesn = zeros(length(fls_orig),2);
 
 
-for i = 1:length(fls_ext)
+for i = 200:length(fls_ext)
     disp(fls_ext{i})
     [rec,met] = strtok(fls_ext(i),'_');
     file = strcat(path_ext,fls_ext(i)); 
@@ -115,7 +115,7 @@ for i = 1:length(fls_ext)
             % discarding channels that are not the best
             fqrs = fqrs{maxch};
             residual = residual(maxch,:);
-            fecg = double(out.fecg{1}(maxch,:));
+            fecg = double(out.fecg{1}(ch(maxch),:));
             % generating statistics
             [F1,MAD,PPV,SE] = Bxb_compare(out.fqrs{1},fqrs,INTERV);
             stats_tspca(origrec,:) = [F1,MAD,PPV,SE];
@@ -148,7 +148,7 @@ for i = 1:length(fls_ext)
             % discarding channels that are not the best
             fqrs = fqrs{maxch};
             residual = residual(maxch,:);
-            fecg = double(out.fecg{1}(maxch,:));
+            fecg = double(out.fecg{1}(ch(maxch),:));
             % generating statistics
             [F1,MAD,PPV,SE] = Bxb_compare(out.fqrs{1},fqrs,INTERV);
             stats_tsekf(origrec,:) = [F1,MAD,PPV,SE];
@@ -199,7 +199,7 @@ for i = 1:length(fls_ext)
             % discarding channels that are not the best
             fqrs = fqrs{maxch};
             residual = residual(maxch,:);
-            fecg = double(out.fecg{1}(maxch,:));
+            fecg = double(out.fecg{1}(ch(maxch),:));
             % generating statistics
             [F1,MAD,PPV,SE] = Bxb_compare(out.fqrs{1},fqrs,INTERV);
             stats_aesn(origrec,:) = [F1,MAD,PPV,SE];

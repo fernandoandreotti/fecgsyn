@@ -127,16 +127,19 @@ if isempty(tends)
     return
 end
 qtref = mean(tends-quus)*1000/fsnew/2;    % in ms
-% looking for isoeletric line and T height
+% looking for T height
 if sum(idxbi) > 0
     twave = allref(find(tees_all,2))-length(ref_temp);
     [~,idx] = max(abs(ref_temp(twave)));
     twave = twave(idx);
 else
-    twave = allref(find(tees_all,1));
+    twave = allref(find(tees_all,1))-length(ref_temp);
 end
-tbeg = allref(find(tees,1)-1);
-jpoint = allref(find(tees,1)-2);
+thref = abs(ref_temp(twave));
+% % % isoeletric line
+% % waves = find(allref<twave+length(ref_temp));
+% % tbeg = allref(waves(end)) -length(ref_temp);
+% % speak = allref(waves(end-1))-length(ref_temp);
 %% == QT-intervals from test
 % Q
 rees = arrayfun(@(x) strcmp(x,'N'),alltypes_t);
@@ -165,7 +168,6 @@ biphasic = filter([1 1],1,tees);
 idxbi = biphasic==2; idxbi = circshift(idxbi,1);
 tees_all = tees;    % saving for theight analysis
 tees(idxbi) = 0;    % only considering second T
-tbip = tbip + sum(idxbi);  % boolean to mark if there are biphasic Twaves
 % looking for T ends
 idxcbrackt = find(tees)+1;
 idxcbrackt = idxcbrackt(cbrackts(idxcbrackt)); % which c-brackts come right after T's
@@ -179,23 +181,23 @@ if isempty(tends)
 end
 
 qttest = mean(tends-quus)*1000/fsnew/2;   % in ms
-
+% looking for T height
+if sum(idxbi) > 0
+    twave = alltest(find(tees_all,2))-length(abdm_temp);
+    [~,idx] = max(abs(abdm_temp(twave)));
+    twave = twave(idx);
+else
+    twave = alltest(find(tees_all,1))-length(abdm_temp);
+end
+thtest = abs(abdm_temp(twave));
+% % % isoeletric line
+% % waves = find(allref<twave+length(ref_temp));
+% % tbeg = allref(waves(end)) -length(ref_temp);
+% % speak = allref(waves(end-1))-length(ref_temp);
 
 %% == QT error
 qt = qttest - qtref;        % absolute error in ms
 
 %% == T-height estimation
-if tbip > 0
-    theight = NaN;
-else
-    tref = allref(tref);
-    ttest = arrayfun(@(x) strcmp(x,'t'),alltypes_t);
-    ttest = alltest(ttest);
-
-    
-    
-    
-    
-end
-
+theight = thtest/thref;
 

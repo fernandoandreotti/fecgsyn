@@ -15,7 +15,7 @@ function [qt,theight] = FECGSYN_manalysis(abdm_temp,ref_temp,fs)
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 09-08-2014
+% Last updated : 26-09-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -35,8 +35,10 @@ function [qt,theight] = FECGSYN_manalysis(abdm_temp,ref_temp,fs)
 % resampling and repeating templates
 fsnew = 500;        % upsampling to 500Hz so that foetal 
                     % heart looks like adult
-abdm_temp = 1000*abdm_temp/max(abs(abdm_temp)); % normalizing for 
-ref_temp = 1000*ref_temp/max(abs(ref_temp));    % comparing T-height
+wsign = abs(max(abdm_temp))>abs(min(abdm_temp));
+wsign = 2*wsign - 1;
+abdm_temp = 1000*wsign*abdm_temp/max(abs(abdm_temp)); % normalizing for 
+ref_temp = 1000*wsign*ref_temp/max(abs(ref_temp));    % comparing T-height
 abdm_temp = resample(abdm_temp,fsnew,fs);
 ref_temp = resample(ref_temp,fsnew,fs);
 abdm_sig = repmat(abdm_temp,1,20)';
@@ -84,30 +86,116 @@ if debug
 end
 
 % == Calculate error on morphological analysis made by extracted data
-qt_err = 0;
-% = qt-intervals from ref
+
+%% == QT-intervals from ref
 % Q
-quus = arrayfun(@(x) strcmp(x,'N'),alltypes_r);
+rees = arrayfun(@(x) strcmp(x,'N'),alltypes_r);
 obrackts = arrayfun(@(x) strcmp(x,'('),alltypes_r);
+idxr = find(rees);
+idxqomplete = obrackts(idxr-1);     % finding QRS complexes with begin/end
+idxincomp = idxr(~idxqomplete);     % R-peak location of incomplete complexes
+quus = allref(idxr(idxqomplete)-1);
+
+cleants = ones(size(rees)); 
+if ~isempty(idxincomp)  % throw some beats away
+    % throw T-waves away if there is no Q
+    for i = 1:length(idxincomp)
+       idx = find(idxr == idxincomp(i));
+       cleants(idxr(idx):idxr(idx+1)) = 0;        
+    end
+end
 
 % T
 tees = arrayfun(@(x) strcmp(x,'t'),alltypes_r);
 cbrackts = arrayfun(@(x) strcmp(x,')'),alltypes_r);
-biphasic = filter([1 1],1,tees);    % looking for T-waves detected as biphasic
+tees = tees&cleants;            % removing T's without Q's
+
+% treating T-waves detected as biphasic
+biphasic = filter([1 1],1,tees);    
 idxbi = biphasic==2; idxbi = circshift(idxbi,1);
+tees_all = tees;    % saving for theight analysis
 tees(idxbi) = 0;    % only considering second T
+% looking for T ends
 idxcbrackt = find(tees)+1;
 idxcbrackt = idxcbrackt(cbrackts(idxcbrackt)); % which c-brackts come right after T's
 tends = allref(idxcbrackt); % T-end locations
 
+% test if QT analysis feasible
+if isempty(tends)
+    theight = NaN;
+    qt = NaN;
+    return
+end
+qtref = mean(tends-quus)*1000/fsnew/2;    % in ms
+% looking for isoeletric line and T height
+if sum(idxbi) > 0
+    twave = allref(find(tees_all,2))-length(ref_temp);
+    [~,idx] = max(abs(ref_temp(twave)));
+    twave = twave(idx);
+else
+    twave = allref(find(tees_all,1));
+end
+tbeg = allref(find(tees,1)-1);
+jpoint = allref(find(tees,1)-2);
+%% == QT-intervals from test
+% Q
+rees = arrayfun(@(x) strcmp(x,'N'),alltypes_t);
+obrackts = arrayfun(@(x) strcmp(x,'('),alltypes_t);
+idxr = find(rees);
+idxqomplete = obrackts(idxr-1);     % finding QRS complexes with begin/end
+idxincomp = idxr(~idxqomplete);     % R-peak location of incomplete complexes
+quus = alltest(idxr(idxqomplete)-1);
+
+cleants = ones(size(rees)); 
+if ~isempty(idxincomp)  % throw some beats away
+    % throw T-waves away if there is no Q
+    for i = 1:length(idxincomp)
+       idx = find(idxr == idxincomp(i));
+       cleants(idxr(idx):idxr(idx+1)) = 0;        
+    end
+end
+
+% T
+tees = arrayfun(@(x) strcmp(x,'t'),alltypes_t);
+cbrackts = arrayfun(@(x) strcmp(x,')'),alltypes_t);
+tees = tees&cleants;            % removing T's without Q's
+
+% treating T-waves detected as biphasic
+biphasic = filter([1 1],1,tees);    
+idxbi = biphasic==2; idxbi = circshift(idxbi,1);
+tees_all = tees;    % saving for theight analysis
+tees(idxbi) = 0;    % only considering second T
+tbip = tbip + sum(idxbi);  % boolean to mark if there are biphasic Twaves
+% looking for T ends
+idxcbrackt = find(tees)+1;
+idxcbrackt = idxcbrackt(cbrackts(idxcbrackt)); % which c-brackts come right after T's
+tends = alltest(idxcbrackt); % T-end locations
+
+% test if QT analysis feasible
+if isempty(tends)
+    theight = NaN;
+    qt = NaN;
+    return
+end
+
+qttest = mean(tends-quus)*1000/fsnew/2;   % in ms
 
 
-% qt-intervals from test
-for i = 1:length(ttest)
+%% == QT error
+qt = qttest - qtref;        % absolute error in ms
+
+%% == T-height estimation
+if tbip > 0
+    theight = NaN;
+else
+    tref = allref(tref);
+    ttest = arrayfun(@(x) strcmp(x,'t'),alltypes_t);
+    ttest = alltest(ttest);
+
+    
+    
     
     
 end
 
-
-theight_err = 0;
 

@@ -1,4 +1,4 @@
-function [qt,theight] = FECGSYN_manalysis(abdm_temp,ref_temp,fs)
+function [qt,theight] = FECGSYN_manalysis(abdm_temp,ref_temp,fs,debug)
 % This function calculates morphological features form signals given two
 % templates (reference and abdm). Statistics are give as %.
 % 
@@ -60,7 +60,6 @@ wrann('refsig','qrs',qrsref,repmat('N',20,1));
 
 % == Segmentation using ECGPUWAVE
 % ref signal
-debug = 1;
 ecgpuwave('refsig','edr',[],[],'qrs'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 [allref,alltypes_r] = rdann('refsig','edr');
 if debug

@@ -53,8 +53,7 @@ switch result
     otherwise % Fernando loves having to flip slashes
         if isunix
             path = '/media/fernando/FetalEKG/2014.08_fecgsyn_simulations(4.0)/';
-            path2save = '/media/fernando/FetalEKG/2014.08_fecgsyn_simulations(4.0)/extracted3Hz/';
-            
+            path2save = '/media/fernando/FetalEKG/2014.08_fecgsyn_simulations(4.0)/extracted07Hz/';            
         else
             path = 'G:\2014.07_fecgsyn_simulations(3.0)\';
             path2save = 'G:\2014.07_fecgsyn_simulations(3.0)\extracted\';

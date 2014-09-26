@@ -34,7 +34,7 @@ function FECGSYN_genresults(path_orig,path_ext,fs,ch,debug)
 %% == Parameters
 INTERV = round(0.05*fs);    % BxB acceptance interval
 TEMP_SEC = round(60*fs);    % samples used for building templates
-morph = 1;                  % turn on/off morphological analysis
+morph = 0;                  % turn on/off morphological analysis
 %% Run through extracted datasets
 cd(path_orig)
 slashchar = char('/'*isunix + '\'*(~isunix));
@@ -60,7 +60,7 @@ morph_tskf = zeros(length(fls_orig),2);
 morph_aesn = zeros(length(fls_orig),2);
 
 
-for i = 200:length(fls_ext)
+for i = 1:length(fls_ext)
     disp(fls_ext{i})
     [rec,met] = strtok(fls_ext(i),'_');
     file = strcat(path_ext,fls_ext(i)); 
@@ -98,10 +98,10 @@ for i = 200:length(fls_ext)
                     temp_ref = FECGSYN_tgen(srcfecg(maxch(block),j:endsamp),qrstmp,debug);
                     temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
                     % evaluating morphological features
-                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
+                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs,debug);
                     block = block+1;
                 end
-                
+                morph_ica(origrec,:) = [mean(qt_err); mean(theight_err)];
             end
             clear fqrs F1 MAD PPV SE
         case 'PCA'
@@ -147,9 +147,9 @@ for i = 200:length(fls_ext)
                     temp_ref = FECGSYN_tgen(fecg(j:endsamp),qrstmp,debug);
                     temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
                     % evaluating morphological features
-                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
+                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs,debug);
                 end
-                morph_tspca(end+1,:) = [mean(qt_err); mean(theight_err)];
+                morph_tspca(origrec,:) = [mean(qt_err); mean(theight_err)];
             end
             
             clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
@@ -180,11 +180,10 @@ for i = 200:length(fls_ext)
                     temp_ref = FECGSYN_tgen(fecg(j:endsamp),qrstmp,debug);
                     temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
                     % evaluating morphological features
-                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
+                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs,debug);
                 end
-            end
-            morph_tskf(end+1,:) = [mean(qt_err); mean(theight_err)];
-            
+                    morph_tskf(origrec,:) = [mean(qt_err); mean(theight_err)];  
+            end            
             clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
         case 'alms'
             % discarding channels that are not the best
@@ -232,10 +231,10 @@ for i = 200:length(fls_ext)
                     temp_abdm = temp_abdm.avg*1000; % looks like adaptive filters are scalling them
                     temp_ref = temp_ref.avg;
                     % evaluating morphological features
-                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
+                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs,debug);
                 end
+                morph_aesn(origrec,:) = [mean(qt_err); mean(theight_err)];
             end
-            morph_aesn(end+1,:) = [mean(qt_err); mean(theight_err)];
             
             clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
     end
@@ -254,6 +253,7 @@ h = boxplot(stats_f1,{[repmat({'BSSica'},1,length(fls_orig)) repmat({'BSSpca'},1
 set(h, 'LineWidth',LWIDTH)
 ylabel('F1 (%)','FontSize',FSIZE)
 % MAD
+figure
 stats_MAD = [stats_ica(:,2) stats_pca(:,2) stats_tsc(:,2) stats_tspca(:,2) ...
     stats_tsekf(:,2) stats_alms(:,2) stats_arls(:,2) stats_aesn(:,2)];
 h = boxplot(stats_MAD,{[repmat({'ICA'},1,length(fls_orig)) repmat({'PCA'},1,length(fls_orig)) ...

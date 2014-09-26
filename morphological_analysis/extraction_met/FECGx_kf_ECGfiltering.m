@@ -105,7 +105,7 @@ for i = 1:Nkernels
         c2{k}=xcov(ECGmean_aux,[wtLow{k} zeros(1,NB_BINS-lenc)],'coeff');
         c2{k} = fliplr(c2{k});
         c2{k} = abs(c2{k}(ceil(lenc/2):NB_BINS+ceil(lenc/2)-1));
-        scalex(k,:) = scalex(k,:);%./mean(scalex(k,:).^2);
+        scalex(k,:) = scalex(k,:);%./mean(scalex(k,:).^2);       
     end
         
     c2 = cell2mat(c2');
@@ -140,13 +140,11 @@ for i = 1:Nkernels
     if alphai == 0
         alphai = amax;
     end
-    tstart = tic;
     InitParams = [alphai bi(i) tetai]; % initial parameters for optimization
     LowBound = [min(amin*sign(alphai),amax*sign(alphai)),0.001,tetai-pi/5];
     UpBound = [max(amin*sign(alphai),amax*sign(alphai)),bi(i)+1,tetai+pi/5];
     OptimPar = lsqnonlin(@(InitParams) FECGx_ECGModelError(InitParams,ECGmean_aux,meanphase),InitParams,LowBound,UpBound,options); 
 %Optimization
-    timeoptim(end+1)=toc(tstart);
     % Plot and Calculate average error in template
     [Error,Model] = FECGx_ECGModelError(OptimPar,ECGmean_aux,meanphase);
    
@@ -157,12 +155,8 @@ end
 OptimumParams = reshape(Optpre,1,3*Nkernels);
 [Error,Model] = FECGx_ECGModelError(OptimumParams,ECGmean,meanphase);
 
-%%%%%%%%%%%%%%%%
-%% SWT 4 %%%%%%%
-%%%%%%%%%%%%%%%%
-% Wavelet Positions and allow Optimization
-% Given Wavelet Positions
-tswt6=tic;
+
+% Re-run optimization procedure
 options = optimset('TolX',1e-4,'TolFun',1e-4,'MaxIter',Nkernels*100,'MaxFunEval',Nkernels*1000,'Display','off');  %Optimization options
 [~,idx] = arrayfun(@(x)(min(abs(meanphase-GaussPos(x)))),1:length(GaussPos),'UniformOutput', false); 
    % looks for minimal distance from GaussPos and meanphase

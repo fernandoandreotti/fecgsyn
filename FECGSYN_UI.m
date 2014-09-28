@@ -1802,11 +1802,11 @@ function cb_run_button(hObject, eventdata)
         fhrstring = ''; mhrstring = ''; mresstring = ''; fresstring = ''; timestring = ''; 
         
             % time
-            if param.n/param.fs < 10
+            if param.n/param.fs < 15
                 param.n = 15000;
                 param.fs = 1000;
                 timeflag = 1;
-                timestring = sprintf('\n Minimum time of simulation = 10 seconds!');
+                timestring = sprintf('\n Minimum time of simulation = 15 seconds!');
             end
         
             % mhr

@@ -107,6 +107,11 @@ if choice(1)
                     ylabel('Amplitude [NU]');
                 end
                 
+                if ee ~= length(el)
+                    set(gca,'xtick',[])
+                    set(gca,'xticklabel',[])
+                end
+                
                 if ee == length(el)
                     xlabel('Time [sec]')
                 end
@@ -226,6 +231,11 @@ if choice(1)
                     ylabel('Amplitude [NU]');
                 elseif length(el)==1 && ee == 1
                     ylabel('Amplitude [NU]');
+                end
+                
+                if ee ~= length(el)
+                    set(gca,'xtick',[])
+                    set(gca,'xticklabel',[])
                 end
                 
                 if ee == length(el)

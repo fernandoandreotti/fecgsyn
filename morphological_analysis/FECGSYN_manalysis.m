@@ -35,6 +35,7 @@ function [qt,theight] = FECGSYN_manalysis(abdm_temp,ref_temp,fs,debug)
 % resampling and repeating templates
 fsnew = 500;        % upsampling to 500Hz so that foetal 
                     % heart looks like adult
+debug = 1;
 wsign = abs(max(abdm_temp))>abs(min(abdm_temp));
 wsign = 2*wsign - 1;
 abdm_temp = 1000*wsign*abdm_temp/max(abs(abdm_temp)); % normalizing for 
@@ -43,6 +44,11 @@ abdm_temp = resample(abdm_temp,fsnew,fs);
 ref_temp = resample(ref_temp,fsnew,fs);
 abdm_sig = repmat(abdm_temp,1,20)';
 ref_sig = repmat(ref_temp,1,20)';
+
+% high-passing reference signal
+LF_CUT = 0.7; 
+[b_bas,a_bas] = butter(3,LF_CUT/(fsnew/2),'high');
+ref_sig = filtfilt(b_bas,a_bas,ref_sig);      
 
 % == getting annotations right
 qrsref = round((0.5 - 1/6)*length(ref_temp));
@@ -53,8 +59,8 @@ qrsabdm = arrayfun(@(x) qrsabdm + x*length(abdm_temp),0:19)';
 % writting to WFDB
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
 tm2 = 1:length(ref_sig); tm2 = tm2'-1;
-wrsamp(tm1,abdm_sig,'absig','','','')
-wrsamp(tm2,ref_sig,'refsig','','','')
+wrsamp(tm1,abdm_sig,'absig',fs,1000,'')
+wrsamp(tm2,ref_sig,'refsig',fs,1000,'')
 wrann('absig','qrs',qrsabdm,repmat('N',20,1));
 wrann('refsig','qrs',qrsref,repmat('N',20,1));
 
@@ -111,7 +117,7 @@ tees = tees&cleants;            % removing T's without Q's
 
 % treating T-waves detected as biphasic
 biphasic = filter([1 1],1,tees);    
-idxbi = biphasic==2; idxbi = circshift(idxbi,1);
+idxbi = biphasic==2; idxbi = circshift(idxbi,-1);
 tees_all = tees;    % saving for theight analysis
 tees(idxbi) = 0;    % only considering second T
 % looking for T ends
@@ -128,7 +134,10 @@ end
 qtref = mean(tends-quus)*1000/fsnew/2;    % in ms
 % looking for T height
 if sum(idxbi) > 0
-    twave = allref(find(tees_all,2))-length(ref_temp);
+    twave = find(idxbi&tees_all,1);
+    twave = [twave twave+1];
+    twave = allref(twave);
+    twave = twave-(sum(alltest(rees)<twave(1))-1)*length(ref_temp);
     [~,idx] = max(abs(ref_temp(twave)));
     twave = twave(idx);
 else
@@ -164,7 +173,7 @@ tees = tees&cleants;            % removing T's without Q's
 
 % treating T-waves detected as biphasic
 biphasic = filter([1 1],1,tees);    
-idxbi = biphasic==2; idxbi = circshift(idxbi,1);
+idxbi = biphasic==2; idxbi = circshift(idxbi,-1);
 tees_all = tees;    % saving for theight analysis
 tees(idxbi) = 0;    % only considering second T
 % looking for T ends
@@ -182,7 +191,9 @@ end
 qttest = mean(tends-quus)*1000/fsnew/2;   % in ms
 % looking for T height
 if sum(idxbi) > 0
-    twave = alltest(find(tees_all,2))-length(abdm_temp);
+    twave = find(idxbi&tees_all,1);
+    twave = [twave twave+1];
+    twave = alltest(twave)-length(abdm_temp);
     [~,idx] = max(abs(abdm_temp(twave)));
     twave = twave(idx);
 else

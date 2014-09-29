@@ -34,7 +34,7 @@ function FECGSYN_genresults(path_orig,path_ext,fs,ch,debug)
 %% == Parameters
 INTERV = round(0.05*fs);    % BxB acceptance interval
 TEMP_SEC = round(60*fs);    % samples used for building templates
-morph = 0;                  % turn on/off morphological analysis
+morph = 1;                  % turn on/off morphological analysis
 %% Run through extracted datasets
 cd(path_orig)
 slashchar = char('/'*isunix + '\'*(~isunix));
@@ -238,6 +238,8 @@ for i = 1:length(fls_ext)
             
             clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
     end
+    xlim([1500 2000])
+    print('-dpng','-r72',['/media/fernando/FetalEKG/2014.08_fecgsyn_simulations(4.0)/extracted07Hz/plots/' fls_ext{i} '.png'])
 end
 
 %% Statistics Generation

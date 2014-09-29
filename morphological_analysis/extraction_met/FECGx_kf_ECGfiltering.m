@@ -1,4 +1,5 @@
-function [ output,Data] = FECGx_kf_ECGfiltering(x,fs,flag,indicepeaks,debug)
+function [ output,Data] = FECGx_kf_ECGfiltering(x,indicepeaks,NbCycles,fs,debug)
+%ecg_filt = FECGx_kf_ECGfiltering(ecg,peaks,nbCycles,fs,debug);
 %ECG FILTERING BLOCK Generates a model and call EKF/EKS
 %   INPUTS:
 %
@@ -32,7 +33,9 @@ peaks(indicepeaks(1:Li)) = 1;
 
 phase = PhaseCalc(find(peaks),length(x)); % phase calculation
 %Data.phase{end+1} = phase;
-NB_BINS = 300;          % number of phase bins
+NB_BINS = 250;          % number of phase bins
+phase_tmp = PhaseCalc(indicepeaks(1:NbCycles),indicepeaks(NbCycles)+300); % phase calculation
+
 [ECGmean,ECGsd,meanphase] = meanbeat(x,phase,NB_BINS); % mean ECG extraction
 
 %//////////////////////////////////////////////////////////////////////////
@@ -143,17 +146,17 @@ for i = 1:Nkernels
     InitParams = [alphai bi(i) tetai]; % initial parameters for optimization
     LowBound = [min(amin*sign(alphai),amax*sign(alphai)),0.001,tetai-pi/5];
     UpBound = [max(amin*sign(alphai),amax*sign(alphai)),bi(i)+1,tetai+pi/5];
-    OptimPar = lsqnonlin(@(InitParams) FECGx_ECGModelError(InitParams,ECGmean_aux,meanphase),InitParams,LowBound,UpBound,options); 
+    OptimPar = lsqnonlin(@(InitParams) FECGx_kf_ECGModelError(InitParams,ECGmean_aux,meanphase),InitParams,LowBound,UpBound,options); 
 %Optimization
     % Plot and Calculate average error in template
-    [Error,Model] = FECGx_ECGModelError(OptimPar,ECGmean_aux,meanphase);
+    [Error,Model] = FECGx_kf_ECGModelError(OptimPar,ECGmean_aux,meanphase);
    
     gspot(i,:) = Model;
     Optpre(i,:) = OptimPar;
     ECGmean_aux = ECGmean_aux - Model;
 end
 OptimumParams = reshape(Optpre,1,3*Nkernels);
-[Error,Model] = FECGx_ECGModelError(OptimumParams,ECGmean,meanphase);
+[Error,Model] = FECGx_kf_ECGModelError(OptimumParams,ECGmean,meanphase);
 
 
 % Re-run optimization procedure
@@ -166,9 +169,9 @@ tetai = meanphase(idx); %closest values for teta (based on GaussPos that belongs
 alphai = 1.2*ECGmean(idx); % purposed initial point for gaussian amplitude
 % bi = .04*ones(size(alphai)); % purposed initial point for gaussian width
 InitParams = [alphai bi tetai];
-OptimumParams = lsqnonlin(@(InitParams) FECGx_ECGModelError(InitParams,ECGmean,meanphase),InitParams,InitParams-2,InitParams+2,options); 
+OptimumParams = lsqnonlin(@(InitParams) FECGx_kf_ECGModelError(InitParams,ECGmean,meanphase),InitParams,InitParams-2,InitParams+2,options); 
 %Optimization
-[Error,Model] = FECGx_ECGModelError(OptimumParams,ECGmean,meanphase);
+[Error,Model] = FECGx_kf_ECGModelError(OptimumParams,ECGmean,meanphase);
 
 clear L Li LowBound Model OptimPar ECGmean_aux
 
@@ -189,7 +192,7 @@ while(yy<N+1)
 end
 N = length(OptimumParams)/3;     %new number of Gaussian kernels
 
-% Plot final results
+% Plot final resultsNew Folder
 % if debug && ~isempty(Optpos)
 %     figure(2)
 %     %     errorbar(meanphase,ECGmean,ECGsd/2);
@@ -217,7 +220,7 @@ y = [phase ; x];
 
 %covariance matrix of the process noise vector
 % should train these gains (grid search)
-GQ = 0.1;
+GQ = 1;
 % Q = diag( [(.1*OptimumParams(1:N)).^2 (.1*ones(1,N)).^2 (.1*ones(1,N)).^2 (0.1*wsd)^2 , GQ*var(Error)]);
 Q = diag( [(.1*OptimumParams(1:N)).^2 (.1*ones(1,N)).^2 (.1*ones(1,N)).^2 (0.1*wsd)^2 , (GQ*mean(ECGsd))^2]);
 
@@ -237,7 +240,7 @@ u = zeros(1,length(x));
 %//////////////////////////////////////////////////////////////////////////
 %Use EKF or EKS
 % disp('Parameters estimated. Filtering...')
-Xfiltered = FECGx_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);                          
+Xfiltered = FECGx_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);                          
 output = Xfiltered(2,:);
 % plot(output,'k')
 end

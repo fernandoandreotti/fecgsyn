@@ -158,10 +158,14 @@ for i=1:N
        end 
     end
     
-    dthetaix = mod(theta(ones(length(gp{crst}{1}.x),1),i)' - gp{crst}{1}.x + pi , 2*pi) - pi;
-    dthetaiy = mod(theta(ones(length(gp{crst}{1}.y),1),i)' - gp{crst}{1}.y + pi , 2*pi) - pi;
-    dthetaiz = mod(theta(ones(length(gp{crst}{1}.z),1),i)' - gp{crst}{1}.z + pi , 2*pi) - pi;
+%     dthetaix = mod(theta(ones(length(gp{crst}{1}.x),1),i)' - gp{crst}{1}.x + pi , 2*pi) - pi;
+%     dthetaiy = mod(theta(ones(length(gp{crst}{1}.y),1),i)' - gp{crst}{1}.y + pi , 2*pi) - pi;
+%     dthetaiz = mod(theta(ones(length(gp{crst}{1}.z),1),i)' - gp{crst}{1}.z + pi , 2*pi) - pi;
     
+    dthetaix = theta(i)*ones(length(gp{crst}{1}.x),1)' - gp{crst}{1}.x;
+    dthetaiy = theta(i)*ones(length(gp{crst}{1}.y),1)' - gp{crst}{1}.y;
+    dthetaiz = theta(i)*ones(length(gp{crst}{1}.z),1)' - gp{crst}{1}.z;
+
     % = differential expression
      X = X - dt*sum(w(i)*gp{crst}{2}.x ./ (gp{crst}{3}.x .^ 2) .* dthetaix .* exp(-dthetaix .^2 ./ (2*gp{crst}{3}.x .^ 2)),2);
      Y = Y - dt*sum(w(i)*gp{crst}{2}.y ./ (gp{crst}{3}.y .^ 2) .* dthetaiy .* exp(-dthetaiy .^2 ./ (2*gp{crst}{3}.y .^ 2)),2);
@@ -172,17 +176,10 @@ for i=1:N
     % Y = sum(gp{crst}{2}.y .* exp(-dthetaiy .^2 ./ (2*gp{crst}{3}.y .^ 2)),2);
     % Z = sum(gp{crst}{2}.z .* exp(-dthetaiz .^2 ./ (2*gp{crst}{3}.z .^ 2)),2);
     
-    if fres==0
-        % no respiration
-        thetax = R0.x;
-        thetay = R0.y;
-        thetaz = R0.z;
-    else
-        % rotation due to respiration     
-        thetax = R0.x + RESP_ANG_X*brwave(i);
-        thetay = R0.y + RESP_ANG_Y*brwave(i);
-        thetaz = R0.z + RESP_ANG_Z*brwave(i);
-    end
+    % rotation due to respiration
+    thetax = R0.x + RESP_ANG_X*brwave(i);
+    thetay = R0.y + RESP_ANG_Y*brwave(i);
+    thetaz = R0.z + RESP_ANG_Z*brwave(i);
     
     R = rotatexyz(thetax,thetay,thetaz); % rotation matrix
     
@@ -199,9 +196,9 @@ end
 
 % == format outputs
 dmodel.H = H;
-[B,A] = butter(5,.5*2/fs,'low'); % high-pass VCG filter with .5 Hz
+[B,A] = butter(5,.7*2/fs,'high'); % high-pass VCG filter with .5 Hz
 for i = 1:3                      % avoid trends in the VCG (due to non-zero differentials  
-    VCG(i,:) = VCG(i,:) - filtfilt(B,A,VCG(i,:));  % at the end/beggining of cycle)
+    VCG(i,:) = filtfilt(B,A,VCG(i,:));  % at the end/beggining of cycle)
     % normalizing VCG for propagating
     VCG(i,:) = VCG(i,:)./max(abs(VCG(i,:)));   
 end

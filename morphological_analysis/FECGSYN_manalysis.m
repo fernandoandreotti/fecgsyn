@@ -120,6 +120,9 @@ biphasic = filter([1 1],1,tees);
 idxbi = biphasic==2; idxbi = circshift(idxbi,-1);
 tees_all = tees;    % saving for theight analysis
 tees(idxbi) = 0;    % only considering second T
+no2tees = tees_all;
+no2tees(idxbi|circshift(idxbi,1)) = 0;
+
 % looking for T ends
 idxcbrackt = find(tees)+1;
 idxcbrackt = idxcbrackt(cbrackts(idxcbrackt)); % which c-brackts come right after T's
@@ -134,10 +137,13 @@ end
 qtref = mean(tends-quus)*1000/fsnew/2;    % in ms
 % looking for T height
 if sum(idxbi) > 0
+    if sum(no2tees)>0
+        twave = allref(no2tees);
+        twave = allref(1);
+    end
     twave = find(idxbi&tees_all,1);
     twave = [twave twave+1];
-    twave = allref(twave);
-    twave = twave-(sum(alltest(rees)<twave(1))-1)*length(ref_temp);
+    twave = allref(twave)-length(ref_temp);
     [~,idx] = max(abs(ref_temp(twave)));
     twave = twave(idx);
 else

@@ -133,7 +133,7 @@ if (fres==0 && size(traj,1)==1) % respiration (FALSE), trajectory (FALSE)
 elseif  (fres~=0 && size(traj,1)==1) % respiration (TRUE), trajectory (FALSE)
     H = zeros(NB_EL,3,N);
     traj = repmat(traj,N,1);
-else % respiration (FALSE), trajectory (TRUE) OR respiration (TRUE), trajectory (TRUE)
+else % respiration (FALSE) AND trajectory (TRUE) OR respiration (TRUE) AND trajectory (TRUE)
     H = zeros(NB_EL,3,N);    
 end
 
@@ -172,11 +172,18 @@ for i=1:N
     % Y = sum(gp{crst}{2}.y .* exp(-dthetaiy .^2 ./ (2*gp{crst}{3}.y .^ 2)),2);
     % Z = sum(gp{crst}{2}.z .* exp(-dthetaiz .^2 ./ (2*gp{crst}{3}.z .^ 2)),2);
     
-    % rotation due to respiration     
-    thetax = R0.x + RESP_ANG_X*brwave(i);
-    thetay = R0.y + RESP_ANG_Y*brwave(i);
-    thetaz = R0.z + RESP_ANG_Z*brwave(i);
-   
+    if fres==0
+        % no respiration
+        thetax = R0.x;
+        thetay = R0.y;
+        thetaz = R0.z;
+    else
+        % rotation due to respiration     
+        thetax = R0.x + RESP_ANG_X*brwave(i);
+        thetay = R0.y + RESP_ANG_Y*brwave(i);
+        thetaz = R0.z + RESP_ANG_Z*brwave(i);
+    end
+    
     R = rotatexyz(thetax,thetay,thetaz); % rotation matrix
     
     VCG(:,i) = R*L*[X; Y; Z]; % VCG with rotation

@@ -52,8 +52,8 @@ switch result
         path2save = '/netshares/ipmprojects3/JB_Experimental_Data/out_ICA/';
     otherwise % Fernando loves having to flip slashes
         if isunix
-            path = '/media/fernando/FetalEKG/2014.08_fecgsyn_simulations(4.0)/';
-            path2save = '/media/fernando/FetalEKG/2014.08_fecgsyn_simulations(4.0)/extracted07Hz/';            
+            path = '/media/fernando/FetalEKG/2014.08_fecgsyn_simulations(5.0)/';
+            path2save = '/media/fernando/FetalEKG/2014.10_fecgsyn_simulations(5.0)/extracted07Hz/';            
         else
             path = 'G:\2014.07_fecgsyn_simulations(3.0)\';
             path2save = 'G:\2014.07_fecgsyn_simulations(3.0)\extracted\';

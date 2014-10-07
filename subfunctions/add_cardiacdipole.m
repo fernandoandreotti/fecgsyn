@@ -194,7 +194,15 @@ end
 % == format outputs
 dmodel.H = H;
 [B,A] = butter(5,.7*2/fs,'high'); % high-pass VCG filter with .5 Hz
-for i = 1:3                      % avoid trends in the VCG (due to non-zero differentials  
+opol = 6;  % polynome order
+
+% == avoid trends in the VCG (due to non-zero differentials  
+for i = 1:3                      
+    % gross trends
+    [p,~,mu] = polyfit(1:N,VCG(i,:),opol);   % polynomial fit
+    f_y = polyval(p,1:N,[],mu);       
+    VCG(i,:) = VCG(i,:) - f_y; % remove rough trends
+    % fine trends
     VCG(i,:) = filtfilt(B,A,VCG(i,:));  % at the end/beggining of cycle)
     % normalizing VCG for propagating
     VCG(i,:) = VCG(i,:)./max(abs(VCG(i,:)));   

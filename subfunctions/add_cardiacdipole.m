@@ -158,18 +158,15 @@ for i=1:N
        end 
     end
     
-%     dthetaix = mod(theta(ones(length(gp{crst}{1}.x),1),i)' - gp{crst}{1}.x + pi , 2*pi) - pi;
-%     dthetaiy = mod(theta(ones(length(gp{crst}{1}.y),1),i)' - gp{crst}{1}.y + pi , 2*pi) - pi;
-%     dthetaiz = mod(theta(ones(length(gp{crst}{1}.z),1),i)' - gp{crst}{1}.z + pi , 2*pi) - pi;
-    
-    dthetaix = theta(i)*ones(length(gp{crst}{1}.x),1)' - gp{crst}{1}.x;
-    dthetaiy = theta(i)*ones(length(gp{crst}{1}.y),1)' - gp{crst}{1}.y;
-    dthetaiz = theta(i)*ones(length(gp{crst}{1}.z),1)' - gp{crst}{1}.z;
+    % = guarantees that dtheta stay in [-pi,pi]
+    dthetaix = mod(theta(ones(length(gp{crst}{1}.x),1),i)' - gp{crst}{1}.x + pi , 2*pi) - pi;
+    dthetaiy = mod(theta(ones(length(gp{crst}{1}.y),1),i)' - gp{crst}{1}.y + pi , 2*pi) - pi;
+    dthetaiz = mod(theta(ones(length(gp{crst}{1}.z),1),i)' - gp{crst}{1}.z + pi , 2*pi) - pi;  
 
     % = differential expression
-     X = X - dt*sum(w(i)*gp{crst}{2}.x ./ (gp{crst}{3}.x .^ 2) .* dthetaix .* exp(-dthetaix .^2 ./ (2*gp{crst}{3}.x .^ 2)),2);
-     Y = Y - dt*sum(w(i)*gp{crst}{2}.y ./ (gp{crst}{3}.y .^ 2) .* dthetaiy .* exp(-dthetaiy .^2 ./ (2*gp{crst}{3}.y .^ 2)),2);
-     Z = Z - dt*sum(w(i)*gp{crst}{2}.z ./ (gp{crst}{3}.z .^ 2) .* dthetaiz .* exp(-dthetaiz .^2 ./ (2*gp{crst}{3}.z .^ 2)),2);
+    X = X - dt*sum(w(i)*gp{crst}{2}.x ./ (gp{crst}{3}.x .^ 2) .* dthetaix .* exp(-dthetaix .^2 ./ (2*gp{crst}{3}.x .^ 2)),2);
+    Y = Y - dt*sum(w(i)*gp{crst}{2}.y ./ (gp{crst}{3}.y .^ 2) .* dthetaiy .* exp(-dthetaiy .^2 ./ (2*gp{crst}{3}.y .^ 2)),2);
+    Z = Z - dt*sum(w(i)*gp{crst}{2}.z ./ (gp{crst}{3}.z .^ 2) .* dthetaiz .* exp(-dthetaiz .^2 ./ (2*gp{crst}{3}.z .^ 2)),2);
     
     % = analytical expression
     % X = sum(gp{crst}{2}.x .* exp(-dthetaix .^2 ./ (2*gp{crst}{3}.x .^ 2)),2);

@@ -33,7 +33,7 @@ debug = 0;
 
 %% Generating simulated data with various SNR for morphological analysis
 % global parameters
-paramorig.fs = 250;            % sampling frequency [Hz]
+paramorig.fs = 1000;            % sampling frequency [Hz]
 paramorig.n = 300*paramorig.fs;  % number of data points to generate (5 min)
 
 % electrode positions

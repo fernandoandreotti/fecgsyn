@@ -218,12 +218,11 @@ N = length(OptimumParams)/3;     %new number of Gaussian kernels
 y = [phase ; x];
 
 %covariance matrix of the process noise vector
-% should train these gains (grid search)
 GQ = 1;
 Q = diag( [(.1*OptimumParams(1:N)).^2 (.1*ones(1,N)).^2 (.1*ones(1,N)).^2 (0.1*wsd)^2 , (GQ*mean(ECGsd))^2]);
 
 %covariance matrix of the observation noise vector
-GR = 1;
+GR = 4;
 R = [(w/fs).^2 0 ;0 GR*mean(ECGsd).^2];
 Wmean = [OptimumParams w 0]';
 

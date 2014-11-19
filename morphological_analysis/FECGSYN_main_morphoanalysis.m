@@ -62,7 +62,7 @@ end
 
 
 %% Set-up parameters
-generate = 1;   % boolean, data should be generated?
+generate = 0;   % boolean, data should be generated?
 % If not, path should direct to data location
 debug = 0;
 

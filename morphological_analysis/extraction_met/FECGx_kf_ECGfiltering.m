@@ -36,7 +36,7 @@ phase = PhaseCalc(find(peaks),length(x)); % phase calculation
 NB_BINS = 250;          % number of phase bins
 phase_tmp = PhaseCalc(indicepeaks(1:NbCycles),indicepeaks(NbCycles)+300); % phase calculation
 
-[ECGmean,ECGsd,meanphase] = meanbeat(x,phase,NB_BINS); % mean ECG extraction
+[ECGmean,ECGsd,meanphase] = meanbeat(x(1:indicepeaks(NbCycles)+300),phase_tmp,NB_BINS); % mean ECG extraction
 
 %//////////////////////////////////////////////////////////////////////////
 % PLOTS AND RESULTS
@@ -221,7 +221,6 @@ y = [phase ; x];
 %covariance matrix of the process noise vector
 % should train these gains (grid search)
 GQ = 1;
-% Q = diag( [(.1*OptimumParams(1:N)).^2 (.1*ones(1,N)).^2 (.1*ones(1,N)).^2 (0.1*wsd)^2 , GQ*var(Error)]);
 Q = diag( [(.1*OptimumParams(1:N)).^2 (.1*ones(1,N)).^2 (.1*ones(1,N)).^2 (0.1*wsd)^2 , (GQ*mean(ECGsd))^2]);
 
 %covariance matrix of the observation noise vector

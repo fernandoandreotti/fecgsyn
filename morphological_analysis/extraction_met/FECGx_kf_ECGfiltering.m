@@ -97,10 +97,8 @@ load('FECGx_kf_wtFilterCoefs.mat'); % loading quadratic spline coeff
 clear bi s gp scalex
 gp = zeros(1,Nkernels);
 scalex = zeros(scala,NB_BINS);
-timeoptim = [];
-
+bi = zeros(1,Nkernels);
 for i = 1:Nkernels
-    c1 = cell(1,scala);
     c2 = cell(1,scala);
     for k = 1:scala
         scalex(k,:) = conv(ECGmean_aux,wtLow{k},'same');
@@ -108,17 +106,17 @@ for i = 1:Nkernels
         c2{k}=xcov(ECGmean_aux,[wtLow{k} zeros(1,NB_BINS-lenc)],'coeff');
         c2{k} = fliplr(c2{k});
         c2{k} = abs(c2{k}(ceil(lenc/2):NB_BINS+ceil(lenc/2)-1));
-        scalex(k,:) = scalex(k,:);%./mean(scalex(k,:).^2);       
+        scalex(k,:) = scalex(k,:);%./mean(scalex(k,:).^2);
     end
-        
+    
     c2 = cell2mat(c2');
-%     figure
-%     surf(c2','EdgeColor','none')
-%     axis square
-%     xlabel('Scale (j)')
-%     ylabel('Samples [n]')
-%     zlabel('Normalized Cross-Covariance (NU)')
-%     
+    %     figure
+    %     surf(c2','EdgeColor','none')
+    %     axis square
+    %     xlabel('Scale (j)')
+    %     ylabel('Samples [n]')
+    %     zlabel('Normalized Cross-Covariance (NU)')
+    %
     [~,s]=max(max(c2')); % picking scale with biggest xcov
     [~,gp(i)] = max(scalex(s,:).^2);
     GaussPos(i) = samptorads(gp(i));  % converting to interval [-pi,pi]
@@ -146,32 +144,33 @@ for i = 1:Nkernels
     InitParams = [alphai bi(i) tetai]; % initial parameters for optimization
     LowBound = [min(amin*sign(alphai),amax*sign(alphai)),0.001,tetai-pi/5];
     UpBound = [max(amin*sign(alphai),amax*sign(alphai)),bi(i)+1,tetai+pi/5];
-    OptimPar = lsqnonlin(@(InitParams) FECGx_kf_ECGModelError(InitParams,ECGmean_aux,meanphase),InitParams,LowBound,UpBound,options); 
-%Optimization
+    OptimPar = lsqnonlin(@(InitParams) FECGx_kf_ECGModelError(InitParams,ECGmean_aux,meanphase),InitParams,LowBound,UpBound,options);
+    %Optimization
     % Plot and Calculate average error in template
-    [Error,Model] = FECGx_kf_ECGModelError(OptimPar,ECGmean_aux,meanphase);
-   
-    gspot(i,:) = Model;
+    [~,Model] = FECGx_kf_ECGModelError(OptimPar,ECGmean_aux,meanphase);   
     Optpre(i,:) = OptimPar;
     ECGmean_aux = ECGmean_aux - Model;
 end
 OptimumParams = reshape(Optpre,1,3*Nkernels);
-[Error,Model] = FECGx_kf_ECGModelError(OptimumParams,ECGmean,meanphase);
-
 
 % Re-run optimization procedure
 options = optimset('TolX',1e-4,'TolFun',1e-4,'MaxIter',Nkernels*100,'MaxFunEval',Nkernels*1000,'Display','off');  %Optimization options
-[~,idx] = arrayfun(@(x)(min(abs(meanphase-GaussPos(x)))),1:length(GaussPos),'UniformOutput', false); 
-   % looks for minimal distance from GaussPos and meanphase
+[~,idx] = arrayfun(@(x)(min(abs(meanphase-GaussPos(x)))),1:length(GaussPos),'UniformOutput', false);
+% looks for minimal distance from GaussPos and meanphase
 idx = cell2mat(idx);        %converts cell to array (both are numeric)
 
 tetai = meanphase(idx); %closest values for teta (based on GaussPos that belongs to meanphase)
 alphai = 1.2*ECGmean(idx); % purposed initial point for gaussian amplitude
 % bi = .04*ones(size(alphai)); % purposed initial point for gaussian width
 InitParams = [alphai bi tetai];
-OptimumParams = lsqnonlin(@(InitParams) FECGx_kf_ECGModelError(InitParams,ECGmean,meanphase),InitParams,InitParams-2,InitParams+2,options); 
+OptimumParams = lsqnonlin(@(InitParams) FECGx_kf_ECGModelError(InitParams,ECGmean,meanphase),InitParams,InitParams-2,InitParams+2,options);
 %Optimization
 [Error,Model] = FECGx_kf_ECGModelError(OptimumParams,ECGmean,meanphase);
+% plot(ECGmean,'k')
+% hold on
+% plot(Model,'r')
+% plot(Error,'g')
+% hold off
 
 clear L Li LowBound Model OptimPar ECGmean_aux
 
@@ -225,7 +224,7 @@ Q = diag( [(.1*OptimumParams(1:N)).^2 (.1*ones(1,N)).^2 (.1*ones(1,N)).^2 (0.1*w
 
 %covariance matrix of the observation noise vector
 GR = 1;
-R = [(w/fs).^2 0 ;0 GR*mean(ECGsd(1:round(length(ECGsd)))).^2];
+R = [(w/fs).^2 0 ;0 GR*mean(ECGsd).^2];
 Wmean = [OptimumParams w 0]';
 
 %mean observation noise vector
@@ -239,7 +238,7 @@ u = zeros(1,length(x));
 %//////////////////////////////////////////////////////////////////////////
 %Use EKF or EKS
 % disp('Parameters estimated. Filtering...')
-Xfiltered = FECGx_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);                          
+Xfiltered = FECGx_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);
 output = Xfiltered(2,:);
 % plot(output,'k')
 end

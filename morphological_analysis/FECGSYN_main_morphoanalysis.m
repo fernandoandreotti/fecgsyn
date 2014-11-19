@@ -52,11 +52,11 @@ switch result
         path2save = '/netshares/ipmprojects3/JB_Experimental_Data/out_ICA/';
     otherwise % Fernando loves having to flip slashes
         if isunix
-            path = '/media/fernando/FetalEKG/2014.08_fecgsyn_simulations(5.0)/';
-            path2save = '/media/fernando/FetalEKG/2014.10_fecgsyn_simulations(5.0)/extracted07Hz/';
+            path = '/media/fernando/FetalEKG/2014.10_fecgsyn_simulations(5.0)/';
+            path2save = '/media/fernando/FetalEKG/2014.10_fecgsyn_simulations(5.0)/extracted3Hz/';
         else
-            path = 'G:\2014.07_fecgsyn_simulations(3.0)\';
-            path2save = 'G:\2014.07_fecgsyn_simulations(3.0)\extracted\';
+            path = '';
+            path2save = '';
         end
 end
 
@@ -190,14 +190,14 @@ fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
 % % % save(['workspace_exp1_', icamethod]); % save the workspace for history
 
 %% Experiment 2 (later 2 and 3)
-extract = 0;
+extract = 1;
 % Channels to be used
 ch = [1 8 11 22 25 32]; % using 6 channels (decided considering Exp. 1)
 refchs = 33:34;
 fs_new = 250;       % signals will be resample to 250 Hz
 
 if extract
-    for i = 1:200%length(fls)
+    for i = 466:length(fls)
         tic
         disp(['Extracting file ' fls{i} '..'])
         filename = [path2save 'rec' num2str(i)];
@@ -215,6 +215,7 @@ if extract
         REFRAC = .15;               % detector refractory period (in s)
         mixture = double(out.mecg) + sum(cat(3,out.fecg{:}),3) ...
             + noise;     % re-creating abdominal mixture
+        mixture = mixture./3000;    % removing gain given during int conversion
         refs = zeros(length(refchs),length(mixture)/(fs/fs_new));
         for j = 1:length(refchs)
             refs(j,:) = resample(mixture(refchs(j),:),fs_new,fs);   % reference maternal channels
@@ -238,71 +239,71 @@ if extract
         clear HF_CUT LF_CUT a_bas a_lp b_bas b_lp bw wo lpmix ppmixture
         % == Extraction
         
-        %         %-------------------
-        %         %ICA Independent Component Analysis
-        %         %-------------------
-        %         disp('ICA extraction ..')
-        %         loopsec = 60;   % in seconds
-        %         icasig = FECGSYN_bss_extraction(mixture,'JADEICA',fs_new,out.fqrs{1},loopsec,filename);     % extract using IC
-        %         % Calculate quality measures
-        %         fqrs = qrs_detect(icasig,TH,REFRAC,fs_new);
-        %         %== saving results
-        %         load([filename '_JADEICA'])
-        %         save([filename '_JADEICA'],'maxch','outdata','fqrs')
-        %         clear fqrs icasig F1 RMS PPV SE outdata
-        %
-        %         % -------------------
-        %         % PCA Principal Component Analysis
-        %         % -------------------
-        %         disp('PCA extraction ..')
-        %         pcasig = FECGSYN_bss_extraction(mixture,'PCA',fs_new,out.fqrs{1},loopsec,filename);     % extract using IC
-        %         % Calculate quality measures
-        %         fqrs = qrs_detect(pcasig,TH,REFRAC,fs_new);
-        %         % == saving results
-        %         load([filename '_PCA'])
-        %         save([filename '_PCA'],'maxch','outdata','fqrs')
-        %         clear fqrs pcasig qrs F1 RMS PPV SE loopsec outdata
-        %
-        %
-        %         % -------------------
-        %         % TS-CERUTTI
-        %         % -------------------
-        %         disp('TS-CERUTTI extraction ..')
-        %         % parameters
-        %         NbCycles = 20;
-        %         residual = zeros(size(mixture));
-        %         fqrs = cell(1,size(mixture,1));
-        %         for j = 1:length(ch)
-        %             residual(j,:) = FECGSYN_ts_extraction(out.mqrs,mixture(j,:),'TS-CERUTTI',0,...
-        %                 NbCycles,'',fs_new);
-        %             fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
-        %             [F1(j),~,~,~] = Bxb_compare(out.fqrs{1},fqrs{j},INTERV);
-        %         end
-        %         [~,maxch] = max(F1);
-        %         % == saving results
-        %         save([filename '_tsc'],'residual','maxch','fqrs');
-        %         clear F1 RMS PPV SE maxch residual fqrs
-        %
-        %         % -------------------
-        %         % TS-PCA
-        %         % -------------------
-        %         disp('TS-PCA extraction ..')
-        %         % parameters
-        %         NbPC = 2;
-        %         residual = zeros(size(mixture));
-        %         fqrs = cell(1,size(mixture,1));
-        %         for j = 1:length(ch)
-        %             residual(j,:) = FECGSYN_ts_extraction(out.mqrs,mixture(j,:),'TS-PCA',0,...
-        %                 NbCycles,NbPC,fs_new);
-        %             fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
-        %             [F1(j),~,~,~] = Bxb_compare(out.fqrs{1},fqrs{j},INTERV);
-        %         end
-        %         [~,maxch] = max(F1);
-        %         % == saving results
-        %         save([filename '_tspca'],'residual','maxch','fqrs');
-        %
-        %         clear F1 RMS PPV SE maxch residual fqrs NbCycles NbPC
-        %
+        %-------------------
+        %ICA Independent Component Analysis
+        %-------------------
+        disp('ICA extraction ..')
+        loopsec = 60;   % in seconds
+        icasig = FECGSYN_bss_extraction(mixture,'JADEICA',fs_new,out.fqrs{1},loopsec,filename);     % extract using IC
+        % Calculate quality measures
+        fqrs = qrs_detect(icasig,TH,REFRAC,fs_new);
+        %== saving results
+        load([filename '_JADEICA'])
+        save([filename '_JADEICA'],'maxch','outdata','fqrs')
+        clear fqrs icasig F1 RMS PPV SE outdata
+        
+        % -------------------
+        % PCA Principal Component Analysis
+        % -------------------
+        disp('PCA extraction ..')
+        pcasig = FECGSYN_bss_extraction(mixture,'PCA',fs_new,out.fqrs{1},loopsec,filename);     % extract using IC
+        % Calculate quality measures
+        fqrs = qrs_detect(pcasig,TH,REFRAC,fs_new);
+        % == saving results
+        load([filename '_PCA'])
+        save([filename '_PCA'],'maxch','outdata','fqrs')
+        clear fqrs pcasig qrs F1 RMS PPV SE loopsec outdata
+        
+        
+        % -------------------
+        % TS-CERUTTI
+        % -------------------
+        disp('TS-CERUTTI extraction ..')
+        % parameters
+        NbCycles = 20;
+        residual = zeros(size(mixture));
+        fqrs = cell(1,size(mixture,1));
+        for j = 1:length(ch)
+            residual(j,:) = FECGSYN_ts_extraction(out.mqrs,mixture(j,:),'TS-CERUTTI',0,...
+                NbCycles,'',fs_new);
+            fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
+            [F1(j),~,~,~] = Bxb_compare(out.fqrs{1},fqrs{j},INTERV);
+        end
+        [~,maxch] = max(F1);
+        % == saving results
+        save([filename '_tsc'],'residual','maxch','fqrs');
+        clear F1 RMS PPV SE maxch residual fqrs
+        
+        % -------------------
+        % TS-PCA
+        % -------------------
+        disp('TS-PCA extraction ..')
+        % parameters
+        NbPC = 2;
+        residual = zeros(size(mixture));
+        fqrs = cell(1,size(mixture,1));
+        for j = 1:length(ch)
+            residual(j,:) = FECGSYN_ts_extraction(out.mqrs,mixture(j,:),'TS-PCA',0,...
+                NbCycles,NbPC,fs_new);
+            fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
+            [F1(j),~,~,~] = Bxb_compare(out.fqrs{1},fqrs{j},INTERV);
+        end
+        [~,maxch] = max(F1);
+        % == saving results
+        save([filename '_tspca'],'residual','maxch','fqrs');
+        
+        clear F1 RMS PPV SE maxch residual fqrs NbCycles NbPC
+        
         % ----------------------------
         % EKF Extended Kalman Filter
         % ----------------------------
@@ -320,66 +321,66 @@ if extract
         save([filename '_tsekf'],'residual','maxch','fqrs');
         clear F1 RMS PPV SE maxch residual fqrs NbCycles
         
-        %         % ----------------------
-        %         % LMS Least Mean Square
-        %         % ----------------------
-        %         disp('LMS extraction ..')
-        %         %parameters
-        %         refch = 1;      % pick reference channel
-        %         mirrow = 30*fs_new;    % mirrow 30 seconds of signal to train method
-        %         % channel loop
-        %         residual = zeros(size(mixture));
-        %         fqrs = cell(1,size(mixture,1));
-        %         for j = 1:length(ch)
-        %             res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)], ...
-        %                 [refs(refch,mirrow:-1:1) refs(refch,:)],'LMS',debug,fs_new);
-        %             residual(j,:) = res(mirrow+1:end);
-        %             fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
-        %             [F1(j),~,~,~] = Bxb_compare(out.fqrs{1},fqrs{j},INTERV);
-        %         end
-        %         [~,maxch] = max(F1);
-        %         % == saving results
-        %         save([filename '_alms'],'residual','maxch','fqrs');
-        %         clear F1 RMS PPV SE maxch residual fqrs lmsStruct
-        %
-        %         % ----------------------
-        %         % RLS Recursive Least Square
-        %         % ----------------------
-        %         disp('RLS extraction ..')
-        %         % channel loop
-        %         residual = zeros(size(mixture));
-        %         fqrs = cell(1,size(mixture,1));
-        %         for j = 1:length(ch)
-        %             res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)],...
-        %                 [refs(refch,mirrow:-1:1) refs(refch,:)],'RLS',debug,fs_new);
-        %             residual(j,:) = res(mirrow+1:end);
-        %             fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
-        %             [F1(j),~,~,~] = Bxb_compare(out.fqrs{1},fqrs{j},INTERV);
-        %         end
-        %         [~,maxch] = max(F1);
-        %         % == saving results
-        %         save([filename '_arls'],'residual','maxch','fqrs');
-        %         clear F1 RMS PPV SE maxch residual fqrs rlsStruct
-        %
-        %         % ----------------------
-        %         % ESN Echo State Neural Network
-        %         % ----------------------
-        %         disp('ESN extraction ..')
-        %         % channel loop
-        %         residual = zeros(size(mixture));
-        %         fqrs = cell(1,size(mixture,1));
-        %         for j = 1:length(ch)
-        %             res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)]...
-        %                 ,[refs(refch,mirrow:-1:1) refs(refch,:)],'ESN',debug,fs_new);
-        %             residual(j,:) = res(mirrow+1:end);
-        %             fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
-        %             [F1(j),~,~,~] = Bxb_compare(out.fqrs{1},fqrs{j},INTERV);
-        %         end
-        %         [~,maxch] = max(F1);
-        %         % == saving results
-        %         save([filename '_aesn'],'residual','maxch','fqrs');
-        %         clear F1 RMS PPV SE maxch residual fqrs ESNparam
-        %         toc
+        % ----------------------
+        % LMS Least Mean Square
+        % ----------------------
+        disp('LMS extraction ..')
+        %parameters
+        refch = 1;      % pick reference channel
+        mirrow = 30*fs_new;    % mirrow 30 seconds of signal to train method
+        % channel loop
+        residual = zeros(size(mixture));
+        fqrs = cell(1,size(mixture,1));
+        for j = 1:length(ch)
+            res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)], ...
+                [refs(refch,mirrow:-1:1) refs(refch,:)],'LMS',debug,fs_new);
+            residual(j,:) = res(mirrow+1:end);
+            fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
+            [F1(j),~,~,~] = Bxb_compare(out.fqrs{1},fqrs{j},INTERV);
+        end
+        [~,maxch] = max(F1);
+        % == saving results
+        save([filename '_alms'],'residual','maxch','fqrs');
+        clear F1 RMS PPV SE maxch residual fqrs lmsStruct
+        
+        % ----------------------
+        % RLS Recursive Least Square
+        % ----------------------
+        disp('RLS extraction ..')
+        % channel loop
+        residual = zeros(size(mixture));
+        fqrs = cell(1,size(mixture,1));
+        for j = 1:length(ch)
+            res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)],...
+                [refs(refch,mirrow:-1:1) refs(refch,:)],'RLS',debug,fs_new);
+            residual(j,:) = res(mirrow+1:end);
+            fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
+            [F1(j),~,~,~] = Bxb_compare(out.fqrs{1},fqrs{j},INTERV);
+        end
+        [~,maxch] = max(F1);
+        % == saving results
+        save([filename '_arls'],'residual','maxch','fqrs');
+        clear F1 RMS PPV SE maxch residual fqrs rlsStruct
+        
+        % ----------------------
+        % ESN Echo State Neural Network
+        % ----------------------
+        disp('ESN extraction ..')
+        % channel loop
+        residual = zeros(size(mixture));
+        fqrs = cell(1,size(mixture,1));
+        for j = 1:length(ch)
+            res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)]...
+                ,[refs(refch,mirrow:-1:1) refs(refch,:)],'ESN',debug,fs_new);
+            residual(j,:) = res(mirrow+1:end);
+            fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
+            [F1(j),~,~,~] = Bxb_compare(out.fqrs{1},fqrs{j},INTERV);
+        end
+        [~,maxch] = max(F1);
+        % == saving results
+        save([filename '_aesn'],'residual','maxch','fqrs');
+        clear F1 RMS PPV SE maxch residual fqrs ESNparam
+        toc
     end
 end
 

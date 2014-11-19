@@ -164,6 +164,7 @@ end
 % this function eliminates some of the substructures from "out" and
 % compresses the variables to int16 for saving disk space
 function out=clean_compress(out)
+    gain = 3000;
     out_tmp=rmfield(out,{'f_model' 'm_model' 'vols' 'selvcgm' 'selvcgf'});
     out = struct();
     out.mecg = int16(round(3000*out_tmp.mecg));
@@ -176,7 +177,7 @@ function out=clean_compress(out)
     end
     if ~isempty(out_tmp.noise)
         for i = 1:length(out_tmp.noise)
-            out.noise{i} = int16(round(3000*out_tmp.noise{i}));
+            out.noise{i} = int16(round(gain*out_tmp.noise{i}));
         end
     else
         out.noise = {};

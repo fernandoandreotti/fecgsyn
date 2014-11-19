@@ -34,7 +34,7 @@ function FECGSYN_genresults(path_orig,path_ext,fs,ch,debug)
 %% == Parameters
 INTERV = round(0.05*fs);    % BxB acceptance interval
 TEMP_SEC = round(60*fs);    % samples used for building templates
-morph = 1;                  % turn on/off morphological analysis
+morph = 0;                  % turn on/off morphological analysis
 %% Run through extracted datasets
 cd(path_orig)
 slashchar = char('/'*isunix + '\'*(~isunix));
@@ -62,12 +62,23 @@ morph_aesn = zeros(length(fls_orig),2);
 
 for i = 1:length(fls_ext)
     disp(fls_ext{i})
+    % loading extracted file
     [rec,met] = strtok(fls_ext(i),'_');
     file = strcat(path_ext,fls_ext(i)); 
     load(file{:})
+    % loading original file
     origrec = str2double(rec{:}(4:end));
     file = strcat(path_orig,fls_orig(origrec)); 
     load(file{:});
+    % uniform naming
+    if exist('outdata','var')
+        residual = outdata;
+    end
+    % test if resampling is needed
+    if size(out.mecg,2) ~= size(residual,2)
+        resamp = 1;
+        out.fqrs{1} = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
+    end
     [elif,~]=strtok(file{:}(end:-1:1),slashchar);
     disp(elif(end:-1:1))
     switch met{:}(2:end-4)
@@ -238,8 +249,8 @@ for i = 1:length(fls_ext)
             
             clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
     end
-    xlim([1500 2000])
-    print('-dpng','-r72',['/media/fernando/FetalEKG/2014.08_fecgsyn_simulations(4.0)/extracted07Hz/plots/' fls_ext{i} '.png'])
+    %xlim([1500 2000])
+    %print('-dpng','-r72',['/media/fernando/FetalEKG/2014.10_fecgsyn_simulations(5.0)/extracted3Hz/plots/' fls_ext{i} '.png'])
 end
 
 %% Statistics Generation

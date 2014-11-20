@@ -1,4 +1,4 @@
-function [template,status] = FECGSYN_tgen(ecg,qrs,debug)
+function [template,status] = FECGSYN_tgen(ecg,qrs)
 % this function is used to contruct a template ecg based on the location of
 % the R-peaks. A series of peaks that match with each other are stacked to
 % build a template. This template can then be used for ecg morphological
@@ -65,6 +65,8 @@ function [template,status] = FECGSYN_tgen(ecg,qrs,debug)
 % WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
 % Public License for more details.
+
+global debug
 
 % == manage inputs
 if nargin<2; error('ecg_template_build: wrong number of input arguments \n'); end;

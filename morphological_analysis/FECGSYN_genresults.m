@@ -1,5 +1,4 @@
-function FECGSYN_genresults(path_orig,path_ext,fs,ch,debug)
-%
+function FECGSYN_genresults(path_orig,path_ext,fs,ch)
 % Input:
 %  path_orig:       Path for original dataset
 %  path_ext:        Path for extracted dataset
@@ -16,7 +15,7 @@ function FECGSYN_genresults(path_orig,path_ext,fs,ch,debug)
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 09-08-2014
+% Last updated : 20-11-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -31,10 +30,13 @@ function FECGSYN_genresults(path_orig,path_ext,fs,ch,debug)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+global debug
+debug = 1;
+
 %% == Parameters
 INTERV = round(0.05*fs);    % BxB acceptance interval
-TEMP_SEC = round(60*fs);    % samples used for building templates
-morph = 0;                  % turn on/off morphological analysis
+TEMP_SAMPS = round(60*fs);    % samples used for building templates
+morph = 1;                  % turn on/off morphological analysis
 %% Run through extracted datasets
 cd(path_orig)
 slashchar = char('/'*isunix + '\'*(~isunix));
@@ -62,147 +64,132 @@ morph_aesn = zeros(length(fls_orig),2);
 
 for i = 1:length(fls_ext)
     disp(fls_ext{i})
-    % loading extracted file
+    %= loading extracted file
     [rec,met] = strtok(fls_ext(i),'_');
     file = strcat(path_ext,fls_ext(i)); 
     load(file{:})
-    % loading original file
+    %= loading original file
     origrec = str2double(rec{:}(4:end));
     file = strcat(path_orig,fls_orig(origrec)); 
     load(file{:});
-    % uniform naming
-    if exist('outdata','var')
+    fecg = double(out.fecg{1}(ch,:)); % selecting channels
+    if exist('outdata','var') % uniform naming residuals
         residual = outdata;
     end
-    % test if resampling is needed
+    
+    %= Resampling data (if necessary)
     if size(out.mecg,2) ~= size(residual,2)
-        resamp = 1;
-        out.fqrs{1} = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
+        fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
+        fecgref = zeros(size(residual));
+        for k = 1:size(fecgref,1)
+            fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
+        end
+    else
+        fecgref = fecg;
+        fref = out.fqrs{1};
     end
     [elif,~]=strtok(file{:}(end:-1:1),slashchar);
     disp(elif(end:-1:1))
+    clear fecg outdata rec file elif k
+
     switch met{:}(2:end-4)
         case 'JADEICA'
             % generating statistics
-            [F1,MAD,PPV,SE] = Bxb_compare(out.fqrs{1},fqrs,INTERV);
+            [F1,MAD,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
             stats_ica(origrec,:) = [F1,MAD,PPV,SE];
             if morph
-                % generating reference template
-                fecg = double(out.fecg{1}(ch,:));
-                W = fecg*pinv(outdata);
-                srcfecg = W*fecg;
-                
-                qt_err = []; theight_err = [];
-                block = 1;
-                for j = 1:TEMP_SEC:length(outdata)
-                    % checking borders
-                    if j+TEMP_SEC > length(outdata)
-                        endsamp = length(outdata);
-                    else
-                        endsamp = j + TEMP_SEC;
-                    end
-                    % qrs complexes in interval
-                    qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
-                    % abdominal signal template
-                    temp_abdm = FECGSYN_tgen(outdata(maxch(block),j:endsamp),qrstmp,debug);
-                    % reference template
-                    temp_ref = FECGSYN_tgen(srcfecg(maxch(block),j:endsamp),qrstmp,debug);
-                    temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
-                    % evaluating morphological features
-                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs,debug);
-                    block = block+1;
-                end
-                morph_ica(origrec,:) = [mean(qt_err); mean(theight_err)];
+                [qt_err,theight_err]=BSS_morpho(fecgref,residual,fref,maxch,TEMP_SAMPS);               
             end
+            morph_ica(origrec,:) = [mean(qt_err); mean(theight_err)];
             clear fqrs F1 MAD PPV SE
         case 'PCA'
-            % generating statistics
-            [F1,MAD,PPV,SE] = Bxb_compare(out.fqrs{1},fqrs,INTERV);
+            %= generating statistics
+            [F1,MAD,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
             stats_pca(origrec,:) = [F1,MAD,PPV,SE];
             clear fqrs F1 MAD PPV SE
         case 'tsc'
-            % discarding channels that are not the best
+            %= discarding channels that are not the best
             fqrs = fqrs{maxch};
             residual = double(residual(maxch,:))./3; %in mV
             fecg = double(out.fecg{1}(ch(maxch),:))./3; %in mV
-            % generating QRS detection statistics
-            [F1,MAD,PPV,SE] = Bxb_compare(out.fqrs{1},fqrs,INTERV);
+            %= generating QRS detection statistics
+            [F1,MAD,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
             stats_tsc(origrec,:) = [F1,MAD,PPV,SE];
                         
             clear fqrs F1 MAD PPV SE
             
         case 'tspca'
-            % discarding channels that are not the best
+            %= discarding channels that are not the best
             fqrs = fqrs{maxch};
             residual = residual(maxch,:);
             fecg = double(out.fecg{1}(ch(maxch),:));
-            % generating statistics
-            [F1,MAD,PPV,SE] = Bxb_compare(out.fqrs{1},fqrs,INTERV);
+            %= generating statistics
+            [F1,MAD,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
             stats_tspca(origrec,:) = [F1,MAD,PPV,SE];
             
-            % morphological statistics
+            %= morphological statistics
             if morph
                 qt_err = []; theight_err = [];
-                for j = 1:TEMP_SEC:length(residual)
+                for j = 1:TEMP_SAMPS:length(residual)
                     % checking borders
-                    if j+TEMP_SEC > length(residual)
+                    if j+TEMP_SAMPS > length(residual)
                         endsamp = length(residual);
                     else
-                        endsamp = j + TEMP_SEC;
+                        endsamp = j + TEMP_SAMPS;
                     end
                     % qrs complexes in interval
                     qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
                     % abdominal signal template
-                    temp_abdm = FECGSYN_tgen(residual(j:endsamp),qrstmp,debug);
+                    temp_abdm = FECGSYN_tgen(residual(j:endsamp),qrstmp);
                     % reference template
-                    temp_ref = FECGSYN_tgen(fecg(j:endsamp),qrstmp,debug);
+                    temp_ref = FECGSYN_tgen(fecg(j:endsamp),qrstmp);
                     temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
                     % evaluating morphological features
-                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs,debug);
+                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
                 end
                 morph_tspca(origrec,:) = [mean(qt_err); mean(theight_err)];
             end
             
             clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
         case 'tsekf'
-            % discarding channels that are not the best
+            %= discarding channels that are not the best
             fqrs = fqrs{maxch};
             residual = residual(maxch,:);
             fecg = double(out.fecg{1}(ch(maxch),:));
-            % generating statistics
-            [F1,MAD,PPV,SE] = Bxb_compare(out.fqrs{1},fqrs,INTERV);
+            %= generating statistics
+            [F1,MAD,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
             stats_tsekf(origrec,:) = [F1,MAD,PPV,SE];
             
-            % morphological statistics
+            %= morphological statistics
             if morph
                 qt_err = []; theight_err = [];
-                for j = 1:TEMP_SEC:length(residual)
+                for j = 1:TEMP_SAMPS:length(residual)
                     % checking borders
-                    if j+TEMP_SEC > length(residual)
+                    if j+TEMP_SAMPS > length(residual)
                         endsamp = length(residual);
                     else
-                        endsamp = j + TEMP_SEC;
+                        endsamp = j + TEMP_SAMPS;
                     end
                     % qrs complexes in interval
                     qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
                     % abdominal signal template
-                    temp_abdm = FECGSYN_tgen(residual(j:endsamp),qrstmp,debug);
+                    temp_abdm = FECGSYN_tgen(residual(j:endsamp),qrstmp);
                     % reference template
-                    temp_ref = FECGSYN_tgen(fecg(j:endsamp),qrstmp,debug);
+                    temp_ref = FECGSYN_tgen(fecg(j:endsamp),qrstmp);
                     temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
                     % evaluating morphological features
-                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs,debug);
+                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
                 end
                     morph_tskf(origrec,:) = [mean(qt_err); mean(theight_err)];  
             end            
             clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
         case 'alms'
-            % discarding channels that are not the best
+            %= discarding channels that are not the best
             fqrs = fqrs{maxch};
             residual = residual(maxch,:);
             fecg = double(out.fecg{1}(maxch,:));
             % generating statistics
-            [F1,MAD,PPV,SE] = Bxb_compare(out.fqrs{1},fqrs,INTERV);
+            [F1,MAD,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
             stats_alms(origrec,:) = [F1,MAD,PPV,SE];
             clear fecg residual fqrs F1 MAD PPV SE
         case 'arls'
@@ -211,7 +198,7 @@ for i = 1:length(fls_ext)
             residual = residual(maxch,:);
             fecg = double(out.fecg{1}(maxch,:));
             % generating statistics
-            [F1,MAD,PPV,SE] = Bxb_compare(out.fqrs{1},fqrs,INTERV);           
+            [F1,MAD,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);           
             stats_arls(origrec,:) = [F1,MAD,PPV,SE];
              clear fecg residual fqrs F1 MAD PPV SE
         case 'aesn'
@@ -220,29 +207,29 @@ for i = 1:length(fls_ext)
             residual = residual(maxch,:);
             fecg = double(out.fecg{1}(ch(maxch),:));
             % generating statistics
-            [F1,MAD,PPV,SE] = Bxb_compare(out.fqrs{1},fqrs,INTERV);
+            [F1,MAD,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
             stats_aesn(origrec,:) = [F1,MAD,PPV,SE];
             
             % morphological statistics
             if morph
                 qt_err = []; theight_err = [];
-                for j = 1:TEMP_SEC:length(residual)
+                for j = 1:TEMP_SAMPS:length(residual)
                     % checking borders
-                    if j+TEMP_SEC > length(residual)
+                    if j+TEMP_SAMPS > length(residual)
                         endsamp = length(residual);
                     else
-                        endsamp = j + TEMP_SEC;
+                        endsamp = j + TEMP_SAMPS;
                     end
                     % qrs complexes in interval
                     qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
                     % abdominal signal template
-                    temp_abdm = FECGSYN_tgen(residual(j:endsamp),qrstmp,debug);
+                    temp_abdm = FECGSYN_tgen(residual(j:endsamp),qrstmp);
                     % reference template
-                    temp_ref = FECGSYN_tgen(fecg(j:endsamp),qrstmp,debug);
+                    temp_ref = FECGSYN_tgen(fecg(j:endsamp),qrstmp);
                     temp_abdm = temp_abdm.avg*1000; % looks like adaptive filters are scalling them
                     temp_ref = temp_ref.avg;
                     % evaluating morphological features
-                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs,debug);
+                    [qt_err(end+1),theight_err(end+1)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
                 end
                 morph_aesn(origrec,:) = [mean(qt_err); mean(theight_err)];
             end
@@ -277,6 +264,48 @@ set(h, 'LineWidth',LWIDTH)
 ylabel('MAD (ms)','FontSize',FSIZE)
 
 
+end
+
+function [qt_err,theight_err]=BSS_morpho(fecg,residual,fqrs,maxch,SAMPS)
+%% Function to perform morphological analysis for BSS extracted data
+%
+% >Inputs
+%  fecg:        Propagated fetal signal before mixture with noise sources
+%  residual:    Result of fetal extraction from abdominal signals
+%  fqrs:        Reference fetal QRS samplestamps
+%  maxch:       Channel with highest F1-accuracy for FQRS detections
+%  SAMPS:       Number of samples used for generating templates
+% 
+% > Outputs
+%  qt_err:      Array containing QT error for each template
+%  theight_err: Array containing T-height error for each template
+%
+
+% generating reference template
+W = fecg*pinv(residual);
+srcfecg = W*fecg;
+qt_err = zeros(length(residual)/SAMPS,1); theight_err = zeros(length(residual)/SAMPS,1);
+block = 1;
+for j = 1:SAMPS:length(residual)
+    % checking borders
+    if j+SAMPS > length(residual)
+        endsamp = length(residual);
+    else
+        endsamp = j + SAMPS;
+    end
+    % qrs complexes in interval
+    qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
+    % abdominal signal template
+    temp_abdm = FECGSYN_tgen(residual(maxch(block),j:endsamp),qrstmp);
+    % reference template
+    temp_ref = FECGSYN_tgen(srcfecg(maxch(block),j:endsamp),qrstmp);
+    temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
+    % evaluating morphological features
+    [qt_err(block),theight_err(block)] = FECGSYN_manalysis(temp_abdm,temp_ref);
+    block = block+1;
+    
+end
+end
 % Plot about cases
 
 % This script plots boxplots with 2 groups

@@ -1,4 +1,4 @@
-function [qt,theight] = FECGSYN_manalysis(abdm_temp,ref_temp,fs,debug)
+function [qt,theight] = FECGSYN_manalysis(abdm_temp,ref_temp)
 % This function calculates morphological features form signals given two
 % templates (reference and abdm). Statistics are give as %.
 % 
@@ -30,18 +30,19 @@ function [qt,theight] = FECGSYN_manalysis(abdm_temp,ref_temp,fs,debug)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+global debug
+
 % == generate signal from template (necessary for ecgpuwave)
 
 % resampling and repeating templates
+fs = 250;           % default sampling frequency for ECGPUWAVE
 fsnew = 500;        % upsampling to 500Hz so that foetal 
                     % heart looks like adult
-debug = 1;
+gain = 1000;        % saving gain for WFDB format
 wsign = abs(max(abdm_temp))>abs(min(abdm_temp));
 wsign = 2*wsign - 1;
 abdm_temp = 1000*wsign*abdm_temp/max(abs(abdm_temp)); % normalizing for 
 ref_temp = 1000*wsign*ref_temp/max(abs(ref_temp));    % comparing T-height
-abdm_temp = resample(abdm_temp,fsnew,fs);
-ref_temp = resample(ref_temp,fsnew,fs);
 abdm_sig = repmat(abdm_temp,1,20)';
 ref_sig = repmat(ref_temp,1,20)';
 
@@ -59,8 +60,8 @@ qrsabdm = arrayfun(@(x) qrsabdm + x*length(abdm_temp),0:19)';
 % writting to WFDB
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
 tm2 = 1:length(ref_sig); tm2 = tm2'-1;
-wrsamp(tm1,abdm_sig,'absig',fs,1000,'')
-wrsamp(tm2,ref_sig,'refsig',fs,1000,'')
+wrsamp(tm1,abdm_sig,'absig',fs,gain,'')
+wrsamp(tm2,ref_sig,'refsig',fs,gain,'')
 wrann('absig','qrs',qrsabdm,repmat('N',20,1));
 wrann('refsig','qrs',qrsref,repmat('N',20,1));
 

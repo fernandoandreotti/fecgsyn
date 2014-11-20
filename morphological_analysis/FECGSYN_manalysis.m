@@ -39,10 +39,12 @@ fs = 250;           % default sampling frequency for ECGPUWAVE
 fsnew = 500;        % upsampling to 500Hz so that foetal 
                     % heart looks like adult
 gain = 1000;        % saving gain for WFDB format
-wsign = abs(max(abdm_temp))>abs(min(abdm_temp));
-wsign = 2*wsign - 1;
-abdm_temp = 1000*wsign*abdm_temp/max(abs(abdm_temp)); % normalizing for 
-ref_temp = 1000*wsign*ref_temp/max(abs(ref_temp));    % comparing T-height
+wsign1 = abs(max(abdm_temp))>abs(min(abdm_temp));
+wsign1 = 2*wsign1 - 1;
+abdm_temp = 1000*wsign1*abdm_temp/max(abs(abdm_temp)); % normalizing for 
+wsign2 = abs(max(ref_temp))>abs(min(ref_temp));      % comparing T-height
+wsign2 = 2*wsign2 - 1;
+ref_temp = 1000*wsign2*ref_temp/max(abs(ref_temp));   
 abdm_sig = repmat(abdm_temp,1,20)';
 ref_sig = repmat(ref_temp,1,20)';
 
@@ -77,6 +79,7 @@ if debug
     hold on
     plot(allref,ref_sig(allref),'or')
     text(allref,ref_sig(allref)+10,alltypes_r)
+    title('Reference Signal')
 end
 % test signal
 ecgpuwave('absig','edr',[],[],'qrs'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
@@ -89,6 +92,7 @@ if debug
     plot(alltest,abdm_sig(alltest),'or')
     text(alltest,abdm_sig(alltest)+50,alltypes_t)
     linkaxes(ax,'x')
+    title('Test Signal')
 end
 
 % == Calculate error on morphological analysis made by extracted data

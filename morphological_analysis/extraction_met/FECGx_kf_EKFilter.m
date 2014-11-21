@@ -1,25 +1,25 @@
-function [Xhat,X0,P0,e] = FECGx_kf_EKFilter(Z,X0,P0,Q,R0,Wmean,Vmean,Modelparameters,w,fs,flag,u)
+function [Xhat,X0,P0,e] = FECGx_kf_EKFilter(Z,X0,P0,Q,R0,Wmean,Vmean,ModelParam,w,fs,flag,u)
 %% EXTENDED KALMAN FILTER/SMOOTHER Extended kalman filter or smoothing
 %
-% inputs:
-% Z: matrix of observation signals (samples x 2). First column corresponds
-% to the phase observations and the second column corresponds to the noisy
-% ECG
-% X0: initial estimate for state vector
-% P0: covariance matrix of the initial state vector
-% Q: covariance matrix of the process noise vector
-% R: covariance matrix of the observation noise vector
-% Wmean: mean process noise vector
-% Vmean: mean observation noise vector
-% Modelparameters: Values of the parameters for the KF (values for
-% gaussians)
-% w: average heart-rate in rads.
-% fs: sampling frequency
-% flag: If flag = 0 use EKF, if flag=1 use EKS
-% varR: Time-Varying convariance matrix R
+% > Inputs
+%       Z:        matrix of observation signals (samples x 2). First column 
+%                 corresponds to the phase observations and the second column 
+%                 corresponds to the noisy ECG.
+%       X0:       initial estimate for state vector
+%       P0:       covariance matrix of the initial state vector
+%       Q:        covariance matrix of the process noise vector
+%       R:        covariance matrix of the observation noise vector
+%       Wmean:    mean process noise vector
+%       Vmean:    mean observation noise vector
+%       ModelParam:     Values of the parameters for the KF (values for
+%                       gaussians)
+%       w:        average heart-rate in rads.
+%       fs:       sampling frequency
+%       flag:     if flag = 0 use EKF, if flag=1 use EKS
+%       u:        control input (not used)
 
-% outputs:
-% Xhat: state vectors estimated by the EKF or EKS (depending on the flag).
+% > Output
+%       Xhat: state vectors estimated by the EKF or EKS (depending on the flag).
 %
 % Open Source ECG Toolbox, version 2.0, March 2008
 % Released under the GNU General Public License
@@ -37,17 +37,16 @@ function [Xhat,X0,P0,e] = FECGx_kf_EKFilter(Z,X0,P0,Q,R0,Wmean,Vmean,Modelparame
 % Public License for more details.
 %
 %% Equation Initialization
-Inits2 = [Modelparameters w fs];
+Inits2 = [ModelParam w fs];
 StateProp(Inits2);           % Initialize state equation
 
-%//////////////////////////////////////////////////////////////////////////
 %% Parameters Initialization
 
 % Define the model parameters exported
-L = (length(Modelparameters)/3);
-alphai = Modelparameters(1:L);
-bi = Modelparameters(L+1:2*L);
-tetai = Modelparameters(2*L+1:3*L);
+L = (length(ModelParam)/3);
+alphai = ModelParam(1:L);
+bi = ModelParam(L+1:2*L);
+tetai = ModelParam(2*L+1:3*L);
 
 %lenghts calculation
 Samples = length(Z);
@@ -66,7 +65,7 @@ Pbar = zeros(L,L,Samples);
 Xhat = zeros(L,Samples);
 Phat = zeros(L,L,Samples);
 
-%//////////////////////////////////////////////////////////////////////////
+
 %% Filtering
 e = zeros(2,Samples);
 B = [0;1];  % control matrix
@@ -118,10 +117,10 @@ P0=PP;
 %% Smoothing: (Only enabled if flag)
 if(flag==1)
     disp('Smoothing Estimation ..')
-    Xhat = EKsmoothing(Phat,Xhat,Pbar,Xbar,Wmean,alphai,bi,tetai,w,fs);
+    Xhat = FECGx_kf_EKsmoothing(Phat,Xhat,Pbar,Xbar,Wmean,alphai,bi,tetai,w,fs);
 end
 
-%//////////////////////////////////////////////////////////////////////////
+
 %% Auxiliar Functions
 function xout = StateProp(x,B,u)
 
@@ -137,8 +136,7 @@ if nargin==1,
     bi = x(L+1:2*L);
     tetai = x(2*L+1:3*L);
     w = x(3*L+1);
-    fs = x(3*L+2);
-    
+    fs = x(3*L+2);   
     dt = 1/fs;
     return
 end

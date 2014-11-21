@@ -312,7 +312,7 @@ if extract
         residual = zeros(size(mixture));
         fqrs = cell(1,size(mixture,1));
         for j = 1:length(ch)
-            residual(j,:) = FECGx_kf_extraction(out.mqrs,mixture(j,:),'EKF',0,NbCycles,fs_new);
+            residual(j,:) = FECGx_kf_extraction(out.mqrs,mixture(j,:),NbCycles,fs_new);
             fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
             [F1(j),~,~,~] = Bxb_compare(out.fqrs{1},fqrs{j},INTERV);
         end

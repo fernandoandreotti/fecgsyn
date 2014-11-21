@@ -1,49 +1,40 @@
-function [ output,Data] = FECGx_kf_ECGfiltering(x,indicepeaks,NbCycles,fs,debug)
+function Xhat = FECGx_kf_ECGfiltering(x,peaksidx,NbCycles,fs)
 %ecg_filt = FECGx_kf_ECGfiltering(ecg,peaks,nbCycles,fs,debug);
 %ECG FILTERING BLOCK Generates a model and call EKF/EKS
-%   INPUTS:
+%   > Inputs
+%      x:            data to be preprocessed
+%      peaksidx:     maternal peak location
+%      NbCycles:     number of cycles used to initialize template
+%      fs:           sampling frequency [Hz]
+%      flag:         flag = 0 to use EKF, if flag=1 to use EKS
 %
-%   x: data with preprocessing
-%   fs: Sampling frequency
-%   flag: If flag = 0 use EKF, if flag=1 use EKS
-%   X0: Initial estimate por x
-%   P0: Initial estimate por templatelen
-%   indicepeaks: Maternal references (Optional)
+%  > Output
+%       Xhat:           filtered signal
 %
-%   OUTPUTS:
-%   output: Processed signal
-%   X0: Initial estimate por x (used for next segment processed)
-%   P0: Initial estimate por templatelen (used for next segment processed)
+global debug
 
-%//////////////////////////////////////////////////////////////////////////
-% PEAK DETECTION BLOCK
-%//////////////////////////////////////////////////////////////////////////
-Nkernels = 10;
-
-% If detection provided is provided load annotations
-L = length(x);
-Li = length(indicepeaks);
-peaks = zeros(1,L);
-peaks(indicepeaks(1:Li)) = 1;
-
-
-%//////////////////////////////////////////////////////////////////////////
-% MEAN PHASE EXTRACTION BLOCK
-%//////////////////////////////////////////////////////////////////////////
-
-phase = PhaseCalc(find(peaks),length(x)); % phase calculation
-%Data.phase{end+1} = phase;
+%% Parameters
+Nkernels = 10;          % number of kernels for Gaussian modelling
 NB_BINS = 250;          % number of phase bins
-phase_tmp = PhaseCalc(indicepeaks(1:NbCycles),indicepeaks(NbCycles)+300); % phase calculation
+scala = 6;              % number from scales used by SWT approach
 
-[ECGmean,ECGsd,meanphase] = meanbeat(x(1:indicepeaks(NbCycles)+300),phase_tmp,NB_BINS); % mean ECG extraction
+% = parametrization
+L = length(x);
+Li = length(peaksidx);
+peaks = zeros(1,L);
+peaks(peaksidx(1:Li)) = 1;
+fm = fs./diff(peaksidx);          % heart-rate
+w = mean(2*pi*fm);          % average heart-rate in rads.
+wsd = std(2*pi*fm,1);       % heart-rate standard deviation in rads.
 
-%//////////////////////////////////////////////////////////////////////////
-% PLOTS AND RESULTS
-%//////////////////////////////////////////////////////////////////////////
+
+%% Generating average ECG beat
+phase = PhaseCalc(find(peaks),length(x)); % phase calculation
+phase_tmp = PhaseCalc(peaksidx(1:NbCycles),peaksidx(NbCycles)+300); % phase calculation
+[ECGmean,ECGsd,meanphase] = ECG_tgen(x(1:peaksidx(NbCycles)+300),phase_tmp,NB_BINS); % mean ECG extraction
+
 if debug
-    %% Phase calculation figure
-    
+    % = phase calculation figure
     I = find(peaks);
     t = (0:length(x)-1)/fs;
     figure;
@@ -56,9 +47,7 @@ if debug
     xlabel('time (sec.)');
     ylabel('Arbitrary units');
     legend('Scaled ECG','mECG references','Asigned phase');
-    
-    
-    %% Phase Wrapping figure
+    % phase Wrapping figure
     [X,Y,Z] = pol2cart(phase,1,x); %NOTE: pol2cart -> Transform polar or cylindrical coordinates to Cartesian.
     %pol2cart(THETA,RHO,Z) transforms the cylindrical coordinate data stored in corresponding
     %elements of THETA, RHO, and Z to three-dimensional Cartesian, or xyz coordinates.
@@ -73,31 +62,28 @@ if debug
     zlabel('ECG (Arbitrary units)');
 end
 
-%//////////////////////////////////////////////////////////////////////////
-%% PARAMETER EXTRACTION
-%//////////////////////////////////////////////////////////////////////////
 
-fm = fs./diff(indicepeaks);          % heart-rate
-w = mean(2*pi*fm);          % average heart-rate in rads.
-wsd = std(2*pi*fm,1);       % heart-rate standard deviation in rads.
-scala = 6;  % number from scales used
+%% Approximating average beat using Gaussians
+% using Stationary Wavelet Transform approach (as in Andreotti CINC2014)
+clear bi s gp scalex
+
+% optimization procedure options
+options = optimset('TolX',1e-4,'TolFun',1e-4,'MaxIter',100,'Display','off');
+
+% loading quadratic spline coefficients
+load('FECGx_kf_wtFilterCoefs.mat');
 
 GaussPos = zeros(1,Nkernels);
-options = optimset('TolX',1e-4,'TolFun',1e-4,'MaxIter',100,'Display','off');  %Optimization options
-
 Optpre = zeros(Nkernels,3);
 ECGmean_aux = ECGmean;
 samptorads = linspace(-pi,pi,length(ECGmean));
-
 amax = max(abs(ECGmean));
 amin = amax/100;
-
-% Stationary Wavelet Transform (as in Andreotti CINC2014)
-load('FECGx_kf_wtFilterCoefs.mat'); % loading quadratic spline coeff
-clear bi s gp scalex
 gp = zeros(1,Nkernels);
 scalex = zeros(scala,NB_BINS);
 bi = zeros(1,Nkernels);
+
+% = iteratively obtaining candidate Gaussians
 for i = 1:Nkernels
     c2 = cell(1,scala);
     for k = 1:scala
@@ -108,16 +94,8 @@ for i = 1:Nkernels
         c2{k} = abs(c2{k}(ceil(lenc/2):NB_BINS+ceil(lenc/2)-1));
         scalex(k,:) = scalex(k,:);%./mean(scalex(k,:).^2);
     end
-    
     c2 = cell2mat(c2');
-    %     figure
-    %     surf(c2','EdgeColor','none')
-    %     axis square
-    %     xlabel('Scale (j)')
-    %     ylabel('Samples [n]')
-    %     zlabel('Normalized Cross-Covariance (NU)')
-    %
-    [~,s]=max(max(c2')); % picking scale with biggest xcov
+    [~,s]=max(max(c2')); % picking scale with highest cross-covariance
     [~,gp(i)] = max(scalex(s,:).^2);
     GaussPos(i) = samptorads(gp(i));  % converting to interval [-pi,pi]
     
@@ -147,30 +125,28 @@ for i = 1:Nkernels
     OptimPar = lsqnonlin(@(InitParams) FECGx_kf_ECGModelError(InitParams,ECGmean_aux,meanphase),InitParams,LowBound,UpBound,options);
     %Optimization
     % Plot and Calculate average error in template
-    [~,Model] = FECGx_kf_ECGModelError(OptimPar,ECGmean_aux,meanphase);   
+    [~,Model] = FECGx_kf_ECGModelError(OptimPar,ECGmean_aux,meanphase);
     Optpre(i,:) = OptimPar;
     ECGmean_aux = ECGmean_aux - Model;
 end
-OptimumParams = reshape(Optpre,1,3*Nkernels);
 
-% Re-run optimization procedure
-options = optimset('TolX',1e-4,'TolFun',1e-4,'MaxIter',Nkernels*100,'MaxFunEval',Nkernels*1000,'Display','off');  %Optimization options
+% = Re-run optimization procedure for definite solution
+% optimization procedure options (more consuming than first)
+options = optimset('TolX',1e-4,'TolFun',1e-4,'MaxIter',Nkernels*100,'MaxFunEval',Nkernels*1000,'Display','off');
+
+% adapting Gaussians coordinates to bins coordinates
 [~,idx] = arrayfun(@(x)(min(abs(meanphase-GaussPos(x)))),1:length(GaussPos),'UniformOutput', false);
-% looks for minimal distance from GaussPos and meanphase
-idx = cell2mat(idx);        %converts cell to array (both are numeric)
+idx = cell2mat(idx);
+tetai = meanphase(idx);     %closest values for teta (based on GaussPos that belongs to meanphase)
 
-tetai = meanphase(idx); %closest values for teta (based on GaussPos that belongs to meanphase)
-alphai = 1.2*ECGmean(idx); % purposed initial point for gaussian amplitude
-% bi = .04*ones(size(alphai)); % purposed initial point for gaussian width
+% purposed initial point for gaussian amplitude
+alphai = 1.2*ECGmean(idx);
+
+% initial bi's are sugested by SWT procedure
 InitParams = [alphai bi tetai];
+
+% = Final Gaussian fitting
 OptimumParams = lsqnonlin(@(InitParams) FECGx_kf_ECGModelError(InitParams,ECGmean,meanphase),InitParams,InitParams-2,InitParams+2,options);
-%Optimization
-[Error,Model] = FECGx_kf_ECGModelError(OptimumParams,ECGmean,meanphase);
-% plot(ECGmean,'k')
-% hold on
-% plot(Model,'r')
-% plot(Error,'g')
-% hold off
 
 clear L Li LowBound Model OptimPar ECGmean_aux
 
@@ -210,98 +186,91 @@ N = length(OptimumParams)/3;     %new number of Gaussian kernels
 % end
 
 %% Kalman Filter Parametrization
-% [~,Model] = FECGx_ECGModelError(OptimumParams,ECGmean,meanphase);
-% Error2 = sum((ECGmean-Model).^2)/sum((ECGmean-mean(ECGmean)).^2); % Normalized Mean Square Error (%)
-% matrix of observation signals (samples x 2). First column corresponds
-% to the phase observations and the second column corresponds to the noisy
-% ECG
+
+% = ECG
 y = [phase ; x];
 
-%covariance matrix of the process noise vector
-GQ = 1;
+% = covariance matrix of the process noise vector
+GQ = 5;
 Q = diag( [(.1*OptimumParams(1:N)).^2 (.1*ones(1,N)).^2 (.1*ones(1,N)).^2 (0.1*wsd)^2 , (GQ*mean(ECGsd))^2]);
 
-%covariance matrix of the observation noise vector
-GR = 4;
-R = [(w/fs).^2 0 ;0 GR*mean(ECGsd).^2];
-Wmean = [OptimumParams w 0]';
+% = covariance matrix of the observation noise vector
+GR = 100;
+R = diag([(w/fs).^2,GR*mean(ECGsd).^2]);
 
-%mean observation noise vector
-Vmean = [0 0]';
-X0 = [-pi 0]';
-P0 = [(2*pi)^2 0 ;0 (10*max(abs(x))).^2];
+% = covariance matrix for error
+P0 = diag([(2*pi)^2,(10*max(abs(x))).^2]); % error covariance matrix
+
+% = noises
+Wmean = [OptimumParams w 0]';
+Vmean = [0 0]'; % mean observation noise vector
+
+% = initialize state
+X0 = [-pi 0]';  % state initialization
+
+% = control input
 u = zeros(1,length(x));
 
-%//////////////////////////////////////////////////////////////////////////
-%% ECG PROCESSING
-%//////////////////////////////////////////////////////////////////////////
-%Use EKF or EKS
-% disp('Parameters estimated. Filtering...')
-Xfiltered = FECGx_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);
-output = Xfiltered(2,:);
-% plot(output,'k')
+
+%% Filtering
+Xhat = FECGx_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);
+
 end
 
+function phase = PhaseCalc(peaks,NbSamples)
 %% Phase Calculation
-function phase = PhaseCalc(peaks,lengthx)
-% Based on Sameni's method for phase calculation
-phase = zeros(1,lengthx);
+%
+% This function generates a saw-tooth phase signal, based on QRS locations
+%
+% > Inputs
+%       peaks:          fidutials location, in these points phase is zero
+%       NbSamples:      number of samples on the signal
+%
+% This function is based on Dr. Sameni's OSET
+%
+%
+
+phase = zeros(1,NbSamples);
 m = diff(peaks);            % gets distance between peaks
-% first interval
-% dealing with borders (first and last peaks may not be full waves)
-% uses second interval as reference
-L = peaks(1);   %length of first interval
-if isempty(m) % only ONE peak was detected
-    phase(1:lengthx) = linspace(-2*pi,2*pi,lengthx);
+% = dealing with borders (first and last peaks may not be full waves)
+
+% first interval uses second interval as reference
+L = peaks(1);       %length of first interval
+if isempty(m)       % only ONE peak was detected
+    phase(1:NbSamples) = linspace(-2*pi,2*pi,NbSamples);
 else
     phase(1:L) = linspace(2*pi-L*2*pi/m(1),2*pi,L);
     % beats in the middle
-    for i = 1:length(peaks)-1;  % generate phases between 0 and 2pi for almos all peaks
+    for i = 1:length(peaks)-1;      % generate phases between 0 and 2pi for almos all peaks
         phase(peaks(i):peaks(i+1)) = linspace(0,2*pi,m(i)+1);
-    end                                         % 2pi is overlapped by 0 on every loop
+    end                             % 2pi is overlapped by 0 on every loop
     % last interval
     % uses second last interval as reference
     L = length(phase)-peaks(end);   %length of last interval
     phase(peaks(end):end) = linspace(0,L*2*pi/m(end),L+1);
 end
 phase = mod(phase,2*pi);
-phase(find(phase>pi)) = phase(find(phase>pi))- 2*pi;
+phase(phase>pi) = phase(phase>pi)- 2*pi;
 end
 
-function [ECGmean,ECGsd,meanPhase] = meanbeat(ecg,phase,NB_BINS)
-%
-% [ECGmean,ECGsd,meanPhase] = MeanECGExtraction(x,phase,bins,flag)
+function [ECGmean,ECGsd,meanPhase] = ECG_tgen(ecg,phase,NB_BINS)
 % Calculation of the mean and SD of ECG waveforms in different beats
 %
-% inputs:
-% x: input ECG signal
-% phase: ECG phase
-% NB_BINS: number of desired phase bins
+% > Inputs
+%       ecg:            input ECG signal
+%       phase:          ECG phase
+%       NB_BINS:        number of desired phase bins
 %
-% outputs:
-% ECGmean: mean ECG beat
-% ECGsd: standard deviation of ECG beats
-% meanPhase: the corresponding phase for one ECG beat
-%
-%
-% Open Source ECG Toolbox, version 2.0, March 2008
-% Released under the GNU General Public License
-% Copyright (C) 2008  Reza Sameni
-% Sharif University of Technology, Tehran, Iran -- LIS-INPG, Grenoble, France
-% reza.sameni@gmail.com
-%
-% This program is free software; you can redistribute it and/or modify it
-% under the terms of the GNU General Public License as published by the
-% Free Software Foundation; either version 2 of the License, or (at your
-% option) any later version.
-% This program is distributed in the hope that it will be useful, but
-% WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-% Public License for more details.
+% > Outputs
+%       ECGmean:        mean ECG beat
+%       ECGsd:          standard deviation of ECG beats
+%       meanPhase:      the corresponding phase for one ECG beat
 %
 %
-%
-% == using Julien's approach
+% Although this function structure is based on OSET's toolbox, the
+% averaging procedure itself is based on Dr. Oster's approach for stacking
+% and averaging beats.
+
 ini_cycles = find(phase(2:end)<0&phase(1:end-1)>0)+1; % start of cycles
 cycle_len = diff(ini_cycles); % distance between cycles
 end_cycles = ini_cycles(1:end-1)+cycle_len-1; % start of cycles

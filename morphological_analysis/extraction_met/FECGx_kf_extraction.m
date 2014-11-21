@@ -1,6 +1,6 @@
-function residual = FECGx_kf_extraction(peaks,ecg,method,debug,varargin)
+function residual = FECGx_kf_extraction(peaks,ecg,varargin)
 % MECG cancellation algorithms using the Extended Kalman Filter/Smoother.
-% The code is based on the PhD from Reza Sameni and the code provided in
+% The code is based on the PhD from Dr. Reza Sameni and the code provided in
 % OSET Toolbox (http://www.oset.ir/).
 %
 % Inputs
@@ -11,7 +11,8 @@ function residual = FECGx_kf_extraction(peaks,ecg,method,debug,varargin)
 %   varargin:
 %       nbCycles:   number of cycles to use in order to build the mean MECG template
 %       fs:         sampling frequency (NOTE: this code is meant to work at 1kHz)
-%
+%       smoothFlag: 0 for extraction using EKF and 1 for extraction using
+%                   the offline smoothing (EKS) 
 % output
 %   residual:   residual containing the FECG
 %
@@ -46,40 +47,34 @@ function residual = FECGx_kf_extraction(peaks,ecg,method,debug,varargin)
 % Public License for more details.
 %
 
-% == manage inputs
-optargs = {20 1000};  % default values for [nbCycles fs]
+%% Manage inputs
+global debug
+optargs = {20 1000 0};  % default values for [nbCycles fs smoothFlag]
 newVals = cellfun(@(x) ~isempty(x), varargin);
 optargs(newVals) = varargin(newVals);
-[nbCycles,fs] = optargs{:};
+[nbCycles,fs,smoothFlag] = optargs{:};
 
-if nargin > 6
+% = input test
+if nargin > 5
     error('kf_extraction: too many input arguments \n');
 end
 
-% check that we have more peaks than nbCycles
+% check that number of peaks is higher than nbCycles
 if nbCycles>length(peaks)
     error('MECGcancellation Error: more peaks than number of cycles for average ecg');
 end
 
-% check which method to use
-switch method
-    case 'EKF'
-        flag = 0;
-    case 'EKS'
-        flag = 1;
-    otherwise
-        error('kf_extraction: method not implemented.')
-end
+%% Re-aligning maternal peaks to match channel's peaks
 
-% == Re-aligning peaks to match channel's peaks
 win = round(0.1*fs);       % max window for beat alignment (ms)
 y = sort(ecg);
-minmax = mean(abs(y(end-floor(0.1*length(y)):end)))>mean(abs(y(1:floor(0.1*length(y))))); % 1 = max, 0 = min
+minmax = mean(abs(y(end-floor(0.1*length(y)):end)))>... % finding signal polarity
+    mean(abs(y(1:floor(0.1*length(y)))));        % 1 = positive, 0 = negative
 interv = arrayfun(@(x) ecg(1,x-win:x+win)',peaks(2:end-1),'UniformOutput',false);       % creates a maternal beat matrix
 if minmax
     [~,delay]=cellfun(@(x) max(x), interv);
 else
-     [~,delay]=cellfun(@(x) min(x), interv);
+    [~,delay]=cellfun(@(x) min(x), interv);
 end
 delay = round(median(delay));
 peaks = (delay-win-1) + peaks;
@@ -87,16 +82,10 @@ peaks = (delay-win-1) + peaks;
 if peaks(1)<1;peaks(1) = 1; end;
 if peaks(end)>length(ecg);peaks(end) = length(ecg); end;
 
-% == MECG estimation using KF
-% try   
-    ecg_filt = FECGx_kf_ECGfiltering(ecg,peaks,nbCycles,fs,debug);
-    % == compute residual
-    residual = ecg - ecg_filt;
-    
-% catch ME
-%     for enb=1:length(ME.stack); disp(ME.stack(enb)); end;
-%     residual = ecg;
-% end
+%% MECG estimation using KF
+ecg_filt = FECGx_kf_ECGfiltering(ecg,peaks,nbCycles,fs);
+% == compute residual
+residual = ecg - ecg_filt;
 
 % == debug
 if debug

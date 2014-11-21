@@ -100,6 +100,7 @@ for i = 1:length(fls_ext)
                 [qt_err,theight_err]=BSS_morpho(fecgref,residual,fref,maxch,TEMP_SAMPS);
             end
             morph_ica(origrec,:) = [mean(qt_err); mean(theight_err)];
+            print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
             clear fqrs F1 MAD PPV SE
         case 'PCA'
             %= generating statistics
@@ -128,9 +129,10 @@ for i = 1:length(fls_ext)
             
             %= morphological statistics
             if morph
-                [qt_err,theight_err]=BSS_morpho(fecgref,residual,fref,TEMP_SAMPS);
+                [qt_err,theight_err]=TS_morpho(fecgref,residual,fref,TEMP_SAMPS);
             end
             morph_tspca(origrec,:) = [mean(qt_err); mean(theight_err)];
+            print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
             
             clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
         case 'tsekf'
@@ -144,10 +146,10 @@ for i = 1:length(fls_ext)
             
             %= morphological statistics
             if morph
-                [qt_err,theight_err]=BSS_morpho(fecgref,residual,fref,TEMP_SAMPS);
+                [qt_err,theight_err]=TS_morpho(fecgref,residual,fref,TEMP_SAMPS);
             end
             morph_tskf(origrec,:) = [mean(qt_err); mean(theight_err)];
-            
+            print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
             clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
         case 'alms'
             %= discarding channels that are not the best
@@ -176,9 +178,12 @@ for i = 1:length(fls_ext)
             
             % morphological statistics
             if morph
-                [qt_err,theight_err]=BSS_morpho(fecgref,residual,fref,TEMP_SAMPS);
+                [qt_err,theight_err]=TS_morpho(fecgref,residual,fref,TEMP_SAMPS);
             end
             morph_aesn(origrec,:) = [mean(qt_err); mean(theight_err)];
+            print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
+            clear fecg residual fqrs F1 MAD PPV SE
+
     end
     
     clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
@@ -268,7 +273,6 @@ function [qt_err,theight_err]=TS_morpho(fecg,residual,fqrs,SAMPS)
 
 % generating reference template
 qt_err = zeros(length(residual)/SAMPS,1); theight_err = zeros(length(residual)/SAMPS,1);
-residual = residual(maxchan,:);
 
 for j = 1:SAMPS:length(residual)
     % checking borders
@@ -311,10 +315,10 @@ end
 % %     c3 = cellfun(@(x) ~isempty(regexp(x, '_c3.mat$', 'match')), fls_orig);
 % %     c4 = cellfun(@(x) ~isempty(regexp(x, '_c4.mat$', 'match')), fls_orig);
 % %     c5 = cellfun(@(x) ~isempty(regexp(x, '_c5.mat$', 'match')), fls_orig);
-% %     
+% %
 % %     stats_ica = stats_ica(:,1);
 % %     stats_tsc = stats_tsc(:,1);
-% %     
+% %
 % %     N = sum(base)+sum(c0)+sum(c1)+sum(c2)+sum(c3)+sum(c4)+sum(c5);
 % %     bh=boxplot([stats_ica(base); stats_ica(c0); stats_ica(c1); stats_ica(c2); stats_ica(c3); stats_ica(c4); stats_ica(c5);...
 % %         stats_tsc(base); stats_ica(c0); stats_tsc(c1); stats_tsc(c2); stats_tsc(c3); stats_tsc(c4); stats_tsc(c5)], ...
@@ -331,10 +335,10 @@ end
 % %     pos=get(xl,'Pos');
 % %     set(xl,'Pos',[pos(1) pos(2)-30 pos(3)])
 % %     save2pdf('boxplot',fig1,600)
-% %     
+% %
 % %     % Plot about SNRmn
 % %     a = cellfun(@(x) strsplit(x,'_snr'), fls_orig,'UniformOutput',0);
-% %     
+% %
 % %     b = cellfun(@(x) length(x)>1,a);
 % % end
 

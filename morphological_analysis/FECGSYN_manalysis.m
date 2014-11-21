@@ -100,9 +100,7 @@ ecgpuwave('absig','edr',[],[],'qrs'); % important to specify the QRS because it 
 
 %% QT-intervals from ref
 
-[qs,tends,twave] = QTcalc(alltypes_r,allref,T_LEN);
-thref = abs(ref_temp(twave));
-
+[qs,tends,twave] = QTcalc(alltypes_r,allref,ref_sig,T_LEN);
 % test if QT analysis feasible
 if isempty(tends)
     theight = NaN;
@@ -111,26 +109,28 @@ if isempty(tends)
     return
 end
 
+offset = sum(qrsref<qs(1))*T_LEN;
+thref = abs(ref_temp(twave-offset));
+
+
+
 qt_ref = mean(tends-qs)*1000/fsnew;    % in ms
 
 if debug
     close all
-    figure(1)
+    figure('units','normalized','outerposition',[0 0 1 1])
     ax(1)=subplot(2,1,1);
     plot(ref_temp,'k','LineWidth',2)
     hold on
-    offset = sum(qrsref<qs(1))*T_LEN;
     plot(qs(1)-offset,ref_temp(qs(1)-offset),'rv','MarkerSize',10,'MarkerFaceColor','r')
     plot(tends(1)-offset,ref_temp(tends(1)-offset),'ms','MarkerSize',10,'MarkerFaceColor','m')
-    title('Reference Signal')
+    plot(twave-offset,ref_temp(twave-offset),'go','MarkerSize',10,'MarkerFaceColor','g')
+    title('Reference Signal')   
 end
 clear qs tends twave
 %% QT-intervals from test
 
-[qs,tends,twave] = QTcalc(alltypes_t,alltest,T_LEN);
-thtest = abs(abdm_temp(twave));
-
-
+[qs,tends,twave] = QTcalc(alltypes_t,alltest,abdm_sig,T_LEN);
 % test if QT analysis feasible
 if isempty(tends)
     theight = NaN;
@@ -138,16 +138,20 @@ if isempty(tends)
     return
 end
 
-if debug
-    close all
+offset = sum(qrsref<qs(1))*T_LEN;
+thtest = abs(abdm_temp(twave-offset));
+
+if debug   
     figure(1)
-    ax(1)=subplot(2,1,2);
+    ax(2)=subplot(2,1,2);
     plot(abdm_temp,'k','LineWidth',2)
     hold on
-    offset = sum(qrsabdm<qs(1))*T_LEN;
     plot(qs(1)-offset,abdm_temp(qs(1)-offset),'rv','MarkerSize',10,'MarkerFaceColor','r')
     plot(tends(1)-offset,abdm_temp(tends(1)-offset),'ms','MarkerSize',10,'MarkerFaceColor','m')
+    plot(twave-offset,abdm_temp(twave-offset),'go','MarkerSize',10,'MarkerFaceColor','g')
     title('Test Signal')
+    linkaxes(ax,'x')
+
 end
 
 qt_test = mean(tends-qs)*1000/fsnew;   % in ms
@@ -161,7 +165,7 @@ theight = thtest/thref;
 end
 
 
-function [qs,tends,twave] = QTcalc(ann_types,ann_stamp,T_LEN)
+function [qs,tends,twave] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
 %% Function that contains heuristics behind QT interval calculation
 % > Inputs
 % ann_types:          Type of ALL annotations obtained from ECGPUWAVE
@@ -203,8 +207,8 @@ biphasic = filter([1 1],1,tees);
 idxbi = biphasic==2; idxbi = circshift(idxbi,-1);
 tees_all = tees;    % saving for theight analysis
 tees(idxbi) = 0;    % only considering latter T annotation
-no2tees = tees_all;
-no2tees(idxbi|circshift(idxbi,1)) = 0;
+% no2tees = tees_all;
+% no2tees(idxbi|circshift(idxbi,1)) = 0;
 
 % looking for T ends
 idxcbrackt = find(tees)+1;
@@ -215,11 +219,13 @@ tends = ann_stamp(idxcbrackt); % T-end locations
 if sum(idxbi) > 0
     twave = find(idxbi&tees_all,1);
     twave = [twave twave+1];
-    twave = ann_stamp(twave)-T_LEN;
-    [~,idx] = max(abs(abdm_temp(twave)));
+    twave = ann_stamp(twave);
+    [~,idx] = max(abs(signal(twave)));
     twave = twave(idx);
 else
-    twave = ann_stamp(find(tees_all,1))-T_LEN;
+    twave = ann_stamp(tees_all);
+    csum = cumsum([0 ; T_LEN*ones(length(twave)-1,1)],1); % removing shift between beats
+    twave = mean(twave-csum);
 end
 
 % % % isoeletric line

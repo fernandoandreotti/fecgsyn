@@ -197,7 +197,7 @@ refchs = 33:34;
 fs_new = 250;       % signals will be resample to 250 Hz
 
 if extract
-    for i = 466:length(fls)
+    for i = 1:length(fls)
         tic
         disp(['Extracting file ' fls{i} '..'])
         filename = [path2save 'rec' num2str(i)];

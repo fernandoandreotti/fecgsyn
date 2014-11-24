@@ -85,7 +85,7 @@ if peaks(end)>length(ecg);peaks(end) = length(ecg); end;
 %% MECG estimation using KF
 ecg_filt = FECGx_kf_ECGfiltering(ecg,peaks,nbCycles,fs);
 % == compute residual
-residual = ecg - ecg_filt;
+residual = ecg - ecg_filt(2,:);
 
 % == debug
 if debug

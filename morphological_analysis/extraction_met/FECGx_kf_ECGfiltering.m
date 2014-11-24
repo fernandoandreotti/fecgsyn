@@ -192,11 +192,11 @@ y = [phase ; x];
 
 % = covariance matrix of the process noise vector
 GQ = 5;
-Q = diag( [(.1*OptimumParams(1:N)).^2 (.1*ones(1,N)).^2 (.1*ones(1,N)).^2 (0.1*wsd)^2 , (GQ*mean(ECGsd))^2]);
+Q = diag( [(0.1*OptimumParams(1:N)).^2 (0.05*ones(1,N)).^2 (0.05*ones(1,N)).^2 wsd^2 , GQ*(0.05*mean(ECGsd))^2]);
 
 % = covariance matrix of the observation noise vector
 GR = 100;
-R = diag([(w/fs).^2,GR*mean(ECGsd).^2]);
+R = diag([(w/fs).^2/12      GR*mean(ECGsd).^2]);
 
 % = covariance matrix for error
 P0 = diag([(2*pi)^2,(10*max(abs(x))).^2]); % error covariance matrix

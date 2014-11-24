@@ -39,7 +39,7 @@ T_LEN = length(abdm_temp);  % template length
 fs = 250;           % default sampling frequency for ECGPUWAVE
 fsnew = 500;        % upsampling to 500Hz so that foetal
 % heart looks like adult
-gain = 1000;        % saving gain for WFDB format
+gain = 200;        % saving gain for WFDB format
 wsign1 = abs(max(abdm_temp))>abs(min(abdm_temp));
 wsign1 = 2*wsign1 - 1;
 abdm_temp = 1000*wsign1*abdm_temp/max(abs(abdm_temp)); % normalizing for
@@ -51,7 +51,7 @@ ref_sig = repmat(ref_temp,1,20)';
 
 % high-passing reference signal
 LF_CUT = 0.7;
-[b_bas,a_bas] = butter(3,LF_CUT/(fsnew/2),'high');
+[b_bas,a_bas] = butter(3,LF_CUT/(fs/2),'high');
 ref_sig = filtfilt(b_bas,a_bas,ref_sig);
 
 % == getting annotations right
@@ -61,6 +61,7 @@ qrsref = arrayfun(@(x) qrsref + x*T_LEN,0:19)';
 qrsabdm = arrayfun(@(x) qrsabdm + x*T_LEN,0:19)';
 
 % writting to WFDB
+
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
 tm2 = 1:length(ref_sig); tm2 = tm2'-1;
 wrsamp(tm1,abdm_sig,'absig',fs,gain,'')

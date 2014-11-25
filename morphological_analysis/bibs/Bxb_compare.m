@@ -60,7 +60,11 @@ NB_REF = length(refqrs);
 NB_TEST = length(testqrs);
 
 % == core function
- [idxmatch,dist] = dsearchn(refqrs,testqrs);     % closest ref for each point in test qrs
+try
+    [idxmatch,dist] = dsearchn(refqrs,testqrs);     % closest ref for each point in test qrs
+catch
+    disp('Whaaaat?')
+end
  idxmatchwin = idxmatch(dist<acceptint);         % keep only the ones within a certain window
 %  RMS = sqrt(mean(dist(dist<acceptint).^2));      % RMS value
  MAE = sum(abs(dist(dist<acceptint)));      % RMS value

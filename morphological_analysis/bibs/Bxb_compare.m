@@ -62,12 +62,14 @@ NB_TEST = length(testqrs);
 % == core function
 try
     [idxmatch,dist] = dsearchn(refqrs,testqrs);     % closest ref for each point in test qrs
-catch
-    disp('Whaaaat?')
+    idxmatchwin = idxmatch(dist<acceptint);         % keep only the ones within a certain window
+    %  RMS = sqrt(mean(dist(dist<acceptint).^2));      % RMS value
+    MAE = sum(abs(dist(dist<acceptint)));      % RMS value
+catch % case testqrs is empty
+    idxmatchwin = [];
+    MAE = NaN;
 end
- idxmatchwin = idxmatch(dist<acceptint);         % keep only the ones within a certain window
-%  RMS = sqrt(mean(dist(dist<acceptint).^2));      % RMS value
- MAE = sum(abs(dist(dist<acceptint)));      % RMS value
+ 
  NB_MATCH_UNIQUE = length(unique(idxmatchwin)); % how many unique matching
  
  

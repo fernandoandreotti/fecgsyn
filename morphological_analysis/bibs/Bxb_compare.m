@@ -79,6 +79,13 @@ end
  FN = NB_REF-TP;                   % number of missed ref QRS
  FP = NB_TEST-TP;                  % how many extra detection?
  SE  = TP/(TP+FN);
- PPV = TP/(FP+TP);
+ 
+ if isnan(MAE)                     % define PPV for zero detections
+     PPV = 0;
+     F1 = 0;                       % F1 definition
+ else
+     PPV = TP/(FP+TP);
+     F1 = 2*SE*PPV/(SE+PPV);           % accuracy measure
+ end
 %  ACC=TP/(TP+FP+FN);         
- F1 = 2*SE*PPV/(SE+PPV);           % accuracy measure
+

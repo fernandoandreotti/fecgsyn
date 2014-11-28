@@ -143,11 +143,15 @@ while (loop)  % will quit as soon as complete signal is filtered
         if ssamp > 1
             outdatanew = outdata;
             maxchnew = maxch;
-            load([outfilename '_' method])
-            if size(outdatanew,1)~=size(outdata,1)
+            load([outfilename '_' method])           
+            % treating cases when BSS technique outputs less channels than before
+            if size(outdatanew,1)<size(outdata,1)
                 outdatanew = [outdatanew;zeros(size(outdata,1)-size(outdatanew,1),length(outdatanew))];
                 outdata = [outdata outdatanew];
-            else
+            elseif size(outdatanew,1)>size(outdata,1) % case first run outputed less components
+                outdata = [outdata;zeros(size(outdatanew,1)-size(outdata,1),length(outdata))];
+                outdata = [outdata outdatanew];
+            else % trivial case
                 outdata = [outdata outdatanew];
             end
             maxch = [maxch maxchnew];

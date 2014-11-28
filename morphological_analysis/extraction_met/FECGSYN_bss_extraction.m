@@ -144,7 +144,12 @@ while (loop)  % will quit as soon as complete signal is filtered
             outdatanew = outdata;
             maxchnew = maxch;
             load([outfilename '_' method])
-            outdata = [outdata outdatanew];
+            if size(outdatanew,1)~=size(outdata,1)
+                outdatanew = [outdatanew;zeros(size(outdata,1)-size(outdatanew,1),length(outdatanew))];
+                outdata = [outdata outdatanew];
+            else
+                outdata = [outdata outdatanew];
+            end
             maxch = [maxch maxchnew];
         end
         save([outfilename '_' method],'outdata','maxch');

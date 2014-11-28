@@ -15,7 +15,7 @@ global debug
 
 %% Parameters
 Nkernels = 10;          % number of kernels for Gaussian modelling
-NB_BINS = 250;          % number of phase bins
+NB_BINS = 500;          % number of phase bins (SWT depends on this number!!)
 scala = 6;              % number from scales used by SWT approach
 
 % = parametrization

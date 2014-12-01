@@ -190,7 +190,7 @@ fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
 % % save(['workspace_exp1_', icamethod]); % save the workspace for history
 
 %% Experiment 2 (later 2 and 3)
-extract = 1;
+extract = 0;
 % Channels to be used
 ch = [1 8 11 22 25 32]; % using 6 channels (decided considering Exp. 1)
 refchs = 33:34;

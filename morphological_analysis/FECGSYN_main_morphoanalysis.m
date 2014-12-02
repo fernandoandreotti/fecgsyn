@@ -65,7 +65,7 @@ end
 
 %% Set-up parameters
 generate = 0;   % boolean, data should be generated?
-extract = 0;
+extract = 1;
 
 %% Data Generation
 if generate
@@ -281,8 +281,8 @@ if extract
         
         % creating statistics in 1-min blocks
         min = 1;
-        maxch = cell(1,length(mixture)/fs_new/60);
-        fqrs_temp = maxch;
+        maxch = zeros(1,length(mixture)/fs_new/60);
+        fqrs_temp = cell(1,length(mixture)/fs_new/60);
         while min <= length(mixture)/fs_new/60;
             F1max = 0;
             idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
@@ -290,7 +290,7 @@ if extract
                 idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
                 [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
                 if F1 > F1max    % compare and see if this channel provides max F1
-                    maxch{min} = j;
+                    maxch(min) = j;
                     F1max = F1;
                     fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
                 end
@@ -298,7 +298,6 @@ if extract
             min = min+1;
         end
         fqrs = cell2mat(fqrs_temp);
-        [~,maxch] = max(F1);
         % == saving results
         save([filename '_tsc'],'residual','maxch','fqrs');
         clear F1 RMS PPV SE maxch residual fqrs
@@ -319,8 +318,8 @@ if extract
         
         % creating statistics in 1-min blocks
         min = 1;
-        maxch = cell(1,length(mixture)/fs_new/60);
-        fqrs_temp = maxch;
+        maxch = zeros(1,length(mixture)/fs_new/60);
+        fqrs_temp = cell(1,length(mixture)/fs_new/60);
         while min <= length(mixture)/fs_new/60;
             F1max = 0;
             idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
@@ -328,7 +327,7 @@ if extract
                 idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
                 [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
                 if F1 > F1max    % compare and see if this channel provides max F1
-                    maxch{min} = j;
+                    maxch(min) = j;
                     F1max = F1;
                     fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
                 end
@@ -336,7 +335,6 @@ if extract
             min = min+1;
         end
         fqrs = cell2mat(fqrs_temp);
-        [~,maxch] = max(F1);
         % == saving results
         save([filename '_tspca'],'residual','maxch','fqrs');
         
@@ -356,8 +354,8 @@ if extract
         
         % creating statistics in 1-min blocks
         min = 1;
-        maxch = cell(1,length(mixture)/fs_new/60);
-        fqrs_temp = maxch;
+        maxch = zeros(1,length(mixture)/fs_new/60);
+        fqrs_temp = cell(1,length(mixture)/fs_new/60);
         while min <= length(mixture)/fs_new/60;
             F1max = 0;
             idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
@@ -365,7 +363,7 @@ if extract
                 idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
                 [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
                 if F1 > F1max    % compare and see if this channel provides max F1
-                    maxch{min} = j;
+                    maxch(min) = j;
                     F1max = F1;
                     fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
                 end
@@ -373,7 +371,6 @@ if extract
             min = min+1;
         end
         fqrs = cell2mat(fqrs_temp);
-        [~,maxch] = max(F1);
         % == saving results
         save([filename '_tsekf'],'residual','maxch','fqrs');
         clear F1 RMS PPV SE maxch residual fqrs NbCycles
@@ -397,8 +394,8 @@ if extract
         
         % creating statistics in 1-min blocks
         min = 1;
-        maxch = cell(1,length(mixture)/fs_new/60);
-        fqrs_temp = maxch;
+        maxch = zeros(1,length(mixture)/fs_new/60);
+        fqrs_temp = cell(1,length(mixture)/fs_new/60);
         while min <= length(mixture)/fs_new/60;
             F1max = 0;
             idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
@@ -406,7 +403,7 @@ if extract
                 idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
                 [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
                 if F1 > F1max    % compare and see if this channel provides max F1
-                    maxch{min} = j;
+                    maxch(min) = j;
                     F1max = F1;
                     fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
                 end
@@ -414,7 +411,6 @@ if extract
             min = min+1;
         end
         fqrs = cell2mat(fqrs_temp);
-        [~,maxch] = max(F1);
         % == saving results
         save([filename '_alms'],'residual','maxch','fqrs');
         clear F1 RMS PPV SE maxch residual fqrs lmsStruct
@@ -435,8 +431,8 @@ if extract
         
         % creating statistics in 1-min blocks
         min = 1;
-        maxch = cell(1,length(mixture)/fs_new/60);
-        fqrs_temp = maxch;
+        maxch = zeros(1,length(mixture)/fs_new/60);
+        fqrs_temp = cell(1,length(mixture)/fs_new/60);
         while min <= length(mixture)/fs_new/60;
             F1max = 0;
             idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
@@ -444,7 +440,7 @@ if extract
                 idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
                 [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
                 if F1 > F1max    % compare and see if this channel provides max F1
-                    maxch{min} = j;
+                    maxch(min) = j;
                     F1max = F1;
                     fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
                 end
@@ -452,7 +448,6 @@ if extract
             min = min+1;
         end
         fqrs = cell2mat(fqrs_temp);
-        [~,maxch] = max(F1);
         % == saving results
         save([filename '_arls'],'residual','maxch','fqrs');
         clear F1 RMS PPV SE maxch residual fqrs rlsStruct
@@ -473,8 +468,8 @@ if extract
         
         % creating statistics in 1-min blocks
         min = 1;
-        maxch = cell(1,length(mixture)/fs_new/60);
-        fqrs_temp = maxch;
+        maxch = zeros(1,length(mixture)/fs_new/60);
+        fqrs_temp = cell(1,length(mixture)/fs_new/60);
         while min <= length(mixture)/fs_new/60;
             F1max = 0;
             idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
@@ -482,7 +477,7 @@ if extract
                 idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
                 [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
                 if F1 > F1max    % compare and see if this channel provides max F1
-                    maxch{min} = j;
+                    maxch(min) = j;
                     F1max = F1;
                     fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
                 end
@@ -490,7 +485,6 @@ if extract
             min = min+1;
         end
         fqrs = cell2mat(fqrs_temp);
-        [~,maxch] = max(F1);
         % == saving results
         save([filename '_aesn'],'residual','maxch','fqrs');
         clear F1 RMS PPV SE maxch residual fqrs ESNparam

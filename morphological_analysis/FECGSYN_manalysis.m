@@ -65,8 +65,8 @@ qrsref = round((0.5 - 1/6)*T_LEN);
 qrsabdm = round((0.5 - 1/6)*T_LEN);
 qrsref = arrayfun(@(x) qrsref + x*T_LEN,0:19)';
 qrsabdm = arrayfun(@(x) qrsabdm + x*T_LEN,0:19)';
-qrsref = round(2*FS_ECGPU/fs.*qrsref);
-qrsabdm = round(2*FS_ECGPU/fs.*qrsabdm);
+%qrsref = round(2*FS_ECGPU/fs.*qrsref);
+%qrsabdm = round(2*FS_ECGPU/fs.*qrsabdm);
 
 % writting to WFDB
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;

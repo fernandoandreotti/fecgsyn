@@ -211,7 +211,7 @@ for j = 1:SAMPS:length(residual)
     if j+SAMPS > length(residual)
         endsamp = length(residual);
     else
-        endsamp = j + SAMPS;
+        endsamp = j + SAMPS -1;
     end
     % qrs complexes in interval
     qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;

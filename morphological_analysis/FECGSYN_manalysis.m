@@ -1,4 +1,4 @@
-function [qt,theight] = FECGSYN_manalysis(abdm_temp,ref_temp)
+function [qt,theight] = FECGSYN_manalysis(abdm_temp,ref_temp,fs)
 % This function calculates morphological features form signals given two
 % templates (reference and abdm). Statistics are give as %.
 %
@@ -32,44 +32,51 @@ function [qt,theight] = FECGSYN_manalysis(abdm_temp,ref_temp)
 
 global debug
 
-% == generate signal from template (necessary for ecgpuwave)
-T_LEN = length(abdm_temp);  % template length
-
 % resampling and repeating templates
-fs = 250;           % default sampling frequency for ECGPUWAVE
-fsnew = 500;        % upsampling to 500Hz so that foetal
-% heart looks like adult
+FS_ECGPU = 250;     % default sampling frequency for ECGPUWAVE
 gain = 200;        % saving gain for WFDB format
+
+
+%% Preprocessing
+
+% resample case input data not compatible with ECGPUWAVE
+% upsampling to 500Hz so that foetal heart looks like an adult heart
+abdm_temp = resample(abdm_temp,2*FS_ECGPU,fs);
+ref_temp = resample(ref_temp,2*FS_ECGPU,fs);
+T_LEN = length(abdm_temp);  % template length
+    
 wsign1 = abs(max(abdm_temp))>abs(min(abdm_temp));
 wsign1 = 2*wsign1 - 1;
-abdm_temp = 1000*wsign1*abdm_temp/max(abs(abdm_temp)); % normalizing for
+abdm_temp = gain*wsign1*abdm_temp/max(abs(abdm_temp)); % normalizing for
 wsign2 = abs(max(ref_temp))>abs(min(ref_temp));      % comparing T-height
 wsign2 = 2*wsign2 - 1;
-ref_temp = 1000*wsign2*ref_temp/max(abs(ref_temp));
+ref_temp = gain*wsign2*ref_temp/max(abs(ref_temp));
 abdm_sig = repmat(abdm_temp,1,20)';
 ref_sig = repmat(ref_temp,1,20)';
 
 % high-passing reference signal
 LF_CUT = 0.7;
-[b_bas,a_bas] = butter(3,LF_CUT/(fs/2),'high');
+[b_bas,a_bas] = butter(3,LF_CUT/FS_ECGPU,'high');
 ref_sig = filtfilt(b_bas,a_bas,ref_sig);
 
-% == getting annotations right
+%% Saving data as WFDB
+% adapting annotations so that peak occur around 1/3 the cycle length
 qrsref = round((0.5 - 1/6)*T_LEN);
 qrsabdm = round((0.5 - 1/6)*T_LEN);
 qrsref = arrayfun(@(x) qrsref + x*T_LEN,0:19)';
 qrsabdm = arrayfun(@(x) qrsabdm + x*T_LEN,0:19)';
+qrsref = round(2*FS_ECGPU/fs.*qrsref);
+qrsabdm = round(2*FS_ECGPU/fs.*qrsabdm);
 
 % writting to WFDB
-
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
 tm2 = 1:length(ref_sig); tm2 = tm2'-1;
-wrsamp(tm1,abdm_sig,'absig',fs,gain,'')
-wrsamp(tm2,ref_sig,'refsig',fs,gain,'')
+wrsamp(tm1,abdm_sig,'absig',FS_ECGPU,gain,'')
+wrsamp(tm2,ref_sig,'refsig',FS_ECGPU,gain,'')
 wrann('absig','qrs',qrsabdm,repmat('N',20,1));
 wrann('refsig','qrs',qrsref,repmat('N',20,1));
 
-% == Segmentation using ECGPUWAVE
+%% Segmentation using ECGPUWAVE
 % ref signal
 ecgpuwave('refsig','edr',[],[],'qrs'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 [allref,alltypes_r] = rdann('refsig','edr');
@@ -111,11 +118,11 @@ if isempty(tends)
 end
 
 offset = sum(qrsref<qs(1))*T_LEN;
-thref = abs(ref_temp(twave-offset));
+thref = abs(ref_sig(twave-offset));
 
 
 
-qt_ref = mean(tends-qs)*1000/fsnew;    % in ms
+qt_ref = mean(tends-qs)*1000/(2*FS_ECGPU);    % in ms
 
 if debug
     close all
@@ -155,7 +162,7 @@ if debug
 
 end
 
-qt_test = mean(tends-qs)*1000/fsnew;   % in ms
+qt_test = mean(tends-qs)*1000/(2*FS_ECGPU);   % in ms
 clear qs tends twave
 %% QT error
 qt = qt_test - qt_ref;        % absolute error in ms

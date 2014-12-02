@@ -31,12 +31,11 @@ function FECGSYN_genresults(path_orig,path_ext,fs,ch)
 % along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 global debug
-debug = 1;
 
 %% == Parameters
 INTERV = round(0.05*fs); % BxB acceptance interval
 TEMP_SAMPS = round(60*fs); % samples used for building templates
-morph = 0; % turn on/off morphological analysis
+morph = 1; % turn on/off morphological analysis
 %% Run through extracted datasets
 cd(path_orig)
 slashchar = char('/'*isunix + '\'*(~isunix));
@@ -76,8 +75,10 @@ for i = 1:length(fls_ext)
     if exist('outdata','var') % uniform naming residuals
         residual = outdata;
     end
-    %= Resampling data (if necessary)
+    %= Resampling original data to match extracted (fs - if necessary)
     if size(out.mecg,2) ~= size(residual,2)
+        % fref:          fetal QRS reference
+        % fecgref:       fetal ECG signals (before mixture)
         fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
         fecgref = zeros(size(residual));
         for k = 1:size(fecgref,1)
@@ -96,9 +97,9 @@ for i = 1:length(fls_ext)
             [F1,MAD,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
             stats_ica(origrec,:) = [F1,MAD,PPV,SE];
             if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,TEMP_SAMPS);
+                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS);
                 morph_ica(origrec,:) = [mean(qt_err); mean(theight_err)];
-                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
+%                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
             end
             clear fqrs F1 MAD PPV SE
         case 'PCA'
@@ -117,9 +118,9 @@ for i = 1:length(fls_ext)
             stats_tspca(origrec,:) = [F1,MAD,PPV,SE];
             %= morphological statistics
             if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,TEMP_SAMPS);
+                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS);
                 morph_tspca(origrec,:) = [mean(qt_err); mean(theight_err)];
-                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
+%                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
             end
             clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
         case 'tsekf'
@@ -128,9 +129,9 @@ for i = 1:length(fls_ext)
             stats_tsekf(origrec,:) = [F1,MAD,PPV,SE];
             %= morphological statistics
             if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,TEMP_SAMPS);
+                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS);
                 morph_tskf(origrec,:) = [mean(qt_err); mean(theight_err)];
-                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
+%                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
             end
             clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
         case 'alms'
@@ -149,9 +150,9 @@ for i = 1:length(fls_ext)
             stats_aesn(origrec,:) = [F1,MAD,PPV,SE];
             % morphological statistics
             if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,TEMP_SAMPS);
+                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS);
                 morph_aesn(origrec,:) = [mean(qt_err); mean(theight_err)];
-                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
+%                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
             end
             clear fecg residual fqrs F1 MAD PPV SE
     end
@@ -185,7 +186,7 @@ ylabel('MAD (ms)','FontSize',FSIZE)
 
 end
 
-function [qt_err,theight_err]=morpho(fecg,residual,fqrs,maxch,SAMPS)
+function [qt_err,theight_err]=morpho(fecg,residual,fqrs,maxch,fs,SAMPS)
 %% Function to perform morphological analysis for TS/BSS extracted data
 %
 % >Inputs
@@ -220,7 +221,7 @@ for j = 1:SAMPS:length(residual)
     temp_ref = FECGSYN_tgen(srcfecg(maxch(block),j:endsamp),qrstmp);
     temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
     % evaluating morphological features
-    [qt_err(block),theight_err(block)] = FECGSYN_manalysis(temp_abdm,temp_ref);
+    [qt_err(block),theight_err(block)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
     block = block+1;
 end
 end

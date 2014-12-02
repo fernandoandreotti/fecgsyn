@@ -36,6 +36,8 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+global debug
+debug = 1;
 %% Input parameters
 % importing path
 % clear all; close all; clc;
@@ -52,8 +54,8 @@ switch result
         path2save = '/netshares/ipmprojects3/JB_Experimental_Data/out_ICA/';
     otherwise % Fernando loves having to flip slashes
         if isunix
-            path = '/media/fernando/FetalEKG/2014.10_fecgsyn_simulations(5.0)/';
-            path2save = '/media/fernando/FetalEKG/2014.10_fecgsyn_simulations(5.0)/extracted3Hz/';
+            path = '/home/fernando/tmp/2014.12_fecgsyn_simulations(5.0)/';
+            path2save = '/home/fernando/tmp/2014.12_fecgsyn_simulations(5.0)/extracted3Hz/';
         else
             path = 'D:\2014.10_fecgsyn_simulations(5.0)\';
             path2save = 'D:\2014.10_fecgsyn_simulations(5.0)\extracted3Hz\';
@@ -63,8 +65,7 @@ end
 
 %% Set-up parameters
 generate = 0;   % boolean, data should be generated?
-% If not, path should direct to data location
-debug = 0;
+extract = 0;
 
 %% Data Generation
 if generate
@@ -190,7 +191,6 @@ fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
 % % save(['workspace_exp1_', icamethod]); % save the workspace for history
 
 %% Experiment 2 (later 2 and 3)
-extract = 0;
 % Channels to be used
 ch = [1 8 11 22 25 32]; % using 6 channels (decided considering Exp. 1)
 refchs = 33:34;
@@ -499,5 +499,5 @@ if extract
 end
 
 %% Generate Results
-FECGSYN_genresults(path,path2save,fs_new,ch,debug)
+FECGSYN_genresults(path,path2save,fs_new,ch)
 

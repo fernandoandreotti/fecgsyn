@@ -134,6 +134,7 @@ for k = 1:NB_RUN
                 ppmixture(j,:) = resample(mixture(j,:),fs_new,fs);    % reducing number of channels
                 lpmix = filtfilt(b_lp,a_lp,ppmixture(j,:));
                 ppmixture(j,:) = filtfilt(b_bas,a_bas,lpmix);
+                fref = round(out.fqrs{1}./(fs/fs_new));
             end
             
             % == extraction
@@ -141,7 +142,7 @@ for k = 1:NB_RUN
             disp('ICA extraction ..')
             loopsec = 60;   % in seconds
             filename = [path2save icamethod{:} '_nbch' num2str(length(ch{k})) '_rec' num2str(i)];
-            icasig = FECGSYN_bss_extraction(mixture,icamethod{:},fs_new,out.fqrs{1},loopsec,filename);     % extract using IC
+            icasig = FECGSYN_bss_extraction(ppmixture,icamethod{:},fs_new,fref,loopsec,filename);     % extract using IC
             % Calculate quality measures
             qrs = qrs_detect(icasig,TH,REFRAC,fs_new);
             if isempty(qrs)
@@ -150,7 +151,7 @@ for k = 1:NB_RUN
                 PPV = 0;
                 SE = 0;
             else
-                [F1,RMS,PPV,SE] = Bxb_compare(out.fqrs{1},qrs,INTERV);
+                [F1,RMS,PPV,SE] = Bxb_compare(fref,qrs,INTERV);
             end
             eval(['stats_' icamethod{:} '(i,:) = [F1,RMS,PPV,SE];'])            
         end
@@ -158,7 +159,7 @@ for k = 1:NB_RUN
         disp('PCA extraction ..')
         loopsec = 60;   % in seconds
         filename = [path2save 'PCA_nbch' num2str(length(ch{k})) '_rec' num2str(i)];
-        icasig = FECGSYN_bss_extraction(mixture,'PCA',fs_new,out.fqrs{1},loopsec,filename);     % extract using IC
+        icasig = FECGSYN_bss_extraction(ppmixture,'PCA',fs_new,fref,loopsec,filename);     % extract using IC
         % Calculate quality measures
         qrs = qrs_detect(icasig,TH,REFRAC,fs_new);
         if isempty(qrs)
@@ -167,7 +168,7 @@ for k = 1:NB_RUN
             PPV = 0;
             SE = 0;
         else
-            [F1,RMS,PPV,SE] = Bxb_compare(out.fqrs{1},qrs,INTERV);
+            [F1,RMS,PPV,SE] = Bxb_compare(fref,qrs,INTERV);
         end
         stats_pca(i,:) = [F1,RMS,PPV,SE];
     end
@@ -186,8 +187,12 @@ median_ica = zeros(NB_RUN,1);
 mean_pca = zeros(NB_RUN,1);
 median_pca = zeros(NB_RUN,1);
 for kk=1:NB_RUN
-    mean_ica(kk) = mean(stats_struct{kk}.stats_ica(1:NB_REC,1));
-    median_ica(kk) = median(stats_struct{kk}.stats_ica(1:NB_REC,1));
+    mean_FASTICA_DEF(kk) = mean(stats_struct{kk}.stats_FASTICA_DEF(1:NB_REC,1));
+    median_FASTICA_DEF(kk) = median(stats_struct{kk}.stats_FASTICA_DEF(1:NB_REC,1));
+        mean_FASTICA_SYM(kk) = mean(stats_struct{kk}.stats_FASTICA_SYM(1:NB_REC,1));
+    median_FASTICA_SYM(kk) = median(stats_struct{kk}.stats_FASTICA_SYM(1:NB_REC,1));
+        mean_JADEICA(kk) = mean(stats_struct{kk}.stats_JADEICA(1:NB_REC,1));
+    median_JADEICA(kk) = median(stats_struct{kk}.stats_JADEICA(1:NB_REC,1));
     mean_pca(kk) = mean(stats_struct{kk}.stats_pca(1:NB_REC,1));
     median_pca(kk) = median(stats_struct{kk}.stats_pca(1:NB_REC,1));
 end

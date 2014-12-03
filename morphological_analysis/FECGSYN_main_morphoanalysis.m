@@ -96,7 +96,7 @@ ch = {[11 22],[1 11 22 32],[1 8 11 22 25 32],[1 8 11 14 19 22 25 32], ...
 NB_REC = length(fls);
 NB_RUN = length(ch)-1; % !! FIXME. NOT RUNNING 32 Channels for now!!
 stats_struct = cell(NB_RUN,1);
-
+cd([path slashchar 'exp1' slashchar])
 for k = 1:NB_RUN
     disp('>>>>>>>>>>>>>>>>>>>>>')
     fprintf('processing case with %f channels \n',length(ch{k}));

@@ -183,6 +183,25 @@ h = boxplot(stats_MAD,{[repmat({'ICA'},1,length(fls_orig)) repmat({'PCA'},1,leng
 set(h, 'LineWidth',LWIDTH)
 ylabel('MAD (ms)','FontSize',FSIZE)
 
+% generate case plots
+c0 = cellfun(@(x) ~isempty(regexp(x,'.c0','ONCE')),fls_orig);
+c1 = cellfun(@(x) ~isempty(regexp(x,'.c1','ONCE')),fls_orig);
+c2 = cellfun(@(x) ~isempty(regexp(x,'.c2','ONCE')),fls_orig);
+c3 = cellfun(@(x) ~isempty(regexp(x,'.c3','ONCE')),fls_orig);
+c4 = cellfun(@(x) ~isempty(regexp(x,'.c4','ONCE')),fls_orig);
+c5 = cellfun(@(x) ~isempty(regexp(x,'.c5','ONCE')),fls_orig);
+
+for met = {'tsekf' 'tspca' 'aesn' 'ica'}
+    figure
+   
+    eval(['stat = stats_' met{:} ';']);
+    statscase = [stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
+    h = boxplot(statscase,{[repmat({'Case 0'},1,250) repmat({'Case 1'},1,250)...
+       repmat({'Case 2'},1,250) repmat({'Case 3'},1,250) repmat({'Case 4'},1,250) ...
+       repmat({'Case 5'},1,250)]});
+set(h, 'LineWidth',LWIDTH)
+title(met)   
+end
 
 end
 

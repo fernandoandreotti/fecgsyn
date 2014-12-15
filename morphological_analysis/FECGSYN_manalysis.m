@@ -80,29 +80,29 @@ wrann('refsig','qrs',qrsref,repmat('N',20,1));
 % ref signal
 ecgpuwave('refsig','edr',[],[],'qrs'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 [allref,alltypes_r] = rdann('refsig','edr');
-% if debug
-%     close all
-%     figure(1)
-%     ax(1)=subplot(2,1,1);
-%     plot(ref_sig)
-%     hold on
-%     plot(allref,ref_sig(allref),'or')
-%     text(allref,ref_sig(allref)+10,alltypes_r)
-%     title('Reference Signal')
-% end
+if debug
+    close all
+    figure(1)
+    ax(1)=subplot(2,1,1);
+    plot(ref_sig)
+    hold on
+    plot(allref,ref_sig(allref),'or')
+    text(allref,ref_sig(allref)+10,alltypes_r)
+    title('Reference Signal')
+end
 % test signal
 ecgpuwave('absig','edr',[],[],'qrs'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 [alltest,alltypes_t] = rdann('absig','edr');
-% if debug
-%     figure(1)
-%     ax(2)=subplot(2,1,2);
-%     plot(abdm_sig)
-%     hold on
-%     plot(alltest,abdm_sig(alltest),'or')
-%     text(alltest,abdm_sig(alltest)+50,alltypes_t)
-%     linkaxes(ax,'x')
-%     title('Test Signal')
-% end
+if debug
+    figure(1)
+    ax(2)=subplot(2,1,2);
+    plot(abdm_sig)
+    hold on
+    plot(alltest,abdm_sig(alltest),'or')
+    text(alltest,abdm_sig(alltest)+50,alltypes_t)
+    linkaxes(ax,'x')
+    title('Test Signal')
+end
 
 % == Calculate error on morphological analysis made by extracted data
 
@@ -119,9 +119,6 @@ end
 
 offset = sum(qrsref<qs(1))*T_LEN;
 thref = abs(ref_sig(twave-offset));
-
-
-
 qt_ref = mean(tends-qs)*1000/(2*FS_ECGPU);    % in ms
 
 if debug

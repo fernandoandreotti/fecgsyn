@@ -86,118 +86,118 @@ fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
 % % %
 % % % == experiments param
 % % 
-ch = {[11 22],[1 11 22 32],[1 8 11 22 25 32],[1 8 11 14 19 22 25 32], ...
-    [1 3 6 8 9 11 14 16 17 19 22 24 25  27 30 32], ...
-    1:32}; % trying with 4, 6, 8, 16 and 32 channels
-
-
-% == core function
-%NB_REC = 100; % for testing on a few records
-NB_REC = length(fls);
-NB_RUN = length(ch)-1; % !! FIXME. NOT RUNNING 32 Channels for now!!
-stats_struct = cell(NB_RUN,1);
-cd([path slashchar 'exp1' slashchar])
-for k = 1:NB_RUN
-    disp('>>>>>>>>>>>>>>>>>>>>>')
-    fprintf('processing case with %f channels \n',length(ch{k}));
-    
-    for i = 1:NB_REC
-        for icamethod = {'FASTICA_DEF','FASTICA_SYM','JADEICA'}
-            disp('==============================');
-            disp(['Extracting file ' fls{i} '..']);
-            disp(['The ICA method used is ' icamethod{:}]);
-            fprintf(' Processing record %f / %f /n (%f abdominal channels) \n',i,NB_REC,length(ch{k}));
-            
-            % = loading data
-            load([path fls{i}])
-            disp(num2str(i))
-            if isempty(out.noise)
-                noise = zeros(size(out.mecg));
-            else
-                noise = sum(cat(3,out.noise{:}),3);
-            end
-            fs = out.param.fs;
-            INTERV = round(0.05*fs);     % BxB acceptance interval
-            TH = 0.3;                    % detector threshold
-            REFRAC = round(.15*fs)/1000; % detector refractory period
-            mixture = double(out.mecg) + sum(cat(3,out.fecg{:}),3) ...
-                + noise;                 % re-creating abdominal mixture
-            mixture = mixture(ch{k},:);  % reducing number of channels
-            
-            % = preprocessing channels
-            HF_CUT = 100; % high cut frequency
-            LF_CUT = 3; % low cut frequency
-            [b_lp,a_lp] = butter(5,HF_CUT/(fs_new/2),'low');
-            [b_bas,a_bas] = butter(3,LF_CUT/(fs_new/2),'high');
-            ppmixture = zeros(size(mixture,1),size(mixture,2)/(fs/fs_new));
-            for j=1:length(ch{k})
-                ppmixture(j,:) = resample(mixture(j,:),fs_new,fs);    % reducing number of channels
-                lpmix = filtfilt(b_lp,a_lp,ppmixture(j,:));
-                ppmixture(j,:) = filtfilt(b_bas,a_bas,lpmix);
-                fref = round(out.fqrs{1}./(fs/fs_new));
-            end
-            
-            % == extraction
-            % = using ICA (FASTICA or JADE)
-            disp('ICA extraction ..')
-            loopsec = 60;   % in seconds
-            filename = [path2save icamethod{:} '_nbch' num2str(length(ch{k})) '_rec' num2str(i)];
-            icasig = FECGSYN_bss_extraction(ppmixture,icamethod{:},fs_new,fref,loopsec,filename);     % extract using IC
-            % Calculate quality measures
-            qrs = qrs_detect(icasig,TH,REFRAC,fs_new);
-            if isempty(qrs)
-                F1= 0;
-                RMS = NaN;
-                PPV = 0;
-                SE = 0;
-            else
-                [F1,RMS,PPV,SE] = Bxb_compare(fref,qrs,INTERV);
-            end
-            eval(['stats_' icamethod{:} '(i,:) = [F1,RMS,PPV,SE];'])            
-        end
-        % = using PCA
-        disp('PCA extraction ..')
-        loopsec = 60;   % in seconds
-        filename = [path2save 'PCA_nbch' num2str(length(ch{k})) '_rec' num2str(i)];
-        icasig = FECGSYN_bss_extraction(ppmixture,'PCA',fs_new,fref,loopsec,filename);     % extract using IC
-        % Calculate quality measures
-        qrs = qrs_detect(icasig,TH,REFRAC,fs_new);
-        if isempty(qrs)
-            F1= 0;
-            RMS = NaN;
-            PPV = 0;
-            SE = 0;
-        else
-            [F1,RMS,PPV,SE] = Bxb_compare(fref,qrs,INTERV);
-        end
-        stats_pca(i,:) = [F1,RMS,PPV,SE];
-    end
-    stats_struct{k}.stats_pca = stats_pca;
-    stats_struct{k}.stats_FASTICA_DEF = stats_FASTICA_DEF;
-    stats_struct{k}.stats_FASTICA_SYM = stats_FASTICA_SYM;
-    stats_struct{k}.stats_JADEICA = stats_JADEICA;
-    
-    save(['stats_ch_' num2str(k)],'stats_struct');
-end
-
-
-% == statistics
-mean_ica = zeros(NB_RUN,1);
-median_ica = zeros(NB_RUN,1);
-mean_pca = zeros(NB_RUN,1);
-median_pca = zeros(NB_RUN,1);
-for kk=1:NB_RUN
-    mean_FASTICA_DEF(kk) = mean(stats_struct{kk}.stats_FASTICA_DEF(1:NB_REC,1));
-    median_FASTICA_DEF(kk) = median(stats_struct{kk}.stats_FASTICA_DEF(1:NB_REC,1));
-        mean_FASTICA_SYM(kk) = mean(stats_struct{kk}.stats_FASTICA_SYM(1:NB_REC,1));
-    median_FASTICA_SYM(kk) = median(stats_struct{kk}.stats_FASTICA_SYM(1:NB_REC,1));
-        mean_JADEICA(kk) = mean(stats_struct{kk}.stats_JADEICA(1:NB_REC,1));
-    median_JADEICA(kk) = median(stats_struct{kk}.stats_JADEICA(1:NB_REC,1));
-    mean_pca(kk) = mean(stats_struct{kk}.stats_pca(1:NB_REC,1));
-    median_pca(kk) = median(stats_struct{kk}.stats_pca(1:NB_REC,1));
-end
-
-% % save(['workspace_exp1_', icamethod]); % save the workspace for history
+% % ch = {[11 22],[1 11 22 32],[1 8 11 22 25 32],[1 8 11 14 19 22 25 32], ...
+% %     [1 3 6 8 9 11 14 16 17 19 22 24 25  27 30 32], ...
+% %     1:32}; % trying with 4, 6, 8, 16 and 32 channels
+% % 
+% % 
+% % == core function
+% % %NB_REC = 100; % for testing on a few records
+% % NB_REC = length(fls);
+% % NB_RUN = length(ch)-1; % !! FIXME. NOT RUNNING 32 Channels for now!!
+% % stats_struct = cell(NB_RUN,1);
+% % cd([path slashchar 'exp1' slashchar])
+% % for k = 1:NB_RUN
+% %     disp('>>>>>>>>>>>>>>>>>>>>>')
+% %     fprintf('processing case with %f channels \n',length(ch{k}));
+% %     
+% %     for i = 1:NB_REC
+% %         for icamethod = {'FASTICA_DEF','FASTICA_SYM','JADEICA'}
+% %             disp('==============================');
+% %             disp(['Extracting file ' fls{i} '..']);
+% %             disp(['The ICA method used is ' icamethod{:}]);
+% %             fprintf(' Processing record %f / %f /n (%f abdominal channels) \n',i,NB_REC,length(ch{k}));
+% %             
+% %             % = loading data
+% %             load([path fls{i}])
+% %             disp(num2str(i))
+% %             if isempty(out.noise)
+% %                 noise = zeros(size(out.mecg));
+% %             else
+% %                 noise = sum(cat(3,out.noise{:}),3);
+% %             end
+% %             fs = out.param.fs;
+% %             INTERV = round(0.05*fs);     % BxB acceptance interval
+% %             TH = 0.3;                    % detector threshold
+% %             REFRAC = round(.15*fs)/1000; % detector refractory period
+% %             mixture = double(out.mecg) + sum(cat(3,out.fecg{:}),3) ...
+% %                 + noise;                 % re-creating abdominal mixture
+% %             mixture = mixture(ch{k},:);  % reducing number of channels
+% %             
+% %             % = preprocessing channels
+% %             HF_CUT = 100; % high cut frequency
+% %             LF_CUT = 3; % low cut frequency
+% %             [b_lp,a_lp] = butter(5,HF_CUT/(fs_new/2),'low');
+% %             [b_bas,a_bas] = butter(3,LF_CUT/(fs_new/2),'high');
+% %             ppmixture = zeros(size(mixture,1),size(mixture,2)/(fs/fs_new));
+% %             for j=1:length(ch{k})
+% %                 ppmixture(j,:) = resample(mixture(j,:),fs_new,fs);    % reducing number of channels
+% %                 lpmix = filtfilt(b_lp,a_lp,ppmixture(j,:));
+% %                 ppmixture(j,:) = filtfilt(b_bas,a_bas,lpmix);
+% %                 fref = round(out.fqrs{1}./(fs/fs_new));
+% %             end
+% %             
+% %             % == extraction
+% %             % = using ICA (FASTICA or JADE)
+% %             disp('ICA extraction ..')
+% %             loopsec = 60;   % in seconds
+% %             filename = [path2save icamethod{:} '_nbch' num2str(length(ch{k})) '_rec' num2str(i)];
+% %             icasig = FECGSYN_bss_extraction(ppmixture,icamethod{:},fs_new,fref,loopsec,filename);     % extract using IC
+% %             % Calculate quality measures
+% %             qrs = qrs_detect(icasig,TH,REFRAC,fs_new);
+% %             if isempty(qrs)
+% %                 F1= 0;
+% %                 RMS = NaN;
+% %                 PPV = 0;
+% %                 SE = 0;
+% %             else
+% %                 [F1,RMS,PPV,SE] = Bxb_compare(fref,qrs,INTERV);
+% %             end
+% %             eval(['stats_' icamethod{:} '(i,:) = [F1,RMS,PPV,SE];'])            
+% %         end
+% %         % = using PCA
+% %         disp('PCA extraction ..')
+% %         loopsec = 60;   % in seconds
+% %         filename = [path2save 'PCA_nbch' num2str(length(ch{k})) '_rec' num2str(i)];
+% %         icasig = FECGSYN_bss_extraction(ppmixture,'PCA',fs_new,fref,loopsec,filename);     % extract using IC
+% %         % Calculate quality measures
+% %         qrs = qrs_detect(icasig,TH,REFRAC,fs_new);
+% %         if isempty(qrs)
+% %             F1= 0;
+% %             RMS = NaN;
+% %             PPV = 0;
+% %             SE = 0;
+% %         else
+% %             [F1,RMS,PPV,SE] = Bxb_compare(fref,qrs,INTERV);
+% %         end
+% %         stats_pca(i,:) = [F1,RMS,PPV,SE];
+% %     end
+% %     stats_struct{k}.stats_pca = stats_pca;
+% %     stats_struct{k}.stats_FASTICA_DEF = stats_FASTICA_DEF;
+% %     stats_struct{k}.stats_FASTICA_SYM = stats_FASTICA_SYM;
+% %     stats_struct{k}.stats_JADEICA = stats_JADEICA;
+% %     
+% %     save(['stats_ch_' num2str(k)],'stats_struct');
+% % end
+% % 
+% % 
+% % % == statistics
+% % mean_ica = zeros(NB_RUN,1);
+% % median_ica = zeros(NB_RUN,1);
+% % mean_pca = zeros(NB_RUN,1);
+% % median_pca = zeros(NB_RUN,1);
+% % for kk=1:NB_RUN
+% %     mean_FASTICA_DEF(kk) = mean(stats_struct{kk}.stats_FASTICA_DEF(1:NB_REC,1));
+% %     median_FASTICA_DEF(kk) = median(stats_struct{kk}.stats_FASTICA_DEF(1:NB_REC,1));
+% %         mean_FASTICA_SYM(kk) = mean(stats_struct{kk}.stats_FASTICA_SYM(1:NB_REC,1));
+% %     median_FASTICA_SYM(kk) = median(stats_struct{kk}.stats_FASTICA_SYM(1:NB_REC,1));
+% %         mean_JADEICA(kk) = mean(stats_struct{kk}.stats_JADEICA(1:NB_REC,1));
+% %     median_JADEICA(kk) = median(stats_struct{kk}.stats_JADEICA(1:NB_REC,1));
+% %     mean_pca(kk) = mean(stats_struct{kk}.stats_pca(1:NB_REC,1));
+% %     median_pca(kk) = median(stats_struct{kk}.stats_pca(1:NB_REC,1));
+% % end
+% 
+% % % save(['workspace_exp1_', icamethod]); % save the workspace for history
 
 %% Experiment 2 (later 2 and 3)
 % Channels to be used

@@ -217,7 +217,9 @@ tees(idxbi) = 0;    % only considering latter T annotation
 
 % looking for T ends
 idxcbrackt = find(tees)+1;
-idxcbrackt = idxcbrackt(cbrackts(idxcbrackt)); % which c-brackts come right after T's
+idxsense = cbrackts(idxcbrackt); % only keeping complete 't' followed by ')'
+qs(~idxsense) = [];	% clearing incomplete waves
+idxcbrackt = idxcbrackt(idxsense); % which c-brackts come right after T's
 tends = ann_stamp(idxcbrackt); % T-end locations
 
 % == T-height

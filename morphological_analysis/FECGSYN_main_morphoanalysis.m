@@ -483,7 +483,7 @@ if extract
             idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
             for j = 1:length(ch)
                 idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
-                [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
+                [F1,~,~,~] = INTER
                 if F1 > F1max    % compare and see if this channel provides max F1
                     maxch(min) = j;
                     F1max = F1;

@@ -11,7 +11,7 @@ function Xhat = FECGx_kf_ECGfiltering(x,peaksidx,NbCycles,fs)
 %  > Output
 %       Xhat:           filtered signal
 %
-global debug
+global debug GR GQ
 
 %% Parameters
 Nkernels = 10;          % number of kernels for Gaussian modelling
@@ -191,11 +191,9 @@ N = length(OptimumParams)/3;     %new number of Gaussian kernels
 y = [phase ; x];
 
 % = covariance matrix of the process noise vector
-GQ = 5;
-Q = diag( [(0.1*OptimumParams(1:N)).^2 (0.05*ones(1,N)).^2 (0.05*ones(1,N)).^2 wsd^2 , GQ*(0.05*mean(ECGsd))^2]);
+Q = diag( [(0.1*OptimumParams(1:N)).^2 (0.5*ones(1,N)).^2 (0.5*ones(1,N)).^2 wsd^2 , GQ*(0.5*mean(ECGsd))^2]);
 
 % = covariance matrix of the observation noise vector
-GR = 100;
 R = diag([(w/fs).^2/12      GR*mean(ECGsd).^2]);
 
 % = covariance matrix for error

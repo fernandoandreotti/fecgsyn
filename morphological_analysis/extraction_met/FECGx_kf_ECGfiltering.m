@@ -33,7 +33,7 @@ phase = PhaseCalc(find(peaks),length(x)); % phase calculation
 phase_tmp = PhaseCalc(peaksidx(1:NbCycles),peaksidx(NbCycles)+300); % phase calculation
 [ECGmean,ECGsd,meanphase] = ECG_tgen(x(1:peaksidx(NbCycles)+300),phase_tmp,NB_BINS); % mean ECG extraction
 
-if debug
+if debug>1
     % = phase calculation figure
     I = find(peaks);
     t = (0:length(x)-1)/fs;
@@ -167,23 +167,23 @@ while(yy<N+1)
 end
 N = length(OptimumParams)/3;     %new number of Gaussian kernels
 
+
 % Plot final resultsNew Folder
-% if debug && ~isempty(Optpos)
-%     figure(2)
-%     %     errorbar(meanphase,ECGmean,ECGsd/2);
-%     hold on;
-%     plot(meanphase,ECGmean,'r');
-%     plot(meanphase,Model,'m','linewidth',2)
-%     plot(meanphase,Error,'-g','linewidth',2);
-%     plot(Optpos(:,end),1,'or','MarkerSize',7)
-%     legend('SD Bar','Mean ECG','Model','Error');%,'Gaussian');
-%     legend('Mean ECG','Gaussian Approx.','Error');%,'Gaussian');
-%     title('Mean, SD extraction and Model');
-%     xlabel('Phase (rads.)');
-%     ylabel('Arbitrary units');
-%     grid
-%     hold off;
-% end
+if debug && ~isempty(OptimumParams)
+    figure
+    [Error,Model] = FECGx_kf_ECGModelError(OptimumParams,ECGmean,meanphase);
+    errorbar(meanphase,ECGmean,ECGsd/2);
+    hold on;
+    plot(meanphase,ECGmean,'r');
+    plot(meanphase,Model,'m','linewidth',2)
+    plot(meanphase,Error,'-g','linewidth',2);
+    legend('SD bar','Mean ECG','Gaussian Approx.','Error');%,'Gaussian');
+    title('Mean, SD extraction and Model');
+    xlabel('Phase (rads.)');
+    ylabel('Arbitrary units');
+    grid
+    hold off;
+end
 
 %% Kalman Filter Parametrization
 

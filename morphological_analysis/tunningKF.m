@@ -108,7 +108,7 @@ if extract
         mixture = ppmixture;
         clear HF_CUT LF_CUT a_bas a_lp b_bas b_lp bw wo lpmix ppmixture
         % == Extraction
-        for GR = [20,60,100,200]
+        for GR = [10,50,100,150,200]
             for GQ = [1,25,50]
                 
                 % ----------------------------
@@ -143,7 +143,7 @@ if extract
                 end
                 fqrs = cell2mat(fqrs_temp);
                 % == saving results
-                save([filename '_GQ' num2str(GQ) 'GR' num2str(GR) '_tsekf3'],'residual','maxch','fqrs');
+                save([filename '_GQ' num2str(GQ) 'GR' num2str(GR) '_tsekf'],'residual','maxch','fqrs');
                 clear F1 RMS PPV SE maxch residual fqrs NbCycles
             end
         end

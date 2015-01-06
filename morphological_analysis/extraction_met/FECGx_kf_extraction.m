@@ -48,7 +48,7 @@ function residual = FECGx_kf_extraction(peaks,ecg,varargin)
 %
 
 %% Manage inputs
-global debug
+global debug GQ GR
 optargs = {20 1000 0};  % default values for [nbCycles fs smoothFlag]
 newVals = cellfun(@(x) ~isempty(x), varargin);
 optargs(newVals) = varargin(newVals);
@@ -98,7 +98,7 @@ if debug
     hold on, plot(tm(peaks),ecg(peaks),'+r','LineWidth',2);
     
     legend('mixture','template','residual','MQRS');
-    title('Template subtraction for extracting the FECG');
+    title(['Template subtraction for extracting the FECG  GR=' num2str(GR) ' GQ=' num2str(GQ)]);
     xlabel('Time [sec]'); ylabel('Amplitude [NU]')
     set(gca,'FontSize',FONT_SIZE);
     set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);

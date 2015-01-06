@@ -191,7 +191,7 @@ N = length(OptimumParams)/3;     %new number of Gaussian kernels
 y = [phase ; x];
 
 % = covariance matrix of the process noise vector
-Q = diag( [(0.1*OptimumParams(1:N)).^2 (0.5*ones(1,N)).^2 (0.5*ones(1,N)).^2 wsd^2 , GQ*(0.5*mean(ECGsd))^2]);
+Q = diag( [(0.1*OptimumParams(1:N)).^2 (0.1*ones(1,N)).^2 (0.1*ones(1,N)).^2 wsd^2 , GQ*mean(ECGsd)^2]);
 
 % = covariance matrix of the observation noise vector
 R = diag([(w/fs).^2/12      GR*mean(ECGsd).^2]);

@@ -37,7 +37,7 @@
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 global debug GQ GR
-debug = 0;
+debug = 1;
 %% Input parameters
 % importing path
 % clear all; close all; clc;
@@ -67,7 +67,7 @@ ch = [1 8 11 22 25 32]; % using 6 channels (decided considering Exp. 1)
 refchs = 33:34;
 
 if extract
-    for i = 1:10%length(fls)
+    for i = 5:6%length(fls)
         tic
         disp(['Extracting file ' fls{i} '..'])
         filename = [path2save 'rec' num2str(i)];
@@ -108,8 +108,8 @@ if extract
         mixture = ppmixture;
         clear HF_CUT LF_CUT a_bas a_lp b_bas b_lp bw wo lpmix ppmixture
         % == Extraction
-        for GQ = [20,60,100,200]
-            for GR = [1,25,50]
+        for GR = [20,60,100,200]
+            for GQ = [1,25,50]
                 
                 % ----------------------------
                 % EKF Extended Kalman Filter
@@ -143,11 +143,47 @@ if extract
                 end
                 fqrs = cell2mat(fqrs_temp);
                 % == saving results
-                save([filename 'GQ' num2str(GQ) 'GR' num2str(GR) '_tsekf2'],'residual','maxch','fqrs');
+                save([filename '_GQ' num2str(GQ) 'GR' num2str(GR) '_tsekf3'],'residual','maxch','fqrs');
                 clear F1 RMS PPV SE maxch residual fqrs NbCycles
             end
         end
         
+        %% Reference
+        disp('TS-PCA extraction ..')        
+        % parameters
+        NbCycles = 20;
+        NbPC = 2;
+        residual = zeros(size(mixture));
+        fqrs = cell(1,size(mixture,1));
+        for j = 1:length(ch)
+            residual(j,:) = FECGSYN_ts_extraction(out.mqrs,mixture(j,:),'TS-PCA',0,...
+                NbCycles,NbPC,fs_new);
+            fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
+        end
+        
+        % creating statistics in 1-min blocks
+        min = 1;
+        maxch = zeros(1,length(mixture)/fs_new/60);
+        fqrs_temp = cell(1,length(mixture)/fs_new/60);
+        while min <= length(mixture)/fs_new/60;
+            F1max = 0;
+            idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
+            for j = 1:length(ch)
+                idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
+                [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
+                if F1 > F1max    % compare and see if this channel provides max F1
+                    maxch(min) = j;
+                    F1max = F1;
+                    fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
+                end
+            end
+            min = min+1;
+        end
+        fqrs = cell2mat(fqrs_temp);
+        % == saving results
+        save([filename '_tspca'],'residual','maxch','fqrs');
+        
+        clear F1 RMS PPV SE maxch residual fqrs NbCycles NbPC
         
     end
 end

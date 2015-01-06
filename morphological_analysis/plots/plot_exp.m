@@ -1,3 +1,5 @@
+
+load('stats_ch_5')
 FONT_SIZE = 14;
 LWIDTH = 2;
 figure(1)
@@ -18,6 +20,7 @@ set(gca,'FontSize',FONT_SIZE)
 set(gca,'XTick',ch)
 ylabel('F_1 (in %)')
 xlabel('                                                                                                 Number of Channels')
+box on
 hold off
 h2 = subplot(1,2,2);
 hold on
@@ -33,5 +36,6 @@ legend('mean (FAST-ICA SYMMETRIC)','median ICA (FAST-ICA SYMMETRIC)',...
 set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
 set(gca,'FontSize',FONT_SIZE)
 set(gca,'XTick',ch)
+box on
 hold off
 

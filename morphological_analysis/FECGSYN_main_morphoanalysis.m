@@ -86,15 +86,15 @@ fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
 % % %
 % % % == experiments param
 % % 
-ch = {[11 22],[1 11 22 32],[1 8 11 22 25 32],[1 8 11 14 19 22 25 32], ...
-    [1 3 6 8 9 11 14 16 17 19 22 24 25  27 30 32], ...
-    1:32}; % trying with 4, 6, 8, 16 and 32 channels
+% % ch = {[11 22],[1 11 22 32],[1 8 11 22 25 32],[1 8 11 14 19 22 25 32], ...
+%     [1 3 6 8 9 11 14 16 17 19 22 24 25  27 30 32], ...
+%     1:32}; % trying with 4, 6, 8, 16 and 32 channels
 % % 
 % % 
 % % == core function
-NB_REC = 100; % for testing on a few records
-NB_REC = length(fls);
-NB_RUN = length(ch)-1; % !! FIXME. NOT RUNNING 32 Channels for now!!
+% % NB_REC = 100; % for testing on a few records
+% % NB_REC = length(fls);
+% % NB_RUN = length(ch)-1; % !! FIXME. NOT RUNNING 32 Channels for now!!
 % % stats_struct = cell(NB_RUN,1);
 % % cd([path slashchar 'exp1' slashchar])
 % % for k = 1:NB_RUN
@@ -182,24 +182,24 @@ NB_RUN = length(ch)-1; % !! FIXME. NOT RUNNING 32 Channels for now!!
 % % 
 % % 
 % % % == statistics
-mean_FASTICA_SYM = zeros(NB_RUN,1);
-median_FASTICA_SYM = zeros(NB_RUN,1);
-mean_JADEICA = zeros(NB_RUN,1);
-median_JADEICA = zeros(NB_RUN,1);
-mean_FASTICA_DEF = zeros(NB_RUN,1);
-median_FASTICA_DEF = zeros(NB_RUN,1);
-mean_pca = zeros(NB_RUN,1);
-median_pca = zeros(NB_RUN,1);
-for kk=1:NB_RUN
-    mean_FASTICA_DEF(kk) = mean(stats_struct{kk}.stats_FASTICA_DEF(1:NB_REC,1));
-    median_FASTICA_DEF(kk) = median(stats_struct{kk}.stats_FASTICA_DEF(1:NB_REC,1));
-    mean_FASTICA_SYM(kk) = mean(stats_struct{kk}.stats_FASTICA_SYM(1:NB_REC,1));
-    median_FASTICA_SYM(kk) = median(stats_struct{kk}.stats_FASTICA_SYM(1:NB_REC,1));
-    mean_JADEICA(kk) = mean(stats_struct{kk}.stats_JADEICA(1:NB_REC,1));
-    median_JADEICA(kk) = median(stats_struct{kk}.stats_JADEICA(1:NB_REC,1));
-    mean_pca(kk) = mean(stats_struct{kk}.stats_pca(1:NB_REC,1));
-    median_pca(kk) = median(stats_struct{kk}.stats_pca(1:NB_REC,1));
-end
+% % mean_FASTICA_SYM = zeros(NB_RUN,1);
+% % median_FASTICA_SYM = zeros(NB_RUN,1);
+% % mean_JADEICA = zeros(NB_RUN,1);
+% % median_JADEICA = zeros(NB_RUN,1);
+% % mean_FASTICA_DEF = zeros(NB_RUN,1);
+% % median_FASTICA_DEF = zeros(NB_RUN,1);
+% % mean_pca = zeros(NB_RUN,1);
+% % median_pca = zeros(NB_RUN,1);
+% % for kk=1:NB_RUN
+% %     mean_FASTICA_DEF(kk) = mean(stats_struct{kk}.stats_FASTICA_DEF(1:NB_REC,1));
+% %     median_FASTICA_DEF(kk) = median(stats_struct{kk}.stats_FASTICA_DEF(1:NB_REC,1));
+% %     mean_FASTICA_SYM(kk) = mean(stats_struct{kk}.stats_FASTICA_SYM(1:NB_REC,1));
+% %     median_FASTICA_SYM(kk) = median(stats_struct{kk}.stats_FASTICA_SYM(1:NB_REC,1));
+% %     mean_JADEICA(kk) = mean(stats_struct{kk}.stats_JADEICA(1:NB_REC,1));
+% %     median_JADEICA(kk) = median(stats_struct{kk}.stats_JADEICA(1:NB_REC,1));
+% %     mean_pca(kk) = mean(stats_struct{kk}.stats_pca(1:NB_REC,1));
+% %     median_pca(kk) = median(stats_struct{kk}.stats_pca(1:NB_REC,1));
+% % end
 % 
 % % % save(['workspace_exp1_', icamethod]); % save the workspace for history
 

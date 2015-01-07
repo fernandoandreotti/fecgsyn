@@ -83,20 +83,20 @@ noise_sig = ~(mat_sig + mat_nosig + fet_sig + fet_nosig);
 mbeats = 60*fs*length(mref)/length(signal); % now im bpm
 fbeats = 60*fs*length(fref)/length(signal); % now im bpm
 
-Pmat = sqrt(sum(signal(:,mat_sig).^2,2))/sum(m_nover); % maternal power (in each channel)
+Pmat = sum(signal(:,mat_sig).^2,2)*(length(mref)/sum(m_nover)); % maternal power (in each channel)
 Pmat = Pmat.*(MHR/mbeats);                          % normalized power
-Pfet = sqrt(sum(signal(:,fet_sig).^2,2))/sum(f_nover); % fetal power (in each channel)
+Pfet = sum(signal(:,fet_sig).^2,2)*(length(fref)/sum(f_nover)); % fetal power (in each channel)
 Pfet = Pfet.*(FHR/fbeats);                          % normalized power
-Pn   = sqrt(sum(signal(:,noise_sig).^2,2))/sum(m_nover); % noise power (in each channel)
+Pn   = sum(signal(:,noise_sig).^2,2); % noise power (in each channel)
 
 SNRfm = 10*log10(Pfet./Pmat);
-SNRnf = 10*log10(Pn./Pfet);
+SNRnf= 10*log10(Pn./Pfet);
 
 %% Plotting
 figure
 hold on
 chan = 1; % channel to plot
-maxes = max(abs(signal)')
+maxes = max(abs(signal)');
 t = 1:length(signal);
 marea = area(t',maxes(chan)*[-mat_sig',2*mat_sig'],'FaceColor',[156 177 219]./255,'EdgeColor','none');
 farea = area(t',maxes(chan)*[-fet_sig',2*fet_sig'],'FaceColor',[187 142 187]./255,'EdgeColor','none');
@@ -108,6 +108,18 @@ xlabel('Time(s)','FontSize',14,'FontWeight','bold'), ylabel('Amplitude (mV)','Fo
 set(gca,'XTick',1:fs:length(signal))  % This automatically sets
 set(gca,'XTickLabel',num2cell(0:1:length(signal)/fs))
 set(gca,'FontSize',12)
+
+hsAnno = get(marea(1), 'Annotation');
+hsLegend = get(hsAnno, 'LegendInformation');
+set(hsLegend, 'IconDisplayStyle', 'off');
+hsAnno = get(farea(1), 'Annotation');
+hsLegend = get(hsAnno, 'LegendInformation');
+set(hsLegend, 'IconDisplayStyle', 'off');
+hsAnno = get(narea(1), 'Annotation');
+hsLegend = get(hsAnno, 'LegendInformation');
+set(hsLegend, 'IconDisplayStyle', 'off');
+
+legend('mat.','fet.','noise')
 
 % % for fast plot substituting logical to NaN
 % mat_plot = NaN(1,length(mat_sig));    

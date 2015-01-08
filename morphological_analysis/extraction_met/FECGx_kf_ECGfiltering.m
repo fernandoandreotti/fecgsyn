@@ -11,7 +11,7 @@ function Xhat = FECGx_kf_ECGfiltering(x,peaksidx,NbCycles,fs)
 %  > Output
 %       Xhat:           filtered signal
 %
-global debug GR GQ
+global debug fref filename channel
 
 %% Parameters
 Nkernels = 7;          % number of kernels for Gaussian modelling
@@ -187,43 +187,66 @@ end
 
 %% Kalman Filter Parametrization
 
-pot = -4:4;
-
-for p(1) = 10.^pot
-
-
-
-
-% = ECG
-y = [phase ; x];
-
-% = covariance matrix of the process noise vector
-Q = diag( [p(1)*OptimumParams(1:N).^2 p(2)*ones(1,N) p(3)*ones(1,N) p(4)*wsd^2 , p(5)*mean(ECGsd)^2]);
-
-% = covariance matrix of the observation noise vector
-R = diag([p(6)*(w/fs).^2      p(7)*mean(ECGsd).^2]);
-
-%R = [7.4555*(w/fs).^2/12 0 ;0 234.5796*mean(ecgsd).^2]; % gain changed with rd(8)
-%Q = diag([fwsd, mwsd, rd(4)*(.05*mean(fecgsd)).^2, rd(5)*(.05*mean(mecgsd)).^2, rd(6)*(.00005*ones(1,3*fN)).^2, rd(7)*(.00005*ones(1,3*mN)).^2]);
-
-
-% = covariance matrix for error
-P0 = diag([(2*pi)^2,(10*max(abs(x))).^2]); % error covariance matrix
-
-% = noises
-Wmean = [OptimumParams w 0]';
-Vmean = [0 0]'; % mean observation noise vector
-
-% = initialize state
-X0 = [-pi 0]';  % state initialization
-
-% = control input
-u = zeros(1,length(x));
-
-Xhat = FECGx_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);
+pot = -3:3;
+INTERV = round(0.05*fs);    % BxB acceptance interval
+TH = 0.3;                   % detector threshold
+REFRAC = .15;               % detector refractory period (in s)
+F1max = 0;
+for l1 = 1:length(pot)
+    p(1) = 10.^pot(l1);
+    for l2 = 1:length(pot)
+        p(2) = 10.^pot(l2);
+        for l3 = 1:length(pot)
+            p(3) = 10.^pot(l3);
+            for l4 = 1:length(pot)
+                p(4) = 10.^pot(l4);
+                for l5 = 1:length(pot)
+                    p(5) = 10.^pot(l5);                   
+                    for l6 = 1:length(pot)
+                        p(6) = 10.^pot(l6);                        
+                        for l7 = 1:length(pot)
+                            p(7) = 10.^pot(l7);
+                            y = [phase ; x];    % state
+                            
+                            % covariance matrix of the process noise vector
+                            Q = diag( [p(1)*OptimumParams(1:N).^2 p(2)*ones(1,N) p(3)*ones(1,N) p(4)*wsd^2 , p(5)*mean(ECGsd)^2]);
+                            
+                            % covariance matrix of the observation noise vector
+                            R = diag([p(6)*(w/fs).^2      p(7)*mean(ECGsd).^2]);
+                            
+                            % covariance matrix for error
+                            P0 = diag([(2*pi)^2,(10*max(abs(x))).^2]); % error covariance matrix
+                            
+                            % noises
+                            Wmean = [OptimumParams w 0]';
+                            Vmean = [0 0]'; % mean observation noise vector
+                            
+                            % initialize state
+                            X0 = [-pi 0]';  % state initialization
+                            
+                            % control input
+                            u = zeros(1,length(x));                           
+                            Xhat = FECGx_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u); 
+                            
+                            % calculating F1
+                            fqrs = qrs_detect(y(2,:)-Xhat(2,:),TH,REFRAC,fs);
+                            [F1,~,~,~] = Bxb_compare(fref,fqrs,INTERV);
+                            if F1 > F1max    % compare and see if this channel provides max F1
+                                F1max = F1;
+                                bestparam = p;
+                                bestest = Xhat;
+                            end
+                            disp(p)
+                        end
+                    end
+                end
+            end
+        end
+    end
 end
 
-
+Xhat = bestest;
+save([filename '_ch' num2str(channel)],'bestparam')
 end
 
 function phase = PhaseCalc(peaks,NbSamples)

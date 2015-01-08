@@ -36,7 +36,7 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-global debug GQ GR
+global debug fref filename channel
 debug = 1;
 %% Input parameters
 % importing path
@@ -48,8 +48,8 @@ if status~=0
 end
 result = strtrim(result);
 
-path = '/media/fernando/E464-421A/tmp/tuning stuff/';
-path2save = '/media/fernando/E464-421A/tmp/tuning stuff/extracted3Hz/';
+path = '/media/fernando/FetalEKG/tuning stuff/training/';
+path2save = '/media/fernando/FetalEKG/tuning stuff/training/extracted3Hz/';
 
 cd(path)
 
@@ -67,7 +67,7 @@ ch = [1 8 11 22 25 32]; % using 6 channels (decided considering Exp. 1)
 refchs = 33:34;
 
 if extract
-    for i = 5:6%length(fls)
+    for i = 1:10%length(fls)
         tic
         disp(['Extracting file ' fls{i} '..'])
         filename = [path2save 'rec' num2str(i)];
@@ -91,7 +91,7 @@ if extract
             refs(j,:) = resample(mixture(refchs(j),:),fs_new,fs);   % reference maternal channels
         end
         mixture = mixture(ch,:);
-        out.fqrs{1} = round(out.fqrs{1}/(fs/fs_new));
+        fref = round(out.fqrs{1}/(fs/fs_new));        
         out.mqrs = round(out.mqrs/(fs/fs_new));
         
         % = preprocessing channels
@@ -108,48 +108,47 @@ if extract
         mixture = ppmixture;
         clear HF_CUT LF_CUT a_bas a_lp b_bas b_lp bw wo lpmix ppmixture
         % == Extraction
-        for GR = [10,50,100,150,200]
-            for GQ = [1,25,50]
-                
-                % ----------------------------
-                % EKF Extended Kalman Filter
-                % ----------------------------
-                disp('EKF extraction ..')
-                NbCycles = 30; % first 30 cycles will be used for template generation
-                residual = zeros(size(mixture));
-                fqrs = cell(1,size(mixture,1));
-                for j = 1:length(ch)
-                    residual(j,:) = FECGx_kf_extraction(out.mqrs,mixture(j,:),NbCycles,fs_new);
-                    fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
-                end
-                
-                % creating statistics in 1-min blocks
-                min = 1;
-                maxch = zeros(1,length(mixture)/fs_new/60);
-                fqrs_temp = cell(1,length(mixture)/fs_new/60);
-                while min <= length(mixture)/fs_new/60;
-                    F1max = 0;
-                    idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
-                    for j = 1:length(ch)
-                        idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
-                        [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
-                        if F1 > F1max    % compare and see if this channel provides max F1
-                            maxch(min) = j;
-                            F1max = F1;
-                            fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
-                        end
-                    end
-                    min = min+1;
-                end
-                fqrs = cell2mat(fqrs_temp);
-                % == saving results
-                save([filename '_GQ' num2str(GQ) 'GR' num2str(GR) '_tsekf'],'residual','maxch','fqrs');
-                clear F1 RMS PPV SE maxch residual fqrs NbCycles
-            end
+        
+        % ----------------------------
+        % EKF Extended Kalman Filter
+        % ----------------------------
+        disp('EKF extraction ..')
+        NbCycles = 30; % first 30 cycles will be used for template generation
+        residual = zeros(size(mixture));
+        fqrs = cell(1,size(mixture,1));
+        for channel = 1:length(ch)            
+            residual(channel,:) = FECGx_kf_extraction(out.mqrs,mixture(channel,:),NbCycles,fs_new);
+            fqrs{channel} = qrs_detect(residual(channel,:),TH,REFRAC,fs_new);
         end
         
-        %% Reference
-        disp('TS-PCA extraction ..')        
+        % creating statistics in 1-min blocks
+        min = 1;
+        maxch = zeros(1,length(mixture)/fs_new/60);
+        fqrs_temp = cell(1,length(mixture)/fs_new/60);
+        while min <= length(mixture)/fs_new/60;
+            F1max = 0;
+            idxref = (fref>=(min-1)*fs_new*60+1)&(fref<=min*fs_new*60);
+            for j = 1:length(ch)
+                idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
+                [F1,~,~,~] = Bxb_compare(fref(idxref),fqrs{j}(idx),INTERV);
+                if F1 > F1max    % compare and see if this channel provides max F1
+                    maxch(min) = j;
+                    F1max = F1;
+                    fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
+                end
+            end
+            min = min+1;
+        end
+        fqrs = cell2mat(fqrs_temp);
+        % == saving results
+        save([filename '_tsekf'],'residual','maxch','fqrs');
+        clear F1 RMS PPV SE maxch residual fqrs NbCycles
+        
+        
+        % ----------------------------
+        % TS-PCA
+        % ----------------------------
+        disp('TS-PCA extraction ..')
         % parameters
         NbCycles = 20;
         NbPC = 2;
@@ -167,10 +166,10 @@ if extract
         fqrs_temp = cell(1,length(mixture)/fs_new/60);
         while min <= length(mixture)/fs_new/60;
             F1max = 0;
-            idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
+            idxref = (fref>=(min-1)*fs_new*60+1)&(fref<=min*fs_new*60);
             for j = 1:length(ch)
                 idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
-                [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
+                [F1,~,~,~] = Bxb_compare(fref(idxref),fqrs{j}(idx),INTERV);
                 if F1 > F1max    % compare and see if this channel provides max F1
                     maxch(min) = j;
                     F1max = F1;

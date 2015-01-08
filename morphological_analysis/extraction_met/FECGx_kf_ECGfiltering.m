@@ -14,7 +14,7 @@ function Xhat = FECGx_kf_ECGfiltering(x,peaksidx,NbCycles,fs)
 global debug GR GQ
 
 %% Parameters
-Nkernels = 10;          % number of kernels for Gaussian modelling
+Nkernels = 7;          % number of kernels for Gaussian modelling
 NB_BINS = 500;          % number of phase bins (SWT depends on this number!!)
 scala = 6;              % number from scales used by SWT approach
 
@@ -187,14 +187,25 @@ end
 
 %% Kalman Filter Parametrization
 
+pot = -4:4;
+
+for p(1) = 10.^pot
+
+
+
+
 % = ECG
 y = [phase ; x];
 
 % = covariance matrix of the process noise vector
-Q = diag( [(0.1*OptimumParams(1:N)).^2 (0.1*ones(1,N)).^2 (0.1*ones(1,N)).^2 wsd^2 , GQ*mean(ECGsd)^2]);
+Q = diag( [p(1)*OptimumParams(1:N).^2 p(2)*ones(1,N) p(3)*ones(1,N) p(4)*wsd^2 , p(5)*mean(ECGsd)^2]);
 
 % = covariance matrix of the observation noise vector
-R = diag([(w/fs).^2/12      GR*mean(ECGsd).^2]);
+R = diag([p(6)*(w/fs).^2      p(7)*mean(ECGsd).^2]);
+
+%R = [7.4555*(w/fs).^2/12 0 ;0 234.5796*mean(ecgsd).^2]; % gain changed with rd(8)
+%Q = diag([fwsd, mwsd, rd(4)*(.05*mean(fecgsd)).^2, rd(5)*(.05*mean(mecgsd)).^2, rd(6)*(.00005*ones(1,3*fN)).^2, rd(7)*(.00005*ones(1,3*mN)).^2]);
+
 
 % = covariance matrix for error
 P0 = diag([(2*pi)^2,(10*max(abs(x))).^2]); % error covariance matrix
@@ -209,9 +220,9 @@ X0 = [-pi 0]';  % state initialization
 % = control input
 u = zeros(1,length(x));
 
-
-%% Filtering
 Xhat = FECGx_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);
+end
+
 
 end
 

@@ -48,7 +48,7 @@ function residual = FECGx_kf_extraction(peaks,ecg,varargin)
 %
 
 %% Manage inputs
-global debug GQ GR
+global debug
 optargs = {20 1000 0};  % default values for [nbCycles fs smoothFlag]
 newVals = cellfun(@(x) ~isempty(x), varargin);
 optargs(newVals) = varargin(newVals);

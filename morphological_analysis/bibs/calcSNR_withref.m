@@ -28,7 +28,7 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
 % Public License for more details.
 %
-function [SNRfm,SNRnf] = calcSNR_withref(mecg,fecg,noise,mref,fref,fs)
+function [SNRfm,SNRnf,Pmat,Pfet,Pn] = calcSNR_withref(mecg,fecg,noise,mref,fref,fs)
 %% Parameters
 MWIN = 50;     % half of window around maternal complexes considered for signal energy (in ms)
 FWIN = 25;     % half of window length around fetal complexes (in ms)

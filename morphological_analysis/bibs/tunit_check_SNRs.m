@@ -58,20 +58,21 @@ for i = 6:length(fls_orig)
     % ppnoise
     % ppfecg
     % ppmecg
-    MHR = 60; %     [in bpm]
-    FHR = 120; %    [in bpm]
-    mbeats = 60*fs*length(mref)/length(ppfecg); % now im bpm
-    fbeats = 60*fs*length(fref)/length(ppfecg); % now im bpm
-    
-    Pmat = sum(ppmecg.^2,2); % maternal power (in each channel)
-    Pmat = Pmat.*(MHR/mbeats);                          % normalized power
-    Pfet = sum(ppfecg.^2,2); % fetal power (in each channel)
-    Pfet = Pfet.*(FHR/fbeats);                          % normalized power
-    Pn   = sum(ppnoise.^2,2); % noise power (in each channel)
-    
-    SNRfm = 10*log10(Pfet./Pmat);
-    SNRnf = 10*log10(Pn./Pfet);
-    
+
+%   % Real SNR
+%     MHR = 60; %     [in bpm]
+%     FHR = 120; %    [in bpm]
+%     mbeats = 60*fs*length(mref)/length(ppfecg); % now im bpm
+%     fbeats = 60*fs*length(fref)/length(ppfecg); % now im bpm
+%     
+%     Pmat = sum(ppmecg.^2,2); % maternal power (in each channel)
+%     Pmat = Pmat.*(MHR/mbeats);                          % normalized power
+%     Pfet = sum(ppfecg.^2,2); % fetal power (in each channel)
+%     Pfet = Pfet.*(FHR/fbeats);                          % normalized power
+%     Pn   = sum(ppnoise.^2,2); % noise power (in each channel)
+%     
+%     SNRfm = 10*log10(Pfet./Pmat);
+%     SNRnf = 10*log10(Pn./Pfet);
 %     % = Test if real and approximated SNR correlates
 %     [SNRfm_approx,SNRnf_approx] = calcSNR(ppmixture,mref,fref,fs_new);
 % 
@@ -82,15 +83,16 @@ for i = 6:length(fls_orig)
 %     plot(SNRnf,'--')
 %     plot(SNRnf_approx,'--r')
 %     
-%     
-    
+%   
+    % Calculate SNR in same fashion
+    [SNRfm,SNRnf,Pmat,Pfet,Pn]=calcSNR_withref(ppmecg,ppfecg,ppnoise,mref,fref,fs_new);    
     files = cellfun(@(x) ~isempty(x), regexp(fls_res,['rec' num2str(i)]));
     files = find(files);
     for x=1:length(files)
         load([path_res fls_res{files(x)}])
         % = Test variables
         % residuals
-        [SNRfm_est,SNRnf_est] = calcSNR(residual,mref,fref,fs_new);
+        [SNRfm_est,SNRnf_est,Pmat_est,Pfet_est,Pn_est] = calcSNR(residual,mref,fref,fs_new);
         
         %% Calculate SNR
         % = Summarized metric
@@ -98,6 +100,8 @@ for i = 6:length(fls_orig)
 %         plot(SNRfm)
 %         hold on
 %         plot(SNRfm_est,'r')
+(SNRfm - SNRfm_est)./SNRfm
+(SNRnf - SNRnf_est)./SNRnf
     end
     
 end

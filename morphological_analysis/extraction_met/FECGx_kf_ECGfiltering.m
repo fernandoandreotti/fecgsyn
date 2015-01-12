@@ -187,65 +187,31 @@ end
 
 %% Kalman Filter Parametrization
 
-pot = -3:3;
-INTERV = round(0.05*fs);    % BxB acceptance interval
-TH = 0.3;                   % detector threshold
-REFRAC = .15;               % detector refractory period (in s)
-F1max = 0;
-for l1 = 1:length(pot)
-    p(1) = 10.^pot(l1);
-    for l2 = 1:length(pot)
-        p(2) = 10.^pot(l2);
-        for l3 = 1:length(pot)
-            p(3) = 10.^pot(l3);
-            for l4 = 1:length(pot)
-                p(4) = 10.^pot(l4);
-                for l5 = 1:length(pot)
-                    p(5) = 10.^pot(l5);                   
-                    for l6 = 1:length(pot)
-                        p(6) = 10.^pot(l6);                        
-                        for l7 = 1:length(pot)
-                            p(7) = 10.^pot(l7);
-                            y = [phase ; x];    % state
-                            
-                            % covariance matrix of the process noise vector
-                            Q = diag( [p(1)*OptimumParams(1:N).^2 p(2)*ones(1,N) p(3)*ones(1,N) p(4)*wsd^2 , p(5)*mean(ECGsd)^2]);
-                            
-                            % covariance matrix of the observation noise vector
-                            R = diag([p(6)*(w/fs).^2      p(7)*mean(ECGsd).^2]);
-                            
-                            % covariance matrix for error
-                            P0 = diag([(2*pi)^2,(10*max(abs(x))).^2]); % error covariance matrix
-                            
-                            % noises
-                            Wmean = [OptimumParams w 0]';
-                            Vmean = [0 0]'; % mean observation noise vector
-                            
-                            % initialize state
-                            X0 = [-pi 0]';  % state initialization
-                            
-                            % control input
-                            u = zeros(1,length(x));                           
-                            Xhat = FECGx_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u); 
-                            
-                            % calculating F1
-                            fqrs = qrs_detect(y(2,:)-Xhat(2,:),TH,REFRAC,fs);
-                            [F1,~,~,~] = Bxb_compare(fref,fqrs,INTERV);
-                            if F1 > F1max    % compare and see if this channel provides max F1
-                                F1max = F1;
-                                bestparam = p;
-                                bestest = Xhat;
-                            end
-                            disp(p)
-                        end
-                    end
-                end
-            end
-        end
-    end
-end
+p = [0.01 0.001 0.001 1 10 0.00001 10];
 
-Xhat = bestest;
+y = [phase ; x];    % state
+
+% covariance matrix of the process noise vector
+Q = diag( [p(1)*OptimumParams(1:N).^2 p(2)*ones(1,N) p(3)*ones(1,N) p(4)*wsd^2 , p(5)*mean(ECGsd)^2]);
+
+% covariance matrix of the observation noise vector
+R = diag([p(6)*(w/fs).^2      p(7)*mean(ECGsd).^2]);
+
+% covariance matrix for error
+P0 = diag([(2*pi)^2,(10*max(abs(x))).^2]); % error covariance matrix
+
+% noises
+Wmean = [OptimumParams w 0]';
+Vmean = [0 0]'; % mean observation noise vector
+
+% initialize state
+X0 = [-pi 0]';  % state initialization
+
+% control input
+u = zeros(1,length(x));
+Xhat = FECGx_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);
+
+                           
 save([filename '_ch' num2str(channel)],'bestparam')
 end
 

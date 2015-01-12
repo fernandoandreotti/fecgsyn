@@ -205,7 +205,7 @@ fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
 
 %% Experiment 2 (later 2 and 3)
 % Channels to be used
-ch = [1 8 11 22 25 32]; % using 6 channels (decided considering Exp. 1)
+ch = [1 8 11 14 19 22 25 32]; % using 8 channels (decided considering Exp. 1)
 refchs = 33:34;
 
 if extract

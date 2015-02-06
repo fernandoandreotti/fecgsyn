@@ -211,8 +211,6 @@ X0 = [-pi 0]';  % state initialization
 u = zeros(1,length(x));
 Xhat = FECGx_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);
 
-                           
-save([filename '_ch' num2str(channel)],'bestparam')
 end
 
 function phase = PhaseCalc(peaks,NbSamples)

@@ -33,8 +33,9 @@ function FECGSYN_genresults(path_orig,path_ext,fs,ch)
 global debug
 
 %% == Parameters
-INTERV = round(0.05*fs); % BxB acceptance interval
-TEMP_SAMPS = round(60*fs); % samples used for building templates
+fs_new = 250;
+INTERV = round(0.05*fs_new); % BxB acceptance interval
+TEMP_SAMPS = round(60*fs_new); % samples used for building templates
 morph = 1; % turn on/off morphological analysis
 %% Run through extracted datasets
 cd(path_orig)
@@ -154,7 +155,8 @@ for i = 1:length(fls_ext)
 end
 
 %% Statistics Generation
-save ['wkspace_' date]
+fname = ['wkspace_' date];
+save fname
 
 LWIDTH = 1.5;
 FSIZE = 15;

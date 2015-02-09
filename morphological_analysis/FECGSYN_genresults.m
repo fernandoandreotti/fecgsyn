@@ -33,10 +33,9 @@ function FECGSYN_genresults(path_orig,path_ext,fs,ch)
 global debug
 
 %% == Parameters
-fs_new = 250;
-INTERV = round(0.05*fs_new); % BxB acceptance interval
-TEMP_SAMPS = round(60*fs_new); % samples used for building templates
-morph = 1; % turn on/off morphological analysis
+INTERV = round(0.05*fs); % BxB acceptance interval
+TEMP_SAMPS = round(60*fs); % samples used for building templates
+morph = 0; % turn on/off morphological analysis
 %% Run through extracted datasets
 cd(path_orig)
 slashchar = char('/'*isunix + '\'*(~isunix));
@@ -45,7 +44,7 @@ fls_orig = arrayfun(@(x)x.name,fls_orig,'UniformOutput',false);
 cd(path_ext)
 fls_ext = dir('*.mat'); % looking for .mat (creating index)
 fls_ext = arrayfun(@(x)x.name,fls_ext,'UniformOutput',false);
-
+fs_new = 250;
 stats_ica = zeros(length(fls_orig),4);
 stats_pca = zeros(length(fls_orig),4);
 stats_tsc = zeros(length(fls_orig),4);
@@ -93,7 +92,7 @@ for i = 1:length(fls_ext)
     disp(elif(end:-1:1))
     clear fecg outdata rec file elif k
     % getting statistics
-    [F1,MAD,PPV,SE] = getStats(out,residual,fs_new);
+    [F1,MAD,PPV,SE] = getStats(fref,residual,fs_new);
     switch met{:}(2:end-4)
         case 'JADEICA'
             % generating statistics
@@ -155,8 +154,7 @@ for i = 1:length(fls_ext)
 end
 
 %% Statistics Generation
-fname = ['wkspace_' date];
-save fname
+save ['wkspace_' date]
 
 LWIDTH = 1.5;
 FSIZE = 15;
@@ -242,12 +240,13 @@ for j = 1:SAMPS:length(residual)
 end
 end
 
-function [F1,RMS,PPV,SE] = getStats(out,residual,fs_new)
+function [F1,RMS,PPV,SE] = getStats(fref,residual,fs_new)
     INTERV = round(0.05*fs_new);    % BxB acceptance interval
-
+    TH = 0.3;                   % detector threshold
+    REFRAC = .15;               % detector refractory period (in s)
     % detect QRS on each channel
-    fqrs = cell(1,size(mixture,1));
-    for j = 1:length(ch)
+    fqrs = cell(1,size(residual,1));
+    for j = 1:size(residual,1)
         fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
     end
     % creating statistics in 1-min blocks
@@ -257,10 +256,10 @@ function [F1,RMS,PPV,SE] = getStats(out,residual,fs_new)
     fqrs_temp = cell(1,length(residual)/fs_new/60);
     while min <= length(residual)/fs_new/60;
         F1max = 0;
-        idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
-        for j = 1:length(ch)
+        idxref = (fref>=(min-1)*fs_new*60+1)&(fref<=min*fs_new*60);
+        for j = 1:size(residual,1)
             idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
-            [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
+            [F1,~,~,~] = Bxb_compare(fref(idxref),fqrs{j}(idx),INTERV);
             if F1 > F1max    % compare and see if this channel provides max F1
                 maxch(min) = j;
                 F1max = F1;
@@ -270,7 +269,7 @@ function [F1,RMS,PPV,SE] = getStats(out,residual,fs_new)
         min = min+1;
     end
     fqrs = cell2mat(fqrs_temp);
-    [F1,RMS,PPV,SE] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
+    [F1,RMS,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
     
     
 end

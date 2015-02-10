@@ -1,4 +1,4 @@
-function [M,N] = FECGSYN_kf_Linearization(x,alphai,bi,tetai,w,fs,flag)
+function [M,N] = FECGSYN_kf_linearization(x,alphai,bi,tetai,w,fs,flag)
 %LINEARIZATION linearization of the non linear system
 %   linearization of the non linear system
 %
@@ -21,7 +21,18 @@ function [M,N] = FECGSYN_kf_Linearization(x,alphai,bi,tetai,w,fs,flag)
 % Copyright (C) 2008  Reza Sameni
 % Sharif University of Technology, Tehran, Iran -- LIS-INPG, Grenoble, France
 % reza.sameni@gmail.com
-
+%
+% Current version:
+%
+% NI-FECG simulator toolbox, version 1.0, February 2014
+% Released under the GNU General Public License
+%
+% Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
+% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+% Last updated : 24-07-2014
+%
+%
 % This program is free software; you can redistribute it and/or modify it
 % under the terms of the GNU General Public License as published by the
 % Free Software Foundation; either version 2 of the License, or (at your

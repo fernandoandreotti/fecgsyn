@@ -1,4 +1,4 @@
-function Xhat = FECGSYN_kf_ECGfiltering(x,peaksidx,NbCycles,fs)
+function [OptimumParams,phase,ECGsd,w,wsd] = FECGSYN_kf_ECGmodelling(x,peaksidx,NbCycles,fs)
 %ecg_filt = FECGSYN_kf_ECGfiltering(ecg,peaks,nbCycles,fs,debug);
 %ECG FILTERING BLOCK Generates a model and call EKF/EKS
 %   > Inputs
@@ -11,7 +11,26 @@ function Xhat = FECGSYN_kf_ECGfiltering(x,peaksidx,NbCycles,fs)
 %  > Output
 %       Xhat:           filtered signal
 %
-global debug fref filename channel
+%
+% NI-FECG simulator toolbox, version 1.0, February 2014
+% Released under the GNU General Public License
+%
+% Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
+% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+% Last updated : 24-07-2014
+%
+%
+% This program is free software; you can redistribute it and/or modify it
+% under the terms of the GNU General Public License as published by the
+% Free Software Foundation; either version 2 of the License, or (at your
+% option) any later version.
+% This program is distributed in the hope that it will be useful, but
+% WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+% Public License for more details.
+%
+global debug
 
 %% Parameters
 Nkernels = 7;          % number of kernels for Gaussian modelling
@@ -185,77 +204,8 @@ if debug && ~isempty(OptimumParams)
     hold off;
 end
 
-%% Kalman Filter Parametrization
-
-pot1 = -2:0;
-pot236 = -5:2:-1;
-pot57 = 0:3;
-
-INTERV = round(0.05*fs);    % BxB acceptance interval
-TH = 0.3;                   % detector threshold
-REFRAC = .15;               % detector refractory period (in s)
-F1max = 0;
-p(4) = 1;           
-for l1 = 1:3
-    p(1) = 10.^pot1(l1);
-    for l2 = 1:3
-        p(2) = 10.^pot236(l2);
-        for l3 = 1:3
-            p(3) = 10.^pot236(l3);            
-            for l5 = 1:4
-                p(5) = 10.^pot57(l5);
-                for l6 = 1:3
-                    p(6) = 10.^pot236(l6);
-                    for l7 = 1:4
-                        p(7) = 10.^pot57(l7);
-                        y = [phase ; x];    % state
-                        
-                        % covariance matrix of the process noise vector
-                        Q = diag( [p(1)*OptimumParams(1:N).^2 ...
-                                 p(2)*ones(1,N) ...
-                                 p(3)*ones(1,N) ...
-                                 p(4)*wsd^2 ...
-                                 p(5)*mean(ECGsd)^2]);
-                        
-                        % covariance matrix of the observation noise vector
-                        R = diag([p(6)*(w/fs).^2      p(7)*mean(ECGsd).^2]);
-                        
-                        % covariance matrix for error
-                        P0 = diag([(2*pi)^2,(10*max(abs(x))).^2]); % error covariance matrix
-                        
-                        % noises
-                        Wmean = [OptimumParams w 0]';
-                        Vmean = [0 0]'; % mean observation noise vector
-                        
-                        % initialize state
-                        X0 = [-pi 0]';  % state initialization
-                        
-                        % control input
-                        u = zeros(1,length(x));
-                        Xhat = FECGSYN_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);
-                        
-                        % calculating F1
-                        fqrs = qrs_detect(y(2,:)-Xhat(2,:),TH,REFRAC,fs);
-                        [F1,~,~,~] = Bxb_compare(fref,fqrs,INTERV);
-                        if F1 > F1max    % compare and see if this channel provides max F1
-                            F1max = F1;
-                            bestparam = p;
-                            bestest = Xhat;
-                        end
-                        disp(p)
-                        
-                    end
-                end
-            end
-        end
-    end
 end
 
-Xhat = bestest;
-save([filename '_ch' num2str(channel)],'bestparam')
-end
-
-function phase = PhaseCalc(peaks,NbSamples)
 %% Phase Calculation
 %
 % This function generates a saw-tooth phase signal, based on QRS locations
@@ -267,7 +217,7 @@ function phase = PhaseCalc(peaks,NbSamples)
 % This function is based on Dr. Sameni's OSET
 %
 %
-
+function phase = PhaseCalc(peaks,NbSamples)
 phase = zeros(1,NbSamples);
 m = diff(peaks);            % gets distance between peaks
 % = dealing with borders (first and last peaks may not be full waves)
@@ -291,8 +241,8 @@ phase = mod(phase,2*pi);
 phase(phase>pi) = phase(phase>pi)- 2*pi;
 end
 
-function [ECGmean,ECGsd,meanPhase] = ECG_tgen(ecg,phase,NB_BINS)
-% Calculation of the mean and SD of ECG waveforms in different beats
+
+%% Calculation of the mean and SD of ECG waveforms in different beats
 %
 % > Inputs
 %       ecg:            input ECG signal
@@ -308,6 +258,7 @@ function [ECGmean,ECGsd,meanPhase] = ECG_tgen(ecg,phase,NB_BINS)
 % Although this function structure is based on OSET's toolbox, the
 % averaging procedure itself is based on Dr. Oster's approach for stacking
 % and averaging beats.
+function [ECGmean,ECGsd,meanPhase] = ECG_tgen(ecg,phase,NB_BINS)
 
 ini_cycles = find(phase(2:end)<0&phase(1:end-1)>0)+1; % start of cycles
 cycle_len = diff(ini_cycles); % distance between cycles
@@ -318,7 +269,6 @@ cycle = arrayfun(@(x) interp1(phase(ini_cycles(x):end_cycles(x)),...
     ecg(1,ini_cycles(x):end_cycles(x)),meanPhase,'spline'),...
     1:length(ini_cycles)-1,'UniformOutput',0);
 cycle = cell2mat(cycle');
-
 ECGmean = mean(cycle);
 ECGsd = std(cycle);
 

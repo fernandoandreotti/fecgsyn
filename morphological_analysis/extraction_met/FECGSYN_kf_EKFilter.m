@@ -26,7 +26,19 @@ function [Xhat,X0,P0,e] = FECGSYN_kf_EKFilter(Z,X0,P0,Q,R0,Wmean,Vmean,ModelPara
 % Copyright (C) 2008  Reza Sameni
 % Sharif University of Technology, Tehran, Iran -- LIS-INPG, Grenoble, France
 % reza.sameni@gmail.com
-
+%
+%
+% Current version:
+%
+% NI-FECG simulator toolbox, version 1.0, February 2014
+% Released under the GNU General Public License
+%
+% Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
+% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+% Last updated : 24-07-2014
+%
+%
 % This program is free software; you can redistribute it and/or modify it
 % under the terms of the GNU General Public License as published by the
 % Free Software Foundation; either version 2 of the License, or (at your
@@ -35,6 +47,7 @@ function [Xhat,X0,P0,e] = FECGSYN_kf_EKFilter(Z,X0,P0,Q,R0,Wmean,Vmean,ModelPara
 % WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
 % Public License for more details.
+%
 %
 %% Equation Initialization
 Inits2 = [ModelParam w fs];
@@ -88,7 +101,7 @@ for k = 1 : Samples
         %A posteriori updates)
         Yminus = ObservationProp(XX,Vmean); %Calculate output estimate (both state and theta)
         YY = Yminus(jj);
-        [HH,VV] = FECGSYN_kf_Linearization(XX,alphai,bi,tetai,w,fs,1);  % Linearized observation eq.
+        [HH,VV] = FECGSYN_kf_linearization(XX,alphai,bi,tetai,w,fs,1);  % Linearized observation eq.
         H = HH(jj,:); % Get row jj   -> H Jacobian
         V = VV(jj,:); % Get  jj   -> V
         
@@ -100,7 +113,7 @@ for k = 1 : Samples
     % TIME UPDATE (PREDICT)
     e(:,k) = XX-Xminus;
     Xminus = StateProp(XX,B,u(k));                             % Project the state ahead
-    [A,F] = FECGSYN_kf_Linearization(XX,Wmean,alphai,bi,tetai,w,fs,0);   % Linearized equations
+    [A,F] = FECGSYN_kf_linearization(XX,Wmean,alphai,bi,tetai,w,fs,0);   % Linearized equations
     Pminus = A*PP*A' + F*Q*F';                             % Project the error covariance ahead
     
     % Store results

@@ -1,4 +1,4 @@
-function residual = FECGx_kf_extraction(peaks,ecg,varargin)
+function residual = FECGSYN_kf_extraction(peaks,ecg,varargin)
 % MECG cancellation algorithms using the Extended Kalman Filter/Smoother.
 % The code is based on the PhD from Dr. Reza Sameni and the code provided in
 % OSET Toolbox (http://www.oset.ir/).
@@ -83,26 +83,26 @@ if peaks(1)<1;peaks(1) = 1; end;
 if peaks(end)>length(ecg);peaks(end) = length(ecg); end;
 
 %% MECG estimation using KF
-ecg_filt = FECGx_kf_ECGfiltering(ecg,peaks,nbCycles,fs);
+ecg_filt = FECGSYN_kf_ECGfiltering(ecg,peaks,nbCycles,fs);
 % == compute residual
 residual = ecg - ecg_filt(2,:);
 
 % == debug
-if debug
-    FONT_SIZE = 15;
-    tm = 1/fs:1/fs:length(residual)/fs;
-    figure('name','MECG cancellation');
-    plot(tm,ecg,'LineWidth',3);
-    hold on, plot(tm,ecg-residual,'--k','LineWidth',3);
-    hold on, plot(tm,residual-1.5,'--r','LineWidth',3);
-    hold on, plot(tm(peaks),ecg(peaks),'+r','LineWidth',2);
-    
-    legend('mixture','template','residual','MQRS');
-    title('Template subtraction for extracting the FECG');
-    xlabel('Time [sec]'); ylabel('Amplitude [NU]')
-    set(gca,'FontSize',FONT_SIZE);
-    set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
-end
+%if debug
+%    FONT_SIZE = 15;
+%    tm = 1/fs:1/fs:length(residual)/fs;
+%    figure('name','MECG cancellation');
+%    plot(tm,ecg,'LineWidth',3);
+%    hold on, plot(tm,ecg-residual,'--k','LineWidth',3);
+%    hold on, plot(tm,residual-1.5,'--r','LineWidth',3);
+%    hold on, plot(tm(peaks),ecg(peaks),'+r','LineWidth',2);
+%    
+%    legend('mixture','template','residual','MQRS');
+%    title('Template subtraction for extracting the FECG');
+%    xlabel('Time [sec]'); ylabel('Amplitude [NU]')
+%    set(gca,'FontSize',FONT_SIZE);
+%    set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
+%end
 
 end
 

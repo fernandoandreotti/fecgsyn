@@ -66,7 +66,7 @@ ch = [1 8 11 22 25 32]; % using 6 channels (decided considering Exp. 1)
 refchs = 33:34;
 
 if extract
-    for i = 1:2%length(fls)
+    for i = 9:10%length(fls)
         tic
         disp(['Extracting file ' fls{i} '..'])
         filename = [path2save 'rec' num2str(i)];

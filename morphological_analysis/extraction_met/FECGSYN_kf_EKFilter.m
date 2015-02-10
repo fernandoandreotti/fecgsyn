@@ -113,7 +113,7 @@ for k = 1 : Samples
     % TIME UPDATE (PREDICT)
     e(:,k) = XX-Xminus;
     Xminus = StateProp(XX,B,u(k));                             % Project the state ahead
-    [A,F] = FECGSYN_kf_linearization(XX,Wmean,alphai,bi,tetai,w,fs,0);   % Linearized equations
+    [A,F] = FECGSYN_kf_linearization(XX,alphai,bi,tetai,w,fs,0);   % Linearized equations
     Pminus = A*PP*A' + F*Q*F';                             % Project the error covariance ahead
     
     % Store results

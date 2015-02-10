@@ -86,24 +86,32 @@ if peaks(end)>length(ecg);peaks(end) = length(ecg); end;
 [OptimumParams,phase,ECGsd,w,wsd] = FECGSYN_kf_ECGmodelling(ecg,peaks,nbCycles,fs);
 
 %% == MECG estimation using KF
-% Kalman Filter Parametrization
+% = Kalman Filter Parametrization
 
 p = [0.01 0.001 0.001 1 10 0.00001 10];
 y = [phase ; ecg];    % state
+
 % covariance matrix of the process noise vector
+N = length(OptimumParams)/3;
 Q = diag( [p(1)*OptimumParams(1:N).^2 p(2)*ones(1,N) p(3)*ones(1,N) p(4)*wsd^2 , p(5)*mean(ECGsd)^2]);
+
 % covariance matrix of the observation noise vector
 R = diag([p(6)*(w/fs).^2      p(7)*mean(ECGsd).^2]);
+
 % covariance matrix for error
-P0 = diag([(2*pi)^2,(10*max(abs(x))).^2]); % error covariance matrix
+P0 = diag([(2*pi)^2,(10*max(abs(ecg))).^2]); % error covariance matrix
+
 % noises
 Wmean = [OptimumParams w 0]';
 Vmean = [0 0]'; % mean observation noise vector
+
 % initialize state
 X0 = [-pi 0]';  % state initialization
 
 % control input
-u = zeros(1,length(x));
+u = zeros(1,length(ecg));
+
+% = Run KF
 Xhat = FECGSYN_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);
 
 %% == compute residual

@@ -37,30 +37,19 @@
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 global debug
-debug = 1;
+debug = 0;
 %% Input parameters
 % importing path
 % clear all; close all; clc;
 slashchar = char('/'*isunix + '\'*(~isunix));
-[status,result] = system('hostname');
-if status~=0
-    error(result);
+if isunix
+    path = '/home/fernando/tmp/2014.12_fecgsyn_simulations(5.0)/';
+    path2save = '/home/fernando/tmp/2014.12_fecgsyn_simulations(5.0)/extracted3Hz/';
+else
+    path = 'K:\2014.10_fecgsyn_simulations(5.0)\';
+    path2save = 'K:\2014.10_fecgsyn_simulations(5.0)\kfcyclic\';
 end
-result = strtrim(result);
-switch result
-    case 'ENGS-19715' % Joachim
-        path = '/netshares/ipmprojects3/JB_Experimental_Data/2014.07_fecgsyn_simulations(3.0)/';
-        path2functions = '/local/shil3432/Dropbox/DPhil_My_reading_list/fecgsyn-Morph_Analysis/';
-        path2save = '/netshares/ipmprojects3/JB_Experimental_Data/out_ICA/';
-    otherwise % Fernando loves having to flip slashes
-        if isunix
-            path = '/home/fernando/tmp/2014.12_fecgsyn_simulations(5.0)/';
-            path2save = '/home/fernando/tmp/2014.12_fecgsyn_simulations(5.0)/extracted3Hz/';
-        else
-            path = 'D:\2014.10_fecgsyn_simulations(5.0)\';
-            path2save = 'D:\2014.10_fecgsyn_simulations(5.0)\extracted3Hz\';
-        end
-end
+
 
 
 %% Set-up parameters
@@ -251,106 +240,106 @@ if extract
         clear HF_CUT LF_CUT a_bas a_lp b_bas b_lp bw wo lpmix ppmixture
         % == Extraction
         
-        %-------------------
-        %ICA Independent Component Analysis
-        %-------------------
-        disp('ICA extraction ..')
-        loopsec = 60;   % in seconds
-        icasig = FECGSYN_bss_extraction(mixture,'JADEICA',fs_new,out.fqrs{1},loopsec,filename);     % extract using IC
-        % Calculate quality measures
-        fqrs = qrs_detect(icasig,TH,REFRAC,fs_new);
-        %== saving results
-        load([filename '_JADEICA'])
-        save([filename '_JADEICA'],'maxch','outdata','fqrs')
-        clear fqrs icasig F1 RMS PPV SE outdata
-        
-        % -------------------
-        % PCA Principal Component Analysis
-        % -------------------
-        disp('PCA extraction ..')
-        pcasig = FECGSYN_bss_extraction(mixture,'PCA',fs_new,out.fqrs{1},loopsec,filename);     % extract using IC
-        % Calculate quality measures
-        fqrs = qrs_detect(pcasig,TH,REFRAC,fs_new);
-        % == saving results
-        load([filename '_PCA'])
-        save([filename '_PCA'],'maxch','outdata','fqrs')
-        clear fqrs pcasig qrs F1 RMS PPV SE loopsec outdata
-        
-        
-        % -------------------
-        % TS-CERUTTI
-        % -------------------
-        disp('TS-CERUTTI extraction ..')
-        % parameters
-        NbCycles = 20;
-        residual = zeros(size(mixture));
-        fqrs = cell(1,size(mixture,1));
-        for j = 1:length(ch)
-            residual(j,:) = FECGSYN_ts_extraction(out.mqrs,mixture(j,:),'TS-CERUTTI',0,...
-                NbCycles,'',fs_new);
-            fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
-        end
-        
-        % creating statistics in 1-min blocks
-        min = 1;
-        maxch = zeros(1,length(mixture)/fs_new/60);
-        fqrs_temp = cell(1,length(mixture)/fs_new/60);
-        while min <= length(mixture)/fs_new/60;
-            F1max = 0;
-            idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
-            for j = 1:length(ch)
-                idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
-                [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
-                if F1 > F1max    % compare and see if this channel provides max F1
-                    maxch(min) = j;
-                    F1max = F1;
-                    fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
-                end
-            end
-            min = min+1;
-        end
-        fqrs = cell2mat(fqrs_temp);
-        % == saving results
-        save([filename '_tsc'],'residual','maxch','fqrs');
-        clear F1 RMS PPV SE maxch residual fqrs
-        
-        % -------------------
-        % TS-PCA
-        % -------------------
-        disp('TS-PCA extraction ..')
-        % parameters
-        NbPC = 2;
-        residual = zeros(size(mixture));
-        fqrs = cell(1,size(mixture,1));
-        for j = 1:length(ch)
-            residual(j,:) = FECGSYN_ts_extraction(out.mqrs,mixture(j,:),'TS-PCA',0,...
-                NbCycles,NbPC,fs_new);
-            fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
-        end
-        
-        % creating statistics in 1-min blocks
-        min = 1;
-        maxch = zeros(1,length(mixture)/fs_new/60);
-        fqrs_temp = cell(1,length(mixture)/fs_new/60);
-        while min <= length(mixture)/fs_new/60;
-            F1max = 0;
-            idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
-            for j = 1:length(ch)
-                idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
-                [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
-                if F1 > F1max    % compare and see if this channel provides max F1
-                    maxch(min) = j;
-                    F1max = F1;
-                    fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
-                end
-            end
-            min = min+1;
-        end
-        fqrs = cell2mat(fqrs_temp);
-        % == saving results
-        save([filename '_tspca'],'residual','maxch','fqrs');
-        
-        clear F1 RMS PPV SE maxch residual fqrs NbCycles NbPC
+%         %-------------------
+%         %ICA Independent Component Analysis
+%         %-------------------
+%         disp('ICA extraction ..')
+%         loopsec = 60;   % in seconds
+%         icasig = FECGSYN_bss_extraction(mixture,'JADEICA',fs_new,out.fqrs{1},loopsec,filename);     % extract using IC
+%         % Calculate quality measures
+%         fqrs = qrs_detect(icasig,TH,REFRAC,fs_new);
+%         %== saving results
+%         load([filename '_JADEICA'])
+%         save([filename '_JADEICA'],'maxch','outdata','fqrs')
+%         clear fqrs icasig F1 RMS PPV SE outdata
+%         
+%         % -------------------
+%         % PCA Principal Component Analysis
+%         % -------------------
+%         disp('PCA extraction ..')
+%         pcasig = FECGSYN_bss_extraction(mixture,'PCA',fs_new,out.fqrs{1},loopsec,filename);     % extract using IC
+%         % Calculate quality measures
+%         fqrs = qrs_detect(pcasig,TH,REFRAC,fs_new);
+%         % == saving results
+%         load([filename '_PCA'])
+%         save([filename '_PCA'],'maxch','outdata','fqrs')
+%         clear fqrs pcasig qrs F1 RMS PPV SE loopsec outdata
+%         
+%         
+%         % -------------------
+%         % TS-CERUTTI
+%         % -------------------
+%         disp('TS-CERUTTI extraction ..')
+%         % parameters
+%         NbCycles = 20;
+%         residual = zeros(size(mixture));
+%         fqrs = cell(1,size(mixture,1));
+%         for j = 1:length(ch)
+%             residual(j,:) = FECGSYN_ts_extraction(out.mqrs,mixture(j,:),'TS-CERUTTI',0,...
+%                 NbCycles,'',fs_new);
+%             fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
+%         end
+%         
+%         % creating statistics in 1-min blocks
+%         min = 1;
+%         maxch = zeros(1,length(mixture)/fs_new/60);
+%         fqrs_temp = cell(1,length(mixture)/fs_new/60);
+%         while min <= length(mixture)/fs_new/60;
+%             F1max = 0;
+%             idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
+%             for j = 1:length(ch)
+%                 idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
+%                 [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
+%                 if F1 > F1max    % compare and see if this channel provides max F1
+%                     maxch(min) = j;
+%                     F1max = F1;
+%                     fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
+%                 end
+%             end
+%             min = min+1;
+%         end
+%         fqrs = cell2mat(fqrs_temp);
+%         % == saving results
+%         save([filename '_tsc'],'residual','maxch','fqrs');
+%         clear F1 RMS PPV SE maxch residual fqrs
+%         
+%         % -------------------
+%         % TS-PCA
+%         % -------------------
+%         disp('TS-PCA extraction ..')
+%         % parameters
+%         NbPC = 2;
+%         residual = zeros(size(mixture));
+%         fqrs = cell(1,size(mixture,1));
+%         for j = 1:length(ch)
+%             residual(j,:) = FECGSYN_ts_extraction(out.mqrs,mixture(j,:),'TS-PCA',0,...
+%                 NbCycles,NbPC,fs_new);
+%             fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
+%         end
+%         
+%         % creating statistics in 1-min blocks
+%         min = 1;
+%         maxch = zeros(1,length(mixture)/fs_new/60);
+%         fqrs_temp = cell(1,length(mixture)/fs_new/60);
+%         while min <= length(mixture)/fs_new/60;
+%             F1max = 0;
+%             idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
+%             for j = 1:length(ch)
+%                 idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
+%                 [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
+%                 if F1 > F1max    % compare and see if this channel provides max F1
+%                     maxch(min) = j;
+%                     F1max = F1;
+%                     fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
+%                 end
+%             end
+%             min = min+1;
+%         end
+%         fqrs = cell2mat(fqrs_temp);
+%         % == saving results
+%         save([filename '_tspca'],'residual','maxch','fqrs');
+%         
+%         clear F1 RMS PPV SE maxch residual fqrs NbCycles NbPC
         
         % ----------------------------
         % EKF Extended Kalman Filter
@@ -387,120 +376,120 @@ if extract
         save([filename '_tsekf'],'residual','maxch','fqrs');
         clear F1 RMS PPV SE maxch residual fqrs NbCycles
         
-        % ----------------------
-        % LMS Least Mean Square
-        % ----------------------
-        disp('LMS extraction ..')
-        %parameters
-        refch = 1;      % pick reference channel
-        mirrow = 30*fs_new;    % mirrow 30 seconds of signal to train method
-        % channel loop
-        residual = zeros(size(mixture));
-        fqrs = cell(1,size(mixture,1));
-        for j = 1:length(ch)
-            res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)], ...
-                [refs(refch,mirrow:-1:1) refs(refch,:)],'LMS',debug,fs_new);
-            residual(j,:) = res(mirrow+1:end);
-            fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
-        end
-        
-        % creating statistics in 1-min blocks
-        min = 1;
-        maxch = zeros(1,length(mixture)/fs_new/60);
-        fqrs_temp = cell(1,length(mixture)/fs_new/60);
-        while min <= length(mixture)/fs_new/60;
-            F1max = 0;
-            idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
-            for j = 1:length(ch)
-                idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
-                [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
-                if F1 > F1max    % compare and see if this channel provides max F1
-                    maxch(min) = j;
-                    F1max = F1;
-                    fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
-                end
-            end
-            min = min+1;
-        end
-        fqrs = cell2mat(fqrs_temp);
-        % == saving results
-        save([filename '_alms'],'residual','maxch','fqrs');
-        clear F1 RMS PPV SE maxch residual fqrs lmsStruct
-        
-        % ----------------------
-        % RLS Recursive Least Square
-        % ----------------------
-        disp('RLS extraction ..')
-        % channel loop
-        residual = zeros(size(mixture));
-        fqrs = cell(1,size(mixture,1));
-        for j = 1:length(ch)
-            res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)],...
-                [refs(refch,mirrow:-1:1) refs(refch,:)],'RLS',debug,fs_new);
-            residual(j,:) = res(mirrow+1:end);
-            fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
-        end
-        
-        % creating statistics in 1-min blocks
-        min = 1;
-        maxch = zeros(1,length(mixture)/fs_new/60);
-        fqrs_temp = cell(1,length(mixture)/fs_new/60);
-        while min <= length(mixture)/fs_new/60;
-            F1max = 0;
-            idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
-            for j = 1:length(ch)
-                idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
-                [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
-                if F1 > F1max    % compare and see if this channel provides max F1
-                    maxch(min) = j;
-                    F1max = F1;
-                    fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
-                end
-            end
-            min = min+1;
-        end
-        fqrs = cell2mat(fqrs_temp);
-        % == saving results
-        save([filename '_arls'],'residual','maxch','fqrs');
-        clear F1 RMS PPV SE maxch residual fqrs rlsStruct
-        
-        % ----------------------
-        % ESN Echo State Neural Network
-        % ----------------------
-        disp('ESN extraction ..')
-        % channel loop
-        residual = zeros(size(mixture));
-        fqrs = cell(1,size(mixture,1));
-        for j = 1:length(ch)
-            res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)]...
-                ,[refs(refch,mirrow:-1:1) refs(refch,:)],'ESN',debug,fs_new);
-            residual(j,:) = res(mirrow+1:end);
-            fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
-        end
-        
-        % creating statistics in 1-min blocks
-        min = 1;
-        maxch = zeros(1,length(mixture)/fs_new/60);
-        fqrs_temp = cell(1,length(mixture)/fs_new/60);
-        while min <= length(mixture)/fs_new/60;
-            F1max = 0;
-            idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
-            for j = 1:length(ch)
-                idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
-                [F1,~,~,~] = INTER
-                if F1 > F1max    % compare and see if this channel provides max F1
-                    maxch(min) = j;
-                    F1max = F1;
-                    fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
-                end
-            end
-            min = min+1;
-        end
-        fqrs = cell2mat(fqrs_temp);
-        % == saving results
-        save([filename '_aesn'],'residual','maxch','fqrs');
-        clear F1 RMS PPV SE maxch residual fqrs ESNparam
-        toc
+%         % ----------------------
+%         % LMS Least Mean Square
+%         % ----------------------
+%         disp('LMS extraction ..')
+%         %parameters
+%         refch = 1;      % pick reference channel
+%         mirrow = 30*fs_new;    % mirrow 30 seconds of signal to train method
+%         % channel loop
+%         residual = zeros(size(mixture));
+%         fqrs = cell(1,size(mixture,1));
+%         for j = 1:length(ch)
+%             res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)], ...
+%                 [refs(refch,mirrow:-1:1) refs(refch,:)],'LMS',debug,fs_new);
+%             residual(j,:) = res(mirrow+1:end);
+%             fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
+%         end
+%         
+%         % creating statistics in 1-min blocks
+%         min = 1;
+%         maxch = zeros(1,length(mixture)/fs_new/60);
+%         fqrs_temp = cell(1,length(mixture)/fs_new/60);
+%         while min <= length(mixture)/fs_new/60;
+%             F1max = 0;
+%             idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
+%             for j = 1:length(ch)
+%                 idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
+%                 [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
+%                 if F1 > F1max    % compare and see if this channel provides max F1
+%                     maxch(min) = j;
+%                     F1max = F1;
+%                     fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
+%                 end
+%             end
+%             min = min+1;
+%         end
+%         fqrs = cell2mat(fqrs_temp);
+%         % == saving results
+%         save([filename '_alms'],'residual','maxch','fqrs');
+%         clear F1 RMS PPV SE maxch residual fqrs lmsStruct
+%         
+%         % ----------------------
+%         % RLS Recursive Least Square
+%         % ----------------------
+%         disp('RLS extraction ..')
+%         % channel loop
+%         residual = zeros(size(mixture));
+%         fqrs = cell(1,size(mixture,1));
+%         for j = 1:length(ch)
+%             res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)],...
+%                 [refs(refch,mirrow:-1:1) refs(refch,:)],'RLS',debug,fs_new);
+%             residual(j,:) = res(mirrow+1:end);
+%             fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
+%         end
+%         
+%         % creating statistics in 1-min blocks
+%         min = 1;
+%         maxch = zeros(1,length(mixture)/fs_new/60);
+%         fqrs_temp = cell(1,length(mixture)/fs_new/60);
+%         while min <= length(mixture)/fs_new/60;
+%             F1max = 0;
+%             idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
+%             for j = 1:length(ch)
+%                 idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
+%                 [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
+%                 if F1 > F1max    % compare and see if this channel provides max F1
+%                     maxch(min) = j;
+%                     F1max = F1;
+%                     fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
+%                 end
+%             end
+%             min = min+1;
+%         end
+%         fqrs = cell2mat(fqrs_temp);
+%         % == saving results
+%         save([filename '_arls'],'residual','maxch','fqrs');
+%         clear F1 RMS PPV SE maxch residual fqrs rlsStruct
+%         
+%         % ----------------------
+%         % ESN Echo State Neural Network
+%         % ----------------------
+%         disp('ESN extraction ..')
+%         % channel loop
+%         residual = zeros(size(mixture));
+%         fqrs = cell(1,size(mixture,1));
+%         for j = 1:length(ch)
+%             res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)]...
+%                 ,[refs(refch,mirrow:-1:1) refs(refch,:)],'ESN',debug,fs_new);
+%             residual(j,:) = res(mirrow+1:end);
+%             fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
+%         end
+%         
+%         % creating statistics in 1-min blocks
+%         min = 1;
+%         maxch = zeros(1,length(mixture)/fs_new/60);
+%         fqrs_temp = cell(1,length(mixture)/fs_new/60);
+%         while min <= length(mixture)/fs_new/60;
+%             F1max = 0;
+%             idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
+%             for j = 1:length(ch)
+%                 idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
+%                 [F1,~,~,~] = INTER
+%                 if F1 > F1max    % compare and see if this channel provides max F1
+%                     maxch(min) = j;
+%                     F1max = F1;
+%                     fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
+%                 end
+%             end
+%             min = min+1;
+%         end
+%         fqrs = cell2mat(fqrs_temp);
+%         % == saving results
+%         save([filename '_aesn'],'residual','maxch','fqrs');
+%         clear F1 RMS PPV SE maxch residual fqrs ESNparam
+%         toc
     end
 end
 

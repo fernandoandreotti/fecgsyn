@@ -48,10 +48,10 @@ wsd = std(2*pi*fm,1);       % heart-rate standard deviation in rads.
 
 
 %% Generating average ECG beat
-phase = PhaseCalc(find(peaks),length(x)); % phase calculation
-phase_tmp = PhaseCalc(peaksidx(1:NbCycles),peaksidx(NbCycles)+300); % phase calculation
-[ECGmean,ECGsd,meanphase] = ECG_tgen(x(1:peaksidx(NbCycles)+300),phase_tmp,NB_BINS); % mean ECG extraction
-
+phase = PhaseCalc(peaksidx,length(x)); % phase calculation
+% phase_tmp = PhaseCalc(peaksidx(1:NbCycles),peaksidx(NbCycles)+300); % phase calculation
+% [ECGmean,ECGsd,meanphase] = ECG_tgen(x(1:peaksidx(NbCycles)+300),phase_tmp,NB_BINS); % mean ECG extraction
+[ECGmean,ECGsd,meanphase] = ECG_tgen(x,phase,NB_BINS); % mean ECG extraction
 if debug>1
     % = phase calculation figure
     I = find(peaks);

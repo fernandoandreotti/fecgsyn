@@ -198,7 +198,7 @@ ch = [1 8 11 22 25 32]; % using 6 channels (decided considering Exp. 1)
 refchs = 33:34;
 
 if extract
-    for i = 1:length(fls)
+    for i = 1:400%length(fls)
         tic
         disp(['Extracting file ' fls{i} '..'])
         filename = [path2save 'rec' num2str(i)];
@@ -271,7 +271,7 @@ if extract
 %         % -------------------
 %         disp('TS-CERUTTI extraction ..')
 %         % parameters
-%         NbCycles = 20;
+         NbCycles = 20;
 %         residual = zeros(size(mixture));
 %         fqrs = cell(1,size(mixture,1));
 %         for j = 1:length(ch)
@@ -345,11 +345,10 @@ if extract
         % EKF Extended Kalman Filter
         % ----------------------------
         disp('EKF extraction ..')
-        NbCycles = 30; % first 30 cycles will be used for template generation
         residual = zeros(size(mixture));
         fqrs = cell(1,size(mixture,1));
         for j = 1:length(ch)
-            residual(j,:) = FECGSYN_kf_extraction(out.mqrs,mixture(j,:),NbCycles,fs_new);
+            residual(j,:) = FECGSYN_kf_extraction_cyclic(out.mqrs,mixture(j,:),NbCycles,fs_new);
             fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
         end
         

@@ -374,12 +374,13 @@ if extract
         fqrs = cell2mat(fqrs_temp);
         % == saving results
 %         save([filename '_tsekf'],'residual','maxch','fqrs');
-% %         clear F1 RMS PPV SE maxch residual fqrs NbCyclesmat
-% %         for chan = 1:8
-% %             figure(chan)
-% %             print('-dpng','-r72',['/media/andreotti/FetalEKG/2014.10_fecgsyn_simulations(5.0)/problematic/' fls{i} '_ch' num2str(chan) '.png'])            
-% %         end
-%         close all
+        clear F1 RMS PPV SE maxch residual fqrs NbCyclesmat
+        drawnow
+        for chan = 1:8
+            figure(chan)
+            print('-dpng','-r72',['/media/andreotti/FetalEKG/2014.10_fecgsyn_simulations(5.0)/plots_waveletfit/afterfix/' fls{i}(1:end-4) '_ch' num2str(chan) '.png'])            
+        end
+        close all
 
 %         % ----------------------
 %         % LMS Least Mean Square

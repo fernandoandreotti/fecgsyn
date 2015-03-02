@@ -222,7 +222,7 @@ for met = {'tsekf' 'tspca' 'aesn' 'ica'}
     set(gca,'XTickLabel',{'Case 0','Case 1','Case 2','Case 3','Case 4','Case 5'})
     set(h, 'LineWidth',LWIDTH)
     h = findobj('Tag','Box');
-    set(h,'Color',[187 81 112]./255);
+    set(h,'Color',([187 81 112]./255));
     ylabel('MAE (ms)','FontSize',FSIZE)
     title(met)
     h=gca;

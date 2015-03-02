@@ -188,7 +188,7 @@ N = length(OptimumParams)/3;     %new number of Gaussian kernels
 
 
 % Plot final resultsNew Folder
-if debug && ~isempty(OptimumParams)
+% if debug && ~isempty(OptimumParams)
     figure
     [Error,Model] = FECGSYN_kf_ECGModelError(OptimumParams,ECGmean,meanphase);
     errorbar(meanphase,ECGmean,ECGsd/2);
@@ -202,7 +202,8 @@ if debug && ~isempty(OptimumParams)
     ylabel('Arbitrary units');
     grid
     hold off;
-end
+    
+% end
 
 end
 

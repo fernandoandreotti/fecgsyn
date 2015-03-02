@@ -195,6 +195,7 @@ c3 = cellfun(@(x) ~isempty(regexp(x,'.c3','ONCE')),fls_orig);
 c4 = cellfun(@(x) ~isempty(regexp(x,'.c4','ONCE')),fls_orig);
 c5 = cellfun(@(x) ~isempty(regexp(x,'.c5','ONCE')),fls_orig);
 
+% F1
 for met = {'tsekf' 'tspca' 'aesn' 'ica'}
     figure   
     eval(['stat = stats_' met{:} ';']);
@@ -210,6 +211,26 @@ for met = {'tsekf' 'tspca' 'aesn' 'ica'}
     set(gca,'FontSize',FSIZE);
     set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
 end
+
+% MAE
+for met = {'tsekf' 'tspca' 'aesn' 'ica'}
+    figure   
+    eval(['stat = stats_' met{:} ';']);
+    statscase = [stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
+    h = boxplot(statscase,{});
+    set(gca,'XTick',[1:6])  % This automatically sets
+    set(gca,'XTickLabel',{'Case 0','Case 1','Case 2','Case 3','Case 4','Case 5'})
+    set(h, 'LineWidth',LWIDTH)
+    h = findobj('Tag','Box');
+    set(h,'Color',[187 81 112]./255);
+    ylabel('MAE (ms)','FontSize',FSIZE)
+    title(met)
+    h=gca;
+    rotateticklabel(h,45);
+    set(gca,'FontSize',FSIZE);
+    set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
+end
+
 
 end
 

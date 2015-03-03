@@ -235,23 +235,22 @@ N = length(OptimumParams)/3;     %new number of Gaussian kernels
 
 
 % Plot final resultsNew Folder
-% if debug && ~isempty(OptimumParams)
-figure('units','normalized','outerposition',[0 0 1 1])
-[Error,Model] = FECGSYN_kf_ECGModelError(OptimumParams,ECGmean,meanphase);
-errorbar(meanphase,ECGmean,ECGsd/2);
-hold on;
-plot(meanphase,ECGmean,'r');
-plot(meanphase,Model,'m','linewidth',2)
-plot(meanphase,Error,'-g','linewidth',2);
-plot(OptimumParams(2*N:end),1,'xr','LineWidth',2)
-legend('SD bar','Mean ECG','Gaussian Approx.','Error','Kernel position');%,'Gaussian');
-title(['N_k = ' num2str(N)]);
-xlabel('Phase (rads.)');
-ylabel('Arbitrary units');
-grid
-hold off;
-
-% end
+if debug && ~isempty(OptimumParams)
+    figure('units','normalized','outerposition',[0 0 1 1])
+    [Error,Model] = FECGSYN_kf_ECGModelError(OptimumParams,ECGmean,meanphase);
+    errorbar(meanphase,ECGmean,ECGsd/2);
+    hold on;
+    plot(meanphase,ECGmean,'r');
+    plot(meanphase,Model,'m','linewidth',2)
+    plot(meanphase,Error,'-g','linewidth',2);
+    plot(OptimumParams(2*N:end),1,'xr','LineWidth',2)
+    legend('SD bar','Mean ECG','Gaussian Approx.','Error','Kernel position');%,'Gaussian');
+    title(['N_k = ' num2str(N)]);
+    xlabel('Phase (rads.)');
+    ylabel('Arbitrary units');
+    grid
+    hold off;
+end
 
 end
 

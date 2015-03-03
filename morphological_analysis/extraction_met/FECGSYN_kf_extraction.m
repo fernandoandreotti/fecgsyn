@@ -83,17 +83,7 @@ if peaks(1)<1;peaks(1) = 1; end;
 if peaks(end)>length(ecg);peaks(end) = length(ecg); end;
 
 %% == Generate KF's mode
-% clear optim
-% for c = 1:10
 [OptimumParams,phase,ECGsd,w,wsd] = FECGSYN_kf_ECGmodelling(ecg,peaks,nbCycles,fs);
-% optminim(c,:) = OptimumParams;
-% end
-
-% testing for stocasticity
-% optim = optim - repmat(optim(1,:),10,1)
-% if find(optim ~=0)
-%     disp('Something is not right')
-% end
 
 
 %% == MECG estimation using KF
@@ -116,8 +106,8 @@ X0 = [-pi 0]';  % state initialization
 u = zeros(1,length(ecg));
 
 % = Run KF
-% Xhat = FECGSYN_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);
-Xhat = [ecg; ecg];
+Xhat = FECGSYN_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);
+
 
 %% == compute residual
 residual = ecg - Xhat(2,:);

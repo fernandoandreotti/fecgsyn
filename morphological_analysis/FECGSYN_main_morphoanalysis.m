@@ -199,7 +199,7 @@ refchs = 33:34;
 
 if extract
     %for i = [502,506,509,529,533,537,540]
-    for i = 360:600
+    for i = 1:length(fls)
         tic
         disp(['Extracting file ' fls{i} '..'])
         filename = [path2save 'rec' num2str(i)];

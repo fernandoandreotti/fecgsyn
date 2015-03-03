@@ -124,9 +124,9 @@ for i = 1:Nkernels
     
     %== Gaussian positioning constraint
     % avoids getting stuck on discontinuities
-%     if (i>1)&&(abs(gp(i)-gp(i-1))<= 5)
-%         [~,gp(i)] = max(scalex(randi([1 scala],1,1),:).^2);    % defining maximum
-%     end
+    if (i>1)&&(abs(gp(i)-gp(i-1))<= 5)
+        [~,gp(i)] = max(scalex(randi([1 scala],1,1),:).^2);    % defining maximum
+    end
     
     GaussPos(i) = samptorads(gp(i));  % converting to interval [-pi,pi]
     
@@ -228,7 +228,6 @@ clear L Li LowBound Model OptimPar ECGmean_aux
 % Look if there is any invalid Gaussian and remove it
 % If gaussian width or height is less than 0.001 it will excluded.
 N = Nkernels;
-
 rmidx = (abs(OptimumParams(1:N))<0.001.*amax)|(abs(OptimumParams(N+1:2*N))<0.001);
 if any(rmidx)
     OptimumParams([rmidx rmidx rmidx]) = [];
@@ -238,7 +237,7 @@ N = length(OptimumParams)/3;     %new number of Gaussian kernels
 
 
 % Plot final resultsNew Folder
-if debug && ~isempty(OptimumParams)
+% if debug && ~isempty(OptimumParams)
     figure('units','normalized','outerposition',[0 0 1 1])
     [Error,Model] = FECGSYN_kf_ECGModelError(OptimumParams,ECGmean,meanphase);
     errorbar(meanphase,ECGmean,ECGsd/2);
@@ -253,7 +252,7 @@ if debug && ~isempty(OptimumParams)
     ylabel('Arbitrary units');
     grid
     hold off;
-end
+% end
 
 end
 

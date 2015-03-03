@@ -106,9 +106,9 @@ X0 = [-pi 0]';  % state initialization
 u = zeros(1,length(ecg));
 
 % = Run KF
-Xhat = FECGSYN_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);
+% Xhat = FECGSYN_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);
 
-
+Xhat = [ecg ;ecg];
 %% == compute residual
 residual = ecg - Xhat(2,:);
 

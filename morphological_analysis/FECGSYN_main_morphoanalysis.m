@@ -379,7 +379,7 @@ if extract
         drawnow
         for chan = 1:8
             figure(chan)
-            print('-dpng','-r72',['/media/andreotti/FetalEKG/2014.10_fecgsyn_simulations(5.0)/plots_waveletfit/afterfix2/' fls{i}(1:end-4) '_ch' num2str(chan) '.png'])            
+            print('-dpng','-r72',['/media/andreotti/FetalEKG/2014.10_fecgsyn_simulations(5.0)/plots_waveletfit/withall_constraints/' fls{i}(1:end-4) '_ch' num2str(chan) '.png'])            
         end
         close all
 

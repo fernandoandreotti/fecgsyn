@@ -43,8 +43,8 @@ debug = 0;
 % clear all; close all; clc;
 slashchar = char('/'*isunix + '\'*(~isunix));
 if isunix
-    path = '/home/fernando/tmp/2014.12_fecgsyn_simulations(5.0)/';
-    path2save = '/home/fernando/tmp/2014.12_fecgsyn_simulations(5.0)/extracted3Hz/';
+    path = '/media/andreotti/FetalEKG/2014.10_fecgsyn_simulations(5.0)//';
+    path2save = '/media/andreotti/FetalEKG/2014.10_fecgsyn_simulations(5.0)/extracted3Hzer/';
 else
     path = 'K:\2014.10_fecgsyn_simulations(5.0)\';
     path2save = 'K:\2014.10_fecgsyn_simulations(5.0)\kfcyclic\';
@@ -194,10 +194,11 @@ fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
 
 %% Experiment 2 (later 2 and 3)
 % Channels to be used
-ch = [1 8 11 22 25 32]; % using 6 channels (decided considering Exp. 1)
+ch = [1 8 11 14 19 22 25 32]; % using 8 channels (decided considering Exp. 1)
 refchs = 33:34;
 
 if extract
+    %for i = [502,506,509,529,533,537,540]
     for i = 1:length(fls)
         tic
         disp(['Extracting file ' fls{i} '..'])
@@ -373,9 +374,15 @@ if extract
         end
         fqrs = cell2mat(fqrs_temp);
         % == saving results
-        save([filename '_tsekf'],'residual','maxch','fqrs');
-        clear F1 RMS PPV SE maxch residual fqrs NbCycles
-        
+%         save([filename '_tsekf'],'residual','maxch','fqrs');
+        clear F1 RMS PPV SE maxch residual fqrs NbCyclesmat
+        drawnow
+        for chan = 1:8
+            figure(chan)
+            print('-dpng','-r72',['/media/andreotti/FetalEKG/2014.10_fecgsyn_simulations(5.0)/plots_waveletfit/' fls{i}(1:end-4) '_ch' num2str(chan) '.png'])            
+        end
+        close all
+
 %         % ----------------------
 %         % LMS Least Mean Square
 %         % ----------------------

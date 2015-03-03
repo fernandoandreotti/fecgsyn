@@ -82,8 +82,9 @@ peaks = (delay-win-1) + peaks;
 if peaks(1)<1;peaks(1) = 1; end;
 if peaks(end)>length(ecg);peaks(end) = length(ecg); end;
 
-%% == Generate KF's model
+%% == Generate KF's mode
 [OptimumParams,phase,ECGsd,w,wsd] = FECGSYN_kf_ECGmodelling(ecg,peaks,nbCycles,fs);
+
 
 %% == MECG estimation using KF
 % = Kalman Filter Parametrization
@@ -106,6 +107,7 @@ u = zeros(1,length(ecg));
 
 % = Run KF
 Xhat = FECGSYN_kf_EKFilter(y,X0,P0,Q,R,Wmean,Vmean,OptimumParams,w,fs,flag,u);
+
 
 %% == compute residual
 residual = ecg - Xhat(2,:);

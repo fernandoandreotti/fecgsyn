@@ -31,7 +31,6 @@ function [OptimumParams,phase,ECGsd,w,wsd] = FECGSYN_kf_ECGmodelling(x,peaksidx,
 % Public License for more details.
 %
 global debug
-
 %% Parameters
 Nkernels = 7;          % number of kernels for Gaussian modelling
 NB_BINS = 500;          % number of phase bins (SWT depends on this number!!)
@@ -123,47 +122,55 @@ for i = 1:Nkernels
     [~,s]=max(max(scl')); % picking scale with highest cross-covariance
     [~,gp(i)] = max(scalex(s,:).^2);    % defining maximum
     
+    %== Gaussian positioning constraint
     % avoids getting stuck on discontinuities
-    if (i>1)&&((gp(i)-gp(i-1))<= 5)
-        [~,gp(i)] = max(scalex(randi([1 scala],1,1),:).^2);    % defining maximum
-    end
+%     if (i>1)&&(abs(gp(i)-gp(i-1))<= 5)
+%         [~,gp(i)] = max(scalex(randi([1 scala],1,1),:).^2);    % defining maximum
+%     end
     
     GaussPos(i) = samptorads(gp(i));  % converting to interval [-pi,pi]
     
+    %== Gaussian standard deviation constraint
     % calculating expected standard deviation for Gaussians
     reswt = resample(wtLow{s},5,1); % just for finding stds
     hwhh = fwhm(1:length(reswt),reswt)/2/5;    % half width at half height
     bi(i) = abs(samptorads(1)-samptorads(ceil(hwhh)));
     
-    [~,idx] = min(abs(meanphase-GaussPos(i)));
     % = small adjusts for fitting
     % extremities
+    [~,idx] = min(abs(meanphase-GaussPos(i)));
     if idx <= 0
         idx = 1;
     elseif idx >= 500
         idx = 499;
     end
+      
     % initial tetai in bins
     tetai = meanphase(idx);
+    
+    %== Amplitude directional constraint
     % initial alphai
-    alphai = mean(ECGmean_aux(idx)); % proposed initial point for gaussian amplitude
+    alphai = scalex(s,idx); % proposed initial point for gaussian amplitude
     if abs(amin) > abs(alphai)
         alphai = sign(alphai)*amin;
     end
     if alphai == 0
         alphai = amax;
     end
-    % initial parameters for optimization
+    
+    
+    %== Initial parameters for optimization
     InitParams = [alphai bi(i) tetai];
     
-    % setting up bounds for optimization
+    %== Setting up bounds for optimization
     % alphai: between +/-amin and +/-amax
-    % bi:     0.0001 and estimated value + 1
+    % bi:     0.001 and estimated value + 1
     % tetai:  current value +/- pi/5
-    LowBound = [min(amin*sign(alphai),amax*sign(alphai)),0.0001,tetai-pi/5];
+    LowBound = [min(amin*sign(alphai),amax*sign(alphai)),0.001,tetai-pi/5];
     UpBound = [max(amin*sign(alphai),amax*sign(alphai)),bi(i)+1,tetai+pi/5];
     OptimPar = lsqnonlin(@(InitParams) FECGSYN_kf_ECGModelError(InitParams,ECGmean_aux,meanphase),InitParams,LowBound,UpBound,options);
-    %Optimization
+    
+    %== Optimization procedure
     % Plot and Calculate average error in template
     [~,Model] = FECGSYN_kf_ECGModelError(OptimPar,ECGmean_aux,meanphase);
     Optpre(i,:) = OptimPar;
@@ -191,12 +198,12 @@ InitParams = [alphai bi tetai];
 
 % setting bounds
 % alphai: 50% +/-
-% bi:     0.0001 and estimated value + 1
+% bi:     0.001 and estimated value + 1
 % tetai:  current value +/- pi/2
 LowBound = zeros(size(InitParams));
 UpBound = zeros(size(InitParams));
 LowBound(1:Nkernels) = alphai - amax/4;
-LowBound(Nkernels+1:2*Nkernels) = repmat(0.0001,1,Nkernels);
+LowBound(Nkernels+1:2*Nkernels) = repmat(0.001,1,Nkernels);
 LowBound(2*Nkernels+1:end) = tetai-pi/2;
 idx2low = (LowBound(2*Nkernels+1:end)<-pi); % checking if not too low
 if any(idx2low)
@@ -221,15 +228,11 @@ clear L Li LowBound Model OptimPar ECGmean_aux
 % Look if there is any invalid Gaussian and remove it
 % If gaussian width or height is less than 0.001 it will excluded.
 N = Nkernels;
-yy = 1;
-while(yy<N+1)
-    if((abs(OptimumParams(N+yy))<0.0001)||(abs(OptimumParams(yy))<0.001))
-        OptimumParams(2*N+yy)=[];OptimumParams(N+yy)=[];OptimumParams(yy)=[];
-        N = N-1;
-        disp('Throwing Gaussians away!')
-    else
-        yy=yy+1;
-    end
+
+rmidx = (abs(OptimumParams(1:N))<0.001.*amax)|(abs(OptimumParams(N+1:2*N))<0.001);
+if any(rmidx)
+    OptimumParams([rmidx rmidx rmidx]) = [];
+    disp('Throwing Gaussians away!')
 end
 N = length(OptimumParams)/3;     %new number of Gaussian kernels
 

@@ -102,11 +102,12 @@ gp = zeros(1,Nkernels);
 scalex = zeros(scala,NB_BINS);
 bi = zeros(1,Nkernels);
 
-plot(meanphase,ECGmean,'Color',[0.7 0.7 0.7],'LineWidth',2)
-xlabel('Phase (rads.)');
-ylabel('Arbitrary units');
-hold on
-
+if debug
+    plot(meanphase,ECGmean,'Color',[0.7 0.7 0.7],'LineWidth',2)
+    xlabel('Phase (rads.)');
+    ylabel('Arbitrary units');
+    hold on
+end
 % = iteratively obtaining candidate Gaussians
 for i = 1:Nkernels
     scl = cell(1,scala); % initializing scales
@@ -121,6 +122,12 @@ for i = 1:Nkernels
     scl = cell2mat(scl');
     [~,s]=max(max(scl')); % picking scale with highest cross-covariance
     [~,gp(i)] = max(scalex(s,:).^2);    % defining maximum
+    
+    % avoids getting stuck on discontinuities
+    if (i>1)&&((gp(i)-gp(i-1))<= 5)
+        [~,gp(i)] = max(scalex(randi([1 scala],1,1),:).^2);    % defining maximum
+    end
+    
     GaussPos(i) = samptorads(gp(i));  % converting to interval [-pi,pi]
     
     % calculating expected standard deviation for Gaussians
@@ -129,13 +136,16 @@ for i = 1:Nkernels
     bi(i) = abs(samptorads(1)-samptorads(ceil(hwhh)));
     
     [~,idx] = min(abs(meanphase-GaussPos(i)));
-    % clearing extremities
+    % = small adjusts for fitting
+    % extremities
     if idx <= 0
         idx = 1;
     elseif idx >= 500
         idx = 499;
     end
+    % initial tetai in bins
     tetai = meanphase(idx);
+    % initial alphai
     alphai = mean(ECGmean_aux(idx)); % proposed initial point for gaussian amplitude
     if abs(amin) > abs(alphai)
         alphai = sign(alphai)*amin;
@@ -143,8 +153,10 @@ for i = 1:Nkernels
     if alphai == 0
         alphai = amax;
     end
-    InitParams = [alphai bi(i) tetai]; % initial parameters for optimization
-    % setting up bounds
+    % initial parameters for optimization
+    InitParams = [alphai bi(i) tetai];
+    
+    % setting up bounds for optimization
     % alphai: between +/-amin and +/-amax
     % bi:     0.0001 and estimated value + 1
     % tetai:  current value +/- pi/5
@@ -156,9 +168,10 @@ for i = 1:Nkernels
     [~,Model] = FECGSYN_kf_ECGModelError(OptimPar,ECGmean_aux,meanphase);
     Optpre(i,:) = OptimPar;
     ECGmean_aux = ECGmean_aux - Model;
-    % Plot intermediate results    
-    plot(meanphase,Model,'LineWidth',2)
-
+    if debug
+        % Plot intermediate results
+        plot(meanphase,Model,'LineWidth',2)
+    end
     
 end
 
@@ -223,21 +236,21 @@ N = length(OptimumParams)/3;     %new number of Gaussian kernels
 
 % Plot final resultsNew Folder
 % if debug && ~isempty(OptimumParams)
-    figure('units','normalized','outerposition',[0 0 1 1])
-    [Error,Model] = FECGSYN_kf_ECGModelError(OptimumParams,ECGmean,meanphase);
-    errorbar(meanphase,ECGmean,ECGsd/2);
-    hold on;
-    plot(meanphase,ECGmean,'r');
-    plot(meanphase,Model,'m','linewidth',2)
-    plot(meanphase,Error,'-g','linewidth',2);
-    plot(OptimumParams(2*N:end),1,'xr','LineWidth',2)
-    legend('SD bar','Mean ECG','Gaussian Approx.','Error','Kernel position');%,'Gaussian');
-    title(['N_k = ' num2str(N)]);
-    xlabel('Phase (rads.)');
-    ylabel('Arbitrary units');
-    grid
-    hold off;
-    
+figure('units','normalized','outerposition',[0 0 1 1])
+[Error,Model] = FECGSYN_kf_ECGModelError(OptimumParams,ECGmean,meanphase);
+errorbar(meanphase,ECGmean,ECGsd/2);
+hold on;
+plot(meanphase,ECGmean,'r');
+plot(meanphase,Model,'m','linewidth',2)
+plot(meanphase,Error,'-g','linewidth',2);
+plot(OptimumParams(2*N:end),1,'xr','LineWidth',2)
+legend('SD bar','Mean ECG','Gaussian Approx.','Error','Kernel position');%,'Gaussian');
+title(['N_k = ' num2str(N)]);
+xlabel('Phase (rads.)');
+ylabel('Arbitrary units');
+grid
+hold off;
+
 % end
 
 end

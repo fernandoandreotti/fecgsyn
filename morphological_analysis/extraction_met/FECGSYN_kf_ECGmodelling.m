@@ -144,7 +144,7 @@ for i = 1:Nkernels
     elseif idx >= 500
         idx = 499;
     end
-      
+    
     % initial tetai in bins
     tetai = meanphase(idx);
     
@@ -237,7 +237,7 @@ N = length(OptimumParams)/3;     %new number of Gaussian kernels
 
 
 % Plot final resultsNew Folder
-% if debug && ~isempty(OptimumParams)
+if debug && ~isempty(OptimumParams)
     figure('units','normalized','outerposition',[0 0 1 1])
     [Error,Model] = FECGSYN_kf_ECGModelError(OptimumParams,ECGmean,meanphase);
     errorbar(meanphase,ECGmean,ECGsd/2);
@@ -252,7 +252,7 @@ N = length(OptimumParams)/3;     %new number of Gaussian kernels
     ylabel('Arbitrary units');
     grid
     hold off;
-% end
+end
 
 end
 

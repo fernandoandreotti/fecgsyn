@@ -88,7 +88,7 @@ if peaks(end)>length(ecg);peaks(end) = length(ecg); end;
 
 %% == MECG estimation using KF
 % = Kalman Filter Parametrization
-p = [0.01 0.001 0.001 1 10 0.00001 10]; % calibrated parameters for cov. mat.
+p = [0.01 0.001 0.001 1 1 0.00001 10]; % calibrated parameters for cov. mat.
 y = [phase ; ecg];    % state
 % covariance matrix of the process noise vector
 N = length(OptimumParams)/3;

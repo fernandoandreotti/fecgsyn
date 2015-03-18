@@ -194,15 +194,35 @@ c2 = cellfun(@(x) ~isempty(regexp(x,'.c2','ONCE')),fls_orig);
 c3 = cellfun(@(x) ~isempty(regexp(x,'.c3','ONCE')),fls_orig);
 c4 = cellfun(@(x) ~isempty(regexp(x,'.c4','ONCE')),fls_orig);
 c5 = cellfun(@(x) ~isempty(regexp(x,'.c5','ONCE')),fls_orig);
+base = ~(c0|c1|c2|c3|c4|c5);
 
-% F1
-for met = {'tsekf' 'tspca' 'aesn' 'ica'}
-    figure   
+% Generate Table
+counter1 = 1;
+table = zeros(16,42);
+for met = {'ica' 'pca' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
     eval(['stat = stats_' met{:} ';']);
-    statscase = 100*[stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
+    % F1
+    statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
+    auxtab = [mean(statscase)',-1.*ones(7,1),median(statscase)',-2.*ones(7,1),std(statscase)',-3.*ones(7,1)];
+    table(counter1,:) = reshape(auxtab',1,7*6); 
+    counter1 = counter1 + 1;
+    % MAE
+    statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
+    auxtab = [mean(statscase)',-1.*ones(7,1),median(statscase)',-2.*ones(7,1),std(statscase)',-3.*ones(7,1)];    
+    table(counter1,:) = reshape(auxtab',1,7*6); 
+    counter1 = counter1 + 1;
+end
+table = round(table.*10)./10;
+% F1
+c=1;
+for met = {'tsekf' 'tspca' 'aesn' 'ica'}
+    figure(c)   
+    c = c+1;
+    eval(['stat = stats_' met{:} ';']);
+    statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
     h = boxplot(statscase,{});
-    set(gca,'XTick',[1:6])  % This automatically sets
-    set(gca,'XTickLabel',{'Case 0','Case 1','Case 2','Case 3','Case 4','Case 5'})
+    set(gca,'XTick',[1:7])  % This automatically sets
+    set(gca,'XTickLabel',{'Baseline','Case 0','Case 1','Case 2','Case 3','Case 4','Case 5'})
     set(h, 'LineWidth',LWIDTH)
     ylabel('F_1 (%)','FontSize',FSIZE)
     title(met)
@@ -213,13 +233,15 @@ for met = {'tsekf' 'tspca' 'aesn' 'ica'}
 end
 
 % MAE
+
 for met = {'tsekf' 'tspca' 'aesn' 'ica'}
-    figure   
+    figure(c)
+    c= c+1;
     eval(['stat = stats_' met{:} ';']);
-    statscase = [stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
+    statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
     h = boxplot(statscase,{});
-    set(gca,'XTick',[1:6])  % This automatically sets
-    set(gca,'XTickLabel',{'Case 0','Case 1','Case 2','Case 3','Case 4','Case 5'})
+    set(gca,'XTick',[1:7])  % This automatically sets
+    set(gca,'XTickLabel',{'Baseline','Case 0','Case 1','Case 2','Case 3','Case 4','Case 5'})
     set(h, 'LineWidth',LWIDTH)
     h = findobj('Tag','Box');
     set(h,'Color',([187 81 112]./255));

@@ -36,6 +36,8 @@ global debug
 INTERV = round(0.05*fs); % BxB acceptance interval
 TEMP_SAMPS = round(60*fs); % samples used for building templates
 morph = 0; % turn on/off morphological analysis
+fs_new = 250;
+
 %% Run through extracted datasets
 cd(path_orig)
 slashchar = char('/'*isunix + '\'*(~isunix));
@@ -44,7 +46,6 @@ fls_orig = arrayfun(@(x)x.name,fls_orig,'UniformOutput',false);
 cd(path_ext)
 fls_ext = dir('*.mat'); % looking for .mat (creating index)
 fls_ext = arrayfun(@(x)x.name,fls_ext,'UniformOutput',false);
-fs_new = 250;
 stats_ica = zeros(length(fls_orig),4);
 stats_pca = zeros(length(fls_orig),4);
 stats_tsc = zeros(length(fls_orig),4);
@@ -98,27 +99,37 @@ for i = 1:length(fls_ext)
             % generating statistics
             stats_ica(origrec,:) = [F1,MAE,PPV,SE];
             if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS);
+                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,1);
                 morph_ica(origrec,:) = [mean(qt_err); mean(theight_err)];
-                %                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
+                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
             end
             clear fqrs F1 MAE PPV SE
         case 'PCA'
             %= generating statistics
             stats_pca(origrec,:) = [F1,MAE,PPV,SE];
+            if morph
+                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,1);
+                morph_ica(origrec,:) = [mean(qt_err); mean(theight_err)];
+                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
+            end
             clear fqrs F1 MAE PPV SE
         case 'tsc'
             %= generating QRS detection statistics
             stats_tsc(origrec,:) = [F1,MAE,PPV,SE];
+            if morph
+                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,0);
+                morph_tspca(origrec,:) = [mean(qt_err); mean(theight_err)];
+                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
+            end
             clear fqrs F1 MAE PPV SE
         case 'tspca'
             %= generating statistics
             stats_tspca(origrec,:) = [F1,MAE,PPV,SE];
             %= morphological statistics
             if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS);
+                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,0);
                 morph_tspca(origrec,:) = [mean(qt_err); mean(theight_err)];
-                %                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
+                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
             end
             clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
         case 'tsekf'
@@ -126,25 +137,35 @@ for i = 1:length(fls_ext)
             stats_tsekf(origrec,:) = [F1,MAE,PPV,SE];
             %= morphological statistics
             if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS);
+                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,0);
                 morph_tskf(origrec,:) = [mean(qt_err); mean(theight_err)];
-                %                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
+                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
             end
             clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
         case 'alms'
             % generating statistics
             stats_alms(origrec,:) = [F1,MAE,PPV,SE];
+            if morph
+                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,0);
+                morph_tspca(origrec,:) = [mean(qt_err); mean(theight_err)];
+                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
+            end
             clear fecg residual fqrs F1 MAE PPV SE
         case 'arls'
             % generating statistics
             stats_arls(origrec,:) = [F1,MAE,PPV,SE];
+            if morph
+                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,0);
+                morph_tspca(origrec,:) = [mean(qt_err); mean(theight_err)];
+                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
+            end
             clear fecg residual fqrs F1 MAE PPV SE
         case 'aesn'
             % generating statistics
             stats_aesn(origrec,:) = [F1,MAE,PPV,SE];
             % morphological statistics
             if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS);
+                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,0);
                 morph_aesn(origrec,:) = [mean(qt_err); mean(theight_err)];
                 %                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
             end
@@ -154,126 +175,134 @@ for i = 1:length(fls_ext)
 end
 save([path_orig 'wkspace_exp2'])
 
-%% Statistics Generation
-LWIDTH = 1.5;
-FSIZE = 15;
-%== F1 plot
-figure
-stats_f1 = 100*[stats_ica(:,1) stats_pca(:,1) stats_tsc(:,1) stats_tspca(:,1) ...
-    stats_tsekf(:,1) stats_alms(:,1) stats_arls(:,1) stats_aesn(:,1)];
-h = boxplot(stats_f1);
-set(gca,'XTick',[1:8])  % This automatically sets
-set(gca,'XTickLabel',{'BSSica';'BSSpca';'TSc';'TSpca';'TSekf';'Alms';'Arls';'Aesn'})
-set(h, 'LineWidth',LWIDTH)
-ylabel('F_1 (%)','FontSize',FSIZE)
-xlabel('Method','FontSize',FSIZE)
-h=gca;
-rotateticklabel(h,45);
-set(gca,'FontSize',FSIZE)
-set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE)
-
-% MAE
-figure
-stats_MAE = [stats_ica(:,2) stats_pca(:,2) stats_tsc(:,2) stats_tspca(:,2) ...
-    stats_tsekf(:,2) stats_alms(:,2) stats_arls(:,2) stats_aesn(:,2)];
-h = boxplot(stats_MAE);
-set(gca,'XTick',[1:8])  % This automatically sets
-set(gca,'XTickLabel',{'BSSica';'BSSpca';'TSc';'TSpca';'TSekf';'Alms';'Arls';'Aesn'})
-set(h, 'LineWidth',LWIDTH)
-ylabel('MAE (ms)','FontSize',FSIZE)
-xlabel('Method','FontSize',FSIZE)
-h=gca;
-rotateticklabel(h,45);
-set(gca,'FontSize',FSIZE)
-set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE)
-
-% generate case plots
-c0 = cellfun(@(x) ~isempty(regexp(x,'.c0','ONCE')),fls_orig);
-c1 = cellfun(@(x) ~isempty(regexp(x,'.c1','ONCE')),fls_orig);
-c2 = cellfun(@(x) ~isempty(regexp(x,'.c2','ONCE')),fls_orig);
-c3 = cellfun(@(x) ~isempty(regexp(x,'.c3','ONCE')),fls_orig);
-c4 = cellfun(@(x) ~isempty(regexp(x,'.c4','ONCE')),fls_orig);
-c5 = cellfun(@(x) ~isempty(regexp(x,'.c5','ONCE')),fls_orig);
-base = ~(c0|c1|c2|c3|c4|c5);
-
-% Generate Table
-counter1 = 1;
-table = zeros(16,42);
-for met = {'ica' 'pca' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
-    eval(['stat = stats_' met{:} ';']);
-    % F1
-    statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
-    auxtab = [mean(statscase)',-1.*ones(7,1),median(statscase)',-2.*ones(7,1),std(statscase)',-3.*ones(7,1)];
-    table(counter1,:) = reshape(auxtab',1,7*6); 
-    counter1 = counter1 + 1;
-    % MAE
-    statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
-    auxtab = [mean(statscase)',-1.*ones(7,1),median(statscase)',-2.*ones(7,1),std(statscase)',-3.*ones(7,1)];    
-    table(counter1,:) = reshape(auxtab',1,7*6); 
-    counter1 = counter1 + 1;
-end
-table = round(table.*10)./10;
-% F1
-c=1;
-for met = {'tsekf' 'tspca' 'aesn' 'ica'}
-    figure(c)   
-    c = c+1;
-    eval(['stat = stats_' met{:} ';']);
-    statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
-    h = boxplot(statscase,{});
-    set(gca,'XTick',[1:7])  % This automatically sets
-    set(gca,'XTickLabel',{'Baseline','Case 0','Case 1','Case 2','Case 3','Case 4','Case 5'})
+%% Plots and statistics generation
+if debug
+    LWIDTH = 1.5;
+    FSIZE = 15;
+    %== F1 plot
+    figure
+    stats_f1 = 100*[stats_ica(:,1) stats_pca(:,1) stats_tsc(:,1) stats_tspca(:,1) ...
+        stats_tsekf(:,1) stats_alms(:,1) stats_arls(:,1) stats_aesn(:,1)];
+    h = boxplot(stats_f1);
+    set(gca,'XTick',[1:8])  % This automatically sets
+    set(gca,'XTickLabel',{'BSSica';'BSSpca';'TSc';'TSpca';'TSekf';'Alms';'Arls';'Aesn'})
     set(h, 'LineWidth',LWIDTH)
     ylabel('F_1 (%)','FontSize',FSIZE)
-    title(met)
+    xlabel('Method','FontSize',FSIZE)
     h=gca;
     rotateticklabel(h,45);
-    set(gca,'FontSize',FSIZE);
-    set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
-end
-
-% MAE
-
-for met = {'tsekf' 'tspca' 'aesn' 'ica'}
-    figure(c)
-    c= c+1;
-    eval(['stat = stats_' met{:} ';']);
-    statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
-    h = boxplot(statscase,{});
-    set(gca,'XTick',[1:7])  % This automatically sets
-    set(gca,'XTickLabel',{'Baseline','Case 0','Case 1','Case 2','Case 3','Case 4','Case 5'})
+    set(gca,'FontSize',FSIZE)
+    set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE)
+    
+    % MAE
+    figure
+    stats_MAE = [stats_ica(:,2) stats_pca(:,2) stats_tsc(:,2) stats_tspca(:,2) ...
+        stats_tsekf(:,2) stats_alms(:,2) stats_arls(:,2) stats_aesn(:,2)];
+    h = boxplot(stats_MAE);
+    set(gca,'XTick',1:8)  % This automatically sets
+    set(gca,'XTickLabel',{'BSSica';'BSSpca';'TSc';'TSpca';'TSekf';'Alms';'Arls';'Aesn'})
     set(h, 'LineWidth',LWIDTH)
-    h = findobj('Tag','Box');
-    set(h,'Color',([187 81 112]./255));
     ylabel('MAE (ms)','FontSize',FSIZE)
-    title(met)
+    xlabel('Method','FontSize',FSIZE)
     h=gca;
     rotateticklabel(h,45);
-    set(gca,'FontSize',FSIZE);
-    set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
+    set(gca,'FontSize',FSIZE)
+    set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE)
+    
+    % generate case plots
+    c0 = cellfun(@(x) ~isempty(regexp(x,'.c0','ONCE')),fls_orig);
+    c1 = cellfun(@(x) ~isempty(regexp(x,'.c1','ONCE')),fls_orig);
+    c2 = cellfun(@(x) ~isempty(regexp(x,'.c2','ONCE')),fls_orig);
+    c3 = cellfun(@(x) ~isempty(regexp(x,'.c3','ONCE')),fls_orig);
+    c4 = cellfun(@(x) ~isempty(regexp(x,'.c4','ONCE')),fls_orig);
+    c5 = cellfun(@(x) ~isempty(regexp(x,'.c5','ONCE')),fls_orig);
+    base = ~(c0|c1|c2|c3|c4|c5);
+    
+    % Generate Table
+    counter1 = 1;
+    table = zeros(16,42);
+    for met = {'ica' 'pca' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
+        eval(['stat = stats_' met{:} ';']);
+        % F1
+        statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
+        auxtab = [mean(statscase)',-1.*ones(7,1),median(statscase)',-2.*ones(7,1),std(statscase)',-3.*ones(7,1)];
+        table(counter1,:) = reshape(auxtab',1,7*6);
+        counter1 = counter1 + 1;
+        % MAE
+        statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
+        auxtab = [mean(statscase)',-1.*ones(7,1),median(statscase)',-2.*ones(7,1),std(statscase)',-3.*ones(7,1)];
+        table(counter1,:) = reshape(auxtab',1,7*6);
+        counter1 = counter1 + 1;
+    end
+    table = round(table.*10)./10;
+    % F1
+    c=1;
+    for met = {'tsekf' 'tspca' 'aesn' 'ica'}
+        figure(c)
+        c = c+1;
+        eval(['stat = stats_' met{:} ';']);
+        statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
+        h = boxplot(statscase,{});
+        set(gca,'XTick',1:7)  % This automatically sets
+        set(gca,'XTickLabel',{'Baseline','Case 0','Case 1','Case 2','Case 3','Case 4','Case 5'})
+        set(h, 'LineWidth',LWIDTH)
+        ylabel('F_1 (%)','FontSize',FSIZE)
+        title(met)
+        h=gca;
+        rotateticklabel(h,45);
+        set(gca,'FontSize',FSIZE);
+        set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
+    end
+    
+    % MAE
+    
+    for met = {'tsekf' 'tspca' 'aesn' 'ica'}
+        figure(c)
+        c= c+1;
+        eval(['stat = stats_' met{:} ';']);
+        statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
+        h = boxplot(statscase,{});
+        set(gca,'XTick',1:7)  % This automatically sets
+        set(gca,'XTickLabel',{'Baseline','Case 0','Case 1','Case 2','Case 3','Case 4','Case 5'})
+        set(h, 'LineWidth',LWIDTH)
+        h = findobj('Tag','Box');
+        set(h,'Color',([187 81 112]./255));
+        ylabel('MAE (ms)','FontSize',FSIZE)
+        title(met)
+        h=gca;
+        rotateticklabel(h,45);
+        set(gca,'FontSize',FSIZE);
+        set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
+    end
 end
 
-
 end
 
-function [qt_err,theight_err]=morpho(fecg,residual,fqrs,maxch,fs,SAMPS)
+function [qt_err,theight_err]=morpho(fecg,residual,fqrs,maxch,fs,SAMPS,bss)
 %% Function to perform morphological analysis for TS/BSS extracted data
 %
 % >Inputs
-% fecg: Propagated fetal signal before mixture with noise sources
-% residual: Result of fetal extraction from abdominal signals
-% fqrs: Reference fetal QRS samplestamps
-% maxch: Channel with highest F1-accuracy for FQRS detections
-% SAMPS: Number of samples used for generating templates
+% fecg:         Propagated fetal signal before mixture with noise sources
+% residual:     Result of fetal extraction from abdominal signals
+% fqrs:         Reference fetal QRS samplestamps
+% maxch:        Channel with highest F1-accuracy for FQRS detections
+% SAMPS:        Number of samples used for generating templates
+% bss:          Boolean true if using BSS technique
 %
 % > Outputs
 % qt_err: Array containing QT error for each template
 % theight_err: Array containing T-height error for each template
 %
 
+% if bss, propagating reference to source domain
+if bss
+    W = fecg*pinv(residual);
+    srcfecg = W*fecg;
+else
+    srcfecg = fecg;
+end
+
 % generating reference template
-W = fecg*pinv(residual);
-srcfecg = W*fecg;
 qt_err = zeros(length(residual)/SAMPS,1); theight_err = zeros(length(residual)/SAMPS,1);
 block = 1;
 for j = 1:SAMPS:length(residual)

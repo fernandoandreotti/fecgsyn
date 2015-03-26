@@ -1,4 +1,4 @@
-function FECGSYN_genresults_exp1(path_orig,path_ext,fs)
+function FECGSYN_genresults_exp1(path_orig,path_ext,fs_new)
 % Input:
 % path_orig: Path for original dataset
 % path_ext: Path for extracted dataset
@@ -33,9 +33,7 @@ function FECGSYN_genresults_exp1(path_orig,path_ext,fs)
 global debug
 
 %% == Parameters
-INTERV = round(0.05*fs); % BxB acceptance interval
-TEMP_SAMPS = round(60*fs); % samples used for building templates
-morph = 1; % turn on/off morphological analysis
+morph = 0; % turn on/off morphological analysis
 %% Run through extracted datasets
 cd(path_orig)
 slashchar = char('/'*isunix + '\'*(~isunix));
@@ -45,109 +43,66 @@ cd(path_ext)
 fls_ext = dir('*.mat'); % looking for .mat (creating index)
 fls_ext = arrayfun(@(x)x.name,fls_ext,'UniformOutput',false);
 
-stats_ica = zeros(length(fls_orig),4);
-stats_pca = zeros(length(fls_orig),4);
-stats_tsc = zeros(length(fls_orig),4);
-stats_tspca = zeros(length(fls_orig),4);
-stats_tsekf = zeros(length(fls_orig),4);
-stats_alms = zeros(length(fls_orig),4);
-stats_arls = zeros(length(fls_orig),4);
-stats_aesn = zeros(length(fls_orig),4);
-
-morph_ica = zeros(length(fls_orig),2);
-morph_tspca = zeros(length(fls_orig),2);
-morph_tskf = zeros(length(fls_orig),2);
-morph_aesn = zeros(length(fls_orig),2);
+stats_fasticadef = zeros(4,length(fls_orig),4);
+stats_fasticasym = zeros(4,length(fls_orig),4);
+stats_jade = zeros(4,length(fls_orig),4);
+stats_pca = zeros(4,length(fls_orig),4);
 
 for i = 1:length(fls_ext)
     disp(fls_ext{i})
     %= loading extracted file
     rec = regexp(fls_ext(i),'rec+[0-1]?[0-9]?[0-9]?[0-9]','match');
-    file = strcat(path_ext,fls_ext(i));
-    met = strcmp(char('DEF', 'PCA', 'ICA'),file(end-7:end-5));
-    load(file{:})
+    nbch = regexp(fls_ext(i),'nbch+[0-1]?[0-9]','match');
+    nbch = nbch{:}; nbch = nbch{1}(5:end);
+    nbch = str2double(nbch);
+    ch = nbch/2;
+    if ch > 5
+        ch = 4;
+    end
+    met = find(strcmp({'DEF','SYM', 'PCA', 'ICA'},fls_ext{i}(end-6:end-4)));
+    load(fls_ext{i})
     %= loading original file
-    origrec = str2double(rec{:}(4:end));
-    file = strcat(path_orig,fls_orig(origrec));
-    load(file{:});
-    fecg = double(out.fecg{1}(ch,:)); % selecting channels
+    origrec = str2double(rec{:}{:}(4:end));
+    load([ path_orig fls_orig{str2double(rec{:}{:}(4:end))}]);
     if exist('outdata','var') % uniform naming residuals
         residual = outdata;
     end
-    %= Resampling original data to match extracted (fs - if necessary)
-    if size(out.mecg,2) ~= size(residual,2)
-        % fref:          fetal QRS reference
-        % fecgref:       fetal ECG signals (before mixture)
-        fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
-        fecgref = zeros(size(residual));
-        for k = 1:size(fecgref,1)
-            fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
-        end
-    else
-        fecgref = fecg;
-        fref = out.fqrs{1};
-    end
-    [elif,~]=strtok(file{:}(end:-1:1),slashchar);
-    disp(elif(end:-1:1))
+    fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
     clear fecg outdata rec file elif k
     % getting statistics
-    [F1,MAD,PPV,SE] = getStats(out,residual,fs_new);
-    switch met{:}(2:end-4)
-        case 'JADEICA'
+    [F1,MAD,PPV,SE] = getStats(fref,residual,fs_new);
+    switch met
+        case 1
             % generating statistics
-            stats_ica(origrec,:) = [F1,MAD,PPV,SE];
+            stats_fasticadef(ch,origrec,:) = [F1,MAD,PPV,SE];
             if morph
                 [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS);
                 morph_ica(origrec,:) = [mean(qt_err); mean(theight_err)];
                 %                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
             end
             clear fqrs F1 MAD PPV SE
-        case 'PCA'
-            %= generating statistics
-            stats_pca(origrec,:) = [F1,MAD,PPV,SE];
+        case 2
+            % generating statistics
+            stats_fasticasym(ch,origrec,:) = [F1,MAD,PPV,SE];
+            if morph
+                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS);
+                morph_ica(origrec,:) = [mean(qt_err); mean(theight_err)];
+                %                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
+            end
             clear fqrs F1 MAD PPV SE
-        case 'tsc'
-            %= generating QRS detection statistics
-            stats_tsc(origrec,:) = [F1,MAD,PPV,SE];
+        case 3
+            % generating statistics
+            stats_jade(ch,origrec,:) = [F1,MAD,PPV,SE];
+            if morph
+                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS);
+                morph_ica(origrec,:) = [mean(qt_err); mean(theight_err)];
+                %                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
+            end
             clear fqrs F1 MAD PPV SE
-        case 'tspca'
+        case 4
             %= generating statistics
-            stats_tspca(origrec,:) = [F1,MAD,PPV,SE];
-            %= morphological statistics
-            if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS);
-                morph_tspca(origrec,:) = [mean(qt_err); mean(theight_err)];
-                %                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
-            end
-            clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
-        case 'tsekf'
-            % generating statistics
-            stats_tsekf(origrec,:) = [F1,MAD,PPV,SE];
-            %= morphological statistics
-            if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS);
-                morph_tskf(origrec,:) = [mean(qt_err); mean(theight_err)];
-                %                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
-            end
-            clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
-        case 'alms'
-            % generating statistics
-            stats_alms(origrec,:) = [F1,MAD,PPV,SE];
-            clear fecg residual fqrs F1 MAD PPV SE
-        case 'arls'
-            % generating statistics
-            stats_arls(origrec,:) = [F1,MAD,PPV,SE];
-            clear fecg residual fqrs F1 MAD PPV SE
-        case 'aesn'
-            % generating statistics
-            stats_aesn(origrec,:) = [F1,MAD,PPV,SE];
-            % morphological statistics
-            if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS);
-                morph_aesn(origrec,:) = [mean(qt_err); mean(theight_err)];
-                %                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
-            end
-            clear fecg residual fqrs F1 MAD PPV SE
+           stats_pca(ch,origrec,:) = [F1,MAD,PPV,SE];
+            clear fqrs F1 MAD PPV SE
     end
     clear fecg residual fqrs F1 MAD PPV SE qt_err theight_err
 end
@@ -239,37 +194,40 @@ for j = 1:SAMPS:length(residual)
 end
 end
 
-function [F1,RMS,PPV,SE] = getStats(out,residual,fs_new)
-    INTERV = round(0.05*fs_new);    % BxB acceptance interval
+function [F1,MAE,PPV,SE] = getStats(fref,residual,fs_new)
+  INTERV = round(0.05*fs_new);    % BxB acceptance interval
+  TH = 0.3;                   % detector threshold
+  REFRAC = .15;               % detector refractory period (in s)
 
-    % detect QRS on each channel
-    fqrs = cell(1,size(mixture,1));
-    for j = 1:length(ch)
-        fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
-    end
-    % creating statistics in 1-min blocks
+% detect QRS on each channel
+ch = size(residual,1);
+fqrs = cell(1,ch);
+for j = 1:ch
+    fqrs{j} = qrs_detect(residual(j,:),TH,REFRAC,fs_new);
+end
+% creating statistics in 1-min blocks
 
-    min = 1;
-    maxch = zeros(1,length(residual)/fs_new/60);
-    fqrs_temp = cell(1,length(residual)/fs_new/60);
-    while min <= length(residual)/fs_new/60;
-        F1max = 0;
-        idxref = (out.fqrs{1}>=(min-1)*fs_new*60+1)&(out.fqrs{1}<=min*fs_new*60);
-        for j = 1:length(ch)
-            idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
-            [F1,~,~,~] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
-            if F1 > F1max    % compare and see if this channel provides max F1
-                maxch(min) = j;
-                F1max = F1;
-                fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
-            end
+% creating statistics in 1-min blocks
+min = 1;
+maxch = zeros(1,length(residual)/fs_new/60);
+fqrs_temp = cell(1,length(residual)/fs_new/60);
+while min <= length(residual)/fs_new/60;
+    F1max = 0;
+    idxref = (fref>=(min-1)*fs_new*60+1)&(fref<=min*fs_new*60);
+    for j = 1:ch
+        idx = (fqrs{j}>=(min-1)*fs_new*60+1)&(fqrs{j}<=min*fs_new*60);
+        [F1,~,~,~] = Bxb_compare(fref(idxref),fqrs{j}(idx),INTERV);
+        if F1 > F1max    % compare and see if this channel provides max F1
+            maxch(min) = j;
+            F1max = F1;
+            fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs_new*60;    % adding fqrs detections to temporary cell
         end
-        min = min+1;
     end
-    fqrs = cell2mat(fqrs_temp);
-    [F1,RMS,PPV,SE] = Bxb_compare(out.fqrs{1}(idxref),fqrs{j}(idx),INTERV);
-    
-    
+    min = min+1;
+end
+fqrs = cell2mat(fqrs_temp);
+[F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
+
 end
 
 %xlim([1500 2000])

@@ -268,9 +268,7 @@ if debug
         h = findobj('Tag','Box');
         set(h,'Color',([187 81 112]./255));
         ylabel('MAE (ms)','FontSize',FSIZE)
-        title(met)
         h=gca;
-        rotateticklabel(h,45);
         set(gca,'FontSize',FSIZE);
         set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
     end

@@ -101,10 +101,12 @@ while (loop)  % will quit as soon as complete signal is filtered
     switch method
         case 'FASTICA_DEF'
             % FastICA with deflation appraoch
-            [~,~,Bnew] = fastica(data(:,samp2filt),'g','tanh','verbose','off','stabilization','on','maxNumIterations',size(data,1)*1000,'approach','defl');
+            [~,~,Bnew] = fastica(data(:,samp2filt),'g','tanh','verbose','on','maxNumIterations',size(data,1)*10000,'approach','defl');
+            disp(['FASTICA_DEF output size:' num2str(size(Bnew,1)) 'x' num2str(size(Bnew,2))])
         case 'FASTICA_SYM'
             % FastICA with symmetric method
-            [~,~,Bnew] = fastica(data(:,samp2filt),'g','tanh','verbose','off','stabilization','on','maxNumIterations',size(data,1)*1000,'approach','symm');    
+            [~,~,Bnew] = fastica(data(:,samp2filt),'g','tanh','verbose','on','maxNumIterations',size(data,1)*10000,'approach','symm');    
+            disp(['FASTICA_SYM output size:' num2str(size(Bnew,1)) 'x' num2str(size(Bnew,2))])
         case 'JADEICA'
             % JADEICA (no restriction on number of sources)
             Bnew = jadeR(data(:,samp2filt)); 

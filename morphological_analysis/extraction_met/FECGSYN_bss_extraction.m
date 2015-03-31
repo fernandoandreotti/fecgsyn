@@ -81,7 +81,7 @@ if size(data,2)<endsamp
 end
 
 % = normalising data (PCA is sensible to scaling)
-trans = bsxfun(@minus,data,mean(data,2)); % remove mean
+trans = bsxfun(@minus,data,mean(data,2)); % remove mean (JADE is sensible)
 data = bsxfun(@rdivide,trans,std(data,0,2)); % divide by standard deviation
 outsig = zeros(1,size(data,2));
 

@@ -43,11 +43,12 @@ cd(path_ext)
 fls_ext = dir('*.mat'); % looking for .mat (creating index)
 fls_ext = arrayfun(@(x)x.name,fls_ext,'UniformOutput',false);
 
-stats_fasticadef = zeros(4,length(fls_orig),4);
-stats_fasticasym = zeros(4,length(fls_orig),4);
-stats_jade = zeros(4,length(fls_orig),4);
-stats_pca = zeros(4,length(fls_orig),4);
-
+stats_fasticadef = zeros(5,length(fls_orig),4);
+stats_fasticasym = zeros(5,length(fls_orig),4);
+stats_jade = zeros(5,length(fls_orig),4);
+stats_pca = zeros(5,length(fls_orig),4);
+diary('loggin.txt')
+diary on
 for i = 1:length(fls_ext)
     disp(fls_ext{i})
     %= loading extracted file
@@ -57,7 +58,7 @@ for i = 1:length(fls_ext)
     nbch = str2double(nbch);
     ch = nbch/2;
     if ch > 5
-        ch = 4;
+        ch = 5;
     end
     met = find(strcmp({'DEF','SYM', 'PCA', 'ICA'},fls_ext{i}(end-6:end-4)));
     load(fls_ext{i})
@@ -108,7 +109,8 @@ for i = 1:length(fls_ext)
 end
 
 %% Statistics Generation
-save ['wkspace_' date]
+save 'kspace'
+diary off
 
 LWIDTH = 1.5;
 FSIZE = 15;

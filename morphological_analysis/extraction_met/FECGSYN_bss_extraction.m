@@ -80,10 +80,6 @@ if size(data,2)<endsamp
     endsamp = size(data,2);
 end
 
-% = normalising data (PCA is sensible to scaling)
-trans = bsxfun(@minus,data,mean(data,2)); % remove mean (JADE is sensible)
-data = bsxfun(@rdivide,trans,std(data,0,2)); % divide by standard deviation
-outsig = zeros(1,size(data,2));
 
 while (loop)  % will quit as soon as complete signal is filtered
     if (size(data,2) - ssamp) < 1.5*blen     % if there is less than 1.5x blen
@@ -101,10 +97,12 @@ while (loop)  % will quit as soon as complete signal is filtered
     switch method
         case 'FASTICA_DEF'
             % FastICA with deflation appraoch
-            [~,~,Bnew] = fastica(data(:,samp2filt),'g','tanh','verbose','off','stabilization','on','maxNumIterations',size(data,1)*1000,'approach','defl');
+            [~,~,Bnew] = fastica(data(:,samp2filt),'g','tanh','verbose','on','maxNumIterations',size(data,1)*1000,'approach','defl');
+            disp(['FASTICA_DEF output size:' num2str(size(Bnew,1)) 'x' num2str(size(Bnew,2))])
         case 'FASTICA_SYM'
             % FastICA with symmetric method
-            [~,~,Bnew] = fastica(data(:,samp2filt),'g','tanh','verbose','off','stabilization','on','maxNumIterations',size(data,1)*1000,'approach','symm');    
+            [~,~,Bnew] = fastica(data(:,samp2filt),'g','tanh','verbose','on','maxNumIterations',size(data,1)*1000,'approach','symm');    
+            disp(['FASTICA_SYM output size:' num2str(size(Bnew,1)) 'x' num2str(size(Bnew,2))])
         case 'JADEICA'
             % JADEICA (no restriction on number of sources)
             Bnew = jadeR(data(:,samp2filt)); 

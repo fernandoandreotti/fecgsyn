@@ -81,6 +81,17 @@ if size(data,2)<endsamp
 end
 
 
+ % = use PCA in keeping channels with 95% of eigenspectrum
+ % = normalising data (PCA is sensible to scaling)
+ data = bsxfun(@minus,data,mean(data,2)); % remove mean (JADE is sensible)
+ data = bsxfun(@rdivide,data,std(data,0,2)); % divide by standard deviation
+ [coeff, score, latent] = pca(data');
+ perc = cumsum(latent)./sum(latent);
+ Ncomp = find(perc>=0.999,1,'first');   % keeping 99.9% data variance
+ data = score*coeff(:,1:Ncomp);
+ data = data';
+
+
 while (loop)  % will quit as soon as complete signal is filtered
     if (size(data,2) - ssamp) < 1.5*blen     % if there is less than 1.5x blen
         endsamp = size(data,2);              % interval, it should filter until end
@@ -120,14 +131,12 @@ while (loop)  % will quit as soon as complete signal is filtered
     % = QRS detect each component and take F1, RMS measure
     qrsdet = cell(1,size(outdata,1));
     F1 = zeros(1,size(outdata,1));
-    RMS = zeros(1,size(outdata,1));
     for ch = 1:size(outdata,1)
         qrsdet{ch} = qrs_detect(outdata(ch,:),TH,REFRAC,fs);
         if ~isempty(qrsdet{ch})
-            [F1(ch),RMS(ch)] = Bxb_compare(refint,qrsdet{ch},INTERV);
+            [F1(ch)] = Bxb_compare(refint,qrsdet{ch},INTERV);
         else
             F1(ch) = 0;
-            RMS(ch) = NaN;
         end
     end
     

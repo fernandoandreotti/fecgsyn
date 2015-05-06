@@ -94,6 +94,7 @@ for i = 1:length(fls_ext)
     clear fecg outdata rec file elif k
     % getting statistics
     [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
+    MAE = MAE*1000/fs_new;
     switch met{:}(2:end-4)
         case 'JADEICA'
             % generating statistics
@@ -173,7 +174,7 @@ for i = 1:length(fls_ext)
     end
     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
 end
-save([path_orig 'wkspace_exp2'])
+save([path_orig 'wkspace_exp2_new'])
 
 %% Plots and statistics generation
 if debug
@@ -220,24 +221,24 @@ if debug
     
     % Generate Table
     counter1 = 1;
-    table = zeros(16,42);
+    table = zeros(16,28);
     for met = {'ica' 'pca' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
         eval(['stat = stats_' met{:} ';']);
         % F1
         statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
-        auxtab = [mean(statscase)',-1.*ones(7,1),median(statscase)',-2.*ones(7,1),std(statscase)',-3.*ones(7,1)];
-        table(counter1,:) = reshape(auxtab',1,7*6);
+        auxtab = [median(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+        table(counter1,:) = reshape(auxtab',1,7*4);
         counter1 = counter1 + 1;
         % MAE
         statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
-        auxtab = [mean(statscase)',-1.*ones(7,1),median(statscase)',-2.*ones(7,1),std(statscase)',-3.*ones(7,1)];
-        table(counter1,:) = reshape(auxtab',1,7*6);
+        auxtab = [median(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+        table(counter1,:) = reshape(auxtab',1,7*4);
         counter1 = counter1 + 1;
     end
     table = round(table.*10)./10;
     % F1
     c=1;
-    for met = {'tsekf' 'tspca' 'aesn' 'ica'}
+    for met = {'ica' 'aesn'}%{'ica' 'pca' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
         figure(c)
         c = c+1;
         eval(['stat = stats_' met{:} ';']);
@@ -256,7 +257,7 @@ if debug
     
     % MAE
     
-    for met = {'tsekf' 'tspca' 'aesn' 'ica'}
+    for met = {'ica' 'aesn'}%{'tsekf' 'tspca' 'aesn' 'ica'}
         figure(c)
         c= c+1;
         eval(['stat = stats_' met{:} ';']);

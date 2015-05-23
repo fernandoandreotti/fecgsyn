@@ -1,4 +1,4 @@
-function [outsig,qrsmethod] = FECGSYN_bss_extraction(data,method,fs,refqrs,varargin)
+function [out_comps,qrsmethod] = FECGSYN_bss_extraction(data,method,fs,refqrs,varargin)
 % Uses Blind Source Separation Methods for FECG extraction given a
 % reference QRS. The component which most agrees with the reference, in
 % terms of F1-measure, is picked as best channel.
@@ -17,7 +17,7 @@ function [outsig,qrsmethod] = FECGSYN_bss_extraction(data,method,fs,refqrs,varar
 % filename:  Saves output of ica into filename
 %
 % Output
-% outsig:    selected best channels on every block
+% out_comps:    selected best channels on every block
 % qrsmethod: BSS techniques chosen QRS detections   
 %
 %
@@ -53,19 +53,12 @@ switch length(varargin)
         blen = size(data,2);
     case 1
         blen = varargin{1};
-    case 2
-        blen = varargin{1};
-        outfilename = varargin{2};
     otherwise
         error('ica_extraction: too many inputs given to function')
 end
 method = upper(method);
-
-% Parameters for QRS detector
-INTERV = round(0.05*fs);     % BxB acceptance interval
-REFRAC = .15; % detector refractory period (s)
-TH = 0.3; 	% detector threshold
 Bold = [];	% old mix matrix
+out_comps = zeros(size(data));  % allocating
 
 %% Main
 % Loop BSS technique on every block
@@ -99,8 +92,6 @@ while (loop)  % will quit as soon as complete signal is filtered
     end
     
     samp2filt = ssamp:endsamp;              % creating a list with samples to filter
-    idx = refqrs>=ssamp & refqrs <= endsamp;
-    refint = refqrs(idx) - ssamp; % within interval
     % this is because FastICA is not deterministic so make sure to use the same random seed at 
     % each run
     stream = RandStream.getGlobalStream; 
@@ -123,49 +114,19 @@ while (loop)  % will quit as soon as complete signal is filtered
         otherwise
             error('bss_extraction: Method not implemented')
     end
-    if isempty(Bold); Bold = Bnew; end;
-    outdata = Bold*data(:,samp2filt);
-    outdata = diag(1./max(outdata,[],2))*outdata; % may not have the same size as "data"
+    if isempty(Bold); Bold = Bnew; end; % first loop
+    outnew = Bold*data(:,samp2filt);
+    outnew = diag(1./max(outnew,[],2))*outnew; % may not have the same size as "data"
     Bold = Bnew;   
+    
+    % Adding to previous blocks
+    if size(outnew,1)<size(out_comps,1)
+        out_comps = [out_comps;zeros(size(out_comps,1)-size(outnew,1),length(outnew))];       
+    elseif size(outnew,1)>size(out_comps,1) % case first run outputed less components
+        out_comps = [out_comps;zeros(size(outnew,1)-size(out_comps,1),length(out_comps))];
+    end
+    out_comps(:,samp2filt) = outnew;
 
-    % = QRS detect each component and take F1, RMS measure
-    qrsdet = cell(1,size(outdata,1));
-    F1 = zeros(1,size(outdata,1));
-    for ch = 1:size(outdata,1)
-        qrsdet{ch} = qrs_detect(outdata(ch,:),TH,REFRAC,fs);
-        if ~isempty(qrsdet{ch})
-            [F1(ch)] = Bxb_compare(refint,qrsdet{ch},INTERV);
-        else
-            F1(ch) = 0;
-        end
-    end
-    
-    % = decide for one component
-    %Saving segment
-    [~,maxch] = max(F1);
-    qrsmethod = [qrsmethod (qrsdet{maxch}+ssamp-1)];
-    outsig(samp2filt) = outdata(maxch,:);
-    
-    if length(varargin)==2
-        if ssamp > 1
-            outdatanew = outdata;
-            maxchnew = maxch;
-            load([outfilename '_' method])           
-            % treating cases when BSS technique outputs less channels than before
-            if size(outdatanew,1)<size(outdata,1)
-                outdatanew = [outdatanew;zeros(size(outdata,1)-size(outdatanew,1),length(outdatanew))];
-                outdata = [outdata outdatanew];
-            elseif size(outdatanew,1)>size(outdata,1) % case first run outputed less components
-                outdata = [outdata;zeros(size(outdatanew,1)-size(outdata,1),length(outdata))];
-                outdata = [outdata outdatanew];
-            else % trivial case
-                outdata = [outdata outdatanew];
-            end
-            maxch = [maxch maxchnew];
-        end
-        save([outfilename '_' method],'outdata','maxch');
-    end
-    
     %Augment offsets
     ssamp = endsamp+1;
     endsamp = endsamp+blen;

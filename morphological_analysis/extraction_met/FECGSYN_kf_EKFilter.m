@@ -1,4 +1,4 @@
-function [Xhat,X0,P0,e] = FECGSYN_kf_EKFilter(Z,X0,P0,Q,R0,Wmean,Vmean,ModelParam,w,fs,flag,u)
+function [Xhat,X0,P0,e] = FECGSYN_kf_EKFilter(Y,X0,P0,Q0,R0,Wmean,Vmean,ModelParam,w,fs,flag)
 %% EXTENDED KALMAN FILTER/SMOOTHER Extended kalman filter or smoothing
 %
 % > Inputs
@@ -49,122 +49,76 @@ function [Xhat,X0,P0,e] = FECGSYN_kf_EKFilter(Z,X0,P0,Q,R0,Wmean,Vmean,ModelPara
 % Public License for more details.
 %
 %
-%% Equation Initialization
-Inits2 = [ModelParam w fs];
-StateProp(Inits2);           % Initialize state equation
 
 %% Parameters Initialization
 
-% Define the model parameters exported
-L = (length(ModelParam)/3);
-alphai = ModelParam(1:L);
-bi = ModelParam(L+1:2*L);
-tetai = ModelParam(2*L+1:3*L);
-
-%lenghts calculation
-Samples = length(Z);
+% Define the model parameters
+N = (length(ModelParam)/3);
+alphai = ModelParam(1:N);
+bi = ModelParam(N+1:2*N);
+tetai = ModelParam(2*N+1:3*N);
+Samples = length(Y);
 L = length(X0);
 
-%Initial estimates
-Pminus = P0;
-Xminus = X0;
-
-%Covariance matrix of the observation noise vector initialization
+% Initalizing filter
 R = R0;
+Q = Q0;
+X = X0;
+P = P0;
+H = [eye(2) zeros(2,L-2)];   % measuring matrix,
 
-%Storing initialization
-Xbar = zeros(L,Samples);
-Pbar = zeros(L,L,Samples);
+% Allocating variables
 Xhat = zeros(L,Samples);
 Phat = zeros(L,L,Samples);
 
 
 %% Filtering
 e = zeros(2,Samples);
-B = [0;1];  % control matrix
 for k = 1 : Samples
+    %= Solution for some numerical problems of singularities
+    idx = find(bi<0.005);   % look for narrow Gaussians
+    if ~isempty(idx)
+        alphai(idx) = 0;     % if too narrow, alpha is zeroed so it has no contribution
+    end
     
     % Prevention of 'Xminus' mis-calculations on phase jumps
-    if(abs(Xminus(1)-Z(1,k))>pi)
-        Xminus(1) = Z(1,k);
+    if(abs(X(1)-Y(1,k))>pi/5)
+        X(1) = Y(1,k);
     end
     
-    % Store results
-    Xbar(:,k) = Xminus'; %Store the state (it's important that the state is a vector of 2 dimensions, phase and real state)
-    Pbar(:,:,k) = Pminus'; %Store error covaraiance
+    % FORECAST STNdrateEP (predict)
+    X = StateProp(X,alphai,bi,tetai,w,fs);
+    [A,dQ] = FECGSYN_kf_linearization(X,alphai,bi,tetai,w,fs,0);   % linearizing model(x,,w,fs,flag)
+    P = A*P*A' + dQ*Q*dQ';                          % a priori error covariance matrix
     
-    XX = Xminus; %Store a priori state to don't overlap it
-    PP = Pminus; %Store a priori error covariance to don't overlap it
+    % DATA ASSIMILATION STEP (update)
+    e(:,k) = Y(:,k)-H*X;                        % innovation
+    S = H*P*H'+R;                               % 'innovation covariance'
     
-    for jj = 1:size(Z,1);
-        %MEASUREMENT UPDATE (CORRECT)
-        %A posteriori updates)
-        Yminus = ObservationProp(XX,Vmean); %Calculate output estimate (both state and theta)
-        YY = Yminus(jj);
-        [HH,VV] = FECGSYN_kf_linearization(XX,alphai,bi,tetai,w,fs,1);  % Linearized observation eq.
-        H = HH(jj,:); % Get row jj   -> H Jacobian
-        V = VV(jj,:); % Get  jj   -> V
-        
-        K = PP*H'/(H*PP*H' + V*R(jj,jj)*V');                  % Compute Kalman Gain
-        XX = XX + K*(Z(jj,k)-YY);                             % Update estimate with measurement
-        PP = (eye(L)-K*H)*PP;                               % Update the error covariance
-    end
-    
-    % TIME UPDATE (PREDICT)
-    e(:,k) = XX-Xminus;
-    Xminus = StateProp(XX,B,u(k));                             % Project the state ahead
-    [A,F] = FECGSYN_kf_linearization(XX,alphai,bi,tetai,w,fs,0);   % Linearized equations
-    Pminus = A*PP*A' + F*Q*F';                             % Project the error covariance ahead
+    %= usual data assimilation
+    K = (P*H')/S;                                 % compute Kalman gain
+    X = X + K*e(:,k);                           % a posteriori state update
+    P = (eye(L)-K*H)*P;                         % a posteriori state error covariance update   
     
     % Store results
-    Xhat(:,k) = XX';
-    Phat(:,:,k) = PP'; %EKS filter use this information to calculate backwards
-    
-    
+    Xhat(:,k) = X; %Store the state (it's important that the state is a vector of 2 dimensions, phase and real state)
+    Phat(:,:,k) = P; %Store error covaraiance
 end
 
-%Create initial values, in case of entering again on KF they will be
-%used
-X0=XX;
-P0=PP;
 %% Smoothing: (Only enabled if flag)
 if(flag==1)
     disp('Smoothing Estimation ..')
     Xhat = FECGSYN_kf_EKsmoothing(Phat,Xhat,Pbar,Xbar,Wmean,alphai,bi,tetai,w,fs);
 end
 
-
-%% Auxiliar Functions
-function xout = StateProp(x,B,u)
-
-% Make variables static
-persistent tetai alphai bi fs w dt;
-
-% Check if variables should be initialized
-if nargin==1,
-    % mean of the noise parameters
-    % Inits = [alphai bi tetai w fs];
-    L = (length(x)-2)/3;
-    alphai = x(1:L);
-    bi = x(L+1:2*L);
-    tetai = x(2*L+1:3*L);
-    w = x(3*L+1);
-    fs = x(3*L+2);   
-    dt = 1/fs;
-    return
 end
-
+%% Auxiliar Functions
+function xout = StateProp(x,alphai,bi,tetai,w,fs)
+dt = 1/fs;
 xout(1,1) = x(1) + w*dt;            % teta state variable
 if(xout(1,1)>pi),
     xout(1,1) = xout(1,1) - 2*pi;
 end
-
 dtetai = rem(xout(1,1) - tetai,2*pi);
-xout(2,1) = x(2) - dt*sum(w*alphai./(bi.^2).*dtetai.*exp(-dtetai.^2./(2*bi.^2))) + B(2)*u; % z state variable
-
-function y = ObservationProp(x,v)
-
-% Calculate output estimate
-y = zeros(2,1);
-y(1) = x(1) + v(1);   % teta observation
-y(2) = x(2) + v(2);   % amplidute observation
+xout(2,1) = x(2) - dt*sum(w*alphai./(bi.^2).*dtetai.*exp(-dtetai.^2./(2*bi.^2))); % z state variable
+end

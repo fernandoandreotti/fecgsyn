@@ -1,4 +1,4 @@
-function [out_comps,qrsmethod] = FECGSYN_bss_extraction(data,method,fs,refqrs,varargin)
+function [out_comps,qrsmethod] = FECGSYN_bss_extraction(data,method,fs,varargin)
 % Uses Blind Source Separation Methods for FECG extraction given a
 % reference QRS. The component which most agrees with the reference, in
 % terms of F1-measure, is picked as best channel.
@@ -58,7 +58,6 @@ switch length(varargin)
 end
 method = upper(method);
 Bold = [];	% old mix matrix
-out_comps = zeros(size(data));  % allocating
 
 %% Main
 % Loop BSS technique on every block
@@ -83,6 +82,7 @@ end
  Ncomp = find(perc>=0.999,1,'first');   % keeping 99.9% data variance
  data = score*coeff(:,1:Ncomp);
  data = data';
+ out_comps = zeros(size(data));  % allocating
 
 
 while (loop)  % will quit as soon as complete signal is filtered

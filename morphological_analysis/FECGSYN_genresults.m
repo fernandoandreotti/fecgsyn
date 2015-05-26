@@ -1,11 +1,15 @@
-function FECGSYN_genresults(path_orig,path_ext,fs,ch)
-% Input:
-% path_orig: Path for original dataset
-% path_ext: Path for extracted dataset
-% fs: Sampling frequency
+function FECGSYN_genresults(path_orig,fs,ch,morph)
 % this script generates a series of abdominal mixtures, containing i) a
 % stationary case and ii) non-stationary case (when adding breathing
-% effects, foetal movement etc.).
+% effects, foetal movement etc).
+% Experiment 2 - Statistics (F1,MAE,PPV,SE)
+% Experiment 3 - Morphologycal Analysis
+% 
+% Input:
+% path_orig:        Path for original dataset
+% fs:               Sampling frequency
+% ch:               Channels to be used
+% morph:            Boolean, if 0 runs exp2 and 1 exp3
 %
 %
 % NI-FECG simulator toolbox, version 1.0, February 2014
@@ -15,7 +19,7 @@ function FECGSYN_genresults(path_orig,path_ext,fs,ch)
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 20-11-2014
+% Last updated : 30-05-2014
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -35,33 +39,44 @@ global debug
 %% == Parameters
 INTERV = round(0.05*fs); % BxB acceptance interval
 TEMP_SAMPS = round(60*fs); % samples used for building templates
-morph = 0; % turn on/off morphological analysis
 fs_new = 250;
 
 %% Run through extracted datasets
 cd(path_orig)
 slashchar = char('/'*isunix + '\'*(~isunix));
-fls_orig = dir('*.mat'); % looking for .mat (creating index)
+% abdominal mixtures
+fls_orig = dir([path '*.mat']); % looking for .mat (creating index)
 fls_orig = arrayfun(@(x)x.name,fls_orig,'UniformOutput',false);
 cd(path_ext)
-fls_ext = dir('*.mat'); % looking for .mat (creating index)
+% extracted files
+if ~morph
+    fls_ext = dir([path 'exp2' slashchar '*.mat']); % looking for .mat (creating index)  
+else
+    fls_ext = dir([path 'exp3' slashchar '*.mat']); % looking for .mat (creating index)  
+end
 fls_ext = arrayfun(@(x)x.name,fls_ext,'UniformOutput',false);
-stats_ica = zeros(length(fls_orig),4);
-stats_pca = zeros(length(fls_orig),4);
-stats_tsc = zeros(length(fls_orig),4);
-stats_tspca = zeros(length(fls_orig),4);
-stats_tsekf = zeros(length(fls_orig),4);
-stats_alms = zeros(length(fls_orig),4);
-stats_arls = zeros(length(fls_orig),4);
-stats_aesn = zeros(length(fls_orig),4);
-
-morph_ica = zeros(length(fls_orig),2);
-morph_tspca = zeros(length(fls_orig),2);
-morph_tskf = zeros(length(fls_orig),2);
-morph_aesn = zeros(length(fls_orig),2);
-idx = cellfun(@(x) strcmp(x(1:3),'rec'),fls_ext);
+idx = cellfun(@(x) strcmp(x(1:3),'rec'),fls_ext); % ignoring files not begining with 'rec'
 fls_ext(~idx) = [];
 
+% pre-allocation
+stats.JADEICA = zeros(length(fls_orig),4);
+stats.PCA = zeros(length(fls_orig),4);
+stats.tsc = zeros(length(fls_orig),4);
+stats.tspca = zeros(length(fls_orig),4);
+stats.tsekf = zeros(length(fls_orig),4);
+stats.alms = zeros(length(fls_orig),4);
+stats.arls = zeros(length(fls_orig),4);
+stats.aesn = zeros(length(fls_orig),4);
+morph.JADEICA = zeros(length(fls_orig),2);
+morph.PCA = zeros(length(fls_orig),2);
+morph.tsc = zeros(length(fls_orig),2);
+morph.tspca = zeros(length(fls_orig),2);
+morph.tsekf = zeros(length(fls_orig),2);
+morph.alms = zeros(length(fls_orig),2);
+morph.arls = zeros(length(fls_orig),2);
+morph.aesn = zeros(length(fls_orig),2);
+
+% = Runs through list of extracted files
 for i = 1:length(fls_ext)
     disp(fls_ext{i})
     %= loading extracted file
@@ -70,12 +85,9 @@ for i = 1:length(fls_ext)
     load(file{:})
     %= loading original file
     origrec = str2double(rec{:}(4:end));
-    file = strcat(path_orig,fls_orig(origrec));
+    file = strcat(cd,fls{origrec});
     load(file{:});
     fecg = double(out.fecg{1}(ch,:)); % selecting channels
-    if exist('outdata','var') % uniform naming residuals
-        residual = outdata;
-    end
     %= Resampling original data to match extracted (fs - if necessary)
     if size(out.mecg,2) ~= size(residual,2)
         % fref:          fetal QRS reference
@@ -92,13 +104,20 @@ for i = 1:length(fls_ext)
     [elif,~]=strtok(file{:}(end:-1:1),slashchar);
     disp(elif(end:-1:1))
     clear fecg outdata rec file elif k
-    % getting statistics
-    [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
-    MAE = MAE*1000/fs_new;
-    switch met{:}(2:end-4)
-        case 'JADEICA'
-            % generating statistics
-            stats_ica(origrec,:) = [F1,MAE,PPV,SE];
+    
+    % Figuring out which extraction method was used, possibilities are:
+    % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
+    method = met{:}(2:end-4);
+     
+    
+    %= Getting statistics (exp 2)
+    if ~morph
+        [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
+        MAE = MAE*1000/fs_new;
+        stats.(method)(origrec,:) = [F1,MAE,PPV,SE];
+    end
+       
+    
             if morph
                 [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,1);
                 morph_ica(origrec,:) = [mean(qt_err); mean(theight_err)];
@@ -174,6 +193,7 @@ for i = 1:length(fls_ext)
     end
     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
 end
+
 save([path_orig 'wkspace_exp2_new'])
 
 %% Plots and statistics generation

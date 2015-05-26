@@ -129,7 +129,7 @@ if debug
     close all
     figure('units','normalized','outerposition',[0 0 1 1])
     ax(1)=subplot(2,1,1);
-    plot(ref_temp,'k','LineWidth',2)
+    plot(ref_temp./gain,'k','LineWidth',2)
     hold on
     plot(qs(1)-offset,ref_temp(qs(1)-offset)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
     plot(tends(1)-offset,ref_temp(tends(1)-offset)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
@@ -153,7 +153,7 @@ thtest = abs(abdm_temp(twave-offset));
 if debug   
     figure(1)
     ax(2)=subplot(2,1,2);
-    plot(abdm_temp,'k','LineWidth',2)
+    plot(abdm_temp./gain,'k','LineWidth',2)
     hold on
     plot(qs(1)-offset,abdm_temp(qs(1)-offset)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
     plot(tends(1)-offset,abdm_temp(tends(1)-offset)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
@@ -191,20 +191,19 @@ function [qs,tends,twave] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
 
 % == Q wave
 % is defined as an open bracket before the R-peak (no annotation between)
-rees = arrayfun(@(x) strcmp(x,'N'),ann_types);
-obrackts = arrayfun(@(x) strcmp(x,'('),ann_types);
-idxr = find(rees);
+rees = arrayfun(@(x) strcmp(x,'N'),ann_types);          % 'R'
+obrackts = arrayfun(@(x) strcmp(x,'('),ann_types);      % '(
+idxr = find(rees);                  % annotation index
 idxqomplete = obrackts(idxr-1);     % finding QRS complexes with begin/end
 idxincomp = idxr(~idxqomplete);     % R-peak location of incomplete complexes
-qs = ann_stamp(idxr(idxqomplete)-1);
-
+qs = ann_stamp(idxr(idxqomplete)-1);  % Q locations
+clear obrackts idxqomplete
 % throw some beats away
 % throw T-waves away if there is no Q
 cleanqs = ones(size(rees));
 if ~isempty(idxincomp)
-    for i = 1:length(idxincomp)
-        idx = find(idxr == idxincomp(i));
-        cleanqs(idxr(idx):idxr(idx+1)) = 0;
+    for i = 1:length(idxincomp)       
+        cleanqs(idxr(idxincomp(i)):idxr(idxincomp(i)+1)) = 0;
     end
 end
 
@@ -213,7 +212,7 @@ end
 tees = arrayfun(@(x) strcmp(x,'t'),ann_types);
 cbrackts = arrayfun(@(x) strcmp(x,')'),ann_types);
 tees = tees&cleanqs;            % ignoring T's without Q's
-
+clear cbrackts cleanqs i
 % treating T-waves detected as biphasic
 biphasic = filter([1 1],1,tees);
 idxbi = biphasic==2; idxbi = circshift(idxbi,-1);

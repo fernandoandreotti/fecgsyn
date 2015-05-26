@@ -84,10 +84,10 @@ if debug
     close all
     figure(1)
     ax(1)=subplot(2,1,1);
-    plot(ref_sig)
+    plot(ref_sig./gain)
     hold on
-    plot(allref,ref_sig(allref),'or')
-    text(allref,ref_sig(allref)+10,alltypes_r)
+    plot(allref,ref_sig(allref)./gain,'or')
+    text(allref,ref_sig(allref)./gain+0.1,alltypes_r)
     title('Reference Signal')
 end
 % test signal
@@ -96,10 +96,10 @@ ecgpuwave('absig','edr',[],[],'qrs'); % important to specify the QRS because it 
 if debug
     figure(1)
     ax(2)=subplot(2,1,2);
-    plot(abdm_sig)
+    plot(abdm_sig./gain)
     hold on
-    plot(alltest,abdm_sig(alltest),'or')
-    text(alltest,abdm_sig(alltest)+50,alltypes_t)
+    plot(alltest,abdm_sig(alltest)./gain,'or')
+    text(alltest,abdm_sig(alltest)./gain+0.2,alltypes_t)
     linkaxes(ax,'x')
     title('Test Signal')
 end
@@ -131,9 +131,9 @@ if debug
     ax(1)=subplot(2,1,1);
     plot(ref_temp,'k','LineWidth',2)
     hold on
-    plot(qs(1)-offset,ref_temp(qs(1)-offset),'rv','MarkerSize',10,'MarkerFaceColor','r')
-    plot(tends(1)-offset,ref_temp(tends(1)-offset),'ms','MarkerSize',10,'MarkerFaceColor','m')
-    plot(twave-offset,ref_temp(twave-offset),'go','MarkerSize',10,'MarkerFaceColor','g')
+    plot(qs(1)-offset,ref_temp(qs(1)-offset)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
+    plot(tends(1)-offset,ref_temp(tends(1)-offset)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
+    plot(twave-offset,ref_temp(twave-offset)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
     title('Reference Signal')   
 end
 clear qs tends twave
@@ -155,9 +155,9 @@ if debug
     ax(2)=subplot(2,1,2);
     plot(abdm_temp,'k','LineWidth',2)
     hold on
-    plot(qs(1)-offset,abdm_temp(qs(1)-offset),'rv','MarkerSize',10,'MarkerFaceColor','r')
-    plot(tends(1)-offset,abdm_temp(tends(1)-offset),'ms','MarkerSize',10,'MarkerFaceColor','m')
-    plot(twave-offset,abdm_temp(twave-offset),'go','MarkerSize',10,'MarkerFaceColor','g')
+    plot(qs(1)-offset,abdm_temp(qs(1)-offset)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
+    plot(tends(1)-offset,abdm_temp(tends(1)-offset)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
+    plot(twave-offset,abdm_temp(twave-offset)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
     title('Test Signal')
     linkaxes(ax,'x')
 
@@ -176,12 +176,15 @@ end
 
 function [qs,tends,twave] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
 %% Function that contains heuristics behind QT interval calculation
-% > Inputs
+% Attempted to keep binary operations for faster performance
+% 
+% 
+% Inputs
 % ann_types:          Type of ALL annotations obtained from ECGPUWAVE
 % ann_stamp:          Samplestamp of ALL annotations obtained from ECGPUWAVE
 % T_LEN:              Length of template
 % 
-% > Outputs
+% Outputs
 % qs:                 Q onset locations
 % tends:              Locations of T-wave (end)
 % twave:              Locations of T-waves (peak)

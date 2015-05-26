@@ -108,89 +108,18 @@ for i = 1:length(fls_ext)
     % Figuring out which extraction method was used, possibilities are:
     % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
     method = met{:}(2:end-4);
-     
     
     %= Getting statistics (exp 2)
     if ~morph
         [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
         MAE = MAE*1000/fs_new;
-        stats.(method)(origrec,:) = [F1,MAE,PPV,SE];
-    end
-       
-    
-            if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,1);
-                morph_ica(origrec,:) = [mean(qt_err); mean(theight_err)];
-                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
-            end
-            clear fqrs F1 MAE PPV SE
-        case 'PCA'
-            %= generating statistics
-            stats_pca(origrec,:) = [F1,MAE,PPV,SE];
-            if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,1);
-                morph_ica(origrec,:) = [mean(qt_err); mean(theight_err)];
-                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
-            end
-            clear fqrs F1 MAE PPV SE
-        case 'tsc'
-            %= generating QRS detection statistics
-            stats_tsc(origrec,:) = [F1,MAE,PPV,SE];
-            if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,0);
-                morph_tspca(origrec,:) = [mean(qt_err); mean(theight_err)];
-                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
-            end
-            clear fqrs F1 MAE PPV SE
-        case 'tspca'
-            %= generating statistics
-            stats_tspca(origrec,:) = [F1,MAE,PPV,SE];
-            %= morphological statistics
-            if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,0);
-                morph_tspca(origrec,:) = [mean(qt_err); mean(theight_err)];
-                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
-            end
-            clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
-        case 'tsekf'
-            % generating statistics
-            stats_tsekf(origrec,:) = [F1,MAE,PPV,SE];
-            %= morphological statistics
-            if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,0);
-                morph_tskf(origrec,:) = [mean(qt_err); mean(theight_err)];
-                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
-            end
-            clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
-        case 'alms'
-            % generating statistics
-            stats_alms(origrec,:) = [F1,MAE,PPV,SE];
-            if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,0);
-                morph_tspca(origrec,:) = [mean(qt_err); mean(theight_err)];
-                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
-            end
-            clear fecg residual fqrs F1 MAE PPV SE
-        case 'arls'
-            % generating statistics
-            stats_arls(origrec,:) = [F1,MAE,PPV,SE];
-            if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,0);
-                morph_tspca(origrec,:) = [mean(qt_err); mean(theight_err)];
-                print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
-            end
-            clear fecg residual fqrs F1 MAE PPV SE
-        case 'aesn'
-            % generating statistics
-            stats_aesn(origrec,:) = [F1,MAE,PPV,SE];
-            % morphological statistics
-            if morph
-                [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,0);
-                morph_aesn(origrec,:) = [mean(qt_err); mean(theight_err)];
-                %                 print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])
-            end
-            clear fecg residual fqrs F1 MAE PPV SE
-    end
+        stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
+    %= Getting statistics (exp 3)        
+    else
+        [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,1);
+        morph.(method)(origrec,:) = [mean(qt_err); mean(theight_err)];
+        print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])        
+    end     
     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
 end
 

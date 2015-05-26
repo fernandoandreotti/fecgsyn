@@ -117,9 +117,13 @@ if isempty(tends)
     return
 end
 
+try
 offset = sum(qrsref<qs(1))*T_LEN;
 thref = abs(ref_sig(twave-offset));
 qt_ref = mean(tends-qs)*1000/(2*FS_ECGPU);    % in ms
+catch
+    disp
+end
 
 if debug
     close all

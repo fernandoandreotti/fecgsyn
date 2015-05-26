@@ -119,7 +119,15 @@ for i = 1:length(fls_ext)
     else
         [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,1);
         morph.(method)(origrec,:) = [mean(qt_err); mean(theight_err)];
-        print('-dpng','-r72',[cd '/plots/' fls_ext{i} '.png'])        
+        if debug
+        drawnow
+        try
+        mkdir([path_orig 'plots' slashchar])
+        print('-dpng','-r72',[path_orig 'plots' slashchar fls_ext{i}(1:end-4) '.png'])        
+        catch
+            warning('Failed to save plot')
+        end
+        end
     end     
     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
 end

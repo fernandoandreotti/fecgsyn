@@ -1,4 +1,4 @@
-function FECGSYN_genresults(path_orig,fs,ch,morph)
+function FECGSYN_genresults(path_orig,fs,ch,exp3)
 % this script generates a series of abdominal mixtures, containing i) a
 % stationary case and ii) non-stationary case (when adding breathing
 % effects, foetal movement etc).
@@ -9,7 +9,7 @@ function FECGSYN_genresults(path_orig,fs,ch,morph)
 % path_orig:        Path for original dataset
 % fs:               Sampling frequency
 % ch:               Channels to be used
-% morph:            Boolean, if 0 runs exp2 and 1 exp3
+% exp3:            Boolean, if 0 runs exp2 and 1 exp3
 %
 %
 % NI-FECG simulator toolbox, version 1.0, February 2014
@@ -45,14 +45,15 @@ fs_new = 250;
 cd(path_orig)
 slashchar = char('/'*isunix + '\'*(~isunix));
 % abdominal mixtures
-fls_orig = dir([path '*.mat']); % looking for .mat (creating index)
+fls_orig = dir([path_orig '*.mat']); % looking for .mat (creating index)
 fls_orig = arrayfun(@(x)x.name,fls_orig,'UniformOutput',false);
-cd(path_ext)
 % extracted files
-if ~morph
-    fls_ext = dir([path 'exp2' slashchar '*.mat']); % looking for .mat (creating index)  
+if ~exp3
+    path_ext = [path_orig 'exp2' slashchar];
+    fls_ext = dir([path_ext '*.mat']); % looking for .mat (creating index)  
 else
-    fls_ext = dir([path 'exp3' slashchar '*.mat']); % looking for .mat (creating index)  
+    path_ext = [path_orig 'exp3' slashchar];
+    fls_ext = dir([path_ext '*.mat']); % looking for .mat (creating index)  
 end
 fls_ext = arrayfun(@(x)x.name,fls_ext,'UniformOutput',false);
 idx = cellfun(@(x) strcmp(x(1:3),'rec'),fls_ext); % ignoring files not begining with 'rec'
@@ -85,7 +86,7 @@ for i = 1:length(fls_ext)
     load(file{:})
     %= loading original file
     origrec = str2double(rec{:}(4:end));
-    file = strcat(cd,fls{origrec});
+    file = strcat(path_orig,fls_orig(origrec));
     load(file{:});
     fecg = double(out.fecg{1}(ch,:)); % selecting channels
     %= Resampling original data to match extracted (fs - if necessary)
@@ -110,7 +111,7 @@ for i = 1:length(fls_ext)
     method = met{:}(2:end-4);
     
     %= Getting statistics (exp 2)
-    if ~morph
+    if ~exp3
         [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
         MAE = MAE*1000/fs_new;
         stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming

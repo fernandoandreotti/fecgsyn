@@ -213,19 +213,28 @@ function [qs,tends,twave] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
 %
 %
 
-%== Disregard R-peaks not followed by T-waves
-temp_types = ann_types;
+temp_types = ann_types;     % allows exclusion of unsuitable annotations
 temp_stamp = ann_stamp;
-obrackts = arrayfun(@(x) strcmp(x,'('),ann_types);      % '('
-cbrackts = arrayfun(@(x) strcmp(x,')'),ann_types);      % ')'
-pees = arrayfun(@(x) strcmp(x,'p'),ann_types);      % 'p'
+
+%== Treat biphasic T-waves
+tees = arrayfun(@(x) strcmp(x,'t'),temp_types);
+biphasic = filter([1 1],1,tees);   % biphasic are marked with 2
+idxbi = biphasic==2; 
+idxbi = circshift(idxbi,-1);  % this variable is later used to rescue biphasic
+temp_types(idxbi) = [];    % temporarilly clearing first T in biphasic cases
+clear biphasic tees
+%== Disregard R-peaks not followed by T-waves
+
+obrackts = arrayfun(@(x) strcmp(x,'('),temp_types);      % '('
+cbrackts = arrayfun(@(x) strcmp(x,')'),temp_types);      % ')'
+pees = arrayfun(@(x) strcmp(x,'p'),temp_types);      % 'p'
 temp_types(obrackts|cbrackts|pees) = [];
 temp_stamp(obrackts|cbrackts|pees) = [];
 annstr = strcat({temp_types'});
 [idxR]=cell2mat(regexp(annstr,'Nt'));  % looking for 'N's followed by 't's
 validR = temp_stamp(idxR);           % valid R-peak sample-stamps
 validT = temp_stamp(idxR+1);           % valid first T-peak sample-stamps
-clear idxR temp_types temp_stamp annstr pees obrackts cbrackts
+clear idxR annstr pees obrackts cbrackts temp_types temp_stamp
 
 % == Q wave (start)
 % is defined as an open bracket before the R-peak (no annotation between)
@@ -234,37 +243,16 @@ goodR = ismember(ann_stamp(rees),validR);
 Rpeaks = find(rees);   % annotation number
 Rpeaks(~goodR) = [];   % eliminating R's without T
 qs = ann_stamp(Rpeaks-1);  % Q locations
+clear Rpeaks goodR rees
 
 % == T-wave (end)
 % Defined as closing parenthesis after T-wave peak
 tees = arrayfun(@(x) strcmp(x,'t'),ann_types);
-tees = tees&cleanqs;                            % ignoring T's without Q's
-cbrackts = arrayfun(@(x) strcmp(x,')'),ann_types);
-
-
-
-% treating T-waves detected as biphasic
-biphasic = filter([1 1],1,tees);   % biphasic are marked with 2
-idxbi = biphasic==2; idxbi = circshift(idxbi,-1);
-tees_all = tees;    % saving for theight analysis
-
-
-tees(idxbi) = 0;    % only considering latter T annotation
-
-
-
-
-clear obrackts cbrackts cleanqs i idxqomplete 
-
-% no2tees = tees_all;
-% no2tees(idxbi|circshift(idxbi,1)) = 0;
-
-% looking for T ends
-idxcbrackt = find(tees)+1;
-idxsense = cbrackts(idxcbrackt); % only keeping complete 't' followed by ')'
-qs(~idxsense) = [];	% clearing incomplete waves
-idxcbrackt = idxcbrackt(idxsense); % which c-brackts come right after T's
-tends = ann_stamp(idxcbrackt); % T-end locations
+goodT = ismember(ann_stamp(tees),validT);
+Tpeaks = find(tees);   % annotation number
+Tpeaks(~goodT) = [];   % eliminating R's without T
+tends = ann_stamp(Tpeaks+1); % T ends
+clear Rpeaks goodR rees 
 
 % == T-height
 if sum(idxbi) > 0

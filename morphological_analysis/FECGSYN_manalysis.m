@@ -195,10 +195,9 @@ end
 
 function [qs,tends,twave] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
 %% Function that contains heuristics behind QT interval calculation
-% Attempted to keep binary operations for faster performance. Based on
-% assumption that ECGPUWAVE only outputs a wave (p,N,t) if it can detect
-% its begin and end. Only highest peak of T-waves marked as biphasic are
-% considered for further analysis.
+% Based on assumption that ECGPUWAVE only outputs a wave (p,N,t) if it can 
+% detect its begin and end. Only highest peak of T-waves marked as biphasic 
+% are considered for further analysis.
 % 
 % 
 % Inputs
@@ -223,20 +222,18 @@ pees = arrayfun(@(x) strcmp(x,'p'),ann_types);      % 'p'
 temp_types(obrackts|cbrackts|pees) = [];
 temp_stamp(obrackts|cbrackts|pees) = [];
 annstr = strcat({temp_types'});
-idx=cell2mat(regexp(annstr,'Nt'));  % looking for 'N's followed by 't's
-fullQT = temp_stamp(idx);           % valid R-peak sample-stamps
-
-
-
+[idxR]=cell2mat(regexp(annstr,'Nt'));  % looking for 'N's followed by 't's
+validR = temp_stamp(idxR);           % valid R-peak sample-stamps
+validT = temp_stamp(idxR+1);           % valid first T-peak sample-stamps
+clear idxR temp_types temp_stamp annstr pees obrackts cbrackts
 
 % == Q wave (start)
 % is defined as an open bracket before the R-peak (no annotation between)
 rees = arrayfun(@(x) strcmp(x,'N'),ann_types);          % 'R'
-obrackts = arrayfun(@(x) strcmp(x,'('),ann_types);      % '(
-idxr = find(rees);                  % R-peak annotation index (in ann_types)
-idxqomplete = obrackts(idxr-1);     % finding QRS complexes with begin/end
-qs = ann_stamp(idxr(idxqomplete)-1);  % Q locations
-cleanqs = ones(size(rees));         % find incomplete beats (to T-elimination)
+goodR = ismember(ann_stamp(rees),validR);
+Rpeaks = find(rees);   % annotation number
+Rpeaks(~goodR) = [];   % eliminating R's without T
+qs = ann_stamp(Rpeaks-1);  % Q locations
 
 % == T-wave (end)
 % Defined as closing parenthesis after T-wave peak

@@ -54,10 +54,31 @@ ref_temp = gain*wsign2*ref_temp/max(abs(ref_temp));
 abdm_sig = repmat(abdm_temp,1,20)';
 ref_sig = repmat(ref_temp,1,20)';
 
-% high-passing reference signal
-LF_CUT = 0.7;
-[b_bas,a_bas] = butter(3,LF_CUT/FS_ECGPU,'high');
-ref_sig = filtfilt(b_bas,a_bas,ref_sig);
+% Preprocessing reference channel
+% high-pass filter
+Fstop = 0.5;  % Stopband Frequency
+Fpass = 1;    % Passband Frequency
+Astop = 60;   % Stopband Attenuation (dB)
+Apass = 0.1;  % Passband Ripple (dB)
+h = fdesign.highpass('fst,fp,ast,ap', Fstop, Fpass, Astop, Apass, FS_ECGPU);
+Hhp = design(h, 'butter', ...
+    'MatchExactly', 'stopband', ...
+    'SOSScaleNorm', 'Linf', ...
+    'SystemObject', true);
+[b_hp,a_hp] = tf(Hhp);
+% low-pass filter
+Fpass = 80;   % Passband Frequency
+Fstop = 100;  % Stopband Frequency
+Apass = 1;    % Passband Ripple (dB)
+Astop = 60;   % Stopband Attenuation (dB)
+h = fdesign.lowpass('fp,fst,ap,ast', Fpass, Fstop, Apass, Astop, FS_ECGPU);
+Hlp = design(h, 'butter', ...
+    'MatchExactly', 'stopband', ...
+    'SOSScaleNorm', 'Linf');
+[b_lp,a_lp] = tf(Hlp);
+clear Fstop Fpass Astop Apass h Hhp Hlp
+ref_sig = filtfilt(b_hp,a_hp,ref_sig);
+ref_sig = filtfilt(b_lp,a_lp,ref_sig);
 
 %% Saving data as WFDB
 % adapting annotations so that peak occur around 1/3 the cycle length
@@ -65,8 +86,6 @@ qrsref = round((0.5 - 1/6)*T_LEN);
 qrsabdm = round((0.5 - 1/6)*T_LEN);
 qrsref = arrayfun(@(x) qrsref + x*T_LEN,0:19)';
 qrsabdm = arrayfun(@(x) qrsabdm + x*T_LEN,0:19)';
-%qrsref = round(2*FS_ECGPU/fs.*qrsref);
-%qrsabdm = round(2*FS_ECGPU/fs.*qrsabdm);
 
 % writting to WFDB
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
@@ -176,7 +195,10 @@ end
 
 function [qs,tends,twave] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
 %% Function that contains heuristics behind QT interval calculation
-% Attempted to keep binary operations for faster performance
+% Attempted to keep binary operations for faster performance. Based on
+% assumption that ECGPUWAVE only outputs a wave (p,N,t) if it can detect
+% its begin and end. Only highest peak of T-waves marked as biphasic are
+% considered for further analysis.
 % 
 % 
 % Inputs
@@ -188,36 +210,47 @@ function [qs,tends,twave] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
 % qs:                 Q onset locations
 % tends:              Locations of T-wave (end)
 % twave:              Locations of T-waves (peak)
+%
+%
+%
 
-% == Q wave
+%== Disregard R-peaks not followed by T-waves
+obrackts = arrayfun(@(x) strcmp(x,'('),ann_types);      % '('
+cbrackts = arrayfun(@(x) strcmp(x,')'),ann_types);      % ')'
+pees = arrayfun(@(x) strcmp(x,'p'),ann_types);      % 'p'
+ann_types(obrackts|cbrackts|pees) = [];
+
+
+% == Q wave (start)
 % is defined as an open bracket before the R-peak (no annotation between)
 rees = arrayfun(@(x) strcmp(x,'N'),ann_types);          % 'R'
 obrackts = arrayfun(@(x) strcmp(x,'('),ann_types);      % '(
-idxr = find(rees);                  % annotation index
+idxr = find(rees);                  % R-peak annotation index (in ann_types)
 idxqomplete = obrackts(idxr-1);     % finding QRS complexes with begin/end
-idxincomp = idxr(~idxqomplete);     % R-peak location of incomplete complexes
 qs = ann_stamp(idxr(idxqomplete)-1);  % Q locations
-clear obrackts idxqomplete
-% throw some beats away
-% throw T-waves away if there is no Q
-cleanqs = ones(size(rees));
-if ~isempty(idxincomp)
-    for i = 1:length(idxincomp)       
-        cleanqs(idxr(idxincomp(i)):idxr(idxincomp(i)+1)) = 0;
-    end
-end
+cleanqs = ones(size(rees));         % find incomplete beats (to T-elimination)
 
 % == T-wave (end)
 % Defined as closing parenthesis after T-wave peak
 tees = arrayfun(@(x) strcmp(x,'t'),ann_types);
+tees = tees&cleanqs;                            % ignoring T's without Q's
 cbrackts = arrayfun(@(x) strcmp(x,')'),ann_types);
-tees = tees&cleanqs;            % ignoring T's without Q's
-clear cbrackts cleanqs i
+
+
+
 % treating T-waves detected as biphasic
-biphasic = filter([1 1],1,tees);
+biphasic = filter([1 1],1,tees);   % biphasic are marked with 2
 idxbi = biphasic==2; idxbi = circshift(idxbi,-1);
 tees_all = tees;    % saving for theight analysis
+
+
 tees(idxbi) = 0;    % only considering latter T annotation
+
+
+
+
+clear obrackts cbrackts cleanqs i idxqomplete 
+
 % no2tees = tees_all;
 % no2tees(idxbi|circshift(idxbi,1)) = 0;
 

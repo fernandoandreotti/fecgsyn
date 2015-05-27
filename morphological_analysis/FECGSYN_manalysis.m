@@ -127,7 +127,7 @@ end
 
 %% QT-intervals from ref
 
-[qt_ref,thref] = QTcalc(alltypes_r,allref,ref_sig,T_LEN);
+[qt_ref,thref,qs,tends,tpeak] = QTcalc(alltypes_r,allref,ref_sig,T_LEN);
 % test if QT analysis feasible
 if isempty(qt_ref)
     theight = NaN;
@@ -140,6 +140,7 @@ qt_ref = qt_ref*1000/(2*FS_ECGPU);    % in ms
 thref = thref./gain;                  % in mV (or not)
 
 if debug
+    offset = sum(qrsref<qs(1))*T_LEN;
     close all
     figure('units','normalized','outerposition',[0 0 1 1])
     ax(1)=subplot(2,1,1);
@@ -147,15 +148,16 @@ if debug
     hold on
     plot(qs(1)-offset,ref_temp(qs(1)-offset)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
     plot(tends(1)-offset,ref_temp(tends(1)-offset)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
-    plot(twave-offset,ref_temp(twave-offset)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
+    plot(tpeak(1)-offset,ref_temp(tpeak(1)-offset)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
     title('Reference Signal')   
+    clear qs tends twave offset
 end
 
 %% QT-intervals from test
 
-[qt_test,thtest] = QTcalc(alltypes_t,alltest,abdm_sig,T_LEN);
+[qt_test,thtest,qs,tends,tpeak] = QTcalc(alltypes_t,alltest,abdm_sig,T_LEN);
 % test if QT analysis feasible
-if isempty(qt_test)
+if isempty(qt_test)||isempty(qs)||isempty(tends)
     theight = NaN;
     qt = NaN;
     return
@@ -166,16 +168,17 @@ thtest = thtest./gain;                  % in mV (or not)
 
 
 if debug   
+    offset = sum(qrsabdm<qs(1))*T_LEN;
     figure(1)
     ax(2)=subplot(2,1,2);
     plot(abdm_temp./gain,'k','LineWidth',2)
     hold on
     plot(qs(1)-offset,abdm_temp(qs(1)-offset)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
     plot(tends(1)-offset,abdm_temp(tends(1)-offset)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
-    plot(twave-offset,abdm_temp(twave-offset)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
+    plot(tpeak(1)-offset,abdm_temp(tpeak(1)-offset)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
     title('Test Signal')
     linkaxes(ax,'x')
-
+    clear qs tend twave offset
 end
 
 %% Final results
@@ -187,7 +190,7 @@ theight = thtest/thref;
 end
 
 
-function [qtint,th,qs,tends,twave] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
+function [qtint,th,qs,tends,tpeak] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
 %% Function that contains heuristics behind QT interval calculation
 % Based on assumption that ECGPUWAVE only outputs a wave (p,N,t) if it can 
 % detect its begin and end. Only highest peak of T-waves marked as biphasic 
@@ -255,14 +258,18 @@ qtint = mean(tends-qs); % qt interval in samples
 
 % == T-height
 if sum(idxbi) > 0   % case biphasic waves occured
-    [valbi,~]=max(abs(signal(ann_stamp([idxbi' idxbi'+1])))'); % max abs value between tt
+    posmax = [idxbi' idxbi'+1];
+    [valbi,bindx]=max(abs(signal(ann_stamp(posmax)))'); % max abs value between tt
     valnonbi = abs(signal(ann_stamp(nonbi))');
     th = mean([valbi valnonbi]); % theight with gain
+    for i = 1:length(bindx); tpeak(i)=ann_stamp(posmax(i,bindx(i)));end
+    tpeak = sort([tpeak ann_stamp(valnonbi)]);
 else
     th = mean(abs(signal(ann_stamp(Tpeaks))));   
+    tpeak = ann_stamp(Tpeaks);
 end
 
-% % % isoeletric line
+% == isoeletric line
 % % waves = find(ann_stamp<twave+length(ref_temp));
 % % tbeg = ann_stamp(waves(end)) -length(ref_temp);
 % % speak = ann_stamp(waves(end-1))-length(ref_temp);

@@ -117,8 +117,9 @@ for i = 1:length(fls_ext)
         stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
     %= Getting statistics (exp 3)        
     else
-        [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,1);
-        morph.(method)(origrec,:) = [mean(qt_err); mean(theight_err)];
+        bss = strcmp(method,'JADEICA')|strcmp(method,'PCA'); % apply coordinate transformation or not
+        [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,bss);
+        morph.(method)(origrec,:) = [qt_err'  theight_err'];
         if debug
         drawnow
         try

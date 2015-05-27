@@ -57,7 +57,7 @@ ref_sig = repmat(ref_temp,1,20)';
 % Preprocessing reference channel
 % high-pass filter
 Fstop = 0.5;  % Stopband Frequency
-Fpass = 1;    % Passband Frequency
+Fpass = 2;    % Passband Frequency
 Astop = 60;   % Stopband Attenuation (dB)
 Apass = 0.1;  % Passband Ripple (dB)
 h = fdesign.highpass('fst,fp,ast,ap', Fstop, Fpass, Astop, Apass, FS_ECGPU);
@@ -77,8 +77,8 @@ Hlp = design(h, 'butter', ...
     'SOSScaleNorm', 'Linf');
 [b_lp,a_lp] = tf(Hlp);
 clear Fstop Fpass Astop Apass h Hhp Hlp
-ref_sig = filtfilt(b_hp,a_hp,ref_sig);
 ref_sig = filtfilt(b_lp,a_lp,ref_sig);
+ref_sig = filtfilt(b_hp,a_hp,ref_sig);
 
 %% Saving data as WFDB
 % adapting annotations so that peak occur around 1/3 the cycle length
@@ -215,10 +215,18 @@ function [qs,tends,twave] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
 %
 
 %== Disregard R-peaks not followed by T-waves
+temp_types = ann_types;
+temp_stamp = ann_stamp;
 obrackts = arrayfun(@(x) strcmp(x,'('),ann_types);      % '('
 cbrackts = arrayfun(@(x) strcmp(x,')'),ann_types);      % ')'
 pees = arrayfun(@(x) strcmp(x,'p'),ann_types);      % 'p'
-ann_types(obrackts|cbrackts|pees) = [];
+temp_types(obrackts|cbrackts|pees) = [];
+temp_stamp(obrackts|cbrackts|pees) = [];
+annstr = strcat({temp_types'});
+idx=cell2mat(regexp(annstr,'Nt'));  % looking for 'N's followed by 't's
+fullQT = temp_stamp(idx);           % valid R-peak sample-stamps
+
+
 
 
 % == Q wave (start)

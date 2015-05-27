@@ -218,9 +218,9 @@ temp_stamp = ann_stamp;
 
 %== Treat biphasic T-waves
 tees = arrayfun(@(x) strcmp(x,'t'),temp_types);
-biphasic = filter([1 1],1,tees);   % biphasic are marked with 2
-idxbi = biphasic==2; 
-idxbi = circshift(idxbi,-1);  % this variable is later used to rescue biphasic
+annstr = strcat({temp_types'});
+idxbi=cell2mat(regexp(annstr,'tt')); % biphasic
+nonbi=cell2mat(regexp(annstr,'\(t\)')) +1; % regular
 temp_types(idxbi) = [];    % temporarilly clearing first T in biphasic cases
 temp_stamp(idxbi) = [];
 clear biphasic tees
@@ -233,10 +233,10 @@ temp_types2 = temp_types; temp_stamp2 = temp_stamp;
 temp_types2(obrackts|cbrackts|pees) = [];
 temp_stamp2(obrackts|cbrackts|pees) = [];
 annstr = strcat({temp_types2'});
-[idxR]=cell2mat(regexp(annstr,'Nt'));  % looking for 'N's followed by 't's
+idxR = cell2mat(regexp(annstr,'Nt'));  % looking for 'N's followed by 't's
 validR = temp_stamp2(idxR);           % valid R-peak sample-stamps
 validT = temp_stamp2(idxR+1);           % valid first T-peak sample-stamps
-clear idxR annstr pees obrackts cbrackts
+clear idxR annstr pees obrackts cbrackts temp_stamp2 temp_types2
 % == Q wave (start)
 % is defined as an open bracket before the R-peak (no annotation between)
 rees = arrayfun(@(x) strcmp(x,'N'),temp_types);          % 'R'
@@ -257,11 +257,9 @@ tends = temp_stamp(Tpeaks+1); % T ends
 
 % == T-height
 if sum(idxbi) > 0
-    twave = find(idxbi);
-    twave = [twave twave+1];
-    twave = ann_stamp(twave);
-    [~,idx] = max(abs(signal(twave)));
-    twave = twave(idx);
+    [valbi,~]=max(abs(signal(ann_stamp([idxbi' idxbi'+1])))'); % max abs value between tt
+    valnonbi = abs(signal(ann_stamp(nonbi))');
+    th = mean([valbi valnonbi]);
 else
     twave = ann_stamp(Tpeaks);
     csum = cumsum([0 ; T_LEN*ones(length(twave)-1,1)],1); % removing shift between beats

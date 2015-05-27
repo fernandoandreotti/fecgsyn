@@ -127,22 +127,17 @@ end
 
 %% QT-intervals from ref
 
-[qs,tends,twave] = QTcalc(alltypes_r,allref,ref_sig,T_LEN);
+[qt_ref,thref] = QTcalc(alltypes_r,allref,ref_sig,T_LEN);
 % test if QT analysis feasible
-if isempty(tends)
+if isempty(qt_ref)
     theight = NaN;
     qt = NaN;
     disp('manalysis: Could not encounter QT wave for the template.')
     return
 end
 
-try
-offset = sum(qrsref<qs(1))*T_LEN;
-thref = abs(ref_sig(twave-offset));
-qt_ref = mean(tends-qs)*1000/(2*FS_ECGPU);    % in ms
-catch
-    disp
-end
+qt_ref = qt_ref*1000/(2*FS_ECGPU);    % in ms
+thref = thref./gain;                  % in mV (or not)
 
 if debug
     close all
@@ -155,19 +150,20 @@ if debug
     plot(twave-offset,ref_temp(twave-offset)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
     title('Reference Signal')   
 end
-clear qs tends twave
+
 %% QT-intervals from test
 
-[qs,tends,twave] = QTcalc(alltypes_t,alltest,abdm_sig,T_LEN);
+[qt_test,thtest] = QTcalc(alltypes_t,alltest,abdm_sig,T_LEN);
 % test if QT analysis feasible
-if isempty(tends)
+if isempty(qt_test)
     theight = NaN;
     qt = NaN;
     return
 end
 
-offset = sum(qrsref<qs(1))*T_LEN;
-thtest = abs(abdm_temp(twave-offset));
+qt_test = qt_test*1000/(2*FS_ECGPU);    % in ms
+thtest = thtest./gain;                  % in mV (or not)
+
 
 if debug   
     figure(1)
@@ -182,18 +178,16 @@ if debug
 
 end
 
-qt_test = mean(tends-qs)*1000/(2*FS_ECGPU);   % in ms
-clear qs tends twave
-%% QT error
+%% Final results
+%== QT error
 qt = qt_test - qt_ref;        % absolute error in ms
-
-%% T-height estimation
+%== T-height estimation
 theight = thtest/thref;
 
 end
 
 
-function [qs,tends,twave] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
+function [qtint,th,qs,tends,twave] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
 %% Function that contains heuristics behind QT interval calculation
 % Based on assumption that ECGPUWAVE only outputs a wave (p,N,t) if it can 
 % detect its begin and end. Only highest peak of T-waves marked as biphasic 
@@ -206,6 +200,8 @@ function [qs,tends,twave] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
 % T_LEN:              Length of template
 % 
 % Outputs
+% qtint:              Length of QT (samples)
+% th:                 Height T-wave (no unit)
 % qs:                 Q onset locations
 % tends:              Locations of T-wave (end)
 % twave:              Locations of T-waves (peak)
@@ -217,7 +213,6 @@ temp_types = ann_types;     % allows exclusion of unsuitable annotations
 temp_stamp = ann_stamp;
 
 %== Treat biphasic T-waves
-tees = arrayfun(@(x) strcmp(x,'t'),temp_types);
 annstr = strcat({temp_types'});
 idxbi=cell2mat(regexp(annstr,'tt')); % biphasic
 nonbi=cell2mat(regexp(annstr,'\(t\)')) +1; % regular
@@ -255,15 +250,16 @@ Tpeaks(~goodT) = [];   % eliminating R's without T
 tends = temp_stamp(Tpeaks+1); % T ends
 %clear Rpeaks goodR
 
+qtint = mean(tends-qs); % qt interval in samples
+
+
 % == T-height
-if sum(idxbi) > 0
+if sum(idxbi) > 0   % case biphasic waves occured
     [valbi,~]=max(abs(signal(ann_stamp([idxbi' idxbi'+1])))'); % max abs value between tt
     valnonbi = abs(signal(ann_stamp(nonbi))');
-    th = mean([valbi valnonbi]);
+    th = mean([valbi valnonbi]); % theight with gain
 else
-    twave = ann_stamp(Tpeaks);
-    csum = cumsum([0 ; T_LEN*ones(length(twave)-1,1)],1); % removing shift between beats
-    twave = round(mean(twave-csum));
+    th = mean(abs(signal(ann_stamp(Tpeaks))));   
 end
 
 % % % isoeletric line

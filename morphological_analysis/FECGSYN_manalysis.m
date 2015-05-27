@@ -222,49 +222,50 @@ biphasic = filter([1 1],1,tees);   % biphasic are marked with 2
 idxbi = biphasic==2; 
 idxbi = circshift(idxbi,-1);  % this variable is later used to rescue biphasic
 temp_types(idxbi) = [];    % temporarilly clearing first T in biphasic cases
+temp_stamp(idxbi) = [];
 clear biphasic tees
-%== Disregard R-peaks not followed by T-waves
 
+%== Disregard R-peaks not followed by T-waves
 obrackts = arrayfun(@(x) strcmp(x,'('),temp_types);      % '('
 cbrackts = arrayfun(@(x) strcmp(x,')'),temp_types);      % ')'
 pees = arrayfun(@(x) strcmp(x,'p'),temp_types);      % 'p'
-temp_types(obrackts|cbrackts|pees) = [];
-temp_stamp(obrackts|cbrackts|pees) = [];
-annstr = strcat({temp_types'});
+temp_types2 = temp_types; temp_stamp2 = temp_stamp;
+temp_types2(obrackts|cbrackts|pees) = [];
+temp_stamp2(obrackts|cbrackts|pees) = [];
+annstr = strcat({temp_types2'});
 [idxR]=cell2mat(regexp(annstr,'Nt'));  % looking for 'N's followed by 't's
-validR = temp_stamp(idxR);           % valid R-peak sample-stamps
-validT = temp_stamp(idxR+1);           % valid first T-peak sample-stamps
-clear idxR annstr pees obrackts cbrackts temp_types temp_stamp
-
+validR = temp_stamp2(idxR);           % valid R-peak sample-stamps
+validT = temp_stamp2(idxR+1);           % valid first T-peak sample-stamps
+clear idxR annstr pees obrackts cbrackts
 % == Q wave (start)
 % is defined as an open bracket before the R-peak (no annotation between)
-rees = arrayfun(@(x) strcmp(x,'N'),ann_types);          % 'R'
-goodR = ismember(ann_stamp(rees),validR);
+rees = arrayfun(@(x) strcmp(x,'N'),temp_types);          % 'R'
+goodR = ismember(temp_stamp(rees),validR);
 Rpeaks = find(rees);   % annotation number
 Rpeaks(~goodR) = [];   % eliminating R's without T
-qs = ann_stamp(Rpeaks-1);  % Q locations
+qs = temp_stamp(Rpeaks-1);  % Q locations
 clear Rpeaks goodR rees
 
 % == T-wave (end)
 % Defined as closing parenthesis after T-wave peak
-tees = arrayfun(@(x) strcmp(x,'t'),ann_types);
-goodT = ismember(ann_stamp(tees),validT);
+tees = arrayfun(@(x) strcmp(x,'t'),temp_types);
+goodT = ismember(temp_stamp(tees),validT);
 Tpeaks = find(tees);   % annotation number
 Tpeaks(~goodT) = [];   % eliminating R's without T
-tends = ann_stamp(Tpeaks+1); % T ends
-clear Rpeaks goodR rees 
+tends = temp_stamp(Tpeaks+1); % T ends
+%clear Rpeaks goodR
 
 % == T-height
 if sum(idxbi) > 0
-    twave = find(idxbi&tees_all,1);
+    twave = find(idxbi);
     twave = [twave twave+1];
     twave = ann_stamp(twave);
     [~,idx] = max(abs(signal(twave)));
     twave = twave(idx);
 else
-    twave = ann_stamp(tees_all);
+    twave = ann_stamp(Tpeaks);
     csum = cumsum([0 ; T_LEN*ones(length(twave)-1,1)],1); % removing shift between beats
-    twave = mean(twave-csum);
+    twave = round(mean(twave-csum));
 end
 
 % % % isoeletric line

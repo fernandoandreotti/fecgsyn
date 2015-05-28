@@ -35,6 +35,8 @@ function FECGSYN_genresults(path_orig,fs,ch,exp3)
 % along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 global debug
+slashchar = char('/'*isunix + '\'*(~isunix));
+if debug,  mkdir([path_orig 'plots' slashchar]), end
 
 %% == Parameters
 INTERV = round(0.05*fs); % BxB acceptance interval
@@ -43,7 +45,7 @@ fs_new = 250;
 
 %% Run through extracted datasets
 cd(path_orig)
-slashchar = char('/'*isunix + '\'*(~isunix));
+
 % abdominal mixtures
 fls_orig = dir([path_orig '*.mat']); % looking for .mat (creating index)
 fls_orig = arrayfun(@(x)x.name,fls_orig,'UniformOutput',false);
@@ -68,17 +70,17 @@ stats.tsekf = zeros(length(fls_orig),4);
 stats.alms = zeros(length(fls_orig),4);
 stats.arls = zeros(length(fls_orig),4);
 stats.aesn = zeros(length(fls_orig),4);
-morph.JADEICA = zeros(length(fls_orig),2);
-morph.PCA = zeros(length(fls_orig),2);
-morph.tsc = zeros(length(fls_orig),2);
-morph.tspca = zeros(length(fls_orig),2);
-morph.tsekf = zeros(length(fls_orig),2);
-morph.alms = zeros(length(fls_orig),2);
-morph.arls = zeros(length(fls_orig),2);
-morph.aesn = zeros(length(fls_orig),2);
+morph.JADEICA = cell(length(fls_orig),7);
+morph.PCA = cell(length(fls_orig),7);
+morph.tsc = cell(length(fls_orig),7);
+morph.tspca = cell(length(fls_orig),7);
+morph.tsekf = cell(length(fls_orig),7);
+morph.alms = cell(length(fls_orig),7);
+morph.arls = cell(length(fls_orig),7);
+morph.aesn = cell(length(fls_orig),7);
 
 % = Runs through list of extracted files
-for i = 1:length(fls_ext)
+for i = 15:length(fls_ext)
     disp(fls_ext{i})
     %= loading extracted file
     [rec,met] = strtok(fls_ext(i),'_');
@@ -118,12 +120,12 @@ for i = 1:length(fls_ext)
     %= Getting statistics (exp 3)        
     else
         bss = strcmp(method,'JADEICA')|strcmp(method,'PCA'); % apply coordinate transformation or not
-        [qt_err,theight_err]=morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,bss);
-        morph.(method)(origrec,:) = [qt_err'  theight_err'];
+        [outputs{1:7}]= morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,bss);
+        morph.(method)(origrec,:) = outputs;
         if debug
         drawnow
+%         fprintf('QT_err: %f  Th_err: %f NaNs: %f \n',outputs{:,5},outputs{:,6},outputs{:,7});
         try
-        mkdir([path_orig 'plots' slashchar])
         print('-dpng','-r72',[path_orig 'plots' slashchar fls_ext{i}(1:end-4) '.png'])        
         catch
             warning('Failed to save plot')
@@ -188,6 +190,7 @@ if debug
         auxtab = [median(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
         table(counter1,:) = reshape(auxtab',1,7*4);
         counter1 = counter1 + 1;
+
         % MAE
         statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
         auxtab = [median(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
@@ -236,7 +239,8 @@ end
 
 end
 
-function [qt_err,theight_err]=morpho(fecg,residual,fqrs,maxch,fs,SAMPS,bss)
+function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numbNaN]=...
+    morpho(fecg,residual,fqrs,maxch,fs,SAMPS,bss)
 %% Function to perform morphological analysis for TS/BSS extracted data
 %
 % >Inputs
@@ -260,8 +264,15 @@ else
     srcfecg = fecg;
 end
 
-% generating reference template
-qt_err = zeros(length(residual)/SAMPS,1); theight_err = zeros(length(residual)/SAMPS,1);
+% Allocatting
+qt_test = cell(length(residual)/SAMPS,1);
+qt_ref = qt_test;
+th_test = qt_test;
+th_ref = qt_test;
+qt_err = qt_test; 
+theight_err = qt_test;
+
+%= Block-wise calculation and template generation
 block = 1;
 for j = 1:SAMPS:length(residual)
     % checking borders
@@ -273,12 +284,17 @@ for j = 1:SAMPS:length(residual)
     % qrs complexes in interval
     qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
     % abdominal signal template
-    temp_abdm = FECGSYN_tgen(residual(maxch(block),j:endsamp),qrstmp);
+    temp_abdm = FECGSYN_tgen(residual(maxch(block),j:endsamp),qrstmp,fs);
     % reference template
-    temp_ref = FECGSYN_tgen(srcfecg(maxch(block),j:endsamp),qrstmp);
+    temp_ref = FECGSYN_tgen(srcfecg(maxch(block),j:endsamp),qrstmp,fs);
     temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
     % evaluating morphological features
-    [qt_err(block),theight_err(block)] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
+    [qt_test{block},qt_ref{block},th_test{block},th_ref{block},...
+        qt_err{block},theight_err{block}] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
     block = block+1;
 end
+% Figuring out how many NaNs were output
+id1 = cellfun(@(x) isnan(x),qt_test);
+id2 = cellfun(@(x) isnan(x),qt_ref);
+numbNaN=sum(id1|id2);
 end

@@ -1,4 +1,4 @@
-function [template,status] = FECGSYN_tgen(ecg,qrs)
+function [template,status] = FECGSYN_tgen(ecg,qrs,fs)
 % this function is used to contruct a template ecg based on the location of
 % the R-peaks. A series of peaks that match with each other are stacked to
 % build a template. This template can then be used for ecg morphological
@@ -15,6 +15,7 @@ function [template,status] = FECGSYN_tgen(ecg,qrs)
 % inputs
 %   ecg:            the ecg channel(s)
 %   qrs:            qrs location [number of samples]
+%    fs:            sampling frequency
 % 
 % outputs
 %   relevantMode:   structure containing cycle, cycleMean and cycleStd
@@ -79,6 +80,7 @@ NB_SAMPLES = size(ecg,2);
 NB_REL = 10; % number relevance. How many cycles minimum to consider that a mode is relevant? - UPDATE ME DEPENDING ON APPLICATION
 MIN_NB_CYC = 20; % mininum number of cycles (will decrease THRES until this number of cycles is achieved) - UPDATE ME DEPENDING ON APPLICATION
 THRES = 0.9; % threshold at which to decide whether the cycle match or not - UPDATE ME DEPENDING ON APPLICATION
+MIN_TLEN = 0.35;     % minimum template length in ms - UPDATE ME DEPENDING ON APPLICATION
 PACE = 0.05;
 MIN_THRES = 0.5;
 cycle = zeros(NB_LEADS,NB_BINS);
@@ -143,7 +145,8 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
 
     % == detecting what mode is relevant
     for i=1:length(Mode)
-        if Mode{i}.NbCycles>NB_REL
+        % minimum amount of cycles and length       
+        if Mode{i}.NbCycles>NB_REL && mean(Mode{i}.cycleLen) >= MIN_TLEN*fs
             relevantModeInd = [relevantModeInd i];
         end
     end

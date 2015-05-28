@@ -1,4 +1,4 @@
-function [qt,theight] = FECGSYN_manalysis(abdm_temp,ref_temp,fs)
+function [qt_test,qt_ref,th_test,th_ref,qt_err,th_err] = FECGSYN_manalysis(abdm_temp,ref_temp,fs)
 % This function calculates morphological features form signals given two
 % templates (reference and abdm). Statistics are give as %.
 %
@@ -35,7 +35,6 @@ global debug
 % resampling and repeating templates
 FS_ECGPU = 250;     % default sampling frequency for ECGPUWAVE
 gain = 200;        % saving gain for WFDB format
-
 
 %% Preprocessing
 
@@ -127,17 +126,21 @@ end
 
 %% QT-intervals from ref
 
-[qt_ref,thref,qs,tends,tpeak] = QTcalc(alltypes_r,allref,ref_sig,T_LEN);
+[qt_ref,th_ref,qs,tends,tpeak] = QTcalc(alltypes_r,allref,ref_sig);
 % test if QT analysis feasible
-if isempty(qt_ref)
-    theight = NaN;
-    qt = NaN;
+if isnan(qt_ref)||isnan(th_ref)
+    qt_test = NaN;
+    qt_ref = NaN;
+    th_test = NaN;
+    th_ref = NaN;
+    qt_err = NaN;
+    th_err = NaN;   
     disp('manalysis: Could not encounter QT wave for the template.')
     return
 end
 
-qt_ref = qt_ref*1000/(2*FS_ECGPU);    % in ms
-thref = thref./gain;                  % in mV (or not)
+qt_ref = qt_ref*1000/(2*FS_ECGPU);          % in ms
+th_ref = th_ref./gain;                  % in mV (or not)
 
 if debug
     offset = sum(qrsref<qs(1))*T_LEN;
@@ -155,17 +158,20 @@ end
 
 %% QT-intervals from test
 
-[qt_test,thtest,qs,tends,tpeak] = QTcalc(alltypes_t,alltest,abdm_sig,T_LEN);
+[qt_test,th_test,qs,tends,tpeak] = QTcalc(alltypes_t,alltest,abdm_sig);
 % test if QT analysis feasible
-if isempty(qt_test)||isempty(qs)||isempty(tends)
-    theight = NaN;
-    qt = NaN;
+if isnan(qt_test)||isnan(th_test)
+    qt_test = NaN;
+    qt_ref = NaN;
+    th_test = NaN;
+    th_ref = NaN;
+    qt_err = NaN;
+    th_err = NaN;   
     return
 end
 
-qt_test = qt_test*1000/(2*FS_ECGPU);    % in ms
-thtest = thtest./gain;                  % in mV (or not)
-
+qt_test = qt_test*1000/(2*FS_ECGPU);          % in ms
+th_test = th_test./gain;                  % in mV (or not)
 
 if debug   
     offset = sum(qrsabdm<qs(1))*T_LEN;
@@ -183,14 +189,14 @@ end
 
 %% Final results
 %== QT error
-qt = qt_test - qt_ref;        % absolute error in ms
+qt_err = qt_test - qt_ref;        % absolute error in ms
 %== T-height estimation
-theight = thtest/thref;
+th_err = th_test/th_ref;
 
 end
 
 
-function [qtint,th,qs,tends,tpeak] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
+function [qtint,th,qs,tends,tpeak] = QTcalc(ann_types,ann_stamp,signal)
 %% Function that contains heuristics behind QT interval calculation
 % Based on assumption that ECGPUWAVE only outputs a wave (p,N,t) if it can 
 % detect its begin and end. Only highest peak of T-waves marked as biphasic 
@@ -251,12 +257,12 @@ goodT = ismember(temp_stamp(tees),validT);
 Tpeaks = find(tees);   % annotation number
 Tpeaks(~goodT) = [];   % eliminating R's without T
 tends = temp_stamp(Tpeaks+1); % T ends
+if isempty(tends), tends = NaN; end
 %clear Rpeaks goodR
-
+if isempty(qs), qs = NaN; end
 qtint = mean(tends-qs); % qt interval in samples
 
-
-% == T-height
+% == T-peak
 if sum(idxbi) > 0   % case biphasic waves occured
     posmax = [idxbi' idxbi'+1];
     [valbi,bindx]=max(abs(signal(ann_stamp(posmax)))'); % max abs value between tt
@@ -268,6 +274,7 @@ else
     th = mean(abs(signal(ann_stamp(Tpeaks))));   
     tpeak = ann_stamp(Tpeaks);
 end
+if isempty(tpeak), tpeak = NaN; end
 
 % == isoeletric line
 % % waves = find(ann_stamp<twave+length(ref_temp));

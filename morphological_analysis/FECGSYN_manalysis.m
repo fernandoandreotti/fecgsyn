@@ -44,12 +44,10 @@ abdm_temp = resample(abdm_temp,2*FS_ECGPU,fs);
 ref_temp = resample(ref_temp,2*FS_ECGPU,fs);
 T_LEN = length(abdm_temp);  % template length
     
-wsign1 = abs(max(abdm_temp))>abs(min(abdm_temp));
-wsign1 = 2*wsign1 - 1;
-abdm_temp = gain*wsign1*abdm_temp/max(abs(abdm_temp)); % normalizing for
-wsign2 = abs(max(ref_temp))>abs(min(ref_temp));      % comparing T-height
-wsign2 = 2*wsign2 - 1;
-ref_temp = gain*wsign2*ref_temp/max(abs(ref_temp));
+wsign = abs(max(abdm_temp))>abs(min(abdm_temp));
+wsign = 2*wsign - 1;
+abdm_temp = gain*wsign*abdm_temp/max(abs(abdm_temp)); % normalizing for
+ref_temp = gain*wsign*ref_temp/max(abs(ref_temp));
 abdm_sig = repmat(abdm_temp,1,20)';
 ref_sig = repmat(ref_temp,1,20)';
 
@@ -126,7 +124,7 @@ end
 
 %% QT-intervals from ref
 
-[qt_ref,th_ref,qs,tends,tpeak] = QTcalc(alltypes_r,allref,ref_sig);
+[qt_ref,th_ref,qs,tends,tpeak] = QTcalc(alltypes_r,allref,ref_sig,T_LEN);
 % test if QT analysis feasible
 if isnan(qt_ref)||isnan(th_ref)
     qt_test = NaN;
@@ -158,7 +156,7 @@ end
 
 %% QT-intervals from test
 
-[qt_test,th_test,qs,tends,tpeak] = QTcalc(alltypes_t,alltest,abdm_sig);
+[qt_test,th_test,qs,tends,tpeak] = QTcalc(alltypes_t,alltest,abdm_sig,T_LEN);
 % test if QT analysis feasible
 if isnan(qt_test)||isnan(th_test)
     qt_test = NaN;
@@ -196,7 +194,7 @@ th_err = th_test/th_ref;
 end
 
 
-function [qtint,th,qs,tends,tpeak] = QTcalc(ann_types,ann_stamp,signal)
+function [qtint,th,qs,tends,tpeak] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
 %% Function that contains heuristics behind QT interval calculation
 % Based on assumption that ECGPUWAVE only outputs a wave (p,N,t) if it can 
 % detect its begin and end. Only highest peak of T-waves marked as biphasic 
@@ -257,7 +255,8 @@ goodT = ismember(temp_stamp(tees),validT);
 Tpeaks = find(tees);   % annotation number
 Tpeaks(~goodT) = [];   % eliminating R's without T
 tends = temp_stamp(Tpeaks+1); % T ends
-if isempty(tends), tends = NaN; end
+% assure that T-ends are within template limits
+if isempty(tends)||tends(1)>2*T_LEN, tends = NaN; end
 %clear Rpeaks goodR
 if isempty(qs), qs = NaN; end
 qtint = mean(tends-qs); % qt interval in samples
@@ -269,7 +268,7 @@ if sum(idxbi) > 0   % case biphasic waves occured
     valnonbi = abs(signal(ann_stamp(nonbi))');
     th = mean([valbi valnonbi]); % theight with gain
     for i = 1:length(bindx); tpeak(i)=ann_stamp(posmax(i,bindx(i)));end
-    tpeak = sort([tpeak ann_stamp(nonbi)]);
+    tpeak = sort([tpeak ann_stamp(nonbi)'])';
 else
     th = mean(abs(signal(ann_stamp(Tpeaks))));   
     tpeak = ann_stamp(Tpeaks);

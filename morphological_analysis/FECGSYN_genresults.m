@@ -83,7 +83,7 @@ morph.aesn = cell(length(fls_orig),7);
 for i = 1:length(fls_ext)
     disp(fls_ext{i})
     %= loading extracted file
-    [rec,met] = strtok(fls_ext(i),'_');srcfecg
+    [rec,met] = strtok(fls_ext(i),'_');
     file = strcat(path_ext,fls_ext(i));
     load(file{:})
     %= loading original file

@@ -171,9 +171,8 @@ template.avg = circshift(relevantMode.cycleMean',-round(NB_BINS/6))';
 template.stdev = circshift(relevantMode.cycleStd',-round(NB_BINS/6))';
 
 % == Converting template from bins back to samples
-phase2samp = round(mean(relevantMode.cycleLen));
-template.avg = resample(template.avg,phase2samp,NB_BINS);
-template.stdev = resample(template.stdev,phase2samp,NB_BINS);
+template.avg = resample(template.avg,fs,NB_BINS);
+template.stdev = resample(template.stdev,fs,NB_BINS);
 
 if debug
    fprintf('The number of cycles constituting the dominant mode was %f \n',relevantMode.NbCycles);

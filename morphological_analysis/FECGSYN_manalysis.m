@@ -269,7 +269,7 @@ if sum(idxbi) > 0   % case biphasic waves occured
     valnonbi = abs(signal(ann_stamp(nonbi))');
     th = mean([valbi valnonbi]); % theight with gain
     for i = 1:length(bindx); tpeak(i)=ann_stamp(posmax(i,bindx(i)));end
-    tpeak = sort([tpeak ann_stamp(valnonbi)]);
+    tpeak = sort([tpeak ann_stamp(nonbi)]);
 else
     th = mean(abs(signal(ann_stamp(Tpeaks))));   
     tpeak = ann_stamp(Tpeaks);

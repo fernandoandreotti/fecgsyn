@@ -80,10 +80,10 @@ morph.arls = cell(length(fls_orig),7);
 morph.aesn = cell(length(fls_orig),7);
 
 % = Runs through list of extracted files
-for i = 15:length(fls_ext)
+for i = 1:length(fls_ext)
     disp(fls_ext{i})
     %= loading extracted file
-    [rec,met] = strtok(fls_ext(i),'_');
+    [rec,met] = strtok(fls_ext(i),'_');srcfecg
     file = strcat(path_ext,fls_ext(i));
     load(file{:})
     %= loading original file

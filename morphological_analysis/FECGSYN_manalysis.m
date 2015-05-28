@@ -54,7 +54,7 @@ ref_sig = repmat(ref_temp,1,20)';
 % Preprocessing reference channel
 % high-pass filter
 Fstop = 0.5;  % Stopband Frequency
-Fpass = 2;    % Passband Frequency
+Fpass = 1;    % Passband Frequency
 Astop = 60;   % Stopband Attenuation (dB)
 Apass = 0.1;  % Passband Ripple (dB)
 h = fdesign.highpass('fst,fp,ast,ap', Fstop, Fpass, Astop, Apass, FS_ECGPU);
@@ -64,8 +64,8 @@ Hhp = design(h, 'butter', ...
     'SystemObject', true);
 [b_hp,a_hp] = tf(Hhp);
 % low-pass filter
-Fpass = 80;   % Passband Frequency
-Fstop = 100;  % Stopband Frequency
+Fpass = 100;   % Passband Frequency
+Fstop = 110;  % Stopband Frequency
 Apass = 1;    % Passband Ripple (dB)
 Astop = 60;   % Stopband Attenuation (dB)
 h = fdesign.lowpass('fp,fst,ap,ast', Fpass, Fstop, Apass, Astop, FS_ECGPU);

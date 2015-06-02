@@ -138,12 +138,12 @@ if isnan(qt_ref)||isnan(th_ref)
 end
 isoel = median(ref_temp(round(qrsref+0.185*fs):end));
 qt_ref = qt_ref*1000/(2*FS_ECGPU);          % in ms
-th_ref = th_ref./gain;                  % in mV (or not)
+th_ref = (th_ref-isoel)./gain;              % in mV (or not)
 
 if debug
     offset = sum(qrsref<qs(1))*T_LEN;
     close all
-    figure('units','normalized','outerposition',[0 0 1 1])
+%     figure('units','normalized','outerposition',[0 0 1 1])
     ax(1)=subplot(2,1,1);
     plot(ref_temp./gain,'k','LineWidth',2)
     hold on
@@ -170,7 +170,7 @@ end
 
 isoel = median(abdm_temp(round(qrsabdm+0.185*fs):end));
 qt_test = qt_test*1000/(2*FS_ECGPU);          % in ms
-th_test = (th_test/isoel)./gain;                  % in mV (or not)
+th_test = (th_test-isoel)./gain;                  % in mV (or not)
 
 if debug   
     offset = sum(qrsabdm<qs(1))*T_LEN;
@@ -190,7 +190,7 @@ end
 %== QT error
 qt_err = qt_test - qt_ref;        % absolute error in ms
 %== T-height estimation
-th_err = th_test/th_ref;
+th_err = abs(th_test/th_ref);     % only considering abs value
 
 end
 

@@ -55,7 +55,7 @@ ref_sig = repmat(ref_temp,1,20)';
 % high-pass filter
 Fstop = 0.5;  % Stopband Frequency
 Fpass = 1;    % Passband Frequency
-Astop = 60;   % Stopband Attenuation (dB)
+Astop = 20;   % Stopband Attenuation (dB)
 Apass = 0.1;  % Passband Ripple (dB)
 h = fdesign.highpass('fst,fp,ast,ap', Fstop, Fpass, Astop, Apass, FS_ECGPU);
 Hhp = design(h, 'butter', ...
@@ -67,7 +67,7 @@ Hhp = design(h, 'butter', ...
 Fpass = 100;   % Passband Frequency
 Fstop = 110;  % Stopband Frequency
 Apass = 1;    % Passband Ripple (dB)
-Astop = 60;   % Stopband Attenuation (dB)
+Astop = 20;   % Stopband Attenuation (dB)
 h = fdesign.lowpass('fp,fst,ap,ast', Fpass, Fstop, Apass, Astop, FS_ECGPU);
 Hlp = design(h, 'butter', ...
     'MatchExactly', 'stopband', ...
@@ -136,7 +136,7 @@ if isnan(qt_ref)||isnan(th_ref)
     disp('manalysis: Could not encounter QT wave for the template.')
     return
 end
-
+isoel = median(ref_temp(round(qrsref+0.185*fs):end));
 qt_ref = qt_ref*1000/(2*FS_ECGPU);          % in ms
 th_ref = th_ref./gain;                  % in mV (or not)
 
@@ -168,8 +168,9 @@ if isnan(qt_test)||isnan(th_test)
     return
 end
 
+isoel = median(abdm_temp(round(qrsabdm+0.185*fs):end));
 qt_test = qt_test*1000/(2*FS_ECGPU);          % in ms
-th_test = th_test./gain;                  % in mV (or not)
+th_test = (th_test/isoel)./gain;                  % in mV (or not)
 
 if debug   
     offset = sum(qrsabdm<qs(1))*T_LEN;

@@ -265,7 +265,7 @@ qt_err = qt_test;
 theight_err = qt_test;
 numbNaN = 0;
 %= Block-wise calculation and template generation
-for ch = 3:size(residual,1)
+for ch = 1:size(residual,1)
     block = 1;
     for j = 1:SAMPS:length(residual)
         % checking borders

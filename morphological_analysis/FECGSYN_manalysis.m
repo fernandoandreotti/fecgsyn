@@ -93,36 +93,38 @@ wrann('refsig','qrs',qrsref,repmat('N',20,1));
 
 %% Segmentation using ECGPUWAVE
 % ref signal
-ecgpuwave('refsig','edr',[],[],'qrs'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+ecgpuwave('refsig','edr',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 [allref,alltypes_r] = rdann('refsig','edr');
-% if debug   
-%     figure(1)
-%     ax(1)=subplot(2,1,1);
-%     plot(ref_sig./gain)
-%     hold on
-%     plot(allref,ref_sig(allref)./gain,'or')
-%     text(allref,ref_sig(allref)./gain+0.1,alltypes_r)
-%     title('Reference Signal')
-% end
+if debug   
+    figure(2)
+    ax(1)=subplot(2,1,1);
+    cla
+    plot(ref_sig./gain)
+    hold on
+    plot(allref,ref_sig(allref)./gain,'or')
+    text(allref,ref_sig(allref)./gain+0.1,alltypes_r)
+    title('Reference Signal')
+end
 % test signal
-ecgpuwave('absig','edr',[],[],'qrs'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+ecgpuwave('absig','edr',[],[],'qrsabdm'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 [alltest,alltypes_t] = rdann('absig','edr');
-% if debug
-%     figure(1)
-%     ax(2)=subplot(2,1,2);
-%     plot(abdm_sig./gain)
-%     hold on
-%     plot(alltest,abdm_sig(alltest)./gain,'or')
-%     text(alltest,abdm_sig(alltest)./gain+0.2,alltypes_t)
-%     linkaxes(ax,'x')
-%     title('Test Signal')
-% end
+if debug
+    figure(2)
+    ax(2)=subplot(2,1,2);
+    cla
+    plot(abdm_sig./gain)
+    hold on
+    plot(alltest,abdm_sig(alltest)./gain,'or')
+    text(alltest,abdm_sig(alltest)./gain+0.2,alltypes_t)
+    linkaxes(ax,'x')
+    title('Test Signal')
+end
 
 % == Calculate error on morphological analysis made by extracted data
 
 %% QT-intervals from ref
 
-[qt_ref,th_ref,qs,tends,tpeak] = QTcalc(alltypes_r,allref,ref_sig,T_LEN);
+[qt_ref,th_ref,qs,tends,tpeak] = QTcalc(alltypes_r,allref,ref_sig,fs);
 % test if QT analysis feasible
 if isnan(qt_ref)||isnan(th_ref)
     qt_test = NaN;
@@ -131,7 +133,7 @@ if isnan(qt_ref)||isnan(th_ref)
     th_ref = NaN;
     qt_err = NaN;
     th_err = NaN;   
-    disp('manalysis: Could not encounter QT wave for the template.')
+    disp('manalysis: Could not encounter QT wave for REFERENCE.')
     return
 end
 isoel = median(ref_temp(round(qrsref+0.185*fs):end));
@@ -141,22 +143,21 @@ th_ref = (th_ref-isoel)./gain;              % in mV (or not)
 if debug
     figure(1)
     set(gcf,'units','normalized','outerposition',[0 0 1 1])   
-    pskip = sum(qrsref<qs(1)); % peaks to be skipped
-    offset = pskip*T_LEN;
     ax(1)=subplot(2,1,1);
     cla
     plot(ref_temp./gain,'k','LineWidth',2)
     hold on
-    plot(qs(pskip)-offset,ref_temp(qs(pskip)-offset)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
-    plot(tends(pskip)-offset,ref_temp(tends(pskip)-offset)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
-    plot(tpeak(pskip)-offset,ref_temp(tpeak(pskip)-offset)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
+    rpeak = qrsref(1)-T_LEN;
+    plot(rpeak+qs,ref_temp(rpeak+qs)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
+    plot(rpeak+tends,ref_temp(rpeak+tends)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
+    plot(rpeak+tpeak,ref_temp(rpeak+tpeak)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
     title('Reference Signal')   
-    clear qs tends twave offset
+    clear qs tends twave offset rpeak
 end
 
 %% QT-intervals from test
 
-[qt_test,th_test,qs,tends,tpeak] = QTcalc(alltypes_t,alltest,abdm_sig,T_LEN);
+[qt_test,th_test,qs,tends,tpeak] = QTcalc(alltypes_t,alltest,abdm_sig,fs);
 % test if QT analysis feasible
 if isnan(qt_test)||isnan(th_test)
     qt_test = NaN;
@@ -165,6 +166,7 @@ if isnan(qt_test)||isnan(th_test)
     th_ref = NaN;
     qt_err = NaN;
     th_err = NaN;   
+    disp('manalysis: Could not encounter QT wave for TEST.')
     return
 end
 
@@ -181,15 +183,14 @@ if debug
     plot(abdm_temp./gain,'k','LineWidth',2)
     hold on
     try
-    plot(qs(pskip)-offset,abdm_temp(qs(pskip)-offset)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
-    plot(tends(pskip)-offset,abdm_temp(tends(pskip)-offset)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
-    plot(tpeak(pskip)-offset,abdm_temp(tpeak(pskip)-offset)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
-    title('Test Signal')
-    linkaxes(ax,'x')
+    rpeak = qrsref(1)-T_LEN;
+    plot(rpeak+qs,abdm_temp(rpeak+qs)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
+    plot(rpeak+tends,abdm_temp(rpeak+tends)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
+    plot(rpeak+tpeak,abdm_temp(rpeak+tpeak)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
     catch
         disp('Failed to plot, results do not make sense!!!')
     end
-    clear qs tend twave offset
+    clear qs tend twave offset rpeak
 end
 
 %% Final results
@@ -201,7 +202,7 @@ th_err = abs(th_test/th_ref);     % only considering abs value
 end
 
 
-function [qtint,th,qs,tends,tpeak] = QTcalc(ann_types,ann_stamp,signal,T_LEN)
+function [qtint,th,qs,tends,tpeak] = QTcalc(ann_types,ann_stamp,signal,fs)
 %% Function that contains heuristics behind QT interval calculation
 % Based on assumption that ECGPUWAVE only outputs a wave (p,N,t) if it can 
 % detect its begin and end. Only highest peak of T-waves marked as biphasic 
@@ -252,8 +253,9 @@ rees = arrayfun(@(x) strcmp(x,'N'),temp_types);          % 'R'
 goodR = ismember(temp_stamp(rees),validR);
 Rpeaks = find(rees);   % annotation number
 Rpeaks(~goodR) = [];   % eliminating R's without T
-qs = temp_stamp(Rpeaks-1);  % Q locations
-clear Rpeaks goodR rees
+qs = round(mean(temp_stamp(Rpeaks-1)-temp_stamp(Rpeaks)));  % Q locations
+
+clear goodR rees
 
 % == T-wave (end)
 % Defined as closing parenthesis after T-wave peak
@@ -261,12 +263,9 @@ tees = arrayfun(@(x) strcmp(x,'t'),temp_types);
 goodT = ismember(temp_stamp(tees),validT);
 Tpeaks = find(tees);   % annotation number
 Tpeaks(~goodT) = [];   % eliminating R's without T
-tends = temp_stamp(Tpeaks+1); % T ends
-% assure that T-ends are within template limits
-if isempty(tends)||tends(1)>2*T_LEN, tends = NaN; end
-%clear Rpeaks goodR
-if isempty(qs), qs = NaN; end
-qtint = mean(tends-qs); % qt interval in samples
+tends = round(mean(temp_stamp(Tpeaks+1) - temp_stamp(Rpeaks)));
+
+qtint = tends-qs; % qt interval in samples
 
 % == T-peak
 if sum(idxbi) > 0   % case biphasic waves occured
@@ -276,10 +275,17 @@ if sum(idxbi) > 0   % case biphasic waves occured
     th = mean([valbi valnonbi]); % theight with gain
     for i = 1:length(bindx); tpeak(i)=ann_stamp(posmax(i,bindx(i)));end
     tpeak = sort([tpeak ann_stamp(nonbi)'])';
+    tpeak = round(mean(tpeak-ann_stamp(Rpeaks)));
 else
     th = mean(abs(signal(ann_stamp(Tpeaks))));   
     tpeak = ann_stamp(Tpeaks);
+    tpeak = round(mean(tpeak-ann_stamp(Rpeaks)));
 end
+
+
+if isempty(tends), tends = NaN; end
+if qtint>0.5*fs, qtint = NaN; end   % limit QT interval length: MIGHT VARY IN OTHER APPLICATIONS!
+if isempty(qs), qs = NaN; end
 if isempty(tpeak), tpeak = NaN; end
 
 % == isoeletric line

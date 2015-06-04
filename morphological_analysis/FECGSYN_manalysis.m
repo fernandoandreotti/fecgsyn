@@ -79,8 +79,8 @@ ref_sig = filtfilt(b_hp,a_hp,ref_sig);
 
 %% Saving data as WFDB
 % looking for peaks in temporary signal
-[~,qrsref] = findpeaks(ref_sig,'MinPeakDistance',T_LEN-10);
-[~,qrsabdm] = findpeaks(abdm_sig,'MinPeakDistance',T_LEN-10);
+[~,qrsref] = findpeaks(ref_sig,'MinPeakDistance',T_LEN-1);
+[~,qrsabdm] = findpeaks(abdm_sig,'MinPeakDistance',T_LEN-1);
 
 % writting to WFDB
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
@@ -179,11 +179,15 @@ if debug
     cla
     plot(abdm_temp./gain,'k','LineWidth',2)
     hold on
+    try
     plot(qs(pskip)-offset,abdm_temp(qs(pskip)-offset)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
     plot(tends(pskip)-offset,abdm_temp(tends(pskip)-offset)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
     plot(tpeak(pskip)-offset,abdm_temp(tpeak(pskip)-offset)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
     title('Test Signal')
     linkaxes(ax,'x')
+    catch
+        disp('Failed to plot, results do not make sense!!!')
+    end
     clear qs tend twave offset
 end
 

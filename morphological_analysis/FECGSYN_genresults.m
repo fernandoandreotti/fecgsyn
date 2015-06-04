@@ -263,10 +263,10 @@ th_test = qt_test;
 th_ref = qt_test;
 qt_err = qt_test; 
 theight_err = qt_test;
-
+numbNaN = 0;
 %= Block-wise calculation and template generation
-block = 1;
 for ch = 1:size(residual,1)
+    block = 1;
     for j = 1:SAMPS:length(residual)
         % checking borders
         if j+SAMPS > length(residual)
@@ -284,19 +284,21 @@ for ch = 1:size(residual,1)
         % evaluating morphological features
         [qt_test{block},qt_ref{block},th_test{block},th_ref{block},...
             qt_err{block},theight_err{block}] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
-        block = block+1;
-        if debug
+        if debug && ~isnan(qt_test{block}) && ~isnan(qt_ref{block})
             drawnow
             try
-                print('-dpng','-r72',[fname '_ch' num2str(ch) '_s' num2str(j) '.png'])
+                print('-dpng','-r72',[fname '_ch' num2str(ch) '_s' num2str(block) '.png'])
             catch
                 warning('Failed to save plot')
             end
+            
         end
+        block = block+1;
     end
+    % Figuring out how many NaNs were output per channel
+    id1 = cellfun(@(x) isnan(x),qt_test);
+    id2 = cellfun(@(x) isnan(x),qt_ref);
+    numbNaN=numbNaN+sum(id1|id2);
 end
-% Figuring out how many NaNs were output
-id1 = cellfun(@(x) isnan(x),qt_test);
-id2 = cellfun(@(x) isnan(x),qt_ref);
-numbNaN=sum(id1|id2);
+
 end

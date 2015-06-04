@@ -80,7 +80,7 @@ morph.arls = cell(length(fls_orig),7);
 morph.aesn = cell(length(fls_orig),7);
 
 % = Runs through list of extracted files
-for i = 51:length(fls_ext)
+for i = 1:length(fls_ext)
     disp(fls_ext{i})
     %= loading extracted file
     [rec,met] = strtok(fls_ext(i),'_');
@@ -120,17 +120,9 @@ for i = 51:length(fls_ext)
     %= Getting statistics (exp 3)        
     else
         bss = strcmp(method,'JADEICA')|strcmp(method,'PCA'); % apply coordinate transformation or not
-        [outputs{1:7}]= morpho(fecgref,residual,fref,maxch,fs,TEMP_SAMPS,bss);
-        morph.(method)(origrec,:) = outputs;
-        if debug
-        drawnow
-%         fprintf('QT_err: %f  Th_err: %f NaNs: %f \n',outputs{:,5},outputs{:,6},outputs{:,7});
-        try
-        print('-dpng','-r72',[path_orig 'plots' slashchar fls_ext{i}(1:end-4) '.png'])        
-        catch
-            warning('Failed to save plot')
-        end
-        end
+        fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4)];
+        [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname);
+        morph.(method)(origrec,:) = outputs;       
     end     
     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
 end
@@ -240,22 +232,22 @@ end
 end
 
 function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numbNaN]=...
-    morpho(fecg,residual,fqrs,maxch,fs,SAMPS,bss)
+    morpho(fecg,residual,fqrs,fs,SAMPS,bss,fname)
 %% Function to perform morphological analysis for TS/BSS extracted data
 %
 % >Inputs
 % fecg:         Propagated fetal signal before mixture with noise sources
 % residual:     Result of fetal extraction from abdominal signals
 % fqrs:         Reference fetal QRS samplestamps
-% maxch:        Channel with highest F1-accuracy for FQRS detections
 % SAMPS:        Number of samples used for generating templates
 % bss:          Boolean true if using BSS technique
+% fname:        Filename to be used in saving plots
 %
 % > Outputs
 % qt_err: Array containing QT error for each template
 % theight_err: Array containing T-height error for each template
 %
-
+global debug
 % if bss, propagating reference to source domain
 if bss
     W = fecg*pinv(residual);
@@ -274,24 +266,34 @@ theight_err = qt_test;
 
 %= Block-wise calculation and template generation
 block = 1;
-for j = 1:SAMPS:length(residual)
-    % checking borders
-    if j+SAMPS > length(residual)
-        endsamp = length(residual);
-    else
-        endsamp = j + SAMPS -1;
+for ch = 1:size(residual,1)
+    for j = 1:SAMPS:length(residual)
+        % checking borders
+        if j+SAMPS > length(residual)
+            endsamp = length(residual);
+        else
+            endsamp = j + SAMPS -1;
+        end
+        % qrs complexes in interval
+        qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
+        % abdominal signal template
+        temp_abdm = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
+        % reference template
+        temp_ref = FECGSYN_tgen(srcfecg(ch,j:endsamp),qrstmp,fs);
+        temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
+        % evaluating morphological features
+        [qt_test{block},qt_ref{block},th_test{block},th_ref{block},...
+            qt_err{block},theight_err{block}] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
+        block = block+1;
+        if debug
+            drawnow
+            try
+                print('-dpng','-r72',[fname '_ch' num2str(ch) '_s' num2str(j) '.png'])
+            catch
+                warning('Failed to save plot')
+            end
+        end
     end
-    % qrs complexes in interval
-    qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
-    % abdominal signal template
-    temp_abdm = FECGSYN_tgen(residual(maxch(block),j:endsamp),qrstmp,fs);
-    % reference template
-    temp_ref = FECGSYN_tgen(srcfecg(maxch(block),j:endsamp),qrstmp,fs);
-    temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
-    % evaluating morphological features
-    [qt_test{block},qt_ref{block},th_test{block},th_ref{block},...
-        qt_err{block},theight_err{block}] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
-    block = block+1;
 end
 % Figuring out how many NaNs were output
 id1 = cellfun(@(x) isnan(x),qt_test);

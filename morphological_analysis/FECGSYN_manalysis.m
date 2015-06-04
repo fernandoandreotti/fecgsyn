@@ -96,29 +96,28 @@ wrann('refsig','qrs',qrsref,repmat('N',20,1));
 % ref signal
 ecgpuwave('refsig','edr',[],[],'qrs'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 [allref,alltypes_r] = rdann('refsig','edr');
-if debug
-    close all
-    figure(1)
-    ax(1)=subplot(2,1,1);
-    plot(ref_sig./gain)
-    hold on
-    plot(allref,ref_sig(allref)./gain,'or')
-    text(allref,ref_sig(allref)./gain+0.1,alltypes_r)
-    title('Reference Signal')
-end
+% if debug   
+%     figure(1)
+%     ax(1)=subplot(2,1,1);
+%     plot(ref_sig./gain)
+%     hold on
+%     plot(allref,ref_sig(allref)./gain,'or')
+%     text(allref,ref_sig(allref)./gain+0.1,alltypes_r)
+%     title('Reference Signal')
+% end
 % test signal
 ecgpuwave('absig','edr',[],[],'qrs'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 [alltest,alltypes_t] = rdann('absig','edr');
-if debug
-    figure(1)
-    ax(2)=subplot(2,1,2);
-    plot(abdm_sig./gain)
-    hold on
-    plot(alltest,abdm_sig(alltest)./gain,'or')
-    text(alltest,abdm_sig(alltest)./gain+0.2,alltypes_t)
-    linkaxes(ax,'x')
-    title('Test Signal')
-end
+% if debug
+%     figure(1)
+%     ax(2)=subplot(2,1,2);
+%     plot(abdm_sig./gain)
+%     hold on
+%     plot(alltest,abdm_sig(alltest)./gain,'or')
+%     text(alltest,abdm_sig(alltest)./gain+0.2,alltypes_t)
+%     linkaxes(ax,'x')
+%     title('Test Signal')
+% end
 
 % == Calculate error on morphological analysis made by extracted data
 
@@ -141,15 +140,17 @@ qt_ref = qt_ref*1000/(2*FS_ECGPU);          % in ms
 th_ref = (th_ref-isoel)./gain;              % in mV (or not)
 
 if debug
-    offset = sum(qrsref<qs(1))*T_LEN;
-    close all
-%     figure('units','normalized','outerposition',[0 0 1 1])
+    figure(1)
+    set(gcf,'units','normalized','outerposition',[0 0 1 1])   
+    pskip = sum(qrsref<qs(1)); % peaks to be skipped
+    offset = pskip*T_LEN;
     ax(1)=subplot(2,1,1);
+    cla
     plot(ref_temp./gain,'k','LineWidth',2)
     hold on
-    plot(qs(1)-offset,ref_temp(qs(1)-offset)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
-    plot(tends(1)-offset,ref_temp(tends(1)-offset)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
-    plot(tpeak(1)-offset,ref_temp(tpeak(1)-offset)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
+    plot(qs(pskip)-offset,ref_temp(qs(pskip)-offset)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
+    plot(tends(pskip)-offset,ref_temp(tends(pskip)-offset)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
+    plot(tpeak(pskip)-offset,ref_temp(tpeak(pskip)-offset)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
     title('Reference Signal')   
     clear qs tends twave offset
 end
@@ -173,14 +174,16 @@ qt_test = qt_test*1000/(2*FS_ECGPU);          % in ms
 th_test = (th_test-isoel)./gain;                  % in mV (or not)
 
 if debug   
-    offset = sum(qrsabdm<qs(1))*T_LEN;
+    pskip = sum(qrsref<qs(1));
+    offset = pskip*T_LEN;
     figure(1)
     ax(2)=subplot(2,1,2);
+    cla
     plot(abdm_temp./gain,'k','LineWidth',2)
     hold on
-    plot(qs(1)-offset,abdm_temp(qs(1)-offset)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
-    plot(tends(1)-offset,abdm_temp(tends(1)-offset)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
-    plot(tpeak(1)-offset,abdm_temp(tpeak(1)-offset)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
+    plot(qs(pskip)-offset,abdm_temp(qs(pskip)-offset)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
+    plot(tends(pskip)-offset,abdm_temp(tends(pskip)-offset)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
+    plot(tpeak(pskip)-offset,abdm_temp(tpeak(pskip)-offset)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
     title('Test Signal')
     linkaxes(ax,'x')
     clear qs tend twave offset

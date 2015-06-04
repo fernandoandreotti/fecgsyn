@@ -78,11 +78,9 @@ ref_sig = filtfilt(b_lp,a_lp,ref_sig);
 ref_sig = filtfilt(b_hp,a_hp,ref_sig);
 
 %% Saving data as WFDB
-% adapting annotations so that peak occur around 1/3 the cycle length
-qrsref = round((0.5 - 1/6)*T_LEN);
-qrsabdm = round((0.5 - 1/6)*T_LEN);
-qrsref = arrayfun(@(x) qrsref + x*T_LEN,0:19)';
-qrsabdm = arrayfun(@(x) qrsabdm + x*T_LEN,0:19)';
+% looking for peaks in temporary signal
+[~,qrsref] = findpeaks(ref_sig,'MinPeakDistance',T_LEN-30);
+[~,qrsabdm] = findpeaks(abdm_sig,'MinPeakDistance',T_LEN-30);
 
 % writting to WFDB
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;

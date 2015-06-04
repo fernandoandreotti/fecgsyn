@@ -79,9 +79,10 @@ ref_sig = filtfilt(b_hp,a_hp,ref_sig);
 
 %% Saving data as WFDB
 % looking for peaks in temporary signal
-[~,qrsref] = findpeaks(ref_sig,'MinPeakDistance',T_LEN-1);
-[~,qrsabdm] = findpeaks(abdm_sig,'MinPeakDistance',T_LEN-1);
-
+[~,qrsref] = findpeaks(ref_sig,'MinPeakDistance',T_LEN-10);
+qrsref([1,20]) = [];
+[~,qrsabdm] = findpeaks(abdm_sig,'MinPeakDistance',T_LEN-10);
+qrsabdm([1,20]) = [];
 % writting to WFDB
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
 tm2 = 1:length(ref_sig); tm2 = tm2'-1;

@@ -255,7 +255,6 @@ validR = temp_stamp2(idxR);           % valid R-peak sample-stamps
 validT = temp_stamp2(idxR+1);           % valid first T-peak sample-stamps
 clear idxR annstr pees obrackts cbrackts temp_stamp2 temp_types2
 % == Q wave (start)
-% is defined as an open bracket before the R-peak (no annotation between)
 rees = arrayfun(@(x) strcmp(x,'N'),temp_types);          % 'R'
 goodR = ismember(temp_stamp(rees),validR);
 Rpeaks = find(rees);   % annotation number
@@ -282,11 +281,11 @@ if sum(idxbi) > 0   % case biphasic waves occured
     th = mean([valbi valnonbi]); % theight with gain
     for i = 1:length(bindx); tpeak(i)=ann_stamp(posmax(i,bindx(i)));end
     tpeak = sort([tpeak ann_stamp(nonbi)'])';
-    tpeak = round(mean(tpeak-ann_stamp(Rpeaks)));
+    tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));
 else
     th = mean(abs(signal(ann_stamp(Tpeaks))));   
     tpeak = ann_stamp(Tpeaks);
-    tpeak = round(mean(tpeak-ann_stamp(Rpeaks)));
+    tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));
 end
 
 

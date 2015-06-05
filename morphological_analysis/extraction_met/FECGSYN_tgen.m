@@ -91,11 +91,6 @@ relevantMode.NbCycles = 0;
 
 % == linear phase wrapping (shift in -pi/6)
 phase = FECGx_kf_PhaseCalc(qrs,NB_SAMPLES);
-nshift = find(phase>pi/6,1,'first'); % considering theta0
-phase = FECGx_kf_PhaseCalc(qrs,NB_SAMPLES+nshift-1);
-phase(1:nshift-1) = [];
-
-
 PhaseChangePoints = find(phase(2:end)<0&phase(1:end-1)>0);
 NB_CYCLES = length(PhaseChangePoints);
 
@@ -160,24 +155,27 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
     if isempty(relevantMode)
         % if we did not catch anything then output rubbish
         relevantMode.cycleMean = ones(NB_BINS,1);
+        relevantMode.cycleStd = ones(NB_BINS,1);
         relevantMode.NbCycles  = 0;
+        relevantMode.cycleLen = 0;
         status = 0;
+        template.avg = NaN;
+        template.stdev = NaN;
     else
         relevantModeStruc = [relevantMode{:}];
         [~,pos] = max([relevantModeStruc.NbCycles]); % look for dominant mode
         relevantMode = relevantMode{pos}; % only return the dominant mode for this application
         status = 1;
+                        
+        % == Converting template from bins back to samples
+        desl = round(-NB_BINS/6); % -pi/3 shift
+        template.avg = circshift(relevantMode.cycleMean,desl); 
+        template.stdev = circshift(relevantMode.cycleStd,desl); % -pi/3 shift
+        template.avg = resample(template.avg,round(mean(relevantMode.cycleLen)),NB_BINS);
+        template.stdev = resample(template.avg,round(mean(relevantMode.cycleLen)),NB_BINS)';
     end
     THRES = THRES-PACE;
 end
-
-% == Adjusting peak at 1/6 of the total interval
-template.avg = circshift(relevantMode.cycleMean',-round(NB_BINS/6))';
-template.stdev = circshift(relevantMode.cycleStd',-round(NB_BINS/6))';
-
-% == Converting template from bins back to samples
-template.avg = resample(template.avg,round(mean(relevantMode.cycleLen)),NB_BINS);
-template.stdev = resample(template.stdev,round(mean(relevantMode.cycleLen)),NB_BINS);
 
 if debug
    fprintf('The number of cycles constituting the dominant mode was %f \n',relevantMode.NbCycles);

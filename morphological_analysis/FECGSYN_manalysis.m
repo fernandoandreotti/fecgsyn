@@ -79,7 +79,7 @@ ref_sig = filtfilt(b_hp,a_hp,ref_sig);
 
 %% Saving data as WFDB
 % looking for peaks in temporary signal
-[~,qrsref] = findpeaks(ref_sig,'MinPeakDistance',T_LEN-10);
+[~,qrsref] = 5/12*T_LEN;
 qrsref([1,20]) = [];
 [~,qrsabdm] = findpeaks(abdm_sig,'MinPeakDistance',T_LEN-10);
 qrsabdm([1,20]) = [];
@@ -95,30 +95,30 @@ wrann('refsig','qrs',qrsref,repmat('N',20,1));
 % ref signal
 ecgpuwave('refsig','edr',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 [allref,alltypes_r] = rdann('refsig','edr');
-if debug   
-    figure(2)
-    ax(1)=subplot(2,1,1);
-    cla
-    plot(ref_sig./gain)
-    hold on
-    plot(allref,ref_sig(allref)./gain,'or')
-    text(allref,ref_sig(allref)./gain+0.1,alltypes_r)
-    title('Reference Signal')
-end
+% if debug   
+%     figure(2)
+%     ax(1)=subplot(2,1,1);
+%     cla
+%     plot(ref_sig./gain)
+%     hold on
+%     plot(allref,ref_sig(allref)./gain,'or')
+%     text(allref,ref_sig(allref)./gain+0.1,alltypes_r)
+%     title('Reference Signal')
+% end
 % test signal
 ecgpuwave('absig','edr',[],[],'qrsabdm'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 [alltest,alltypes_t] = rdann('absig','edr');
-if debug
-    figure(2)
-    ax(2)=subplot(2,1,2);
-    cla
-    plot(abdm_sig./gain)
-    hold on
-    plot(alltest,abdm_sig(alltest)./gain,'or')
-    text(alltest,abdm_sig(alltest)./gain+0.2,alltypes_t)
-    linkaxes(ax,'x')
-    title('Test Signal')
-end
+% if debug
+%     figure(2)
+%     ax(2)=subplot(2,1,2);
+%     cla
+%     plot(abdm_sig./gain)
+%     hold on
+%     plot(alltest,abdm_sig(alltest)./gain,'or')
+%     text(alltest,abdm_sig(alltest)./gain+0.2,alltypes_t)
+%     linkaxes(ax,'x')
+%     title('Test Signal')
+% end
 
 % == Calculate error on morphological analysis made by extracted data
 
@@ -175,8 +175,6 @@ qt_test = qt_test*1000/(2*FS_ECGPU);          % in ms
 th_test = (th_test-isoel)./gain;                  % in mV (or not)
 
 if debug   
-    pskip = sum(qrsref<qs(1));
-    offset = pskip*T_LEN;
     figure(1)
     ax(2)=subplot(2,1,2);
     cla

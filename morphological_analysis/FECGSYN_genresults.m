@@ -4,7 +4,7 @@ function FECGSYN_genresults(path_orig,fs,ch,exp3)
 % effects, foetal movement etc).
 % Experiment 2 - Statistics (F1,MAE,PPV,SE)
 % Experiment 3 - Morphologycal Analysis
-% 
+%
 % Input:
 % path_orig:        Path for original dataset
 % fs:               Sampling frequency
@@ -52,10 +52,10 @@ fls_orig = arrayfun(@(x)x.name,fls_orig,'UniformOutput',false);
 % extracted files
 if ~exp3
     path_ext = [path_orig 'exp2' slashchar];
-    fls_ext = dir([path_ext '*.mat']); % looking for .mat (creating index)  
+    fls_ext = dir([path_ext '*.mat']); % looking for .mat (creating index)
 else
     path_ext = [path_orig 'exp3' slashchar];
-    fls_ext = dir([path_ext '*.mat']); % looking for .mat (creating index)  
+    fls_ext = dir([path_ext '*.mat']); % looking for .mat (creating index)
 end
 fls_ext = arrayfun(@(x)x.name,fls_ext,'UniformOutput',false);
 idx = cellfun(@(x) strcmp(x(1:3),'rec'),fls_ext); % ignoring files not begining with 'rec'
@@ -80,7 +80,7 @@ morph.arls = cell(length(fls_orig),7);
 morph.aesn = cell(length(fls_orig),7);
 
 % = Runs through list of extracted files
-for i = 1:length(fls_ext)
+for i = 6:length(fls_ext)
     disp(fls_ext{i})
     %= loading extracted file
     [rec,met] = strtok(fls_ext(i),'_');
@@ -117,13 +117,13 @@ for i = 1:length(fls_ext)
         [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
         MAE = MAE*1000/fs_new;
         stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
-    %= Getting statistics (exp 3)        
+        %= Getting statistics (exp 3)
     else
         bss = strcmp(method,'JADEICA')|strcmp(method,'PCA'); % apply coordinate transformation or not
         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4)];
         [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname);
-        morph.(method)(origrec,:) = outputs;       
-    end     
+        morph.(method)(origrec,:) = outputs;
+    end
     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
 end
 
@@ -182,7 +182,7 @@ if debug
         auxtab = [median(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
         table(counter1,:) = reshape(auxtab',1,7*4);
         counter1 = counter1 + 1;
-
+        
         % MAE
         statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
         auxtab = [median(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
@@ -261,7 +261,7 @@ qt_test = cell(length(residual)/SAMPS,1);
 qt_ref = qt_test;
 th_test = qt_test;
 th_ref = qt_test;
-qt_err = qt_test; 
+qt_err = qt_test;
 theight_err = qt_test;
 numbNaN = 0;
 %= Block-wise calculation and template generation
@@ -277,16 +277,27 @@ for ch = 1:size(residual,1)
         % qrs complexes in interval
         qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
         % abdominal signal template
-        temp_abdm = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
+        [temp_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
         % reference template
-        temp_ref = FECGSYN_tgen(srcfecg(ch,j:endsamp),qrstmp,fs);
+        [temp_ref,status2] = FECGSYN_tgen(srcfecg(ch,j:endsamp),qrstmp,fs);
         temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
-        % evaluating morphological features
-        [qt_test{block},qt_ref{block},th_test{block},th_ref{block},...
-            qt_err{block},theight_err{block}] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
+        
+        if (~status1||~status2)
+            qt_test{block} = NaN;
+            qt_ref{block} = NaN;
+            th_test{block} = NaN;
+            th_ref{block} = NaN;
+            qt_err{block} = NaN;
+            theight_err{block} = NaN;
+        else
+            % evaluating morphological features
+            [qt_test{block},qt_ref{block},th_test{block},th_ref{block},...
+                qt_err{block},theight_err{block}] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
+        end
+        
         if debug && ~isnan(qt_test{block}) && ~isnan(qt_ref{block})
-            drawnow
             try
+                drawnow
                 print('-dpng','-r72',[fname '_ch' num2str(ch) '_s' num2str(block) '.png'])
             catch
                 warning('Failed to save plot')

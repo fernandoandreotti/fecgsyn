@@ -219,7 +219,7 @@ function [qtint,th,qs,tends,tpeak] = QTcalc(ann_types,ann_stamp,signal,fs)
 % Inputs
 % ann_types:          Type of ALL annotations obtained from ECGPUWAVE
 % ann_stamp:          Samplestamp of ALL annotations obtained from ECGPUWAVE
-% T_LEN:              Length of template
+% fs:                 Sampling frequency
 % 
 % Outputs
 % qtint:              Length of QT (samples)
@@ -230,6 +230,7 @@ function [qtint,th,qs,tends,tpeak] = QTcalc(ann_types,ann_stamp,signal,fs)
 %
 %
 %
+QT_MAX = 0.5; % Maximal QT size (in s)  MAY VARY DEPENDING ON APPLICATION!
 
 temp_types = ann_types;     % allows exclusion of unsuitable annotations
 temp_stamp = ann_stamp;
@@ -238,6 +239,8 @@ temp_stamp = ann_stamp;
 annstr = strcat({temp_types'});
 idxbi=cell2mat(regexp(annstr,'tt')); % biphasic
 nonbi=cell2mat(regexp(annstr,'\(t\)')) +1; % regular
+nonbi= [nonbi (cell2mat(regexp(annstr,'\)t\(')) +1)]; % regular
+nonbi = sort(nonbi);
 temp_types(idxbi) = [];    % temporarilly clearing first T in biphasic cases
 temp_stamp(idxbi) = [];
 clear biphasic tees
@@ -290,7 +293,7 @@ end
 
 
 if isempty(tends), tends = NaN; end
-if qtint>0.5*fs, qtint = NaN; end   % limit QT interval length: MIGHT VARY IN OTHER APPLICATIONS!
+if qtint>QT_MAX*fs, qtint = NaN; end  
 if isempty(qs), qs = NaN; end
 if isempty(tpeak), tpeak = NaN; end
 

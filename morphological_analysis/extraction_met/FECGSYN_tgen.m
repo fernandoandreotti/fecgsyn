@@ -1,4 +1,4 @@
-function [template,status] = FECGSYN_tgen(ecg,qrs,fs)
+function [template,qrsloc,status] = FECGSYN_tgen(ecg,qrs,fs)
 % this function is used to contruct a template ecg based on the location of
 % the R-peaks. A series of peaks that match with each other are stacked to
 % build a template. This template can then be used for ecg morphological
@@ -161,6 +161,7 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
         status = 0;
         template.avg = NaN;
         template.stdev = NaN;
+        qrsloc = NaN;
     else
         relevantModeStruc = [relevantMode{:}];
         [~,pos] = max([relevantModeStruc.NbCycles]); % look for dominant mode
@@ -168,11 +169,14 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
         status = 1;
                         
         % == Converting template from bins back to samples
-        desl = round(-NB_BINS/6); % -pi/3 shift
-        template.avg = circshift(relevantMode.cycleMean,desl); 
-        template.stdev = circshift(relevantMode.cycleStd,desl); % -pi/3 shift
+        desl = round(NB_BINS/6); % -pi/3 shift
+        qrsloc = round((NB_BINS/2 - desl)*round(mean(relevantMode.cycleLen))/NB_BINS);
+        template.avg = circshift(relevantMode.cycleMean',-desl)'; 
+        template.stdev = circshift(relevantMode.cycleStd',-desl)'; % -pi/3 shift
         template.avg = resample(template.avg,round(mean(relevantMode.cycleLen)),NB_BINS);
         template.stdev = resample(template.avg,round(mean(relevantMode.cycleLen)),NB_BINS)';
+        [~,delay]=max(abs(template.avg));
+        if qrsloc-delay<3, qrsloc = delay; end  % allow some alignment
     end
     THRES = THRES-PACE;
 end

@@ -1,11 +1,12 @@
-function [qt_test,qt_ref,th_test,th_ref,qt_err,th_err] = FECGSYN_manalysis(abdm_temp,ref_temp,fs)
+function [qt_test,qt_ref,th_test,th_ref,qt_err,th_err] = FECGSYN_manalysis(abdm_temp,ref_temp,qrsabdm,qrsref,fs)
 % This function calculates morphological features form signals given two
 % templates (reference and abdm). Statistics are give as %.
 %
 % Input:
-%  abdm_temp:       Template to be tested
-%  path_ext:        Path for extracted dataset
-%  fs:              Sampling frequency
+%  abdm_temp:               Template to be tested
+%  ref_temp:                Reference template
+%  qrs_abdm/qrs_ref:        Location of qrs in template
+%  fs:                      Sampling frequency
 %
 %
 % NI-FECG simulator toolbox, version 1.0, February 2014
@@ -79,10 +80,9 @@ ref_sig = filtfilt(b_hp,a_hp,ref_sig);
 
 %% Saving data as WFDB
 % looking for peaks in temporary signal
-[~,qrsref] = 5/12*T_LEN;
-qrsref([1,20]) = [];
-[~,qrsabdm] = findpeaks(abdm_sig,'MinPeakDistance',T_LEN-10);
-qrsabdm([1,20]) = [];
+qrsref = cumsum([0 repmat(T_LEN,1,19)])+2*qrsref;
+qrsabdm = cumsum([0 repmat(T_LEN,1,19)])+2*qrsabdm;
+qrsref([1,20]) = []; qrsabdm([1,20]) = [];
 % writting to WFDB
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
 tm2 = 1:length(ref_sig); tm2 = tm2'-1;
@@ -136,6 +136,10 @@ if isnan(qt_ref)||isnan(th_ref)
     disp('manalysis: Could not encounter QT wave for REFERENCE.')
     return
 end
+if isnan(tpeak)
+    disp
+end
+
 isoel = median(ref_temp(round(qrsref+0.185*fs):end));
 qt_ref = qt_ref*1000/(2*FS_ECGPU);          % in ms
 th_ref = (th_ref-isoel)./gain;              % in mV (or not)
@@ -150,7 +154,12 @@ if debug
     rpeak = qrsref(1)-T_LEN;
     plot(rpeak+qs,ref_temp(rpeak+qs)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
     plot(rpeak+tends,ref_temp(rpeak+tends)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
-    plot(rpeak+tpeak,ref_temp(rpeak+tpeak)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
+    try
+        plot(rpeak+tpeak,ref_temp(rpeak+tpeak)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
+    catch
+    disp    
+    end
+    
     title('Reference Signal')   
     clear qs tends twave offset rpeak
 end

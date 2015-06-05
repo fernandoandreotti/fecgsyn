@@ -80,7 +80,7 @@ morph.arls = cell(length(fls_orig),7);
 morph.aesn = cell(length(fls_orig),7);
 
 % = Runs through list of extracted files
-for i = 6:length(fls_ext)
+for i = 13:length(fls_ext)
     disp(fls_ext{i})
     %= loading extracted file
     [rec,met] = strtok(fls_ext(i),'_');
@@ -277,9 +277,9 @@ for ch = 1:size(residual,1)
         % qrs complexes in interval
         qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
         % abdominal signal template
-        [temp_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
+        [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
         % reference template
-        [temp_ref,status2] = FECGSYN_tgen(srcfecg(ch,j:endsamp),qrstmp,fs);
+        [temp_ref,qrs_ref,status2] = FECGSYN_tgen(srcfecg(ch,j:endsamp),qrstmp,fs);
         temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
         
         if (~status1||~status2)
@@ -292,7 +292,7 @@ for ch = 1:size(residual,1)
         else
             % evaluating morphological features
             [qt_test{block},qt_ref{block},th_test{block},th_ref{block},...
-                qt_err{block},theight_err{block}] = FECGSYN_manalysis(temp_abdm,temp_ref,fs);
+                qt_err{block},theight_err{block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs);
         end
         
         if debug && ~isnan(qt_test{block}) && ~isnan(qt_ref{block})

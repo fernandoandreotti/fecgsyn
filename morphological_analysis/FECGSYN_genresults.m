@@ -56,6 +56,30 @@ if ~exp3
 else
     path_ext = [path_orig 'exp3' slashchar];
     fls_ext = dir([path_ext '*.mat']); % looking for .mat (creating index)
+    % Preprocessing Filter coefficiens
+    % high-pass filter
+    Fstop = 0.5;  % Stopband Frequency
+    Fpass = 1;    % Passband Frequency
+    Astop = 20;   % Stopband Attenuation (dB)
+    Apass = 0.1;  % Passband Ripple (dB)
+    h = fdesign.highpass('fst,fp,ast,ap', Fstop, Fpass, Astop, Apass, fs_new);
+    Hhp = design(h, 'butter', ...
+        'MatchExactly', 'stopband', ...
+        'SOSScaleNorm', 'Linf', ...
+        'SystemObject', true);
+    [b_hp,a_hp] = tf(Hhp);
+    % low-pass filter
+    Fpass = 100;   % Passband Frequency
+    Fstop = 110;  % Stopband Frequency
+    Astop = 20;   % Stopband Attenuation (dB)
+    Apass = 0.1;    % Passband Ripple (dB)
+    h = fdesign.lowpass('fp,fst,ap,ast', Fpass, Fstop, Apass, Astop, fs_new);
+    Hlp = design(h, 'butter', ...
+        'MatchExactly', 'stopband', ...
+        'SOSScaleNorm', 'Linf');
+    [b_lp,a_lp] = tf(Hlp);
+    clear Fstop Fpass Astop Apass h Hhp Hlp
+    
 end
 fls_ext = arrayfun(@(x)x.name,fls_ext,'UniformOutput',false);
 idx = cellfun(@(x) strcmp(x(1:3),'rec'),fls_ext); % ignoring files not begining with 'rec'
@@ -80,7 +104,7 @@ morph.arls = cell(length(fls_orig),7);
 morph.aesn = cell(length(fls_orig),7);
 
 % = Runs through list of extracted files
-for i = 669:length(fls_ext)
+for i = 961:length(fls_ext)
     disp(fls_ext{i})
     %= loading extracted file
     [rec,met] = strtok(fls_ext(i),'_');
@@ -121,7 +145,7 @@ for i = 669:length(fls_ext)
     else
         bss = strcmp(method,'JADEICA')|strcmp(method,'PCA'); % apply coordinate transformation or not
         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4)];
-        [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname);
+        [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname,[b_hp,a_hp,b_lp,a_lp]);
         morph.(method)(origrec,:) = outputs;
     end
     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
@@ -232,7 +256,7 @@ end
 end
 
 function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numbNaN]=...
-    morpho(fecg,residual,fqrs,fs,SAMPS,bss,fname)
+    morpho(fecg,residual,fqrs,fs,SAMPS,bss,fname,filterc)
 %% Function to perform morphological analysis for TS/BSS extracted data
 %
 % >Inputs
@@ -242,6 +266,8 @@ function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numbNaN]=...
 % SAMPS:        Number of samples used for generating templates
 % bss:          Boolean true if using BSS technique
 % fname:        Filename to be used in saving plots
+% filterc:      Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
+%               highpass (hp) and lowpass (lp)
 %
 % > Outputs
 % qt_err: Array containing QT error for each template
@@ -291,7 +317,7 @@ for ch = 1:size(residual,1)
         else
             % evaluating morphological features
             [qt_test{ch,block},qt_ref{ch,block},th_test{ch,block},th_ref{ch,block},...
-                qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs);
+                qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc);
         end
         
         if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})
@@ -308,9 +334,9 @@ for ch = 1:size(residual,1)
 end
 % Figuring out how many NaNs were output per channel
 try
-id1 = cellfun(@(x) isnan(x),qt_test);
-id2 = cellfun(@(x) isnan(x),qt_ref);
-numbNaN=sum(sum(id1|id2));
+    id1 = cellfun(@(x) isnan(x),qt_test);
+    id2 = cellfun(@(x) isnan(x),qt_ref);
+    numbNaN=sum(sum(id1|id2));
 catch
     disp
 end

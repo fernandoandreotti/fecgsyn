@@ -1,4 +1,4 @@
-function [qt_test,qt_ref,th_test,th_ref,qt_err,th_err] = FECGSYN_manalysis(abdm_temp,ref_temp,qrsabdm,qrsref,fs)
+function [qt_test,qt_ref,th_test,th_ref,qt_err,th_err] = FECGSYN_manalysis(abdm_temp,ref_temp,qrsabdm,qrsref,fs,filterc)
 % This function calculates morphological features form signals given two
 % templates (reference and abdm). Statistics are give as %.
 %
@@ -7,6 +7,8 @@ function [qt_test,qt_ref,th_test,th_ref,qt_err,th_err] = FECGSYN_manalysis(abdm_
 %  ref_temp:                Reference template
 %  qrs_abdm/qrs_ref:        Location of qrs in template
 %  fs:                      Sampling frequency
+%  filterc:                 Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
+%                           highpass (hp) and lowpass (lp)
 %
 %
 % NI-FECG simulator toolbox, version 1.0, February 2014
@@ -38,7 +40,7 @@ FS_ECGPU = 250;     % default sampling frequency for ECGPUWAVE
 gain = 200;        % saving gain for WFDB format
 
 %% Preprocessing
-
+b_hp = filterc(1); a_hp = filterc(2); b_lp = filterc(3);a_lp= filterc(4);
 % resample case input data not compatible with ECGPUWAVE
 % upsampling to 500Hz so that foetal heart looks like an adult heart
 abdm_temp = resample(abdm_temp,2*FS_ECGPU,fs);
@@ -53,30 +55,10 @@ abdm_sig = repmat(abdm_temp,1,20)';
 ref_sig = repmat(ref_temp,1,20)';
 
 % Preprocessing reference channel
-% high-pass filter
-Fstop = 0.5;  % Stopband Frequency
-Fpass = 1;    % Passband Frequency
-Astop = 20;   % Stopband Attenuation (dB)
-Apass = 0.1;  % Passband Ripple (dB)
-h = fdesign.highpass('fst,fp,ast,ap', Fstop, Fpass, Astop, Apass, FS_ECGPU);
-Hhp = design(h, 'butter', ...
-    'MatchExactly', 'stopband', ...
-    'SOSScaleNorm', 'Linf', ...
-    'SystemObject', true);
-[b_hp,a_hp] = tf(Hhp);
-% low-pass filter
-Fpass = 100;   % Passband Frequency
-Fstop = 110;  % Stopband Frequency
-Apass = 1;    % Passband Ripple (dB)
-Astop = 20;   % Stopband Attenuation (dB)
-h = fdesign.lowpass('fp,fst,ap,ast', Fpass, Fstop, Apass, Astop, FS_ECGPU);
-Hlp = design(h, 'butter', ...
-    'MatchExactly', 'stopband', ...
-    'SOSScaleNorm', 'Linf');
-[b_lp,a_lp] = tf(Hlp);
-clear Fstop Fpass Astop Apass h Hhp Hlp
 ref_sig = filtfilt(b_lp,a_lp,ref_sig);
 ref_sig = filtfilt(b_hp,a_hp,ref_sig);
+abdm_sig = filtfilt(b_lp,a_lp,abdm_sig); 
+abdm_sig = filtfilt(b_hp,a_hp,abdm_sig); 
 
 %% Saving data as WFDB
 % looking for peaks in temporary signal

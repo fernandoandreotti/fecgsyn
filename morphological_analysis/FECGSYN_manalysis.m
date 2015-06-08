@@ -239,7 +239,8 @@ temp_stamp = ann_stamp;
 annstr = strcat({temp_types'});
 idxbi=cell2mat(regexp(annstr,'tt')); % biphasic
 nonbi=cell2mat(regexp(annstr,'\(t\)')) +1; % regular
-nonbi= [nonbi (cell2mat(regexp(annstr,'\)t\(')) +1)]; % regular
+nonbi= [nonbi (cell2mat(regexp(annstr,'\)t\(')) +1)]; % weird t
+nonbi= [nonbi (cell2mat(regexp(annstr,'\)t\)')) +1)]; % weird t2
 nonbi = sort(nonbi);
 temp_types(idxbi) = [];    % temporarilly clearing first T in biphasic cases
 temp_stamp(idxbi) = [];
@@ -272,6 +273,11 @@ tees = arrayfun(@(x) strcmp(x,'t'),temp_types);
 goodT = ismember(temp_stamp(tees),validT);
 Tpeaks = find(tees);   % annotation number
 Tpeaks(~goodT) = [];   % eliminating R's without T
+
+if any(Tpeaks >= length(temp_stamp)) % avoid bugs
+    Tpeaks(Tpeaks >= length(temp_stamp)) = [];
+    Rpeaks = Rpeaks(1:length(Tpeaks));
+end
 tends = round(mean(temp_stamp(Tpeaks+1) - temp_stamp(Rpeaks)));
 
 qtint = tends-qs; % qt interval in samples
@@ -284,7 +290,11 @@ if sum(idxbi) > 0   % case biphasic waves occured
     th = mean([valbi valnonbi]); % theight with gain
     for i = 1:length(bindx); tpeak(i)=ann_stamp(posmax(i,bindx(i)));end
     tpeak = sort([tpeak ann_stamp(nonbi)'])';
-    tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));
+    try
+        tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));
+    catch
+        disp
+    end
 else
     th = mean(abs(signal(ann_stamp(Tpeaks))));   
     tpeak = ann_stamp(Tpeaks);

@@ -220,10 +220,14 @@ temp_stamp = ann_stamp;
 %== Treat biphasic T-waves
 annstr = strcat({temp_types'});
 idxbi=cell2mat(regexp(annstr,'tt')); % biphasic
-nonbi=cell2mat(regexp(annstr,'\(t\)')) +1; % regular
-nonbi= [nonbi (cell2mat(regexp(annstr,'\)t\(')) +1)]; % weird t
-nonbi= [nonbi (cell2mat(regexp(annstr,'\)t\)')) +1)]; % weird t2
-nonbi = sort(nonbi);
+nonbi1=cell2mat(regexp(annstr,'\(t\)')) +1; % regular
+nonbi2= cell2mat(regexp(annstr,'\)t\(')) +1; % weird t
+
+nonbi3= cell2mat(regexp(annstr,'\)t\)')) +1; % weird t2
+if ~isempty(nonbi2)||~isempty(nonbi3)
+    disp('Whaaaaaaat!')
+end
+nonbi = sort([nonbi1 nonbi2 nonbi3]);
 temp_types(idxbi) = [];    % temporarilly clearing first T in biphasic cases
 temp_stamp(idxbi) = [];
 clear biphasic tees
@@ -278,9 +282,13 @@ if sum(idxbi) > 0   % case biphasic waves occured
         disp
     end
 else
+    try
     th = mean(abs(signal(ann_stamp(Tpeaks))));   
     tpeak = ann_stamp(Tpeaks);
     tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));
+    catch
+        disp
+    end
 end
 
 

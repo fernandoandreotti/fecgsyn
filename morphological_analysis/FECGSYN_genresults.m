@@ -104,7 +104,8 @@ morph.arls = cell(length(fls_orig),7);
 morph.aesn = cell(length(fls_orig),7);
 
 % = Runs through list of extracted files
-for i = 961:length(fls_ext)
+for i = 1:5000%length(fls_ext)
+% for i = randperm(length(fls_ext))
     disp(fls_ext{i})
     %= loading extracted file
     [rec,met] = strtok(fls_ext(i),'_');
@@ -151,7 +152,7 @@ for i = 961:length(fls_ext)
     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
 end
 
-save([path_orig 'wkspace_exp2_new'])
+save([path_orig 'wkspace_exp1_new'])
 
 %% Plots and statistics generation
 if debug

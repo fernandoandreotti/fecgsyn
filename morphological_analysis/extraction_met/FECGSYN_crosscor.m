@@ -33,10 +33,11 @@ coeff = zeros(1,nbLeads);
 
 % == compute correlation coeff
 for i=1:nbLeads
-%   C = corrcoef(cycleA,cycleB);    
-%   coeff(i) = C(1,2);
-    coeff(i) = sqrt(abs((cycleA(i,:)-mean(cycleA(i,:)))*...
-        (cycleB(i,:)-mean(cycleB(i,:)))')./(NB_BINS*std(cycleA(i,:))*std(cycleB(i,:))));
+  [r,p] = corrcoef(cycleA,cycleB); 
+  coeff(i) = abs(r(1,2));
+  
+%     coeff(i) = sqrt(abs((cycleA(i,:)-mean(cycleA(i,:)))*...
+%         (cycleB(i,:)-mean(cycleB(i,:)))')./(NB_BINS*std(cycleA(i,:))*std(cycleB(i,:))));
 end
 
 if mean(coeff)>thres; 

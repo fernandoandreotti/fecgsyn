@@ -34,7 +34,7 @@ function FECGSYN_genresults(path_orig,fs,ch,exp3)
 % You should have received a copy of the GNU General Public License
 % along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-global debug
+global debug filesproc
 slashchar = char('/'*isunix + '\'*(~isunix));
 if debug,  mkdir([path_orig 'plots' slashchar]), end
 
@@ -104,7 +104,7 @@ morph.arls = cell(length(fls_orig),7);
 morph.aesn = cell(length(fls_orig),7);
 
 % = Runs through list of extracted files
-for i = 1:length(fls_ext)
+for i = filesproc%length(fls_ext)
 % for i = randperm(length(fls_ext))
     disp(fls_ext{i})
     fprintf('Data %d out of %d \n',i,length(fls_ext));
@@ -158,7 +158,7 @@ for i = 1:length(fls_ext)
     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
 end
 
-save([path_orig 'wkspace_exp1_new'])
+save([path_orig 'wksp' num2str(filesproc(end))])
 
 %% Plots and statistics generation
 if debug

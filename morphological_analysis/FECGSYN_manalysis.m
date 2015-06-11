@@ -37,7 +37,7 @@ global debug
 
 % resampling and repeating templates
 FS_ECGPU = 250;     % default sampling frequency for ECGPUWAVE
-gain = 200;        % saving gain for WFDB format
+gain = 1000;        % saving gain for WFDB format
 
 %% Preprocessing
 b_hp = filterc(1); a_hp = filterc(2); b_lp = filterc(3);a_lp= filterc(4);
@@ -45,11 +45,13 @@ b_hp = filterc(1); a_hp = filterc(2); b_lp = filterc(3);a_lp= filterc(4);
 % upsampling to 500Hz so that foetal heart looks like an adult heart
 abdm_temp = resample(abdm_temp,2*FS_ECGPU,fs);
 ref_temp = resample(ref_temp,2*FS_ECGPU,fs);
+qrsref = round(qrsref*2*FS_ECGPU/fs);
+qrsabdm = round(qrsabdm*2*FS_ECGPU/fs);
 T_LEN = length(abdm_temp);  % template length
     
-wsign = abs(max(abdm_temp))>abs(min(abdm_temp));
-wsign = 2*wsign - 1;
+wsign = sign(abdm_temp(qrsabdm));
 abdm_temp = gain*wsign*abdm_temp/max(abs(abdm_temp)); % normalizing for
+wsign = sign(ref_temp(qrsref));
 ref_temp = gain*wsign*ref_temp/max(abs(ref_temp));
 abdm_sig = repmat(abdm_temp,1,20)';
 ref_sig = repmat(ref_temp,1,20)';
@@ -62,45 +64,48 @@ abdm_sig = filtfilt(b_hp,a_hp,abdm_sig);
 
 %% Saving data as WFDB
 % looking for peaks in temporary signal
-qrsref = cumsum([0 repmat(T_LEN,1,19)])+2*qrsref;
-qrsabdm = cumsum([0 repmat(T_LEN,1,19)])+2*qrsabdm;
+qrsref = cumsum([0 repmat(T_LEN,1,19)])+qrsref;
+qrsabdm = cumsum([0 repmat(T_LEN,1,19)])+qrsabdm;
 qrsref([1,20]) = []; qrsabdm([1,20]) = [];
 % writting to WFDB
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
 tm2 = 1:length(ref_sig); tm2 = tm2'-1;
 wrsamp(tm1,abdm_sig,'absig',FS_ECGPU,gain,'')
 wrsamp(tm2,ref_sig,'refsig',FS_ECGPU,gain,'')
-wrann('absig','qrs',qrsabdm,repmat('N',20,1));
-wrann('refsig','qrs',qrsref,repmat('N',20,1));
+wrann('absig','qrs',qrsabdm',repmat('N',20,1));
+wrann('refsig','qrs',qrsref',repmat('N',20,1));
 
 %% Segmentation using ECGPUWAVE
 % ref signal
 ecgpuwave('refsig','edr',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 [allref,alltypes_r] = rdann('refsig','edr');
-% if debug   
-%     figure(2)
-%     ax(1)=subplot(2,1,1);
-%     cla
-%     plot(ref_sig./gain)
-%     hold on
-%     plot(allref,ref_sig(allref)./gain,'or')
-%     text(allref,ref_sig(allref)./gain+0.1,alltypes_r)
-%     title('Reference Signal')
-% end
+rees = arrayfun(@(x) strcmp(x,'N'),alltypes_r);          % 'R'
+if debug   
+    figure(2)
+    ax(1)=subplot(2,1,1);
+    cla
+    plot(ref_sig./gain)
+    hold on
+    plot(allref,ref_sig(allref)./gain,'or')
+    plot(qrsref,0,'sg')
+    text(allref,ref_sig(allref)./gain+0.1,alltypes_r)
+    title('Reference Signal')
+end
 % test signal
 ecgpuwave('absig','edr',[],[],'qrsabdm'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 [alltest,alltypes_t] = rdann('absig','edr');
-% if debug
-%     figure(2)
-%     ax(2)=subplot(2,1,2);
-%     cla
-%     plot(abdm_sig./gain)
-%     hold on
-%     plot(alltest,abdm_sig(alltest)./gain,'or')
-%     text(alltest,abdm_sig(alltest)./gain+0.2,alltypes_t)
-%     linkaxes(ax,'x')
-%     title('Test Signal')
-% end
+if debug
+    figure(2)
+    ax(2)=subplot(2,1,2);
+    cla
+    plot(abdm_sig./gain)
+    hold on
+    plot(qrsabdm,0,'sg')
+    plot(alltest,abdm_sig(alltest)./gain,'or')
+    text(alltest,abdm_sig(alltest)./gain+0.2,alltypes_t)
+    linkaxes(ax,'x')
+    title('Test Signal')
+end
 
 % == Calculate error on morphological analysis made by extracted data
 
@@ -222,7 +227,6 @@ annstr = strcat({temp_types'});
 idxbi=cell2mat(regexp(annstr,'tt')); % biphasic
 nonbi1=cell2mat(regexp(annstr,'\(t\)')) +1; % regular
 nonbi2= cell2mat(regexp(annstr,'\)t\(')) +1; % weird t
-
 nonbi3= cell2mat(regexp(annstr,'\)t\)')) +1; % weird t2
 if ~isempty(nonbi2)||~isempty(nonbi3)
     disp('Whaaaaaaat!')

@@ -172,11 +172,11 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
         
         % == Converting template from bins back to samples
         desl = round(NB_BINS/6); % -pi/3 shift
-        qrsloc = round((NB_BINS/2 - desl)*round(mean(relevantMode.cycleLen))/NB_BINS);
         template.avg = circshift(relevantMode.cycleMean',-desl)';
         template.stdev = circshift(relevantMode.cycleStd',-desl)'; % -pi/3 shift
         template.avg = resample(template.avg,round(mean(relevantMode.cycleLen)),NB_BINS);
         template.stdev = resample(template.avg,round(mean(relevantMode.cycleLen)),NB_BINS)';
+        qrsloc = round(round((NB_BINS/2 - desl)*(length(template.avg)/NB_BINS)));
         [~,delay]=max(abs(template.avg));
         if qrsloc-delay<3, qrsloc = delay; end  % allow some alignment
     end

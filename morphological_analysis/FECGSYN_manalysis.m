@@ -50,9 +50,9 @@ qrsabdm = round(qrsabdm*2*FS_ECGPU/fs);
 T_LEN = length(abdm_temp);  % template length
     
 wsign = sign(abdm_temp(qrsabdm));
-abdm_temp = gain*wsign*abdm_temp/max(abs(abdm_temp)); % normalizing for
+abdm_temp = 2*gain*wsign*abdm_temp/abs(abdm_temp(qrsabdm)); % normalizing in 2 mV
 wsign = sign(ref_temp(qrsref));
-ref_temp = gain*wsign*ref_temp/max(abs(ref_temp));
+ref_temp = 2*gain*wsign*ref_temp/abs(ref_temp(qrsref));
 abdm_sig = repmat(abdm_temp,1,20)';
 ref_sig = repmat(ref_temp,1,20)';
 
@@ -102,7 +102,7 @@ if debug
     hold on
     plot(qrsabdm,0,'sg')
     plot(alltest,abdm_sig(alltest)./gain,'or')
-    text(alltest,abdm_sig(alltest)./gain+0.2,alltypes_t)
+    text(alltest,abdm_sig(alltest)./gain+0.1,alltypes_t)
     linkaxes(ax,'x')
     title('Test Signal')
 end

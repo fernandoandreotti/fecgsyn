@@ -146,6 +146,10 @@ for i = 1:length(fls_ext)
         stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
         %= Getting statistics (exp 3)
     else
+        if ~exist([path_orig 'wfdb'],'dir')
+            mkdir([path_orig 'wfdb'])
+        end
+        cd([path_orig 'wfdb'])
         bss = strcmp(method,'JADEICA')|strcmp(method,'PCA'); % apply coordinate transformation or not
         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4)];
         [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname,[b_hp,a_hp,b_lp,a_lp],i);

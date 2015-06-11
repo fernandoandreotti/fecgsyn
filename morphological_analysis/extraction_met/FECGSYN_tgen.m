@@ -4,19 +4,19 @@ function [template,qrsloc,status] = FECGSYN_tgen(ecg,qrs,fs)
 % build a template. This template can then be used for ecg morphological
 % analysis or further processing. Note that the qrs location inputed must
 % be as precise as possible. This approach for building the template ECG
-% seems to be the best of the alternatives that were tested and leaves the 
-% freedom of having more than one mode (i.e. multiple ECG template can be 
+% seems to be the best of the alternatives that were tested and leaves the
+% freedom of having more than one mode (i.e. multiple ECG template can be
 % built if there are different cycle morphology such as PVC)  but it is not
 % particularly fast.
 % The procedure for building the template is:
 % 1. create average wrapped template
 % 2. identify different modes present
-% 
+%
 % inputs
 %   ecg:            the ecg channel(s)
 %   qrs:            qrs location [number of samples]
 %    fs:            sampling frequency
-% 
+%
 % outputs
 %   relevantMode:   structure containing cycle, cycleMean and cycleStd
 %                   representing how many cycles have been selected to build the stack, the
@@ -25,8 +25,8 @@ function [template,qrsloc,status] = FECGSYN_tgen(ecg,qrs,fs)
 %                   of the precision of the estimation. *Only the dominant mode is outputted
 %                   for this application.*
 %   status:         bool, success or failed to extract a dominant mode
-% 
-% 
+%
+%
 % Dependencies: FECGSYN_phase_wrap.m
 %
 %
@@ -41,7 +41,7 @@ function [template,qrsloc,status] = FECGSYN_tgen(ecg,qrs,fs)
 %
 % outputs
 %   ecgme:   template ECG
-%   ecgsd:   ECG standard deviation used as a proxy of signal quality 
+%   ecgsd:   ECG standard deviation used as a proxy of signal quality
 %            (i.e. trust of the Kalman in observations)
 %   phaseme: mean phase of the template ECG
 %   nbcyc:   number of cycles used to build the template
@@ -84,7 +84,7 @@ MIN_TLEN = 0.35;     % minimum template length in ms - UPDATE ME DEPENDING ON AP
 PACE = 0.05;
 MIN_THRES = 0.6;
 cycle = zeros(NB_LEADS,NB_BINS);
-startCycle = 2;    
+startCycle = 2;
 NbModes = 1; % initialisation variable
 relevantModeInd = []; % - UPDATE ME DEPENDING ON APPLICATION
 relevantMode.NbCycles = 0;
@@ -118,11 +118,13 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
         match = 0;
         indMode = 1;
         while (~match&&indMode<=NbModes)
-            match = FECGSYN_crosscor(cycle,Mode{indMode}.cycleMean,THRES);
+            [r,~] = corrcoef(cycle,Mode{indMode}.cycleMean);
+            coeff = abs(r(1,2));
+            match = coeff>THRES;
             indMode = indMode+1;
         end
         if ~match  % if the new cycle does not match with the average cycle of any mode
-                  % then create a new mode 
+            % then create a new mode
             NbModes=NbModes+1;
             Mode{NbModes}.cycles = zeros(NB_LEADS,NB_BINS,1);
             Mode{NbModes}.cycles(:,:,1) = cycle;
@@ -140,18 +142,18 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
             Mode{indMode-1}.cycleStd = std(Mode{indMode-1}.cycles,0,3);
             Mode{indMode-1}.cycleLen = [Mode{indMode-1}.cycleLen length(cycleIndex)];
         end
-
+        
     end
-
+    
     % == detecting what mode is relevant
     for i=1:length(Mode)
-        % minimum amount of cycles and length       
+        % minimum amount of cycles and length
         if Mode{i}.NbCycles>NB_REL && mean(Mode{i}.cycleLen) >= MIN_TLEN*fs
             relevantModeInd = [relevantModeInd i];
         end
     end
     relevantMode = Mode(relevantModeInd);
-
+    
     if isempty(relevantMode)
         % if we did not catch anything then output rubbish
         relevantMode.cycleMean = ones(NB_BINS,1);
@@ -167,11 +169,11 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
         [~,pos] = max([relevantModeStruc.NbCycles]); % look for dominant mode
         relevantMode = relevantMode{pos}; % only return the dominant mode for this application
         status = 1;
-                        
+        
         % == Converting template from bins back to samples
         desl = round(NB_BINS/6); % -pi/3 shift
         qrsloc = round((NB_BINS/2 - desl)*round(mean(relevantMode.cycleLen))/NB_BINS);
-        template.avg = circshift(relevantMode.cycleMean',-desl)'; 
+        template.avg = circshift(relevantMode.cycleMean',-desl)';
         template.stdev = circshift(relevantMode.cycleStd',-desl)'; % -pi/3 shift
         template.avg = resample(template.avg,round(mean(relevantMode.cycleLen)),NB_BINS);
         template.stdev = resample(template.avg,round(mean(relevantMode.cycleLen)),NB_BINS)';
@@ -182,9 +184,9 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
 end
 
 if debug
-   fprintf('The number of cycles constituting the dominant mode was %f \n',relevantMode.NbCycles);
-   fprintf('The correlation threshold at which this happened was    %f \n',THRES+PACE);
-   fprintf('========================================================== \n');
+    fprintf('The number of cycles constituting the dominant mode was %f \n',relevantMode.NbCycles);
+    fprintf('The correlation threshold at which this happened was    %f \n',THRES+PACE);
+    fprintf('========================================================== \n');
 end
 
 

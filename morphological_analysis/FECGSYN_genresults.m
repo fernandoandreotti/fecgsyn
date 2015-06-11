@@ -148,7 +148,7 @@ for i = 1:length(fls_ext)
     else
         bss = strcmp(method,'JADEICA')|strcmp(method,'PCA'); % apply coordinate transformation or not
         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4)];
-        [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname,[b_hp,a_hp,b_lp,a_lp]);
+        [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname,[b_hp,a_hp,b_lp,a_lp],i);
         morph.(method)(origrec,:) = outputs;
     end
     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
@@ -259,7 +259,7 @@ end
 end
 
 function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numbNaN]=...
-    morpho(fecg,residual,fqrs,fs,SAMPS,bss,fname,filterc)
+    morpho(fecg,residual,fqrs,fs,SAMPS,bss,fname,filterc,filen)
 %% Function to perform morphological analysis for TS/BSS extracted data
 %
 % >Inputs
@@ -320,7 +320,7 @@ for ch = 1:size(residual,1)
         else
             % evaluating morphological features
             [qt_test{ch,block},qt_ref{ch,block},th_test{ch,block},th_ref{ch,block},...
-                qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc);
+                qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,filen);
         end
         
         if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})

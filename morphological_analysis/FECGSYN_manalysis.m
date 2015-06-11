@@ -1,4 +1,4 @@
-function [qt_test,qt_ref,th_test,th_ref,qt_err,th_err] = FECGSYN_manalysis(abdm_temp,ref_temp,qrsabdm,qrsref,fs,filterc)
+function [qt_test,qt_ref,th_test,th_ref,qt_err,th_err] = FECGSYN_manalysis(abdm_temp,ref_temp,qrsabdm,qrsref,fs,filterc,filen)
 % This function calculates morphological features form signals given two
 % templates (reference and abdm). Statistics are give as %.
 %
@@ -9,6 +9,7 @@ function [qt_test,qt_ref,th_test,th_ref,qt_err,th_err] = FECGSYN_manalysis(abdm_
 %  fs:                      Sampling frequency
 %  filterc:                 Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
 %                           highpass (hp) and lowpass (lp)
+%  filen:                   number to be added to ecgpuwaves outputs
 %
 %
 % NI-FECG simulator toolbox, version 1.0, February 2014
@@ -70,42 +71,41 @@ qrsref([1,20]) = []; qrsabdm([1,20]) = [];
 % writting to WFDB
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
 tm2 = 1:length(ref_sig); tm2 = tm2'-1;
-wrsamp(tm1,abdm_sig,'absig',FS_ECGPU,gain,'')
-wrsamp(tm2,ref_sig,'refsig',FS_ECGPU,gain,'')
-wrann('absig','qrs',qrsabdm',repmat('N',20,1));
-wrann('refsig','qrs',qrsref',repmat('N',20,1));
+wrsamp(tm1,abdm_sig,['absig_' num2str(filen)],FS_ECGPU,gain,'')
+wrsamp(tm2,ref_sig,['refsig_' num2str(filen)],FS_ECGPU,gain,'')
+wrann(['absig_' num2str(filen)],'qrs',qrsabdm',repmat('N',20,1));
+wrann(['refsig_' num2str(filen)],'qrs',qrsref',repmat('N',20,1));
 
 %% Segmentation using ECGPUWAVE
 % ref signal
-ecgpuwave('refsig','edr',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
-[allref,alltypes_r] = rdann('refsig','edr');
-rees = arrayfun(@(x) strcmp(x,'N'),alltypes_r);          % 'R'
-if debug   
-    figure(2)
-    ax(1)=subplot(2,1,1);
-    cla
-    plot(ref_sig./gain)
-    hold on
-    plot(allref,ref_sig(allref)./gain,'or')
-    plot(qrsref,0,'sg')
-    text(allref,ref_sig(allref)./gain+0.1,alltypes_r)
-    title('Reference Signal')
-end
+ecgpuwave(['refsig_' num2str(filen)],'edr',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+[allref,alltypes_r] = rdann(['refsig_' num2str(filen)],'edr');
+% if debug   
+%     figure(2)
+%     ax(1)=subplot(2,1,1);
+%     cla
+%     plot(ref_sig./gain)
+%     hold on
+%     plot(allref,ref_sig(allref)./gain,'or')
+%     plot(qrsref,0,'sg')
+%     text(allref,ref_sig(allref)./gain+0.1,alltypes_r)
+%     title('Reference Signal')
+% end
 % test signal
-ecgpuwave('absig','edr',[],[],'qrsabdm'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
-[alltest,alltypes_t] = rdann('absig','edr');
-if debug
-    figure(2)
-    ax(2)=subplot(2,1,2);
-    cla
-    plot(abdm_sig./gain)
-    hold on
-    plot(qrsabdm,0,'sg')
-    plot(alltest,abdm_sig(alltest)./gain,'or')
-    text(alltest,abdm_sig(alltest)./gain+0.1,alltypes_t)
-    linkaxes(ax,'x')
-    title('Test Signal')
-end
+ecgpuwave(['absig_' num2str(filen)],'edr',[],[],'qrsabdm'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+[alltest,alltypes_t] = rdann(['absig_' num2str(filen)],'edr');
+% if debug
+%     figure(2)
+%     ax(2)=subplot(2,1,2);
+%     cla
+%     plot(abdm_sig./gain)
+%     hold on
+%     plot(qrsabdm,0,'sg')
+%     plot(alltest,abdm_sig(alltest)./gain,'or')
+%     text(alltest,abdm_sig(alltest)./gain+0.1,alltypes_t)
+%     linkaxes(ax,'x')
+%     title('Test Signal')
+% end
 
 % == Calculate error on morphological analysis made by extracted data
 
@@ -280,19 +280,11 @@ if sum(idxbi) > 0   % case biphasic waves occured
     th = mean([valbi valnonbi]); % theight with gain
     for i = 1:length(bindx); tpeak(i)=ann_stamp(posmax(i,bindx(i)));end
     tpeak = sort([tpeak ann_stamp(nonbi)'])';
-    try
-        tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));
-    catch
-        disp
-    end
+    tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));
 else
-    try
     th = mean(abs(signal(ann_stamp(Tpeaks))));   
     tpeak = ann_stamp(Tpeaks);
     tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));
-    catch
-        disp
-    end
 end
 
 

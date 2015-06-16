@@ -282,6 +282,7 @@ if sum(idxbi) > 0   % case biphasic waves occured
     tpeak = sort([tpeak ann_stamp(nonbi)'])';
     tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));
 else
+    Tpeaks(ann_stamp(Tpeaks)>length(signal)) = [];
     th = mean(abs(signal(ann_stamp(Tpeaks))));   
     tpeak = ann_stamp(Tpeaks);
     tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));

@@ -69,8 +69,8 @@ else
         'SystemObject', true);
     [b_hp,a_hp] = tf(Hhp);
     % low-pass filter
-    Fpass = 100;   % Passband Frequency
-    Fstop = 110;  % Stopband Frequency
+    Fpass = 90;   % Passband Frequency
+    Fstop = 100;  % Stopband Frequency
     Astop = 20;   % Stopband Attenuation (dB)
     Apass = 0.1;    % Passband Ripple (dB)
     h = fdesign.lowpass('fp,fst,ap,ast', Fpass, Fstop, Apass, Astop, fs_new);

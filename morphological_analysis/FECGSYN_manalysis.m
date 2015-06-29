@@ -48,8 +48,9 @@ abdm_temp = resample(abdm_temp,2*FS_ECGPU,fs);
 ref_temp = resample(ref_temp,2*FS_ECGPU,fs);
 qrsref = round(qrsref*2*FS_ECGPU/fs);
 qrsabdm = round(qrsabdm*2*FS_ECGPU/fs);
-T_LEN = length(abdm_temp);  % template length
-    
+T_LENa = length(abdm_temp);  % template length
+T_LENr = length(ref_temp);  % template length
+
 wsign = sign(abdm_temp(qrsabdm));
 abdm_temp = 2*gain*wsign*abdm_temp/abs(abdm_temp(qrsabdm)); % normalizing in 2 mV
 wsign = sign(ref_temp(qrsref));
@@ -65,8 +66,8 @@ abdm_sig = filtfilt(b_hp,a_hp,abdm_sig);
 
 %% Saving data as WFDB
 % looking for peaks in temporary signal
-qrsref = cumsum([0 repmat(T_LEN,1,19)])+qrsref;
-qrsabdm = cumsum([0 repmat(T_LEN,1,19)])+qrsabdm;
+qrsref = cumsum([0 repmat(T_LENr,1,19)])+qrsref;
+qrsabdm = cumsum([0 repmat(T_LENa,1,19)])+qrsabdm;
 qrsref([1,20]) = []; qrsabdm([1,20]) = [];
 % writting to WFDB
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
@@ -121,15 +122,15 @@ if isnan(qt_ref)||isnan(th_ref)
     qt_err = NaN;
     th_err = NaN;   
     disp('manalysis: Could not encounter QT wave for REFERENCE.')
-    return
-end
-if isnan(tpeak)
-    disp
+    return % does not extract from test
 end
 
-isoel = median(ref_temp(round(qrsref+0.185*fs):end));
+isoel = median(ref_temp(round(qrsref(1)-T_LENr+0.185*fs):end));
 qt_ref = qt_ref*1000/(2*FS_ECGPU);          % in ms
 th_ref = (th_ref-isoel)./gain;              % in mV (or not)
+
+
+
 
 if debug
     figure(1)
@@ -138,15 +139,11 @@ if debug
     cla
     plot(ref_temp./gain,'k','LineWidth',2)
     hold on
-    rpeak = qrsref(1)-T_LEN;
+    rpeak = qrsref(1)-T_LENr;
     plot(rpeak+qs,ref_temp(rpeak+qs)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
     plot(rpeak+tends,ref_temp(rpeak+tends)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
-    try
-        plot(rpeak+tpeak,ref_temp(rpeak+tpeak)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
-    catch
-    disp    
-    end
-    
+    plot(rpeak+tpeak,ref_temp(rpeak+tpeak)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
+   
     title('Reference Signal')   
     clear qs tends twave offset rpeak
 end
@@ -165,8 +162,7 @@ if isnan(qt_test)||isnan(th_test)
     disp('manalysis: Could not encounter QT wave for TEST.')
     return
 end
-
-isoel = median(abdm_temp(round(qrsabdm+0.185*fs):end));
+isoel = median(abdm_temp(round(qrsabdm(1)-T_LENa+0.185*fs):end));
 qt_test = qt_test*1000/(2*FS_ECGPU);          % in ms
 th_test = (th_test-isoel)./gain;                  % in mV (or not)
 
@@ -177,7 +173,7 @@ if debug
     plot(abdm_temp./gain,'k','LineWidth',2)
     hold on
     try
-    rpeak = qrsref(1)-T_LEN;
+    rpeak = qrsref(1)-T_LENa;
     plot(rpeak+qs,abdm_temp(rpeak+qs)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
     plot(rpeak+tends,abdm_temp(rpeak+tends)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
     plot(rpeak+tpeak,abdm_temp(rpeak+tpeak)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
@@ -186,12 +182,16 @@ if debug
     end
     clear qs tend twave offset rpeak
 end
-
 %% Final results
 %== QT error
 qt_err = qt_test - qt_ref;        % absolute error in ms
 %== T-height estimation
 th_err = abs(th_test/th_ref);     % only considering abs value
+
+
+if ~isnan(qt_err)&&isnan(th_err)
+    disp('Hold your horses!')
+end
 
 end
 
@@ -229,7 +229,7 @@ nonbi1=cell2mat(regexp(annstr,'\(t\)')) +1; % regular
 nonbi2= cell2mat(regexp(annstr,'\)t\(')) +1; % weird t
 nonbi3= cell2mat(regexp(annstr,'\)t\)')) +1; % weird t2
 if ~isempty(nonbi2)||~isempty(nonbi3)
-    disp('Whaaaaaaat!')
+    disp('ecpuwave: might be returning weird waves.')
 end
 nonbi = sort([nonbi1 nonbi2 nonbi3]);
 temp_types(idxbi) = [];    % temporarilly clearing first T in biphasic cases

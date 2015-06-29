@@ -160,6 +160,16 @@ end
 
 save([path_orig 'wksp' num2str(filesproc(end))])
 
+%% EXP3
+% Generating statistics
+for method = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn'}
+    tmpvec = morph.(method{:})(:,[5 6]); % hold results temporarilly
+    tmpvec = cellfun(@(x) nanmin(min(abs(cell2mat(x)))),tmpvec,'UniformOutput',0); % minimal error per channel/component
+    
+    nanmean(cell2mat(cellfun(@(x) nanmean(nanmean(abs(cell2mat(x)))),tmpvec,'UniformOutput',0))); % mean QT and TH errors (ignoring NaNs)
+end
+
+
 %% Plots and statistics generation
 if debug
     LWIDTH = 1.5;
@@ -325,6 +335,10 @@ for ch = 1:size(residual,1)
             % evaluating morphological features
             [qt_test{ch,block},qt_ref{ch,block},th_test{ch,block},th_ref{ch,block},...
                 qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,filen);
+        end
+        
+        if ~isnan(qt_err{ch,block})&&isnan(theight_err{ch,block})
+            disp('Hold your horses!')
         end
         
         if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})

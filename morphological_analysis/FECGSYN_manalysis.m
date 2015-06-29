@@ -217,8 +217,8 @@ function [qtint,th,qs,tends,tpeak] = QTcalc(ann_types,ann_stamp,signal,fs)
 %
 %
 %
-QT_MAX = 0.5; % Maximal QT size (in s)  MAY VARY DEPENDING ON APPLICATION!
-
+QT_MAX = 0.5; % Maximal QT length (in s)  MAY VARY DEPENDING ON APPLICATION!
+QT_MIN = 0.1; % Minimal QT length (in s)  MAY VARY DEPENDING ON APPLICATION!
 temp_types = ann_types;     % allows exclusion of unsuitable annotations
 temp_stamp = ann_stamp;
 
@@ -285,12 +285,15 @@ else
     Tpeaks(ann_stamp(Tpeaks)>length(signal)) = [];
     th = mean(abs(signal(ann_stamp(Tpeaks))));   
     tpeak = ann_stamp(Tpeaks);
-    tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));
+    temp = temp_stamp(Rpeaks);
+    tpeak = round(mean(tpeak-temp(1:length(tpeak))));
 end
 
 
 if isempty(tends), tends = NaN; end
 if qtint>QT_MAX*fs, qtint = NaN; end  
+if qtint<QT_MIN*fs, qtint = NaN; end  
+
 if isempty(qs), qs = NaN; end
 if isempty(tpeak), tpeak = NaN; end
 

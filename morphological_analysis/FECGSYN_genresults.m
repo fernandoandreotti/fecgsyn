@@ -105,10 +105,10 @@ morph.aesn = cell(length(fls_orig),7);
 
 % = Runs through list of extracted files
 for i = filesproc%length(fls_ext)
-% for i = randperm(length(fls_ext))
+    % for i = randperm(length(fls_ext))
     disp(fls_ext{i})
     fprintf('Data %d out of %d \n',i,length(fls_ext));
-
+    
     %= loading extracted file
     [rec,met] = strtok(fls_ext(i),'_');
     file = strcat(path_ext,fls_ext(i));
@@ -162,11 +162,17 @@ save([path_orig 'wksp' num2str(filesproc(end))])
 
 %% EXP3
 % Generating statistics
-for method = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn'}
-    tmpvec = morph.(method{:})(:,[5 6]); % hold results temporarilly
-    tmpvec = cellfun(@(x) nanmin(min(abs(cell2mat(x)))),tmpvec,'UniformOutput',0); % minimal error per channel/component
-    
-    nanmean(cell2mat(cellfun(@(x) nanmean(nanmean(abs(cell2mat(x)))),tmpvec,'UniformOutput',0))); % mean QT and TH errors (ignoring NaNs)
+if exp3
+    res3.mean = [];
+    res3.std = [];
+    c = 1;
+    for method = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn'}
+        tmpvec = morph.(method{:})(:,[5 6]); % hold results temporarilly
+        tmpvec = cell2mat(cellfun(@(x) nanmean(min(abs(cell2mat(x)))),tmpvec,'UniformOutput',0)); % minimal error per channel/component
+        res3.mean(c,:) = nanmean(tmpvec);
+        res3.std(c,:) = nanstd(tmpvec);
+        c = c+1; % simple counter
+    end
 end
 
 

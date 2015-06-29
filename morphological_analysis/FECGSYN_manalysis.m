@@ -125,9 +125,9 @@ if isnan(qt_ref)||isnan(th_ref)
     return % does not extract from test
 end
 
-isoel = median(ref_temp(round(qrsref(1)-T_LENr+0.185*fs):end));
+isoel = median(ref_temp(round(qrsref(1)-T_LENr+0.185*fs):end)./gain);
 qt_ref = qt_ref*1000/(2*FS_ECGPU);          % in ms
-th_ref = (th_ref-isoel)./gain;              % in mV (or not)
+th_ref = th_ref./gain-isoel;              % in mV (or not)
 
 
 
@@ -162,9 +162,9 @@ if isnan(qt_test)||isnan(th_test)
     disp('manalysis: Could not encounter QT wave for TEST.')
     return
 end
-isoel = median(abdm_temp(round(qrsabdm(1)-T_LENa+0.185*fs):end));
+isoel = median(abdm_temp(round(qrsabdm(1)-T_LENa+0.185*fs):end)./gain);
 qt_test = qt_test*1000/(2*FS_ECGPU);          % in ms
-th_test = (th_test-isoel)./gain;                  % in mV (or not)
+th_test = th_test./gain-isoel;                  % in mV (or not)
 
 if debug   
     figure(1)

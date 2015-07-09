@@ -151,6 +151,10 @@ for i = filesproc%length(fls_ext)
         end
         cd([path_orig 'wfdb'])
         bss = strcmp(method,'JADEICA')|strcmp(method,'PCA'); % apply coordinate transformation or not
+        
+        %___temp
+        if bss, bss = 2; else continue,end;
+        %_____ temp
         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4)];
         [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname,[b_hp,a_hp,b_lp,a_lp],i);
         morph.(method)(origrec,:) = outputs;
@@ -329,6 +333,23 @@ for ch = 1:size(residual,1)
         % reference template
         [temp_ref,qrs_ref,status2] = FECGSYN_tgen(srcfecg(ch,j:endsamp),qrstmp,fs);
         temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
+        %_____________________________________________
+        % temp stuff (tests for article)
+        
+        if bss == 2 % testing distribution of QT / TH depending on analysis domain
+              [temp_ref2,qrs_ref,status3] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
+              temp_ref2 = temp_ref2.avg;
+              if ~status3
+                  qt_ref2{ch,block} = NaN;
+                  th_ref2{ch,block} = NaN;
+              else
+                [~,qt_ref2{ch,block},~,th_ref2{ch,block},...
+                ~,~] = FECGSYN_manalysis(temp_ref2,temp_ref2,qrs_abdm,qrs_ref,fs,filterc,filen);
+              end
+
+        end
+        
+        %_____________________________________________
         
         if (~status1||~status2)
             qt_test{ch,block} = NaN;
@@ -343,10 +364,7 @@ for ch = 1:size(residual,1)
                 qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,filen);
         end
         
-        if ~isnan(qt_err{ch,block})&&isnan(theight_err{ch,block})
-            disp('Hold your horses!')
-        end
-        
+               
         if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})
             try
                 drawnow
@@ -359,6 +377,11 @@ for ch = 1:size(residual,1)
         block = block+1;
     end
 end
+
+save([num2str(filen) '_dist'],'qt_ref','qt_ref2','th_ref','th_ref2')
+
+
+
 % Figuring out how many NaNs were output per channel
 try
     id1 = cellfun(@(x) isnan(x),qt_test);

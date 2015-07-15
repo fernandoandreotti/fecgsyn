@@ -178,7 +178,7 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
         template.stdev = resample(template.avg,round(mean(relevantMode.cycleLen)),NB_BINS)';
         qrsloc = round(round((NB_BINS/2 - desl)*(length(template.avg)/NB_BINS)));
         [~,delay]=max(abs(template.avg));
-        if qrsloc-delay<3, qrsloc = delay; end  % allow some alignment
+        if abs(qrsloc-delay)<3, qrsloc = delay; end  % allow some alignment
     end
     THRES = THRES-PACE;
 end

@@ -317,9 +317,10 @@ th_ref = qt_test;
 qt_err = qt_test;
 theight_err = qt_test;
 %= Block-wise calculation and template generation
-for ch = 1:size(residual,1)
-    block = 1;
-    for j = 1:SAMPS:length(residual)
+block = 1;
+for j = 1:SAMPS:length(residual)
+    for ch = 1:size(residual,1)
+
         % checking borders
         if j+SAMPS > length(residual)
             endsamp = length(residual);
@@ -333,23 +334,6 @@ for ch = 1:size(residual,1)
         % reference template
         [temp_ref,qrs_ref,status2] = FECGSYN_tgen(srcfecg(ch,j:endsamp),qrstmp,fs);
         temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
-        %_____________________________________________
-        % temp stuff (tests for article)
-        
-        if bss == 2 % testing distribution of QT / TH depending on analysis domain
-              [temp_ref2,qrs_ref,status3] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
-              temp_ref2 = temp_ref2.avg;
-              if ~status3
-                  qt_ref2{ch,block} = NaN;
-                  th_ref2{ch,block} = NaN;
-              else
-                [~,qt_ref2{ch,block},~,th_ref2{ch,block},...
-                ~,~] = FECGSYN_manalysis(temp_ref2,temp_ref2,qrs_abdm,qrs_ref,fs,filterc,filen);
-              end
-
-        end
-        
-        %_____________________________________________
         
         if (~status1||~status2)
             qt_test{ch,block} = NaN;
@@ -359,7 +343,7 @@ for ch = 1:size(residual,1)
             qt_err{ch,block} = NaN;
             theight_err{ch,block} = NaN;
         else
-            % evaluating morphological features
+           
             [qt_test{ch,block},qt_ref{ch,block},th_test{ch,block},th_ref{ch,block},...
                 qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,filen);
         end
@@ -376,18 +360,32 @@ for ch = 1:size(residual,1)
         end
         block = block+1;
     end
+    for ch = 1:size(fecg,1)
+     %_____________________________________________
+            % temp stuff (tests for article)
+            
+            if bss == 2 % testing distribution of QT / TH depending on analysis domain
+                [temp_ref2,qrs_ref,status3] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
+                temp_ref2 = temp_ref2.avg;
+                if ~status3
+                    qt_ref2{ch,block} = NaN;
+                    th_ref2{ch,block} = NaN;
+                else
+                    [~,qt_ref2{ch,block},~,th_ref2{ch,block},...
+                        ~,~] = FECGSYN_manalysis(temp_ref2,temp_ref2,qrs_abdm,qrs_ref,fs,filterc,filen);
+                end
+                
+            end
+            
+            %_____________________________________________
+            % evaluating morphological features           
+    end
 end
 
 save([num2str(filen) '_dist'],'qt_ref','qt_ref2','th_ref','th_ref2')
 
 
 
-% Figuring out how many NaNs were output per channel
-try
-    id1 = cellfun(@(x) isnan(x),qt_test);
-    id2 = cellfun(@(x) isnan(x),qt_ref);
-    numbNaN=sum(sum(id1|id2));
-catch
-    disp
-end
+
+
 end

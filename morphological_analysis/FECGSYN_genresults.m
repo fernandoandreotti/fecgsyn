@@ -123,7 +123,7 @@ for i = filesproc%length(fls_ext)
         % fref:          fetal QRS reference
         % fecgref:       fetal ECG signals (before mixture)
         fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
-        fecgref = zeros(size(residual));
+        fecgref = zeros(length(ch),size(residual,2));
         for k = 1:size(fecgref,1)
             fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
         end
@@ -282,7 +282,7 @@ end
 
 end
 
-function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numbNaN]=...
+function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
     morpho(fecg,residual,fqrs,fs,SAMPS,bss,fname,filterc,filen)
 %% Function to perform morphological analysis for TS/BSS extracted data
 %
@@ -301,9 +301,16 @@ function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numbNaN]=...
 % theight_err: Array containing T-height error for each template
 %
 global debug
+numNaN = 0;
 % if bss, propagating reference to source domain
 if bss
-    W = fecg*pinv(residual);
+    restemp = residual;
+    if (size(residual,1) ~= size(fecg,1))
+        for i = 1:(size(fecg,1)- size(restemp,1))
+            restemp = [restemp; randn(1,length(restemp))];
+        end
+    end
+    W = fecg*pinv(restemp);
     srcfecg = W*fecg;
 else
     srcfecg = fecg;
@@ -357,8 +364,7 @@ for j = 1:SAMPS:length(residual)
                 warning('Failed to save plot')
             end
             
-        end
-        block = block+1;
+        end        
     end
     for ch = 1:size(fecg,1)
      %_____________________________________________
@@ -380,6 +386,7 @@ for j = 1:SAMPS:length(residual)
             %_____________________________________________
             % evaluating morphological features           
     end
+    block = block+1;
 end
 
 save([num2str(filen) '_dist'],'qt_ref','qt_ref2','th_ref','th_ref2')

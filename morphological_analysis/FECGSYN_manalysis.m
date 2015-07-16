@@ -51,12 +51,13 @@ qrsabdm = round(qrsabdm*2*FS_ECGPU/fs);
 T_LENa = length(abdm_temp);  % template length
 T_LENr = length(ref_temp);  % template length
 
-wsign = sign(abdm_temp(qrsabdm));
-abdm_temp = 2*gain*wsign*abdm_temp/abs(abdm_temp(qrsabdm)); % normalizing in 2 mV
-wsign = sign(ref_temp(qrsref));
-ref_temp = 2*gain*wsign*ref_temp/abs(ref_temp(qrsref));
 abdm_sig = repmat(abdm_temp,1,20)';
 ref_sig = repmat(ref_temp,1,20)';
+wsign = sign(abdm_sig(qrsabdm));
+abdm_sig = 2*gain*wsign*abdm_sig/abs(abdm_sig(qrsabdm)); % normalizing in 2 mV
+wsign = sign(ref_temp(ref_sig));
+ref_sig = 2*gain*wsign*ref_sig/abs(ref_sig(qrsref));
+
 
 % Preprocessing reference channel
 ref_sig = filtfilt(b_lp,a_lp,ref_sig);

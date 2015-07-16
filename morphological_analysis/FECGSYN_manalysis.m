@@ -51,11 +51,11 @@ qrsabdm = round(qrsabdm*2*FS_ECGPU/fs);
 T_LENa = length(abdm_temp);  % template length
 T_LENr = length(ref_temp);  % template length
 
-abdm_sig = repmat(abdm_temp,1,20)';
-ref_sig = repmat(ref_temp,1,20)';
+abdm_sig = repmat(abdm_temp',1,20);
+ref_sig = repmat(ref_temp',1,20);
 wsign = sign(abdm_sig(qrsabdm));
 abdm_sig = 2*gain*wsign*abdm_sig/abs(abdm_sig(qrsabdm)); % normalizing in 2 mV
-wsign = sign(ref_temp(ref_sig));
+wsign = sign(ref_temp(qrsref));
 ref_sig = 2*gain*wsign*ref_sig/abs(ref_sig(qrsref));
 
 
@@ -73,8 +73,8 @@ qrsref([1,20]) = []; qrsabdm([1,20]) = [];
 % writting to WFDB
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
 tm2 = 1:length(ref_sig); tm2 = tm2'-1;
-wrsamp(tm1,abdm_sig,['absig_' num2str(filen)],FS_ECGPU,gain,'')
-wrsamp(tm2,ref_sig,['refsig_' num2str(filen)],FS_ECGPU,gain,'')
+wrsamp(tm1,abdm_sig',['absig_' num2str(filen)],FS_ECGPU,gain,'')
+wrsamp(tm2,ref_sig',['refsig_' num2str(filen)],FS_ECGPU,gain,'')
 wrann(['absig_' num2str(filen)],'qrs',qrsabdm',repmat('N',20,1));
 wrann(['refsig_' num2str(filen)],'qrs',qrsref',repmat('N',20,1));
 

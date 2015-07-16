@@ -44,6 +44,17 @@ gain = 1000;        % saving gain for WFDB format
 b_hp = filterc(1); a_hp = filterc(2); b_lp = filterc(3);a_lp= filterc(4);
 % resample case input data not compatible with ECGPUWAVE
 % upsampling to 500Hz so that foetal heart looks like an adult heart
+if isnan(qrsabdm)||isnan(qrsref)
+    qt_test = NaN;
+    qt_ref = NaN;
+    th_test = NaN;
+    th_ref = NaN;
+    qt_err = NaN;
+    th_err = NaN;   
+    disp('manalysis: could not generate a TEMPLATE.')
+    return % does not extract from test
+end
+
 abdm_temp = resample(abdm_temp,2*FS_ECGPU,fs);
 ref_temp = resample(ref_temp,2*FS_ECGPU,fs);
 qrsref = round(qrsref*2*FS_ECGPU/fs);
@@ -278,7 +289,7 @@ if sum(idxbi) > 0   % case biphasic waves occured
     posmax = [idxbi' idxbi'+1];
     [valbi,bindx]=max(abs(signal(ann_stamp(posmax)))'); % max abs value between tt
     valnonbi = abs(signal(ann_stamp(nonbi))');
-    th = mean([valbi valnonbi]); % theight with gain
+    th = mean([valbi valnonbi']); % theight with gain
     for i = 1:length(bindx); tpeak(i)=ann_stamp(posmax(i,bindx(i)));end
     tpeak = sort([tpeak ann_stamp(nonbi)'])';
     tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));

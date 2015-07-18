@@ -62,7 +62,13 @@ for i = 1:length(fls)
 end
 
 [h,p]=ttest(exp3tab(:,1),exp3tab(:,2));
-
+if h
+    fprintf('Null hypothesis can be rejected with p= %d \n',p);
+else
+    fprintf('Null hypothesis CANNOT be rejected');
+end
+fprintf('NaNs on source domain:  %3.2f percent \n',srcnan/srctot*100);
+fprintf('NaNs on source domain:  %3.2f percent \n',timenan/timetot*100);
 %     figure(1)
 % %     subplot(2,1,1)
 %     xlim([100 300]),ylim([100 300])

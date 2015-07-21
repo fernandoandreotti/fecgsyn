@@ -10,7 +10,8 @@ srcnan = 0;
 srctot = 0;
 timenan = 0;
 timetot = 0;
-exp3tab = [];
+exp3fqt = [];
+exp3fth = [];
 exp3ica = [];
 for i = 1:length(fls)
     load(fls{i})
@@ -42,8 +43,9 @@ for i = 1:length(fls)
     
     % Max FQT per segment
     tmpres = min(cell2mat(qt_ref)-cell2mat(qt_ref2));
-    exp3tab = [exp3tab; tmpres'];
-    
+    exp3fqt = [exp3fqt; tmpres'];
+    tmpres2 = min(cell2mat(th_ref)-cell2mat(th_ref2));
+    exp3fth = [exp3fth; tmpres2'];
     clear tmpresßß
     
 %     hold on

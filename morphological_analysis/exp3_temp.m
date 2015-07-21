@@ -41,14 +41,10 @@ for i = 1:length(fls)
     timetot = timetot + numel(cell2mat(qt_ref2));
     
     % Max FQT per segment
-    maxsrc = nanmax(cell2mat(qt_ref));
-    maxtime = nanmax(cell2mat(qt_ref2));
-    if length(maxsrc)<5 || length(maxtime)<5
-        disp
-    end
-    exp3tab = [exp3tab; maxtime' maxsrc'];
+    tmpres = min(cell2mat(qt_ref)-cell2mat(qt_ref2));
+    exp3tab = [exp3tab; tmpres'];
     
-    clear maxsrc maxtime
+    clear tmpresßß
     
 %     hold on
 %     
@@ -82,7 +78,7 @@ color = 'b';
 plot(exp3tab(find(exp3ica),1),exp3tab(find(exp3ica),2),'o','Color',color,'MarkerFaceColor',color,'MarkerSize',3)
 xlim([100 260]),ylim([100 260])
 xlabel('FQT (time domain)')
-ylabel('FQT (spectral domain)')  
+ylabel('FQT (source domain)')  
 title('BSS_{ica}')
 matlab2tikz(['fqtica.tikz'], 'height', '\figureheight', 'width', '\figurewidth');
 
@@ -91,7 +87,7 @@ color = 'r';
 plot(exp3tab(find(~exp3ica),1),exp3tab(find(~exp3ica),2),'o','Color',color,'MarkerFaceColor',color,'MarkerSize',3)
 xlim([100 260]),ylim([100 260])
 xlabel('FQT (time domain)')
-ylabel('FQT (spectral domain)')  
+ylabel('FQT (source domain)')  
 title('BSS_{pca}')
 matlab2tikz(['fqtpca.tikz'], 'height', '\figureheight', 'width', '\figurewidth');
 

@@ -44,6 +44,17 @@ gain = 1000;        % saving gain for WFDB format
 b_hp = filterc(1); a_hp = filterc(2); b_lp = filterc(3);a_lp= filterc(4);
 % resample case input data not compatible with ECGPUWAVE
 % upsampling to 500Hz so that foetal heart looks like an adult heart
+if isnan(qrsabdm)||isnan(qrsref)
+    qt_test = NaN;
+    qt_ref = NaN;
+    th_test = NaN;
+    th_ref = NaN;
+    qt_err = NaN;
+    th_err = NaN;   
+    disp('manalysis: could not generate a TEMPLATE.')
+    return % does not extract from test
+end
+
 abdm_temp = resample(abdm_temp,2*FS_ECGPU,fs);
 ref_temp = resample(ref_temp,2*FS_ECGPU,fs);
 qrsref = round(qrsref*2*FS_ECGPU/fs);
@@ -51,12 +62,13 @@ qrsabdm = round(qrsabdm*2*FS_ECGPU/fs);
 T_LENa = length(abdm_temp);  % template length
 T_LENr = length(ref_temp);  % template length
 
-wsign = sign(abdm_temp(qrsabdm));
-abdm_temp = 2*gain*wsign*abdm_temp/abs(abdm_temp(qrsabdm)); % normalizing in 2 mV
+abdm_sig = repmat(abdm_temp',1,20);
+ref_sig = repmat(ref_temp',1,20);
+wsign = sign(abdm_sig(qrsabdm));
+abdm_sig = 2*gain*wsign*abdm_sig/abs(abdm_sig(qrsabdm)); % normalizing in 2 mV
 wsign = sign(ref_temp(qrsref));
-ref_temp = 2*gain*wsign*ref_temp/abs(ref_temp(qrsref));
-abdm_sig = repmat(abdm_temp,1,20)';
-ref_sig = repmat(ref_temp,1,20)';
+ref_sig = 2*gain*wsign*ref_sig/abs(ref_sig(qrsref));
+
 
 % Preprocessing reference channel
 ref_sig = filtfilt(b_lp,a_lp,ref_sig);
@@ -72,8 +84,8 @@ qrsref([1,20]) = []; qrsabdm([1,20]) = [];
 % writting to WFDB
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
 tm2 = 1:length(ref_sig); tm2 = tm2'-1;
-wrsamp(tm1,abdm_sig,['absig_' num2str(filen)],FS_ECGPU,gain,'')
-wrsamp(tm2,ref_sig,['refsig_' num2str(filen)],FS_ECGPU,gain,'')
+wrsamp(tm1,abdm_sig',['absig_' num2str(filen)],FS_ECGPU,gain,'')
+wrsamp(tm2,ref_sig',['refsig_' num2str(filen)],FS_ECGPU,gain,'')
 wrann(['absig_' num2str(filen)],'qrs',qrsabdm',repmat('N',20,1));
 wrann(['refsig_' num2str(filen)],'qrs',qrsref',repmat('N',20,1));
 
@@ -277,7 +289,7 @@ if sum(idxbi) > 0   % case biphasic waves occured
     posmax = [idxbi' idxbi'+1];
     [valbi,bindx]=max(abs(signal(ann_stamp(posmax)))'); % max abs value between tt
     valnonbi = abs(signal(ann_stamp(nonbi))');
-    th = mean([valbi valnonbi]); % theight with gain
+    th = mean([valbi valnonbi']); % theight with gain
     for i = 1:length(bindx); tpeak(i)=ann_stamp(posmax(i,bindx(i)));end
     tpeak = sort([tpeak ann_stamp(nonbi)'])';
     tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));

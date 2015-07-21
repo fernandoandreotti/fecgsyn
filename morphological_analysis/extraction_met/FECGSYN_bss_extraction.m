@@ -1,4 +1,4 @@
-function [out_comps,qrsmethod] = FECGSYN_bss_extraction(data,method,fs,varargin)
+function [out_comps,qrsmethod,W] = FECGSYN_bss_extraction(data,method,fs,varargin)
 % Uses Blind Source Separation Methods for FECG extraction given a
 % reference QRS. The component which most agrees with the reference, in
 % terms of F1-measure, is picked as best channel.
@@ -18,7 +18,8 @@ function [out_comps,qrsmethod] = FECGSYN_bss_extraction(data,method,fs,varargin)
 %
 % Output
 % out_comps:    selected best channels on every block
-% qrsmethod: BSS techniques chosen QRS detections   
+% qrsmethod:    BSS techniques chosen QRS detections   
+% W:            used mixing matrices
 %
 %
 % NI-FECG simulator toolbox, version 1.0, February 2014
@@ -84,7 +85,7 @@ end
  data = data';
  out_comps = zeros(size(data));  % allocating
 
-
+W = [];
 while (loop)  % will quit as soon as complete signal is filtered
     if (size(data,2) - ssamp) < 1.5*blen     % if there is less than 1.5x blen
         endsamp = size(data,2);              % interval, it should filter until end
@@ -110,13 +111,14 @@ while (loop)  % will quit as soon as complete signal is filtered
             Bnew = jadeR(data(:,samp2filt)); 
         case 'PCA'
             [Bnew,~] = princomp(data(:,samp2filt)');
-            Bnew = Bnew';
+            Bnew = Bnew';            
         otherwise
             error('bss_extraction: Method not implemented')
     end
     if isempty(Bold); Bold = Bnew; end; % first loop
     outnew = Bold*data(:,samp2filt);
     outnew = diag(1./max(outnew,[],2))*outnew; % may not have the same size as "data"
+    W = [W Bold];   % saving previous mixing matrices
     Bold = Bnew;   
     
     % Adding to previous blocks

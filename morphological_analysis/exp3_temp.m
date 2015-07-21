@@ -11,20 +11,23 @@ srctot = 0;
 timenan = 0;
 timetot = 0;
 exp3tab = [];
+exp3ica = [];
 for i = 1:length(fls)
     load(fls{i})
     
-%     if ismember(str2double(strtok(fls{i},'_')),pca)
+     if ismember(str2double(strtok(fls{i},'_')),pca)
 %         color = 'b';
 %         figure(1)
 %         hold on
-%     elseif ismember(str2double(strtok(fls{i},'_')),ica)
+        exp3ica(5*(i-1)+1:5*(i-1)+5,1) = false;
+    elseif ismember(str2double(strtok(fls{i},'_')),ica)
+        exp3ica(5*(i-1)+1:5*(i-1)+5,1) = true;
 %         color = 'r';
 %         figure(2)
 %         hold on
-%     else
-%         color = 'k';
-%     end
+    else
+        color = 'k';
+     end
     %% QT
     qt_ref(cellfun(@isempty, qt_ref)) = {NaN};
     qt_ref2(cellfun(@isempty, qt_ref2)) = {NaN};
@@ -40,6 +43,9 @@ for i = 1:length(fls)
     % Max FQT per segment
     maxsrc = nanmax(cell2mat(qt_ref));
     maxtime = nanmax(cell2mat(qt_ref2));
+    if length(maxsrc)<5 || length(maxtime)<5
+        disp
+    end
     exp3tab = [exp3tab; maxtime' maxsrc'];
     
     clear maxsrc maxtime
@@ -68,12 +74,27 @@ else
     fprintf('Null hypothesis CANNOT be rejected');
 end
 fprintf('NaNs on source domain:  %3.2f percent \n',srcnan/srctot*100);
-fprintf('NaNs on source domain:  %3.2f percent \n',timenan/timetot*100);
-%     figure(1)
-% %     subplot(2,1,1)
-%     xlim([100 300]),ylim([100 300])
-%     xlabel('FQT (time domain)')
-%     ylabel('FQT (spectral domain)')    
+fprintf('NaNs on time domain:  %3.2f percent \n',timenan/timetot*100);
+
+figure(1)
+% subplot(2,1,1)
+color = 'b';
+plot(exp3tab(find(exp3ica),1),exp3tab(find(exp3ica),2),'o','Color',color,'MarkerFaceColor',color,'MarkerSize',3)
+xlim([100 260]),ylim([100 260])
+xlabel('FQT (time domain)')
+ylabel('FQT (spectral domain)')  
+title('BSS_{ica}')
+matlab2tikz(['fqtica.tikz'], 'height', '\figureheight', 'width', '\figurewidth');
+
+figure(2)
+color = 'r';
+plot(exp3tab(find(~exp3ica),1),exp3tab(find(~exp3ica),2),'o','Color',color,'MarkerFaceColor',color,'MarkerSize',3)
+xlim([100 260]),ylim([100 260])
+xlabel('FQT (time domain)')
+ylabel('FQT (spectral domain)')  
+title('BSS_{pca}')
+matlab2tikz(['fqtpca.tikz'], 'height', '\figureheight', 'width', '\figurewidth');
+
 % %     subplot(2,1,2)
 % %     xlabel('T_h (time domain)')
 % %     ylabel('T_h (spectral domain)')

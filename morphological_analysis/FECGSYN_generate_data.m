@@ -28,7 +28,6 @@
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 function FECGSYN_generate_data(path)
 
-% clear all; close all;
 debug = 0;
 
 %% Generating simulated data with various SNR for morphological analysis

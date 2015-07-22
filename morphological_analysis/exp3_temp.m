@@ -1,5 +1,5 @@
-% This script runs through comparison between QT and Th values for applying
-% or not the 
+% This script compares the results of FQT for BSS techniques before and
+% after applying the mixing matrix
 cd('/home/andreotti/Desktop/Simulator Paper/bssdist')
 fls = dir('*.mat');     % looking for .mat (creating index)
 fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
@@ -14,6 +14,8 @@ exp3fqt = [];
 exp3fth = [];
 exp3ica = [];
 exp3median = [];exp3max = [];
+cas3 = []; cas4 = []; cas5 = []; cas6 = []; cas7 = []; cas8 = []; cas9 = [];
+
 for i = 1:length(fls)
     load(fls{i})
     
@@ -43,12 +45,22 @@ for i = 1:length(fls)
     timetot = timetot + numel(cell2mat(qt_ref2));
     
     % Max FQT per segment
-    maxsrc = nanmax(cell2mat(qt_ref));
-    maxtime = nanmax(cell2mat(qt_ref2));
+    maxsrc = nanmedian(cell2mat(qt_ref));
+    maxtime = nanmedian(cell2mat(qt_ref2));
     exp3max = [exp3max; maxtime' maxsrc'];
-    medsrc = nanmedian(cell2mat(qt_ref));
-    medtime = nanmedian(cell2mat(qt_ref2));
-    exp3median = [exp3median; maxtime' maxsrc'];
+    cas = corrTab(str2double(strtok(fls{i},'_')),3);
+    if strcmp(cas,'bas')
+        hold on
+        cas3 = [cas3 ; [maxtime',maxsrc']];
+        hold off
+    else
+        numb = 4+str2double(strtok(corrTab(str2double(strtok(fls{i},'_')),3),'c'));
+        eval(['cas' num2str(numb) '= ' '[cas' num2str(numb) '; [maxtime'' maxsrc'']];']);
+        hold off
+    end
+%     medsrc = nanmedian(cell2mat(qt_ref));
+%     medtime = nanmedian(cell2mat(qt_ref2));
+%     exp3median = [exp3median; maxtime' maxsrc'];
     
 %     hold on
 %     
@@ -67,6 +79,23 @@ for i = 1:length(fls)
    clear qt_ref qt_ref2 th_ref th_ref2
 end
 
+for i = 3:9
+    figure(i)
+    scatter(eval(['cas' num2str(i) '(:,1)']),eval(['cas' num2str(i) '(:,2)']),'ob','filled')
+    xlabel('FQT (time domain)')
+    ylabel('FQT (source domain)')
+    xlim([100 260]),ylim([100 260])
+    hold on
+    h = lsline;
+    set(h(1),'color','k')
+    hold off
+    if i ==3
+        title('Baseline')
+    else
+        title(['Case' num2str(i-4)])
+    end
+end
+    
 [h,p]=ttest(exp3max(:,1),exp3max(:,2));
 if h
     fprintf('Null hypothesis can be rejected with p= %d \n',p);

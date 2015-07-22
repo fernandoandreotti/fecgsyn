@@ -29,7 +29,7 @@
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 %% == GLOBAL
-clear all; close all; clc;
+close all; clc;
 THR = 0.2; % threshold of QRS detector
 mVCG = 5; % choose mother VCG (if empty then the simulator randomly choose one within the set of available VCGs)
 fVCG = 4; % choose foetus VCG (ibid)

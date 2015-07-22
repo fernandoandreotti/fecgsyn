@@ -33,7 +33,6 @@
 %% == (1) BSS examples (single pregnancy)
 
 % = general
-clear all; close all;
 param.fvcg = 3; % force to keep same vcgs for the stationary 
                 % and non-stationary cases in order to make a direct
                 % comparison

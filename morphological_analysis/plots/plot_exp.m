@@ -1,5 +1,4 @@
 
-clearvars -except stat stats_struct
 stat = stats_struct;
 % 
 % for kk=1:length(stat_nopca)

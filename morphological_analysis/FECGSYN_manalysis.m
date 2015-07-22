@@ -84,15 +84,15 @@ qrsref([1,20]) = []; qrsabdm([1,20]) = [];
 % writting to WFDB
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
 tm2 = 1:length(ref_sig); tm2 = tm2'-1;
-wrsamp(tm1,abdm_sig',['absig_' num2str(filen)],FS_ECGPU,gain,'')
-wrsamp(tm2,ref_sig',['refsig_' num2str(filen)],FS_ECGPU,gain,'')
-wrann(['absig_' num2str(filen)],'qrs',qrsabdm',repmat('N',20,1));
-wrann(['refsig_' num2str(filen)],'qrs',qrsref',repmat('N',20,1));
+wrsamp(tm1,abdm_sig',['absig_' filen(regexp(filen,'rec'):end)],FS_ECGPU,gain,'')
+wrsamp(tm2,ref_sig',['refsig_' filen(regexp(filen,'rec'):end)],FS_ECGPU,gain,'')
+wrann(['absig_' filen(regexp(filen,'rec'):end)],'qrs',qrsabdm',repmat('N',20,1));
+wrann(['refsig_' filen(regexp(filen,'rec'):end)],'qrs',qrsref',repmat('N',20,1));
 
 %% Segmentation using ECGPUWAVE
 % ref signal
-ecgpuwave(['refsig_' num2str(filen)],'edr',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
-[allref,alltypes_r] = rdann(['refsig_' num2str(filen)],'edr');
+ecgpuwave(['refsig_' filen(regexp(filen,'rec'):end)],'edr',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+[allref,alltypes_r] = rdann(['refsig_' filen(regexp(filen,'rec'):end)],'edr');
 % if debug   
 %     figure(2)
 %     ax(1)=subplot(2,1,1);
@@ -105,8 +105,8 @@ ecgpuwave(['refsig_' num2str(filen)],'edr',[],[],'qrsref'); % important to speci
 %     title('Reference Signal')
 % end
 % test signal
-ecgpuwave(['absig_' num2str(filen)],'edr',[],[],'qrsabdm'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
-[alltest,alltypes_t] = rdann(['absig_' num2str(filen)],'edr');
+ecgpuwave(['absig_' filen(regexp(filen,'rec'):end)],'edr',[],[],'qrsabdm'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+[alltest,alltypes_t] = rdann(['absig_' filen(regexp(filen,'rec'):end)],'edr');
 % if debug
 %     figure(2)
 %     ax(2)=subplot(2,1,2);

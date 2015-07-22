@@ -116,6 +116,7 @@ for i = filesproc%length(fls_ext)
     %= loading original file
     origrec = str2double(rec{:}(4:end));
     file = strcat(path_orig,fls_orig(origrec));
+    cas = regexp(file{:},'_c[0-7]','match');
     load(file{:});
     fecg = double(out.fecg{1}(ch,:)); % selecting channels
     %= Resampling original data to match extracted (fs - if necessary)
@@ -151,9 +152,9 @@ for i = filesproc%length(fls_ext)
         end
         cd([path_orig 'wfdb'])
         bss = strcmp(method,'JADEICA')|strcmp(method,'PCA'); % apply coordinate transformation or not
-        
-        fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4)];
-        [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname,[b_hp,a_hp,b_lp,a_lp],i);
+        fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
+        fname = strcat(fname{:});
+        [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname,[b_hp,a_hp,b_lp,a_lp]);
         morph.(method)(origrec,:) = outputs;
     end
     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
@@ -280,7 +281,7 @@ end
 end
 
 function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
-    morpho(fecg,residual,fqrs,fs,SAMPS,bss,fname,filterc,filen)
+    morpho(fecg,residual,fqrs,fs,SAMPS,bss,fname,filterc)
 %% Function to perform morphological analysis for TS/BSS extracted data
 %
 % >Inputs
@@ -349,7 +350,7 @@ for j = 1:SAMPS:length(residual)
         else
             
             [qt_test{ch,block},qt_ref{ch,block},th_test{ch,block},th_ref{ch,block},...
-                qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,filen);
+                qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,fname);
         end
         
         
@@ -373,18 +374,18 @@ for j = 1:SAMPS:length(residual)
                 th_ref2{ch,block} = NaN;
             else
                 [~,qt_ref2{ch,block},~,th_ref2{ch,block},...
-                    ~,~] = FECGSYN_manalysis(temp_ref2,temp_ref2,qrs_abdm,qrs_ref,fs,filterc,filen);
+                    ~,~] = FECGSYN_manalysis(temp_ref2,temp_ref2,qrs_abdm,qrs_ref,fs,filterc,fname);
             end
-            
         end
-        block = block+1;
     end
-    save([num2str(filen) '_dist'],'qt_ref','qt_ref2','th_ref','th_ref2','temp_ref','temp_ref2','qrs_abdm','qrs_ref')
-    else
-        save([num2str(filen) '_dist'],'qt_ref','th_ref','temp_ref','qrs_abdm','qrs_ref')
-        
+    block = block+1;
 end
 
+if bss
+    save(['fqt_' fname(regexp(fname,'rec'):end)],'qt_ref','qt_ref2','th_ref','th_ref2','temp_ref','temp_ref2','qrs_abdm','qrs_ref')
+else
+    save(['fqt_' fname(regexp(fname,'rec'):end)],'qt_ref','th_ref','temp_ref','qrs_abdm','qrs_ref')
+end
 
 
 

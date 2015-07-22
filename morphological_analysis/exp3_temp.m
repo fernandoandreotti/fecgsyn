@@ -13,6 +13,7 @@ timetot = 0;
 exp3fqt = [];
 exp3fth = [];
 exp3ica = [];
+exp3median = [];exp3max = [];
 for i = 1:length(fls)
     load(fls{i})
     
@@ -42,11 +43,12 @@ for i = 1:length(fls)
     timetot = timetot + numel(cell2mat(qt_ref2));
     
     % Max FQT per segment
-    tmpres = min(cell2mat(qt_ref)-cell2mat(qt_ref2));
-    exp3fqt = [exp3fqt; tmpres'];
-    tmpres2 = min(cell2mat(th_ref)-cell2mat(th_ref2));
-    exp3fth = [exp3fth; tmpres2'];
-    clear tmpresßß
+    maxsrc = nanmax(cell2mat(qt_ref));
+    maxtime = nanmax(cell2mat(qt_ref2));
+    exp3max = [exp3max; maxtime' maxsrc'];
+    medsrc = nanmedian(cell2mat(qt_ref));
+    medtime = nanmedian(cell2mat(qt_ref2));
+    exp3median = [exp3median; maxtime' maxsrc'];
     
 %     hold on
 %     
@@ -75,24 +77,43 @@ fprintf('NaNs on source domain:  %3.2f percent \n',srcnan/srctot*100);
 fprintf('NaNs on time domain:  %3.2f percent \n',timenan/timetot*100);
 
 figure(1)
-% subplot(2,1,1)
+subplot(1,2,1)
 color = 'b';
-plot(exp3tab(find(exp3ica),1),exp3tab(find(exp3ica),2),'o','Color',color,'MarkerFaceColor',color,'MarkerSize',3)
+plot(exp3max(find(exp3ica),1),exp3tab(find(exp3ica),2),'o','Color',color,'MarkerFaceColor',color,'MarkerSize',3)
 xlim([100 260]),ylim([100 260])
 xlabel('FQT (time domain)')
 ylabel('FQT (source domain)')  
 title('BSS_{ica}')
 matlab2tikz(['fqtica.tikz'], 'height', '\figureheight', 'width', '\figurewidth');
 
-figure(2)
+subplot(1,2,2)
 color = 'r';
-plot(exp3tab(find(~exp3ica),1),exp3tab(find(~exp3ica),2),'o','Color',color,'MarkerFaceColor',color,'MarkerSize',3)
+plot(exp3max(find(~exp3ica),1),exp3tab(find(~exp3ica),2),'o','Color',color,'MarkerFaceColor',color,'MarkerSize',3)
 xlim([100 260]),ylim([100 260])
 xlabel('FQT (time domain)')
 ylabel('FQT (source domain)')  
 title('BSS_{pca}')
 matlab2tikz(['fqtpca.tikz'], 'height', '\figureheight', 'width', '\figurewidth');
 
+
+figure(2)
+subplot(1,2,1)
+color = 'b';
+plot(exp3median(find(exp3ica),1),exp3tab(find(exp3ica),2),'o','Color',color,'MarkerFaceColor',color,'MarkerSize',3)
+xlim([100 260]),ylim([100 260])
+xlabel('FQT (time domain)')
+ylabel('FQT (source domain)')  
+title('BSS_{ica}')
+matlab2tikz(['fqtica.tikz'], 'height', '\figureheight', 'width', '\figurewidth');
+
+subplot(1,2,2)
+color = 'r';
+plot(exp3median(find(~exp3ica),1),exp3tab(find(~exp3ica),2),'o','Color',color,'MarkerFaceColor',color,'MarkerSize',3)
+xlim([100 260]),ylim([100 260])
+xlabel('FQT (time domain)')
+ylabel('FQT (source domain)')  
+title('BSS_{pca}')
+matlab2tikz(['fqtpca.tikz'], 'height', '\figureheight', 'width', '\figurewidth');
 % %     subplot(2,1,2)
 % %     xlabel('T_h (time domain)')
 % %     ylabel('T_h (spectral domain)')

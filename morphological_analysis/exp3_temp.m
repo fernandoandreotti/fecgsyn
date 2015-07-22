@@ -79,7 +79,11 @@ fprintf('NaNs on time domain:  %3.2f percent \n',timenan/timetot*100);
 figure(1)
 subplot(1,2,1)
 color = 'b';
-plot(exp3max(find(exp3ica),1),exp3max(find(exp3ica),2),'o','Color',color,'MarkerFaceColor',color,'MarkerSize',3)
+scatter(exp3max(find(exp3ica),1),exp3max(find(exp3ica),2),'ob','filled')
+hold on
+h = lsline;
+set(h(1),'color','k')
+hold off
 xlim([100 260]),ylim([100 260])
 xlabel('FQT (time domain)')
 ylabel('FQT (source domain)')  
@@ -88,7 +92,11 @@ title('BSS_{ica}')
 
 subplot(1,2,2)
 color = 'r';
-plot(exp3max(find(~exp3ica),1),exp3max(find(~exp3ica),2),'o','Color',color,'MarkerFaceColor',color,'MarkerSize',3)
+scatter(exp3max(find(~exp3ica),1),exp3max(find(~exp3ica),2),'or','filled')
+hold on
+h = lsline;
+set(h(1),'color','k')
+hold off
 xlim([100 260]),ylim([100 260])
 xlabel('FQT (time domain)')
 ylabel('FQT (source domain)')  
@@ -99,7 +107,11 @@ title('BSS_{pca}')
 figure(2)
 subplot(1,2,1)
 color = 'b';
-plot(exp3median(find(exp3ica),1),exp3median(find(exp3ica),2),'o','Color',color,'MarkerFaceColor',color,'MarkerSize',3)
+scatter(exp3median(find(exp3ica),1),exp3median(find(exp3ica),2),'ob','filled')
+hold on
+h = lsline;
+set(h(1),'color','k')
+hold off
 xlim([100 260]),ylim([100 260])
 xlabel('FQT (time domain)')
 ylabel('FQT (source domain)')  
@@ -108,7 +120,11 @@ title('BSS_{ica}')
 
 subplot(1,2,2)
 color = 'r';
-plot(exp3median(find(~exp3ica),1),exp3median(find(~exp3ica),2),'o','Color',color,'MarkerFaceColor',color,'MarkerSize',3)
+scatter(exp3median(find(~exp3ica),1),exp3median(find(~exp3ica),2),'or','filled')
+hold on
+h = lsline;
+set(h(1),'color','k')
+hold off
 xlim([100 260]),ylim([100 260])
 xlabel('FQT (time domain)')
 ylabel('FQT (source domain)')  

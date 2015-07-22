@@ -152,9 +152,6 @@ for i = filesproc%length(fls_ext)
         cd([path_orig 'wfdb'])
         bss = strcmp(method,'JADEICA')|strcmp(method,'PCA'); % apply coordinate transformation or not
         
-        %___temp
-        if bss, bss = 2; else continue,end;
-        %_____ temp
         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4)];
         [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname,[b_hp,a_hp,b_lp,a_lp],i);
         morph.(method)(origrec,:) = outputs;
@@ -327,7 +324,7 @@ theight_err = qt_test;
 block = 1;
 for j = 1:SAMPS:length(residual)
     for ch = 1:size(residual,1)
-
+        
         % checking borders
         if j+SAMPS > length(residual)
             endsamp = length(residual);
@@ -350,12 +347,12 @@ for j = 1:SAMPS:length(residual)
             qt_err{ch,block} = NaN;
             theight_err{ch,block} = NaN;
         else
-           
+            
             [qt_test{ch,block},qt_ref{ch,block},th_test{ch,block},th_ref{ch,block},...
                 qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,filen);
         end
         
-               
+        
         if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})
             try
                 drawnow
@@ -364,32 +361,30 @@ for j = 1:SAMPS:length(residual)
                 warning('Failed to save plot')
             end
             
-        end        
+        end
     end
-    for ch = 1:size(fecg,1)
-     %_____________________________________________
-            % temp stuff (tests for article)
-            
-            if bss == 2 % testing distribution of QT / TH depending on analysis domain
-                [temp_ref2,qrs_ref,status3] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
-                temp_ref2 = temp_ref2.avg;
-                if ~status3
-                    qt_ref2{ch,block} = NaN;
-                    th_ref2{ch,block} = NaN;
-                else
-                    [~,qt_ref2{ch,block},~,th_ref2{ch,block},...
-                        ~,~] = FECGSYN_manalysis(temp_ref2,temp_ref2,qrs_abdm,qrs_ref,fs,filterc,filen);
-                end
-                
+    % bss need original signal as well
+    if bss
+        for ch = 1:size(fecg,1)
+            [temp_ref2,qrs_ref,status3] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
+            temp_ref2 = temp_ref2.avg;
+            if ~status3
+                qt_ref2{ch,block} = NaN;
+                th_ref2{ch,block} = NaN;
+            else
+                [~,qt_ref2{ch,block},~,th_ref2{ch,block},...
+                    ~,~] = FECGSYN_manalysis(temp_ref2,temp_ref2,qrs_abdm,qrs_ref,fs,filterc,filen);
             end
             
-            %_____________________________________________
-            % evaluating morphological features           
+        end
+        block = block+1;
     end
-    block = block+1;
+    save([num2str(filen) '_dist'],'qt_ref','qt_ref2','th_ref','th_ref2','temp_ref','temp_ref2','qrs_abdm','qrs_ref')
+    else
+        save([num2str(filen) '_dist'],'qt_ref','th_ref','temp_ref','qrs_abdm','qrs_ref')
+        
 end
 
-save([num2str(filen) '_dist'],'qt_ref','qt_ref2','th_ref','th_ref2')
 
 
 

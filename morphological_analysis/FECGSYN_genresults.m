@@ -154,7 +154,11 @@ for i = filesproc%length(fls_ext)
         bss = strcmp(method,'JADEICA')|strcmp(method,'PCA'); % apply coordinate transformation or not
         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
         fname = strcat(fname{:});
-        [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname,[b_hp,a_hp,b_lp,a_lp]);
+        if bss
+        [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname,[b_hp,a_hp,b_lp,a_lp],W);
+        else
+            [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname,[b_hp,a_hp,b_lp,a_lp]);
+        end
         morph.(method)(origrec,:) = outputs;
     end
     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
@@ -281,7 +285,7 @@ end
 end
 
 function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
-    morpho(fecg,residual,fqrs,fs,SAMPS,bss,fname,filterc)
+    morpho(fecg,residual,fqrs,fs,SAMPS,bss,fname,filterc,varargin)
 %% Function to perform morphological analysis for TS/BSS extracted data
 %
 % >Inputs
@@ -300,6 +304,14 @@ function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
 %
 global debug
 numNaN = 0;
+switch length(varargin)
+    case 0
+        W = [];
+    case 1
+        W = varargin{1};
+    otherwise
+        error('morpho: Too many inputs to function')
+end
 % if bss, propagating reference to source domain
 if bss
     restemp = residual;

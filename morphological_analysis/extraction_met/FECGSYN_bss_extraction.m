@@ -85,13 +85,14 @@ end
  data = data';
  out_comps = zeros(size(data));  % allocating
 
-W = [];
+W = cell(5,1);
+count = 0;
 while (loop)  % will quit as soon as complete signal is filtered
     if (size(data,2) - ssamp) < 1.5*blen     % if there is less than 1.5x blen
         endsamp = size(data,2);              % interval, it should filter until end
         loop = 0;                            % and be the last loop iteration
     end
-    
+    count = count +1;
     samp2filt = ssamp:endsamp;              % creating a list with samples to filter
     % this is because FastICA is not deterministic so make sure to use the same random seed at 
     % each run
@@ -118,7 +119,7 @@ while (loop)  % will quit as soon as complete signal is filtered
     if isempty(Bold); Bold = Bnew; end; % first loop
     outnew = Bold*data(:,samp2filt);
     outnew = diag(1./max(outnew,[],2))*outnew; % may not have the same size as "data"
-    W = [W Bold];   % saving previous mixing matrices
+    W{count} = Bold;   % saving previous mixing matrices
     Bold = Bnew;   
     
     % Adding to previous blocks

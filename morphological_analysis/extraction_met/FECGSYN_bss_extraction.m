@@ -74,26 +74,27 @@ if size(data,2)<endsamp
 end
 
 
- % = use PCA in keeping channels with 95% of eigenspectrum
- % = normalising data (PCA is sensible to scaling)
- data = bsxfun(@minus,data,mean(data,2)); % remove mean (JADE is sensible)
- data = bsxfun(@rdivide,data,std(data,0,2)); % divide by standard deviation
- [coeff, score, latent] = pca(data');
- perc = cumsum(latent)./sum(latent);
- Ncomp = find(perc>=0.999,1,'first');   % keeping 99.9% data variance
- data = score*coeff(:,1:Ncomp);
- data = data';
- out_comps = zeros(size(data));  % allocating
-
 W = cell(5,1);
 count = 0;
 while (loop)  % will quit as soon as complete signal is filtered
-    if (size(data,2) - ssamp) < 1.5*blen     % if there is less than 1.5x blen
+     if (size(data,2) - ssamp) < 1.5*blen     % if there is less than 1.5x blen
         endsamp = size(data,2);              % interval, it should filter until end
         loop = 0;                            % and be the last loop iteration
-    end
+     end
     count = count +1;
     samp2filt = ssamp:endsamp;              % creating a list with samples to filter
+     % = use PCA in keeping channels with 95% of eigenspectrum
+     % = normalising data (PCA is sensible to scaling)
+     tmpdata = data(:,samp2filt);
+     tmpdata = bsxfun(@minus,tmpdata,mean(tmpdata,2)); % remove mean (JADE is sensible)
+     tmpdata = bsxfun(@rdivide,tmpdata,std(tmpdata,0,2)); % divide by standard deviation
+     [coeff, score, latent] = pca(tmpdata');
+     perc = cumsum(latent)./sum(latent);
+     Ncomp = find(perc>=0.999,1,'first');   % keeping 99.9% data variance
+     tmpdata = score*coeff(:,1:Ncomp);
+     tmpdata = tmpdata';
+     out_comps = zeros(size(tmpdata));  % allocating
+          
     % this is because FastICA is not deterministic so make sure to use the same random seed at 
     % each run
     stream = RandStream.getGlobalStream; 
@@ -101,23 +102,23 @@ while (loop)  % will quit as soon as complete signal is filtered
     switch method
         case 'FASTICA_DEF'
             % FastICA with deflation appraoch
-            [~,~,Bnew] = fastica(data(:,samp2filt),'g','tanh','verbose','on','maxNumIterations',size(data,1)*1000,'approach','defl');
+            [~,~,Bnew] = fastica(tmpdata,'g','tanh','verbose','on','maxNumIterations',size(tmpdata,1)*1000,'approach','defl');
             disp(['FASTICA_DEF output size:' num2str(size(Bnew,1)) 'x' num2str(size(Bnew,2))])
         case 'FASTICA_SYM'
             % FastICA with symmetric method
-            [~,~,Bnew] = fastica(data(:,samp2filt),'g','tanh','verbose','on','maxNumIterations',size(data,1)*1000,'approach','symm');    
+            [~,~,Bnew] = fastica(tmpdata,'g','tanh','verbose','on','maxNumIterations',size(tmpdata,1)*1000,'approach','symm');    
             disp(['FASTICA_SYM output size:' num2str(size(Bnew,1)) 'x' num2str(size(Bnew,2))])
         case 'JADEICA'
             % JADEICA (no restriction on number of sources)
-            Bnew = jadeR(data(:,samp2filt)); 
+            Bnew = jadeR(tmpdata); 
         case 'PCA'
-            [Bnew,~] = princomp(data(:,samp2filt)');
+            [Bnew,~] = princomp(tmpdata');
             Bnew = Bnew';            
         otherwise
             error('bss_extraction: Method not implemented')
     end
     if isempty(Bold); Bold = Bnew; end; % first loop
-    outnew = Bold*data(:,samp2filt);
+    outnew = Bold*tmpdata;
     outnew = diag(1./max(outnew,[],2))*outnew; % may not have the same size as "data"
     W{count} = Bold;   % saving previous mixing matrices
     Bold = Bnew;   

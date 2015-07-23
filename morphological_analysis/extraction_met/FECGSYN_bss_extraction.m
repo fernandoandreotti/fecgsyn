@@ -110,7 +110,7 @@ while (loop)  % will quit as soon as complete signal is filtered
             disp(['FASTICA_SYM output size:' num2str(size(Bnew,1)) 'x' num2str(size(Bnew,2))])
         case 'JADEICA'
             % JADEICA (no restriction on number of sources)
-            Bnew = jadeR(tmpdata); 
+            Bnew = jadeR(tmpdata,Ncomp); 
         case 'PCA'
             [Bnew,~] = princomp(tmpdata');
             Bnew = Bnew';            

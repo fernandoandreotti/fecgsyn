@@ -91,7 +91,7 @@ while (loop)  % will quit as soon as complete signal is filtered
      [coeff, score, latent] = pca(tmpdata');
      perc = cumsum(latent)./sum(latent);
      Ncomp = find(perc>=0.999,1,'first');   % keeping 99.9% data variance
-     tmpdata = score*coeff(:,1:Ncomp);
+     tmpdata = score(:,1:Ncomp)*coeff(:,1:Ncomp)';
      tmpdata = tmpdata';
      out_comps = zeros(size(tmpdata));  % allocating
           

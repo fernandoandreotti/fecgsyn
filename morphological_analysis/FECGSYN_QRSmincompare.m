@@ -46,7 +46,7 @@ fqrs = cell(1,size(data,1));
 for j = 1:size(data,1)
     fqrs{j} = qrs_detect(data(j,:),TH,REFRAC,fs);
 end
-end
+
 
 % creating statistics in 1-min blocks
 min = 1;

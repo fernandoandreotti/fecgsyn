@@ -145,21 +145,32 @@ for i = filesproc%length(fls_ext)
         [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
         MAE = MAE*1000/fs_new;
         stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
-        %= Getting statistics (exp 3)
-    else
+    else %= Getting statistics (exp 3)
         if ~exist([path_orig 'wfdb'],'dir')
             mkdir([path_orig 'wfdb'])
         end
-        cd([path_orig 'wfdb'])
-        bss = strcmp(method,'JADEICA')|strcmp(method,'PCA'); % apply coordinate transformation or not
+        cd([path_orig 'wfdb'])        
         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
         fname = strcat(fname{:});
-        if bss
-        [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname,[b_hp,a_hp,b_lp,a_lp],W);
-        else
-            [outputs{1:7}]= morpho(fecgref,residual,fref,fs,TEMP_SAMPS,bss,fname,[b_hp,a_hp,b_lp,a_lp]);
-        end
+        % Until this point, input signals were prepared for the
+        % morphological analysis. M
+        [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
         morph.(method)(origrec,:) = outputs;
+        
+        % Analysis for BSS, evaluate if application of mixing matrix changes
+        % FQT interval        
+        if strcmp(method,'JADEICA')
+            tmpfref = cell(length(A),1);
+            for i = 1:length(A)
+                tmpfref{i} = A{i}*fecgref;
+            end
+            fecgref2 = cell2mat(tmpfref);
+            [outputs{1:7}]= morpho_loop(fecgref2,fecgref2,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+        end
+        
+        morph.(method)(origrec,:) = outputs;
+        
+        
     end
     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
 end
@@ -285,7 +296,7 @@ end
 end
 
 function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
-    morpho(fecg,residual,fqrs,fs,SAMPS,bss,fname,filterc,varargin)
+    morpho_loop(fecg,residual,fqrs,fs,SAMPS,fname,filterc)
 %% Function to perform morphological analysis for TS/BSS extracted data
 %
 % >Inputs
@@ -293,7 +304,6 @@ function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
 % residual:     Result of fetal extraction from abdominal signals
 % fqrs:         Reference fetal QRS samplestamps
 % SAMPS:        Number of samples used for generating templates
-% bss:          Boolean true if using BSS technique
 % fname:        Filename to be used in saving plots
 % filterc:      Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
 %               highpass (hp) and lowpass (lp)
@@ -304,27 +314,6 @@ function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
 %
 global debug
 numNaN = 0;
-switch length(varargin)
-    case 0
-        W = [];
-    case 1
-        W = varargin{1};
-    otherwise
-        error('morpho: Too many inputs to function')
-end
-% if bss, propagating reference to source domain
-if bss
-    restemp = residual;
-    if (size(residual,1) ~= size(fecg,1))
-        for i = 1:(size(fecg,1)- size(restemp,1))
-            restemp = [restemp; randn(1,length(restemp))];
-        end
-    end
-    W = fecg*pinv(restemp);
-    srcfecg = W*fecg;
-else
-    srcfecg = fecg;
-end
 
 % Allocatting
 qt_test = cell(size(residual,1),length(residual)/SAMPS,1);
@@ -337,7 +326,6 @@ theight_err = qt_test;
 block = 1;
 for j = 1:SAMPS:length(residual)
     for ch = 1:size(residual,1)
-        
         % checking borders
         if j+SAMPS > length(residual)
             endsamp = length(residual);
@@ -346,6 +334,7 @@ for j = 1:SAMPS:length(residual)
         end
         % qrs complexes in interval
         qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
+        %% Template Generation
         % abdominal signal template
         [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
         % reference template
@@ -360,12 +349,11 @@ for j = 1:SAMPS:length(residual)
             qt_err{ch,block} = NaN;
             theight_err{ch,block} = NaN;
         else
-            
+            %% Performs morphological analysis
             [qt_test{ch,block},qt_ref{ch,block},th_test{ch,block},th_ref{ch,block},...
                 qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,fname);
         end
-        
-        
+        % Saves generated plots
         if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})
             try
                 drawnow
@@ -376,31 +364,5 @@ for j = 1:SAMPS:length(residual)
             
         end
     end
-    % bss need original signal as well
-    if bss
-        for ch = 1:size(fecg,1)
-            [temp_ref2,qrs_ref,status3] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
-            temp_ref2 = temp_ref2.avg;
-            if ~status3
-                qt_ref2{ch,block} = NaN;
-                th_ref2{ch,block} = NaN;
-            else
-                [~,qt_ref2{ch,block},~,th_ref2{ch,block},...
-                    ~,~] = FECGSYN_manalysis(temp_ref2,temp_ref2,qrs_abdm,qrs_ref,fs,filterc,fname);
-            end
-        end
-    end
-    block = block+1;
 end
-
-if bss
-    save(['fqt_' fname(regexp(fname,'rec'):end)],'qt_ref','qt_ref2','th_ref','th_ref2','temp_ref','temp_ref2','qrs_abdm','qrs_ref')
-else
-    save(['fqt_' fname(regexp(fname,'rec'):end)],'qt_ref','th_ref','temp_ref','qrs_abdm','qrs_ref')
-end
-
-
-
-
-
 end

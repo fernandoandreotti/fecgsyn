@@ -1,4 +1,4 @@
-function [out_comps,qrsmethod,W] = FECGSYN_bss_extraction(data,method,fs,varargin)
+function [out_comps,qrsmethod,W] = FECGSYN_bss_extraction(data,method,fs,blen,defl)
 % Uses Blind Source Separation Methods for FECG extraction given a
 % reference QRS. The component which most agrees with the reference, in
 % terms of F1-measure, is picked as best channel.
@@ -11,6 +11,8 @@ function [out_comps,qrsmethod,W] = FECGSYN_bss_extraction(data,method,fs,varargi
 % data:      Matrix containing signals to serve as input for bss technique
 % method:    String containing method name i.e. 'ICA' or 'PCA'
 % fs:        Sampling frequency [Hz]
+% blen:      Divide signal into segment of blen length
+% defl:      Boolean, if 1 will apply PCA deflation to data
 % refqrs:    Array containing reference QRS detections for F1 measure
 % (optional)
 % blen:      Iterates method every blen (in seconds)
@@ -49,14 +51,6 @@ if size(data,1) > size(data,2)
     data = data';
 end
 
-switch length(varargin)
-    case 0
-        blen = size(data,2);
-    case 1
-        blen = varargin{1};
-    otherwise
-        error('ica_extraction: too many inputs given to function')
-end
 method = upper(method);
 Bold = [];	% old mix matrix
 
@@ -76,6 +70,8 @@ end
 
 W = cell(5,1);
 count = 0;
+out_comps = zeros(size(data));  % allocating
+
 while (loop)  % will quit as soon as complete signal is filtered
      if (size(data,2) - ssamp) < 1.5*blen     % if there is less than 1.5x blen
         endsamp = size(data,2);              % interval, it should filter until end
@@ -83,7 +79,8 @@ while (loop)  % will quit as soon as complete signal is filtered
      end
     count = count +1;
     samp2filt = ssamp:endsamp;              % creating a list with samples to filter
-     % = use PCA in keeping channels with 95% of eigenspectrum
+    if defl 
+    % = use PCA in keeping channels with 95% of eigenspectrum
      % = normalising data (PCA is sensible to scaling)
      tmpdata = data(:,samp2filt);
      tmpdata = bsxfun(@minus,tmpdata,mean(tmpdata,2)); % remove mean (JADE is sensible)
@@ -93,7 +90,10 @@ while (loop)  % will quit as soon as complete signal is filtered
      Ncomp = find(perc>=0.999,1,'first');   % keeping 99.9% data variance
      tmpdata = score(:,1:Ncomp)*coeff(:,1:Ncomp)';
      tmpdata = tmpdata';
-     out_comps = zeros(size(tmpdata));  % allocating
+     
+    else
+        tmpdata = data';
+    end
           
     % this is because FastICA is not deterministic so make sure to use the same random seed at 
     % each run

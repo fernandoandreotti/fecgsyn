@@ -102,6 +102,7 @@ morph.tsekf = cell(length(fls_orig),7);
 morph.alms = cell(length(fls_orig),7);
 morph.arls = cell(length(fls_orig),7);
 morph.aesn = cell(length(fls_orig),7);
+exp3dist = {};
 
 % = Runs through list of extracted files
 for i = filesproc%length(fls_ext)
@@ -111,6 +112,15 @@ for i = filesproc%length(fls_ext)
     
     %= loading extracted file
     [rec,met] = strtok(fls_ext(i),'_');
+    % Figuring out which extraction method was used, possibilities are:
+    % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
+    method = met{:}(2:end-4);
+    
+    % ------ should be removed ------
+    if ~strcmp(method,'JADEICA')
+        continue
+    end
+    % ------ should be removed ------
     file = strcat(path_ext,fls_ext(i));
     load(file{:})
     %= loading original file
@@ -136,10 +146,6 @@ for i = filesproc%length(fls_ext)
     disp(elif(end:-1:1))
     clear fecg outdata rec file elif k
     
-    % Figuring out which extraction method was used, possibilities are:
-    % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
-    method = met{:}(2:end-4);
-    
     %= Getting statistics (exp 2)
     if ~exp3
         [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
@@ -154,25 +160,28 @@ for i = filesproc%length(fls_ext)
         fname = strcat(fname{:});
         % Until this point, input signals were prepared for the
         % morphological analysis. M
-        [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-        morph.(method)(origrec,:) = outputs;
-        
+               
         % Analysis for BSS, evaluate if application of mixing matrix changes
         % FQT interval        
         if strcmp(method,'JADEICA')
-            tmpfref = cell(length(A),1);
+            tmpfref = cell(1,length(A));
             for i = 1:length(A)
-                tmpfref{i} = A{i}*fecgref;
+                tmpfref{i} = A{i}*fecgref(:,(i-1)*TEMP_SAMPS+1:i*TEMP_SAMPS);
             end
             fecgref2 = cell2mat(tmpfref);
-            [outputs{1:7}]= morpho_loop(fecgref2,fecgref2,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-        end
+            [outputs{1:7}]= morpho_loop(fecgref2,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+            % Evaluating if applying mixing matrix makes a difference
+            [qt_bss,~,th_bss]= morpho_loop(fecgref,fecgref,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+            exp3dist(end+1,:) = {outputs{1}, qt_bss, outputs{3},th_bss}
+        else
+             [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
         
+        end
         morph.(method)(origrec,:) = outputs;
         
         
     end
-    clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err
+    clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err outputs
 end
 
 save([path_orig 'wksp' num2str(filesproc(end))])
@@ -350,7 +359,7 @@ for j = 1:SAMPS:length(residual)
             theight_err{ch,block} = NaN;
         else
             %% Performs morphological analysis
-            [qt_test{ch,block},qt_ref{ch,block},th_test{ch,block},th_ref{ch,block},...
+            [qt_ref{ch,block},qt_test{ch,block},th_ref{ch,block},th_test{ch,block},...
                 qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,fname);
         end
         % Saves generated plots
@@ -363,6 +372,8 @@ for j = 1:SAMPS:length(residual)
             end
             
         end
+        
     end
+    block = block+1; 
 end
 end

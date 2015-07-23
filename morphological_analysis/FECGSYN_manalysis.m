@@ -1,4 +1,4 @@
-function [qt_test,qt_ref,th_test,th_ref,qt_err,th_err] = FECGSYN_manalysis(abdm_temp,ref_temp,qrsabdm,qrsref,fs,filterc,filen)
+function [qt_ref,qt_test,th_ref,th_test,qt_err,th_err] = FECGSYN_manalysis(abdm_temp,ref_temp,qrsabdm,qrsref,fs,filterc,filen)
 % This function calculates morphological features form signals given two
 % templates (reference and abdm). Statistics are give as %.
 %

@@ -93,7 +93,10 @@ while (loop)  % will quit as soon as complete signal is filtered
      tmpdata = tmpdata';
      
     else
-        tmpdata = data';
+        tmpdata = data(:,samp2filt);
+        tmpdata = bsxfun(@minus,tmpdata,mean(tmpdata,2)); % remove mean (JADE is sensible)
+        Nmat = diag(std(tmpdata,0,2));   % normalization matrix
+        tmpdata = bsxfun(@rdivide,tmpdata,std(tmpdata,0,2)); % divide by standard deviation
     end
           
     % this is because FastICA is not deterministic so make sure to use the same random seed at 

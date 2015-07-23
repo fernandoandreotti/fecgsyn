@@ -34,11 +34,13 @@ REFRAC = .15;               % detector refractory period (in s)
 
 % Treating BSS outputs
 if iscell(data)
-    
-   for j = 1:size(data{k},1)
-    fqrs{j} = qrs_detect(data(j,:),TH,REFRAC,fs);
+   pad = max(cellfun(@(x) size(x,1),data));
+   for k = 1:length(data)
+       data{k} = [data{k}; zeros(pad-size(data{k},1),length(data{k}))];
+   end
+   data = cell2mat(data);   
 end 
-else
+
 % Detect QRS complexes
 fqrs = cell(1,size(data,1));
 for j = 1:size(data,1)

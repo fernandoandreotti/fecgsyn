@@ -70,7 +70,7 @@ end
 
 W = cell(5,1);
 count = 0;
-out_comps = zeros(size(data));  % allocating
+out_comps = {};  % allocating
 
 while (loop)  % will quit as soon as complete signal is filtered
      if (size(data,2) - ssamp) < 1.5*blen     % if there is less than 1.5x blen
@@ -84,6 +84,7 @@ while (loop)  % will quit as soon as complete signal is filtered
      % = normalising data (PCA is sensible to scaling)
      tmpdata = data(:,samp2filt);
      tmpdata = bsxfun(@minus,tmpdata,mean(tmpdata,2)); % remove mean (JADE is sensible)
+     Nmat = diag(std(tmpdata,0,2));   % normalization matrix
      tmpdata = bsxfun(@rdivide,tmpdata,std(tmpdata,0,2)); % divide by standard deviation
      [coeff, score, latent] = pca(tmpdata');
      perc = cumsum(latent)./sum(latent);
@@ -118,18 +119,15 @@ while (loop)  % will quit as soon as complete signal is filtered
             error('bss_extraction: Method not implemented')
     end
     if isempty(Bold); Bold = Bnew; end; % first loop
-    outnew = Bold*tmpdata;
+    outnew = Bold*Nmat*tmpdata;
     outnew = diag(1./max(outnew,[],2))*outnew; % may not have the same size as "data"
     W{count} = Bold;   % saving previous mixing matrices
     Bold = Bnew;   
     
-    % Adding to previous blocks
-    if size(outnew,1)<size(out_comps,1)
-        out_comps = [out_comps;zeros(size(out_comps,1)-size(outnew,1),length(outnew))];       
-    elseif size(outnew,1)>size(out_comps,1) % case first run outputed less components
-        out_comps = [out_comps;zeros(size(outnew,1)-size(out_comps,1),length(out_comps))];
-    end
-    out_comps(:,samp2filt) = outnew;
+    % Adding to previous blocks, differences in the number of components
+    % are corrected with zeros
+    out_comps{count} = outnew;
+    
 
     %Augment offsets
     ssamp = endsamp+1;

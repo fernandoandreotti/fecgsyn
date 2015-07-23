@@ -32,10 +32,18 @@ INTERV = round(0.05*fs);    % BxB acceptance interval
 TH = 0.3;                   % detector threshold
 REFRAC = .15;               % detector refractory period (in s)
 
+% Treating BSS outputs
+if iscell(data)
+    
+   for j = 1:size(data{k},1)
+    fqrs{j} = qrs_detect(data(j,:),TH,REFRAC,fs);
+end 
+else
 % Detect QRS complexes
 fqrs = cell(1,size(data,1));
 for j = 1:size(data,1)
     fqrs{j} = qrs_detect(data(j,:),TH,REFRAC,fs);
+end
 end
 
 % creating statistics in 1-min blocks

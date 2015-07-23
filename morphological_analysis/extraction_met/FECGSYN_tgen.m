@@ -81,7 +81,7 @@ NB_REL = 10; % number relevance. How many cycles minimum to consider that a mode
 MIN_NB_CYC = 30; % mininum number of cycles (will decrease THRES until this number of cycles is achieved) - UPDATE ME DEPENDING ON APPLICATION
 THRES = 0.9; % threshold at which to decide whether the cycle match or not - UPDATE ME DEPENDING ON APPLICATION
 MIN_TLEN = 0.35;     % minimum template length in ms - UPDATE ME DEPENDING ON APPLICATION
-PACE = 0.05;
+PACE = 0.1;
 MIN_THRES = 0.6;
 cycle = zeros(NB_LEADS,NB_BINS);
 startCycle = 2;
@@ -118,8 +118,10 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
         match = 0;
         indMode = 1;
         while (~match&&indMode<=NbModes)
-            [r,~] = corrcoef(cycle,Mode{indMode}.cycleMean);
-            coeff = abs(r(1,2));
+%             [r,~] = corrcoef(cycle,Mode{indMode}.cycleMean);
+%             coeff = abs(r(1,2));
+            % 50% computation time 
+            coeff = prcorr2(cycle,Mode{indMode}.cycleMean);
             match = coeff>THRES;
             indMode = indMode+1;
         end

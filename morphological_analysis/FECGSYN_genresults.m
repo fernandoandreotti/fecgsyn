@@ -338,7 +338,7 @@ for j = 1:SAMPS:length(residual)
         % abdominal signal template
         [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
         % reference template
-        [temp_ref,qrs_ref,status2] = FECGSYN_tgen(srcfecg(ch,j:endsamp),qrstmp,fs);
+        [temp_ref,qrs_ref,status2] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
         temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
         
         if (~status1||~status2)

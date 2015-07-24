@@ -115,12 +115,6 @@ for i = filesproc%length(fls_ext)
     % Figuring out which extraction method was used, possibilities are:
     % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
     method = met{:}(2:end-4);
-    
-    % ------ should be removed ------
-    if ~strcmp(method,'JADEICA')
-        continue
-    end
-    % ------ should be removed ------
     file = strcat(path_ext,fls_ext(i));
     load(file{:})
     %= loading original file
@@ -155,14 +149,14 @@ for i = filesproc%length(fls_ext)
         if ~exist([path_orig 'wfdb'],'dir')
             mkdir([path_orig 'wfdb'])
         end
-        cd([path_orig 'wfdb'])        
+        cd([path_orig 'wfdb'])
         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
         fname = strcat(fname{:});
         % Until this point, input signals were prepared for the
         % morphological analysis. M
-               
+        
         % Analysis for BSS, evaluate if application of mixing matrix changes
-        % FQT interval        
+        % FQT interval
         if strcmp(method,'JADEICA')
             tmpfref = cell(1,length(A));
             pad = max(cellfun(@(x) size(x,1),A));
@@ -170,18 +164,14 @@ for i = filesproc%length(fls_ext)
                 tmpfref{i} = A{i}*fecgref(:,(i-1)*TEMP_SAMPS+1:i*TEMP_SAMPS);
                 tmpfref{i} = [tmpfref{i};zeros(pad-size(tmpfref{i},1),length(tmpfref{i}))];
             end
-            try
-            fecgref2 = cell2mat(tmpfref);
-            catch
-                dis
-            end
+            fecgref2 = cell2mat(tmpfref);   % source domain FECG reference signal
             [outputs{1:7}]= morpho_loop(fecgref2,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
             % Evaluating if applying mixing matrix makes a difference
-            [qt_bss,~,th_bss]= morpho_loop(fecgref,fecgref,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-            exp3dist(end+1,:) = {outputs{1}, qt_bss, outputs{3},th_bss}
+            [qt_time,~,th_time]= morpho_loop(fecgref,fecgref,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+            exp3dist(end+1,:) = {outputs{1}, qt_time, outputs{3},th_time};
         else
-             [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-        
+            [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+            
         end
         morph.(method)(origrec,:) = outputs;
         
@@ -194,22 +184,11 @@ save([path_orig 'wksp' num2str(filesproc(end))])
 
 %% EXP3
 % Generating statistics
-if exp3
-    res3.mean = [];
-    res3.std = [];
-    c = 1;
-    for method = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn'}
-        tmpvec = morph.(method{:})(:,[5 6]); % hold results temporarilly
-        tmpvec = cell2mat(cellfun(@(x) nanmean(min(abs(cell2mat(x)))),tmpvec,'UniformOutput',0)); % minimal error per channel/component
-        res3.mean(c,:) = nanmean(tmpvec);
-        res3.std(c,:) = nanstd(tmpvec);
-        c = c+1; % simple counter
-    end
-end
 
 
-%% Plots and statistics generation
-if debug
+
+if ~exp3 % Experiment 2
+    %= Plots and statistics generation
     LWIDTH = 1.5;
     FSIZE = 15;
     %== F1 plot
@@ -306,10 +285,37 @@ if debug
         set(gca,'FontSize',FSIZE);
         set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
     end
+    
+    
+    
+    
+else
+    %% Experiment 3 
+    
+    %= Distribution of ICA FQT intervals
+    % exp3dist = qt_src, qt_time, th_src,th_time
+    exp3dist(cellfun(@(x) cellfun(@isempty, x),exp3dist)) = {NaN}; % substituting empty for NaNs
+        
+    
+    load('information')
+    
+    
+    
+    
+    
+    %     res3.mean = [];
+    %     res3.std = [];
+    %     c = 1;
+    %     for method = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn'}
+    %         tmpvec = morph.(method{:})(:,[5 6]); % hold results temporarilly
+    %         tmpvec = cell2mat(cellfun(@(x) nanmean(min(abs(cell2mat(x)))),tmpvec,'UniformOutput',0)); % minimal error per channel/component
+    %         res3.mean(c,:) = nanmean(tmpvec);
+    %         res3.std(c,:) = nanstd(tmpvec);
+    %         c = c+1; % simple counter
+    %     end
 end
 
 end
-
 function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
     morpho_loop(fecg,residual,fqrs,fs,SAMPS,fname,filterc)
 %% Function to perform morphological analysis for TS/BSS extracted data
@@ -380,6 +386,6 @@ for j = 1:SAMPS:length(residual)
         end
         
     end
-    block = block+1; 
+    block = block+1;
 end
 end

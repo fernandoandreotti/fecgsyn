@@ -139,4 +139,11 @@ while (loop)  % will quit as soon as complete signal is filtered
 
 end
 
+pad = max(cellfun(@(x) size(x,1),out_comps));
+for k = 1:length(out_comps)
+    out_comps{k} = [out_comps{k}; zeros(pad-size(out_comps{k},1),length(out_comps{k}))];
+end
+out_comps = cell2mat(out_comps);
+
+
 

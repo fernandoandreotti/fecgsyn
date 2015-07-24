@@ -165,10 +165,16 @@ for i = filesproc%length(fls_ext)
         % FQT interval        
         if strcmp(method,'JADEICA')
             tmpfref = cell(1,length(A));
+            pad = max(cellfun(@(x) size(x,1),A));
             for i = 1:length(A)
                 tmpfref{i} = A{i}*fecgref(:,(i-1)*TEMP_SAMPS+1:i*TEMP_SAMPS);
+                tmpfref{i} = [tmpfref{i};zeros(pad-size(tmpfref{i},1),length(tmpfref{i}))];
             end
+            try
             fecgref2 = cell2mat(tmpfref);
+            catch
+                dis
+            end
             [outputs{1:7}]= morpho_loop(fecgref2,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
             % Evaluating if applying mixing matrix makes a difference
             [qt_bss,~,th_bss]= morpho_loop(fecgref,fecgref,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);

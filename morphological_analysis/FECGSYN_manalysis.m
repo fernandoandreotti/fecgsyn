@@ -64,17 +64,19 @@ T_LENr = length(ref_temp);  % template length
 
 abdm_sig = repmat(abdm_temp',1,20);
 ref_sig = repmat(ref_temp',1,20);
-wsign = sign(abdm_sig(qrsabdm));
-abdm_sig = 2*gain*wsign*abdm_sig/abs(abdm_sig(qrsabdm)); % normalizing in 2 mV
-wsign = sign(ref_temp(qrsref));
-ref_sig = 2*gain*wsign*ref_sig/abs(ref_sig(qrsref));
-
 
 % Preprocessing reference channel
 ref_sig = filtfilt(b_lp,a_lp,ref_sig);
 ref_sig = filtfilt(b_hp,a_hp,ref_sig);
 abdm_sig = filtfilt(b_lp,a_lp,abdm_sig); 
 abdm_sig = filtfilt(b_hp,a_hp,abdm_sig); 
+
+% Normalizing signal
+wsign = sign(max(abdm_sig)); % looking for signal sign
+abdm_sig = 2*gain*wsign(1)*abdm_sig/max(abs(abdm_sig)); % normalizing in 2 mV
+wsign = sign(max(ref_temp)); % looking for signal sign
+ref_sig = 2*gain*wsign(1)*ref_sig/max(abs(ref_sig));
+
 
 %% Saving data as WFDB
 % looking for peaks in temporary signal
@@ -85,6 +87,11 @@ qrsref([1,20]) = []; qrsabdm([1,20]) = [];
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
 tm2 = 1:length(ref_sig); tm2 = tm2'-1;
 filen = filen(regexp(filen,'rec'):end);
+counter = 1; % avoind rewriting file
+while exist(['absig_' filen '_' num2str(counter) '.hea'],'file')
+    counter = counter + 1;
+end
+filen = [filen '_' num2str(counter)];
 wrsamp(tm1,abdm_sig',['absig_' filen],FS_ECGPU,gain,'')
 wrsamp(tm2,ref_sig',['refsig_' filen],FS_ECGPU,gain,'')
 wrann(['absig_' filen],'qrs',qrsabdm',repmat('N',20,1));
@@ -92,8 +99,8 @@ wrann(['refsig_' filen],'qrs',qrsref',repmat('N',20,1));
 
 %% Segmentation using ECGPUWAVE
 % ref signal
-ecgpuwave(['refsig_' filen],'edr',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
-[allref,alltypes_r] = rdann(['refsig_' filen],'edr');
+ecgpuwave(['refsig_' filen],'ecgpuwave',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+[allref,alltypes_r] = rdann(['refsig_' filen],'ecgpuwave');
 % if debug   
 %     figure(2)
 %     ax(1)=subplot(2,1,1);
@@ -106,8 +113,8 @@ ecgpuwave(['refsig_' filen],'edr',[],[],'qrsref'); % important to specify the QR
 %     title('Reference Signal')
 % end
 % test signal
-ecgpuwave(['absig_' filen],'edr',[],[],'qrsabdm'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
-[alltest,alltypes_t] = rdann(['absig_' filen],'edr');
+ecgpuwave(['absig_' filen],'ecgpuwave',[],[],'qrsabdm'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+[alltest,alltypes_t] = rdann(['absig_' filen],'ecgpuwave');
 % if debug
 %     figure(2)
 %     ax(2)=subplot(2,1,2);

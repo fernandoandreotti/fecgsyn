@@ -157,6 +157,7 @@ if debug
     set(gcf,'units','normalized','outerposition',[0 0 1 1])   
     ax(1)=subplot(2,1,1);
     cla
+    ref_temp = ref_sig(1:length(ref_temp));
     plot(ref_temp./gain,'k','LineWidth',2)
     hold on
     rpeak = qrsref(1)-T_LENr;
@@ -190,6 +191,7 @@ if debug
     figure(1)
     ax(2)=subplot(2,1,2);
     cla
+    abdm_temp = abdm_sig(1:length(abdm_temp));
     plot(abdm_temp./gain,'k','LineWidth',2)
     hold on
     try

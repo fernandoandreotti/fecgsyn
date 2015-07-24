@@ -35,6 +35,8 @@ function [qt_ref,qt_test,th_ref,th_test,qt_err,th_err] = FECGSYN_manalysis(abdm_
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 global debug
+% Case second run of ICA tests (speed up a bit)
+if isequal(abdm_temp,ref_temp); ident = 1; else ident = 0; end
 
 % resampling and repeating templates
 FS_ECGPU = 250;     % default sampling frequency for ECGPUWAVE
@@ -92,13 +94,11 @@ while exist(['absig_' filen '_' num2str(counter) '.hea'],'file')
     counter = counter + 1;
 end
 filen = [filen '_' num2str(counter)];
-wrsamp(tm1,abdm_sig',['absig_' filen],FS_ECGPU,gain,'')
-wrsamp(tm2,ref_sig',['refsig_' filen],FS_ECGPU,gain,'')
-wrann(['absig_' filen],'qrs',qrsabdm',repmat('N',20,1));
-wrann(['refsig_' filen],'qrs',qrsref',repmat('N',20,1));
 
 %% Segmentation using ECGPUWAVE
 % ref signal
+wrsamp(tm2,ref_sig',['refsig_' filen],FS_ECGPU,gain,'')
+wrann(['refsig_' filen],'qrs',qrsref',repmat('N',20,1));
 ecgpuwave(['refsig_' filen],'ecgpuwave',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 [allref,alltypes_r] = rdann(['refsig_' filen],'ecgpuwave');
 % if debug   
@@ -113,8 +113,13 @@ ecgpuwave(['refsig_' filen],'ecgpuwave',[],[],'qrsref'); % important to specify 
 %     title('Reference Signal')
 % end
 % test signal
-ecgpuwave(['absig_' filen],'ecgpuwave',[],[],'qrsabdm'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
-[alltest,alltypes_t] = rdann(['absig_' filen],'ecgpuwave');
+  
+if ~ident
+    wrsamp(tm1,abdm_sig',['absig_' filen],FS_ECGPU,gain,'')
+    wrann(['absig_' filen],'qrs',qrsabdm',repmat('N',20,1));
+    ecgpuwave(['absig_' filen],'ecgpuwave',[],[],'qrsabdm'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+    [alltest,alltypes_t] = rdann(['absig_' filen],'ecgpuwave');
+end
 % if debug
 %     figure(2)
 %     ax(2)=subplot(2,1,2);
@@ -169,8 +174,16 @@ if debug
     clear qs tends twave offset rpeak
 end
 
-%% QT-intervals from test
+if ident
+    qt_test = qt_ref;
+    th_test = th_ref;
+    th_ref = 0;
+    qt_err = 0;
+    th_err = 0;   
+    return
+end
 
+%% QT-intervals from test
 [qt_test,th_test,qs,tends,tpeak] = QTcalc(alltypes_t,alltest,abdm_sig,fs);
 % test if QT analysis feasible
 if isnan(qt_test)||isnan(th_test)

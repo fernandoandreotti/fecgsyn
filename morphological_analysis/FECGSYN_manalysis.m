@@ -52,7 +52,7 @@ if isnan(qrsabdm)||isnan(qrsref)
     th_test = NaN;
     th_ref = NaN;
     qt_err = NaN;
-    th_err = NaN;   
+    th_err = NaN;
     disp('manalysis: could not generate a TEMPLATE.')
     return % does not extract from test
 end
@@ -70,8 +70,8 @@ ref_sig = repmat(ref_temp',1,20);
 % Preprocessing reference channel
 ref_sig = filtfilt(b_lp,a_lp,ref_sig);
 ref_sig = filtfilt(b_hp,a_hp,ref_sig);
-abdm_sig = filtfilt(b_lp,a_lp,abdm_sig); 
-abdm_sig = filtfilt(b_hp,a_hp,abdm_sig); 
+abdm_sig = filtfilt(b_lp,a_lp,abdm_sig);
+abdm_sig = filtfilt(b_hp,a_hp,abdm_sig);
 
 % Normalizing signal
 wsign = sign(max(abdm_sig)); % looking for signal sign
@@ -97,11 +97,23 @@ filen = [filen '_' num2str(counter)];
 
 %% Segmentation using ECGPUWAVE
 % ref signal
-wrsamp(tm2,ref_sig',['refsig_' filen],FS_ECGPU,gain,'')
-wrann(['refsig_' filen],'qrs',qrsref',repmat('N',20,1));
-ecgpuwave(['refsig_' filen],'ecgpuwave',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+recordName = ['refsig_' filen];
+wrsamp(tm2,ref_sig',recordName,FS_ECGPU,gain,'')
+wrann(recordName,'qrs',qrsref',repmat('N',20,1));
+
+% if isunix
+%     system(['ecgpuwave -r ' recordName '.hea' ' -a ecgpu -i qrsref | awk ''{print $1}'' > tmpout']);
+%     fp = fopen('tmpout','r');
+%     tmp = textscan(fp,'%s','delimiter','\n');
+%     tmp = tmp{1};
+%     tmp = str2double(tmp);
+%     tmp = round(tmp * fs)+1; % convert 0-1 indexing
+% else
+   
+    ecgpuwave(recordName,'ecgpuwave',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+% end
 [allref,alltypes_r] = rdann(['refsig_' filen],'ecgpuwave');
-% if debug   
+% if debug
 %     figure(2)
 %     ax(1)=subplot(2,1,1);
 %     cla
@@ -113,7 +125,7 @@ ecgpuwave(['refsig_' filen],'ecgpuwave',[],[],'qrsref'); % important to specify 
 %     title('Reference Signal')
 % end
 % test signal
-  
+
 if ~ident
     wrsamp(tm1,abdm_sig',['absig_' filen],FS_ECGPU,gain,'')
     wrann(['absig_' filen],'qrs',qrsabdm',repmat('N',20,1));
@@ -145,7 +157,7 @@ if isnan(qt_ref)||isnan(th_ref)
     th_test = NaN;
     th_ref = NaN;
     qt_err = NaN;
-    th_err = NaN;   
+    th_err = NaN;
     disp('manalysis: Could not encounter QT wave for REFERENCE.')
     return % does not extract from test
 end
@@ -159,7 +171,7 @@ th_ref = th_ref./gain-isoel;              % in mV (or not)
 
 if debug
     figure(1)
-    set(gcf,'units','normalized','outerposition',[0 0 1 1])   
+    set(gcf,'units','normalized','outerposition',[0 0 1 1])
     ax(1)=subplot(2,1,1);
     cla
     ref_temp = ref_sig(1:length(ref_temp));
@@ -169,8 +181,8 @@ if debug
     plot(rpeak+qs,ref_temp(rpeak+qs)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
     plot(rpeak+tends,ref_temp(rpeak+tends)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
     plot(rpeak+tpeak,ref_temp(rpeak+tpeak)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
-   
-    title('Reference Signal')   
+    
+    title('Reference Signal')
     clear qs tends twave offset rpeak
 end
 
@@ -179,7 +191,7 @@ if ident
     th_test = th_ref;
     th_ref = 0;
     qt_err = 0;
-    th_err = 0;   
+    th_err = 0;
     return
 end
 
@@ -192,7 +204,7 @@ if isnan(qt_test)||isnan(th_test)
     th_test = NaN;
     th_ref = NaN;
     qt_err = NaN;
-    th_err = NaN;   
+    th_err = NaN;
     disp('manalysis: Could not encounter QT wave for TEST.')
     return
 end
@@ -200,7 +212,7 @@ isoel = median(abdm_temp(round(qrsabdm(1)-T_LENa+0.185*fs):end)./gain);
 qt_test = qt_test*1000/(2*FS_ECGPU);          % in ms
 th_test = th_test./gain-isoel;                  % in mV (or not)
 
-if debug   
+if debug
     figure(1)
     ax(2)=subplot(2,1,2);
     cla
@@ -208,10 +220,10 @@ if debug
     plot(abdm_temp./gain,'k','LineWidth',2)
     hold on
     try
-    rpeak = qrsref(1)-T_LENa;
-    plot(rpeak+qs,abdm_temp(rpeak+qs)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
-    plot(rpeak+tends,abdm_temp(rpeak+tends)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
-    plot(rpeak+tpeak,abdm_temp(rpeak+tpeak)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
+        rpeak = qrsref(1)-T_LENa;
+        plot(rpeak+qs,abdm_temp(rpeak+qs)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
+        plot(rpeak+tends,abdm_temp(rpeak+tends)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
+        plot(rpeak+tpeak,abdm_temp(rpeak+tpeak)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
     catch
         disp('Failed to plot, results do not make sense!!!')
     end
@@ -233,16 +245,16 @@ end
 
 function [qtint,th,qs,tends,tpeak] = QTcalc(ann_types,ann_stamp,signal,fs)
 %% Function that contains heuristics behind QT interval calculation
-% Based on assumption that ECGPUWAVE only outputs a wave (p,N,t) if it can 
-% detect its begin and end. Only highest peak of T-waves marked as biphasic 
+% Based on assumption that ECGPUWAVE only outputs a wave (p,N,t) if it can
+% detect its begin and end. Only highest peak of T-waves marked as biphasic
 % are considered for further analysis.
-% 
-% 
+%
+%
 % Inputs
 % ann_types:          Type of ALL annotations obtained from ECGPUWAVE
 % ann_stamp:          Samplestamp of ALL annotations obtained from ECGPUWAVE
 % fs:                 Sampling frequency
-% 
+%
 % Outputs
 % qtint:              Length of QT (samples)
 % th:                 Height T-wave (no unit)
@@ -318,7 +330,7 @@ if sum(idxbi) > 0   % case biphasic waves occured
     tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));
 else
     Tpeaks(ann_stamp(Tpeaks)>length(signal)) = [];
-    th = mean(abs(signal(ann_stamp(Tpeaks))));   
+    th = mean(abs(signal(ann_stamp(Tpeaks))));
     tpeak = ann_stamp(Tpeaks);
     temp = temp_stamp(Rpeaks);
     tpeak = round(mean(tpeak-temp(1:length(tpeak))));
@@ -326,8 +338,8 @@ end
 
 
 if isempty(tends), tends = NaN; end
-if qtint>QT_MAX*fs, qtint = NaN; end  
-if qtint<QT_MIN*fs, qtint = NaN; end  
+if qtint>QT_MAX*fs, qtint = NaN; end
+if qtint<QT_MIN*fs, qtint = NaN; end
 
 if isempty(qs), qs = NaN; end
 if isempty(tpeak), tpeak = NaN; end

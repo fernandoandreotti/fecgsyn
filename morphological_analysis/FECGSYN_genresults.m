@@ -147,9 +147,11 @@ for i = filesproc%length(fls_ext)
         stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
     else %= Getting statistics (exp 3)
         if ~exist([path_orig 'wfdb'],'dir')
-            mkdir([path_orig 'wfdb'])
+            mkdir([path_orig 'wfdb'])            
         end
         cd([path_orig 'wfdb'])
+        mkdir(num2str(i))
+        cd(num2str(i))
         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
         fname = strcat(fname{:});
         % Until this point, input signals were prepared for the
@@ -178,6 +180,7 @@ for i = filesproc%length(fls_ext)
         
     end
     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err outputs
+    cd ..
 end
 
 save([path_orig 'wksp' num2str(filesproc(end))])

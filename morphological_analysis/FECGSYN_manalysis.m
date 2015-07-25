@@ -110,9 +110,9 @@ wrann(recordName,'qrs',qrsref',repmat('N',20,1));
 %     tmp = round(tmp * fs)+1; % convert 0-1 indexing
 % else
    
-    ecgpuwave(recordName,'ecgpuwave',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+    ecgpuwave(recordName,'ecgpu',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 % end
-[allref,alltypes_r] = rdann(['refsig_' filen],'ecgpuwave');
+[allref,alltypes_r] = rdann(['refsig_' filen],'ecgpu');
 % if debug
 %     figure(2)
 %     ax(1)=subplot(2,1,1);
@@ -129,8 +129,8 @@ wrann(recordName,'qrs',qrsref',repmat('N',20,1));
 if ~ident
     wrsamp(tm1,abdm_sig',['absig_' filen],FS_ECGPU,gain,'')
     wrann(['absig_' filen],'qrs',qrsabdm',repmat('N',20,1));
-    ecgpuwave(['absig_' filen],'ecgpuwave',[],[],'qrsabdm'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
-    [alltest,alltypes_t] = rdann(['absig_' filen],'ecgpuwave');
+    ecgpuwave(['absig_' filen],'ecgpu',[],[],'qrsabdm'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+    [alltest,alltypes_t] = rdann(['absig_' filen],'ecgpu');
 end
 % if debug
 %     figure(2)

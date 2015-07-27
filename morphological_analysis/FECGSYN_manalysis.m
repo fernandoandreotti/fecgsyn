@@ -89,15 +89,26 @@ qrsref([1,20]) = []; qrsabdm([1,20]) = [];
 tm1 = 1:length(abdm_sig); tm1 = tm1'-1;
 tm2 = 1:length(ref_sig); tm2 = tm2'-1;
 filen = filen(regexp(filen,'rec'):end);
-counter = 1; % avoind rewriting file
-while exist(['absig_' filen '_' num2str(counter) '.hea'],'file')
-    counter = counter + 1;
-end
-filen = [filen '_' num2str(counter)];
+
 
 %% Segmentation using ECGPUWAVE
 % ref signal
-recordName = ['refsig_' filen];
+if ~ident
+    counter = 1; % avoind rewriting file
+    while exist(['refsig_' filen '_' num2str(counter) '.hea'],'file')
+        counter = counter + 1;
+    end
+    filen = [filen '_' num2str(counter)];
+    recordName = ['refsig_' filen];
+else
+     counter = 1; % avoind rewriting file
+    while exist(['refsig2_' filen '_' num2str(counter) '.hea'],'file')
+        counter = counter + 1;
+    end
+    filen = [filen '_' num2str(counter)];
+    recordName = ['refsig2_' filen];
+end
+
 wrsamp(tm2,ref_sig',recordName,FS_ECGPU,gain,'')
 wrann(recordName,'qrs',qrsref',repmat('N',20,1));
 
@@ -112,7 +123,7 @@ wrann(recordName,'qrs',qrsref',repmat('N',20,1));
    
     ecgpuwave(recordName,'ecgpu',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 % end
-[allref,alltypes_r] = rdann(['refsig_' filen],'ecgpu');
+[allref,alltypes_r] = rdann(recordName,'ecgpu');
 % if debug
 %     figure(2)
 %     ax(1)=subplot(2,1,1);
@@ -333,7 +344,11 @@ else
     th = mean(abs(signal(ann_stamp(Tpeaks))));
     tpeak = ann_stamp(Tpeaks);
     temp = temp_stamp(Rpeaks);
+    try
     tpeak = round(mean(tpeak-temp(1:length(tpeak))));
+    catch
+        disp
+    end
 end
 
 

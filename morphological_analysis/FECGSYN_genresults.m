@@ -235,8 +235,7 @@ end
 
 save([path_orig 'wksp' num2str(filesproc(end))])
 
-%% EXP3
-% Generating statistics
+
 
 
 
@@ -246,8 +245,8 @@ if ~exp3 % Experiment 2
     FSIZE = 15;
     %== F1 plot
     figure
-    stats_f1 = 100*[stats_ica(:,1) stats_pca(:,1) stats_tsc(:,1) stats_tspca(:,1) ...
-        stats_tsekf(:,1) stats_alms(:,1) stats_arls(:,1) stats_aesn(:,1)];
+    stats_f1 = 100*[stats.JADEICA(:,1) stats.PCA(:,1) stats.tsc(:,1) stats.tspca(:,1) ...
+        stats.tsekf(:,1) stats.alms(:,1) stats.arls(:,1) stats.aesn(:,1)];
     h = boxplot(stats_f1);
     set(gca,'XTick',[1:8])  % This automatically sets
     set(gca,'XTickLabel',{'BSSica';'BSSpca';'TSc';'TSpca';'TSekf';'Alms';'Arls';'Aesn'})
@@ -261,8 +260,8 @@ if ~exp3 % Experiment 2
     
     % MAE
     figure
-    stats_MAE = [stats_ica(:,2) stats_pca(:,2) stats_tsc(:,2) stats_tspca(:,2) ...
-        stats_tsekf(:,2) stats_alms(:,2) stats_arls(:,2) stats_aesn(:,2)];
+    stats_MAE = [stats.JADEICA(:,2) stats.PCA(:,2) stats.tsc(:,2) stats.tspca(:,2) ...
+        stats.tsekf(:,2) stats.alms(:,2) stats.arls(:,2) stats.aesn(:,2)];
     h = boxplot(stats_MAE);
     set(gca,'XTick',1:8)  % This automatically sets
     set(gca,'XTickLabel',{'BSSica';'BSSpca';'TSc';'TSpca';'TSekf';'Alms';'Arls';'Aesn'})
@@ -286,27 +285,27 @@ if ~exp3 % Experiment 2
     % Generate Table
     counter1 = 1;
     table = zeros(16,28);
-    for met = {'ica' 'pca' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
-        eval(['stat = stats_' met{:} ';']);
+    for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
+        eval(['stat = stats.' met{:} ';']);
         % F1
         statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
-        auxtab = [median(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+        auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
         table(counter1,:) = reshape(auxtab',1,7*4);
         counter1 = counter1 + 1;
         
         % MAE
         statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
-        auxtab = [median(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+        auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
         table(counter1,:) = reshape(auxtab',1,7*4);
         counter1 = counter1 + 1;
     end
     table = round(table.*10)./10;
     % F1
-    c=1;
-    for met = {'ica' 'aesn'}%{'ica' 'pca' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
+    c=3;
+    for met = {'JADEICA' 'aesn'}%{'ica' 'pca' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
         figure(c)
         c = c+1;
-        eval(['stat = stats_' met{:} ';']);
+        eval(['stat = stats.' met{:} ';']);
         statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
         h = boxplot(statscase,{});
         set(gca,'XTick',1:7)  % This automatically sets
@@ -322,10 +321,10 @@ if ~exp3 % Experiment 2
     
     % MAE
     
-    for met = {'ica' 'aesn'}%{'tsekf' 'tspca' 'aesn' 'ica'}
+    for met = {'JADEICA' 'aesn'}%{'tsekf' 'tspca' 'aesn' 'ica'}
         figure(c)
         c= c+1;
-        eval(['stat = stats_' met{:} ';']);
+        eval(['stat = stats.' met{:} ';']);
         statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
         h = boxplot(statscase,{});
         set(gca,'XTick',1:7)  % This automatically sets

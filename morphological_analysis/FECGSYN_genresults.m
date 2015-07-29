@@ -290,6 +290,7 @@ if ~exp3 % Experiment 2
         % F1
         statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
         auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+        auxtab2(counter1,:) = median(statscase)';
         table(counter1,:) = reshape(auxtab',1,7*4);
         counter1 = counter1 + 1;
         
@@ -345,12 +346,66 @@ else
     %% Experiment 3 
     
     %= Distribution of ICA FQT intervals
-    % exp3dist = qt_src, qt_time, th_src,th_time
-    exp3dist(cellfun(@(x) cellfun(@isempty, x),exp3dist)) = {NaN}; % substituting empty for NaNs
+    nans = sum(cellfun(@(x) sum(sum(isnan(cell2mat(x)))),exp3dist));
+    tot = sum(cellfun(@(x) numel(cell2mat(x)),exp3dist));
+    srcnan = nans(1); srctot = tot(1);
+    timenan = nans(2); timetot = tot(2);
+    exp3med = cellfun(@(x) nanmedian(cell2mat(x)),exp3dist,'UniformOutput',0);
+    exp3med = [cell2mat(exp3med(:,1)')' cell2mat(exp3med(:,2)')'];
+    [h,p]=ttest(exp3med(:,1),exp3med(:,2));
+    if h
+        fprintf('Null hypothesis can be rejected with p= %d \n',p);
+    else
+        fprintf('Null hypothesis CANNOT be rejected');
+    end
+    fprintf('NaNs on source domain:  %3.2f percent \n',srcnan/srctot*100);
+    fprintf('NaNs on time domain:  %3.2f percent \n',timenan/timetot*100);
+
+    
+    % Case by case methods against each other
+    % Generate Table
+    res = struct('qt',[],'th',[]);
+    qt = []; th = [];
+    % FQT
+    for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
+        tmp = morphall.(met{:});
+        res.qt=cell(1750,1);
+        for i = 1:1750
+            res.qt{i} = cell2mat(tmp{i,1})-cell2mat(tmp{i,2});
+        end
+        %         stat = bsxfun(@minus,morphall.(met{:})(:,col),morphall.(met{:})(:,col+1));
+        res.qt = cellfun(@(x) nanmedian(nanmin(x)),res.qt);
+        qt = [qt nanmedian(res.qt)];
+    end
+    
+    % FTh
+    for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
+        tmp = morphall.(met{:});
+        res.th=cell(1750,1);
+        for i = 1:1750            
+            res.th{i} = cell2mat(tmp{i,3})./cell2mat(tmp{i,4});
+        end
+        counter = counter+2;
+        res.th = cellfun(@(x) nanmedian(nanmin(x-1)),res.th);
+        th = [th nanmedian(res.th)];
+    end
+   
         
-    
-    load('information')
-    
+%         eval(['stat = cellfun(@(x) x,morphall.' met{:}(col:col+1) ');']);
+%         % F1
+%         statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
+%         auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+%         auxtab2(counter1,:) = median(statscase)';
+%         table(counter1,:) = reshape(auxtab',1,7*4);
+%         counter1 = counter1 + 1;
+%         
+%         % MAE
+%         statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
+%         auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+%         table(counter1,:) = reshape(auxtab',1,7*4);
+%         counter1 = counter1 + 1;
+%  
+%     
     
     
     
@@ -365,7 +420,7 @@ else
     %         res3.std(c,:) = nanstd(tmpvec);
     %         c = c+1; % simple counter
     %     end
-end
+
 
 end
 function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...

@@ -74,9 +74,11 @@ abdm_sig = filtfilt(b_lp,a_lp,abdm_sig);
 abdm_sig = filtfilt(b_hp,a_hp,abdm_sig);
 
 % Normalizing signal
-wsign = sign(max(abdm_sig)); % looking for signal sign
+[~,I] = max(abs(abdm_sig));
+wsign = sign(abdm_sig(I)); % looking for signal sign
 abdm_sig = 2*gain*wsign(1)*abdm_sig/max(abs(abdm_sig)); % normalizing in 2 mV
-wsign = sign(max(ref_temp)); % looking for signal sign
+[~,I] = max(abs(ref_temp));
+wsign = sign(ref_temp(I)); % looking for signal sign
 ref_sig = 2*gain*wsign(1)*ref_sig/max(abs(ref_sig));
 
 

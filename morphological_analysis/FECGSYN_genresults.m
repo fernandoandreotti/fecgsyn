@@ -38,12 +38,62 @@ global debug filesproc
 slashchar = char('/'*isunix + '\'*(~isunix));
 if debug,  mkdir([path_orig 'plots' slashchar]), end
 
-%% == Parameters
+
+%% Experiment 1
+stat = stats_struct;
+cc = linspecer(5);
+ch = [2,4,6,8,12,16];
+FONT_SIZE = 14;
+LWIDTH = 2;
+
+for kk=1:length(stat)
+    mean_FASTICA_DEF(kk) = 100.*mean(stat{kk}.stats_FASTICA_DEF(:,1));
+    median_FASTICA_DEF(kk) = 100.*median(stat{kk}.stats_FASTICA_DEF(:,1));
+    mean_FASTICA_SYM(kk) = 100.*mean(stat{kk}.stats_FASTICA_SYM(:,1));
+    median_FASTICA_SYM(kk) = 100.*median(stat{kk}.stats_FASTICA_SYM(:,1));
+    mean_JADEICA(kk) = 100.*mean(stat{kk}.stats_JADEICA(:,1));
+    median_JADEICA(kk) = 100.*median(stat{kk}.stats_JADEICA(:,1));
+    mean_pca(kk) = 100.*mean(stat{kk}.stats_pca(:,1));
+    median_pca(kk) = 100.*median(stat{kk}.stats_pca(:,1));
+end
+
+for kk=1:length(stat)
+    FASTICA_DEF(:,kk) = 100.*stat{kk}.stats_FASTICA_DEF(:,1);
+    FASTICA_SYM(:,kk) = 100.*stat{kk}.stats_FASTICA_SYM(:,1);
+    JADEICA(:,kk) = 100.*stat{kk}.stats_JADEICA(:,1);
+    pca(:,kk) = 100.*stat{kk}.stats_pca(:,1);
+end
+
+figure(1)
+hold on
+plot(ch,mean_JADEICA,'s--','linewidth',LWIDTH,'MarkerFaceColor',cc(1,:),'Color',cc(1,:),'linewidth',LWIDTH)
+plot(ch,median_JADEICA,'s-','linewidth',LWIDTH,'MarkerFaceColor',cc(1,:),'Color',cc(1,:),'linewidth',LWIDTH)
+plot(ch,mean_FASTICA_SYM,'d--','linewidth',LWIDTH,'MarkerFaceColor',cc(2,:),'Color',cc(2,:),'linewidth',LWIDTH)
+plot(ch,median_FASTICA_SYM,'d-','linewidth',LWIDTH,'MarkerFaceColor',cc(2,:),'Color',cc(2,:),'linewidth',LWIDTH)
+plot(ch,mean_FASTICA_DEF,'s--','linewidth',LWIDTH,'MarkerFaceColor',cc(3,:),'Color',cc(3,:),'linewidth',LWIDTH)
+plot(ch,median_FASTICA_DEF,'s-','linewidth',LWIDTH,'MarkerFaceColor',cc(3,:),'Color',cc(3,:),'linewidth',LWIDTH)
+plot(ch,mean_pca,'o--','linewidth',LWIDTH,'MarkerFaceColor',cc(4,:),'Color',cc(4,:),'linewidth',LWIDTH)
+plot(ch,median_pca,'o-','linewidth',LWIDTH,'MarkerFaceColor',cc(4,:),'Color',cc(4,:),'linewidth',LWIDTH)
+xlim([2,32])
+legend('mean ICA (JADE)','median ICA (JADE)','mean ICA (sym. FAST-ICA)','median ICA (sym. FAST-ICA)',...
+    'mean ICA (defl. FAST-ICA)','median ICA (defl. FAST-ICA)','mean PCA','median PCA')
+set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
+set(gca,'FontSize',FONT_SIZE)
+set(gca,'XTick',ch)
+ylabel('F_1 (in %)')
+xlabel('Number of Channels')
+box on
+% title('PCA reduction')
+hold off
+
+
+%% Experiment 2
+% == Parameters
 INTERV = round(0.05*fs); % BxB acceptance interval
 TEMP_SAMPS = round(60*fs); % samples used for building templates
 fs_new = 250;
 
-%% Run through extracted datasets
+% Run through extracted datasets
 cd(path_orig)
 
 % abdominal mixtures
@@ -185,8 +235,7 @@ end
 
 save([path_orig 'wksp' num2str(filesproc(end))])
 
-%% EXP3
-% Generating statistics
+
 
 
 
@@ -196,8 +245,8 @@ if ~exp3 % Experiment 2
     FSIZE = 15;
     %== F1 plot
     figure
-    stats_f1 = 100*[stats_ica(:,1) stats_pca(:,1) stats_tsc(:,1) stats_tspca(:,1) ...
-        stats_tsekf(:,1) stats_alms(:,1) stats_arls(:,1) stats_aesn(:,1)];
+    stats_f1 = 100*[stats.JADEICA(:,1) stats.PCA(:,1) stats.tsc(:,1) stats.tspca(:,1) ...
+        stats.tsekf(:,1) stats.alms(:,1) stats.arls(:,1) stats.aesn(:,1)];
     h = boxplot(stats_f1);
     set(gca,'XTick',[1:8])  % This automatically sets
     set(gca,'XTickLabel',{'BSSica';'BSSpca';'TSc';'TSpca';'TSekf';'Alms';'Arls';'Aesn'})
@@ -211,8 +260,8 @@ if ~exp3 % Experiment 2
     
     % MAE
     figure
-    stats_MAE = [stats_ica(:,2) stats_pca(:,2) stats_tsc(:,2) stats_tspca(:,2) ...
-        stats_tsekf(:,2) stats_alms(:,2) stats_arls(:,2) stats_aesn(:,2)];
+    stats_MAE = [stats.JADEICA(:,2) stats.PCA(:,2) stats.tsc(:,2) stats.tspca(:,2) ...
+        stats.tsekf(:,2) stats.alms(:,2) stats.arls(:,2) stats.aesn(:,2)];
     h = boxplot(stats_MAE);
     set(gca,'XTick',1:8)  % This automatically sets
     set(gca,'XTickLabel',{'BSSica';'BSSpca';'TSc';'TSpca';'TSekf';'Alms';'Arls';'Aesn'})
@@ -236,27 +285,28 @@ if ~exp3 % Experiment 2
     % Generate Table
     counter1 = 1;
     table = zeros(16,28);
-    for met = {'ica' 'pca' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
-        eval(['stat = stats_' met{:} ';']);
+    for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
+        eval(['stat = stats.' met{:} ';']);
         % F1
         statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
-        auxtab = [median(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+        auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+        auxtab2(counter1,:) = median(statscase)';
         table(counter1,:) = reshape(auxtab',1,7*4);
         counter1 = counter1 + 1;
         
         % MAE
         statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
-        auxtab = [median(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+        auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
         table(counter1,:) = reshape(auxtab',1,7*4);
         counter1 = counter1 + 1;
     end
     table = round(table.*10)./10;
     % F1
-    c=1;
-    for met = {'ica' 'aesn'}%{'ica' 'pca' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
+    c=3;
+    for met = {'JADEICA' 'aesn'}%{'ica' 'pca' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
         figure(c)
         c = c+1;
-        eval(['stat = stats_' met{:} ';']);
+        eval(['stat = stats.' met{:} ';']);
         statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
         h = boxplot(statscase,{});
         set(gca,'XTick',1:7)  % This automatically sets
@@ -272,10 +322,10 @@ if ~exp3 % Experiment 2
     
     % MAE
     
-    for met = {'ica' 'aesn'}%{'tsekf' 'tspca' 'aesn' 'ica'}
+    for met = {'JADEICA' 'aesn'}%{'tsekf' 'tspca' 'aesn' 'ica'}
         figure(c)
         c= c+1;
-        eval(['stat = stats_' met{:} ';']);
+        eval(['stat = stats.' met{:} ';']);
         statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
         h = boxplot(statscase,{});
         set(gca,'XTick',1:7)  % This automatically sets
@@ -296,12 +346,66 @@ else
     %% Experiment 3 
     
     %= Distribution of ICA FQT intervals
-    % exp3dist = qt_src, qt_time, th_src,th_time
-    exp3dist(cellfun(@(x) cellfun(@isempty, x),exp3dist)) = {NaN}; % substituting empty for NaNs
+    nans = sum(cellfun(@(x) sum(sum(isnan(cell2mat(x)))),exp3dist));
+    tot = sum(cellfun(@(x) numel(cell2mat(x)),exp3dist));
+    srcnan = nans(1); srctot = tot(1);
+    timenan = nans(2); timetot = tot(2);
+    exp3med = cellfun(@(x) nanmedian(cell2mat(x)),exp3dist,'UniformOutput',0);
+    exp3med = [cell2mat(exp3med(:,1)')' cell2mat(exp3med(:,2)')'];
+    [h,p]=ttest(exp3med(:,1),exp3med(:,2));
+    if h
+        fprintf('Null hypothesis can be rejected with p= %d \n',p);
+    else
+        fprintf('Null hypothesis CANNOT be rejected');
+    end
+    fprintf('NaNs on source domain:  %3.2f percent \n',srcnan/srctot*100);
+    fprintf('NaNs on time domain:  %3.2f percent \n',timenan/timetot*100);
+
+    
+    % Case by case methods against each other
+    % Generate Table
+    res = struct('qt',[],'th',[]);
+    qt = []; th = [];
+    % FQT
+    for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
+        tmp = morphall.(met{:});
+        res.qt=cell(1750,1);
+        for i = 1:1750
+            res.qt{i} = cell2mat(tmp{i,1})-cell2mat(tmp{i,2});
+        end
+        %         stat = bsxfun(@minus,morphall.(met{:})(:,col),morphall.(met{:})(:,col+1));
+        res.qt = cellfun(@(x) nanmedian(nanmin(x)),res.qt);
+        qt = [qt nanmedian(res.qt)];
+    end
+    
+    % FTh
+    for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
+        tmp = morphall.(met{:});
+        res.th=cell(1750,1);
+        for i = 1:1750            
+            res.th{i} = cell2mat(tmp{i,3})./cell2mat(tmp{i,4});
+        end
+        counter = counter+2;
+        res.th = cellfun(@(x) nanmedian(nanmin(x-1)),res.th);
+        th = [th nanmedian(res.th)];
+    end
+   
         
-    
-    load('information')
-    
+%         eval(['stat = cellfun(@(x) x,morphall.' met{:}(col:col+1) ');']);
+%         % F1
+%         statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
+%         auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+%         auxtab2(counter1,:) = median(statscase)';
+%         table(counter1,:) = reshape(auxtab',1,7*4);
+%         counter1 = counter1 + 1;
+%         
+%         % MAE
+%         statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
+%         auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+%         table(counter1,:) = reshape(auxtab',1,7*4);
+%         counter1 = counter1 + 1;
+%  
+%     
     
     
     
@@ -316,7 +420,7 @@ else
     %         res3.std(c,:) = nanstd(tmpvec);
     %         c = c+1; % simple counter
     %     end
-end
+
 
 end
 function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...

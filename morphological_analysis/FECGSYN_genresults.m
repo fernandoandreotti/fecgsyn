@@ -152,7 +152,7 @@ morph.tsekf = cell(length(fls_orig),7);
 morph.alms = cell(length(fls_orig),7);
 morph.arls = cell(length(fls_orig),7);
 morph.aesn = cell(length(fls_orig),7);
-exp3dist = {};
+exp3dist = cell(250,1);
 
 % = Runs through list of extracted files
 for i = filesproc%length(fls_ext)
@@ -170,7 +170,11 @@ for i = filesproc%length(fls_ext)
     %= loading original file
     origrec = str2double(rec{:}(4:end));
     file = strcat(path_orig,fls_orig(origrec));
-    cas = regexp(file{:},'_c[0-7]','match');
+    cas = regexp(file{:},'_c[0-7]','match'); % find out which case it depicts
+    if isempty(cas)
+        cas = {'bas'};
+    end
+    
     load(file{:});
     fecg = double(out.fecg{1}(ch,:)); % selecting channels
     %= Resampling original data to match extracted (fs - if necessary)
@@ -197,7 +201,7 @@ for i = filesproc%length(fls_ext)
         stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
     else %= Getting statistics (exp 3)
         if ~exist([path_orig 'wfdb'],'dir')
-            mkdir([path_orig 'wfdb'])            
+            mkdir([path_orig 'wfdb'])
         end
         cd([path_orig 'wfdb'])
         mkdir(num2str(i))
@@ -220,7 +224,9 @@ for i = filesproc%length(fls_ext)
             [outputs{1:7}]= morpho_loop(fecgref2,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
             % Evaluating if applying mixing matrix makes a difference
             [qt_time,~,th_time]= morpho_loop(fecgref,fecgref,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-            exp3dist(end+1,:) = {outputs{1}, qt_time, outputs{3},th_time};
+            if strcmp(cas,'bas')  % baseline
+                exp3dist(end+1,:) = {outputs{2}, qt_time, outputs{4},th_time};
+            end
         else
             [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
             
@@ -343,7 +349,7 @@ if ~exp3 % Experiment 2
     
     
 else
-    %% Experiment 3 
+    %% Experiment 3
     
     %= Distribution of ICA FQT intervals
     exp3dist = exp3dist1;
@@ -363,7 +369,7 @@ else
     fprintf('NaNs on time domain:  %3.2f percent \n',timenan/timetot*100);
     scatter(exp3med(:,1),exp3med(:,2))
     hold on
-        
+    
     % Case by case methods against each other
     % Generate Table
     res = struct('qt',[],'th',[]);
@@ -384,29 +390,29 @@ else
     for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
         tmp = morphall.(met{:});
         res.th=cell(1750,1);
-        for i = 1:1750            
+        for i = 1:1750
             res.th{i} = cell2mat(tmp{i,3})./cell2mat(tmp{i,4});
         end
         res.th = cellfun(@(x) nanmedian(nanmin(x-1)),res.th);
         th = [th nanmedian(res.th)];
     end
-   
-        
-%         eval(['stat = cellfun(@(x) x,morphall.' met{:}(col:col+1) ');']);
-%         % F1
-%         statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
-%         auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
-%         auxtab2(counter1,:) = median(statscase)';
-%         table(counter1,:) = reshape(auxtab',1,7*4);
-%         counter1 = counter1 + 1;
-%         
-%         % MAE
-%         statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
-%         auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
-%         table(counter1,:) = reshape(auxtab',1,7*4);
-%         counter1 = counter1 + 1;
-%  
-%     
+    
+    
+    %         eval(['stat = cellfun(@(x) x,morphall.' met{:}(col:col+1) ');']);
+    %         % F1
+    %         statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
+    %         auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+    %         auxtab2(counter1,:) = median(statscase)';
+    %         table(counter1,:) = reshape(auxtab',1,7*4);
+    %         counter1 = counter1 + 1;
+    %
+    %         % MAE
+    %         statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
+    %         auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+    %         table(counter1,:) = reshape(auxtab',1,7*4);
+    %         counter1 = counter1 + 1;
+    %
+    %
     
     
     
@@ -421,79 +427,108 @@ else
     %         res3.std(c,:) = nanstd(tmpvec);
     %         c = c+1; % simple counter
     %     end
-
-
+    
+    
 end
-function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
-    morpho_loop(fecg,residual,fqrs,fs,SAMPS,fname,filterc)
-%% Function to perform morphological analysis for TS/BSS extracted data
-%
-% >Inputs
-% fecg:         Propagated fetal signal before mixture with noise sources
-% residual:     Result of fetal extraction from abdominal signals
-% fqrs:         Reference fetal QRS samplestamps
-% SAMPS:        Number of samples used for generating templates
-% fname:        Filename to be used in saving plots
-% filterc:      Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
-%               highpass (hp) and lowpass (lp)
-%
-% > Outputs
-% qt_err: Array containing QT error for each template
-% theight_err: Array containing T-height error for each template
-%
-global debug
-numNaN = 0;
-
-% Allocatting
-qt_test = cell(size(residual,1),length(residual)/SAMPS,1);
-qt_ref = qt_test;
-th_test = qt_test;
-th_ref = qt_test;
-qt_err = qt_test;
-theight_err = qt_test;
-%= Block-wise calculation and template generation
-block = 1;
-for j = 1:SAMPS:length(residual)
-    for ch = 1:size(residual,1)
-        % checking borders
-        if j+SAMPS > length(residual)
-            endsamp = length(residual);
-        else
-            endsamp = j + SAMPS -1;
-        end
-        % qrs complexes in interval
-        qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
-        %% Template Generation
-        % abdominal signal template
-        [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
-        % reference template
-        [temp_ref,qrs_ref,status2] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
-        temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
+    function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
+            morpho_loop(fecg,residual,fqrs,fs,SAMPS,fname,filterc)
+        %% Function to perform morphological analysis for TS/BSS extracted data
+        %
+        % >Inputs
+        % fecg:         Propagated fetal signal before mixture with noise sources
+        % residual:     Result of fetal extraction from abdominal signals
+        % fqrs:         Reference fetal QRS samplestamps
+        % SAMPS:        Number of samples used for generating templates
+        % fname:        Filename to be used in saving plots
+        % filterc:      Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
+        %               highpass (hp) and lowpass (lp)
+        %
+        % > Outputs
+        % qt_err: Array containing QT error for each template
+        % theight_err: Array containing T-height error for each template
+        %
+        global debug
+        numNaN = 0;
         
-        if (~status1||~status2)
-            qt_test{ch,block} = NaN;
-            qt_ref{ch,block} = NaN;
-            th_test{ch,block} = NaN;
-            th_ref{ch,block} = NaN;
-            qt_err{ch,block} = NaN;
-            theight_err{ch,block} = NaN;
-        else
-            %% Performs morphological analysis
-            [qt_ref{ch,block},qt_test{ch,block},th_ref{ch,block},th_test{ch,block},...
-                qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,fname);
-        end
-        % Saves generated plots
-        if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})
-            try
-                drawnow
-                print('-dpng','-r72',[fname '_ch' num2str(ch) '_s' num2str(block) '.png'])
-            catch
-                warning('Failed to save plot')
+        % Allocatting
+        qt_test = cell(size(residual,1),length(residual)/SAMPS,1);
+        qt_ref = qt_test;
+        th_test = qt_test;
+        th_ref = qt_test;
+        qt_err = qt_test;
+        theight_err = qt_test;
+        %= Block-wise calculation and template generation
+        block = 1;
+        for j = 1:SAMPS:length(residual)
+            for ch = 1:size(residual,1)
+                % checking borders
+                if j+SAMPS > length(residual)
+                    endsamp = length(residual);
+                else
+                    endsamp = j + SAMPS -1;
+                end
+                % qrs complexes in interval
+                qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
+                %% Template Generation
+                % abdominal signal template
+                [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
+                % reference template
+                [temp_ref,qrs_ref,status2] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
+                temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
+                
+                % crop end of templates which have steps on them
+                try
+                    per80 = round(0.8*length(temp_abdm));
+                    [~,idx]=findpeaks(abs(diff(temp_abdm(per80:end))),'Threshold',10*median(abs(diff(temp_abdm(per80:end)))));
+                    if ~isempty(idx)
+                        idx = idx-1;
+                        med1 = median(temp_abdm(per80:per80+idx)); med2 = median(temp_abdm(per80+idx:end));
+                        temp_abdm(per80+idx:end) = temp_abdm(per80+idx:end)+(med1-med2); % removing step in signals
+                    end
+                    clear idx med1 med2 per 80
+                    per80 = round(0.8*length(temp_ref));
+                    [~,idx]=findpeaks(abs(diff(temp_ref(per80:end))),'Threshold',10*median(abs(diff(temp_ref(per80:end)))));
+                    if ~isempty(idx)
+                        idx = idx-1;
+                        med1 = median(temp_ref(per80:per80+idx)); med2 = median(temp_ref(per80+idx:end));
+                        temp_ref(per80+idx:end) = temp_ref(per80+idx:end)+(med1-med2); % removing step in signals
+                    end
+                    clear idx med1 med2 per 80
+                catch
+                    disp('templategen: problems in template?')
+                end
+                
+                if (~status1||~status2)
+                    qt_test{ch,block} = NaN;
+                    qt_ref{ch,block} = NaN;
+                    th_test{ch,block} = NaN;
+                    th_ref{ch,block} = NaN;
+                    qt_err{ch,block} = NaN;
+                    theight_err{ch,block} = NaN;
+                else
+                    %% Performs morphological analysis
+                    [qt_ref{ch,block},qt_test{ch,block},th_ref{ch,block},th_test{ch,block},...
+                        qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,fname);
+                end
+                % Saves generated plots
+                if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})
+                    try
+                        drawnow
+                        subplot(2,1,1)
+                        hold on
+                        text(0,0,['QT = ' strcat(num2str(qt_ref{ch,block}))])
+                        
+                        subplot(2,1,2)
+                        hold on
+                        text(0,0,['QT = ' strcat(num2str(qt_test{ch,block}))])
+                        print('-dpng','-r72',[fname '_ch' num2str(ch) '_s' num2str(block) '.png'])
+                    catch
+                        warning('Failed to save plot')
+                    end
+                    
+                end
+                
             end
-            
+            block = block+1;
         end
-        
     end
-    block = block+1;
-end
-end

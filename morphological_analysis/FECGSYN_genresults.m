@@ -346,11 +346,12 @@ else
     %% Experiment 3 
     
     %= Distribution of ICA FQT intervals
+    exp3dist = exp3dist1;
     nans = sum(cellfun(@(x) sum(sum(isnan(cell2mat(x)))),exp3dist));
     tot = sum(cellfun(@(x) numel(cell2mat(x)),exp3dist));
     srcnan = nans(1); srctot = tot(1);
     timenan = nans(2); timetot = tot(2);
-    exp3med = cellfun(@(x) nanmedian(cell2mat(x)),exp3dist,'UniformOutput',0);
+    exp3med = cellfun(@(x) nanmax(cell2mat(x)),exp3dist,'UniformOutput',0);
     exp3med = [cell2mat(exp3med(:,1)')' cell2mat(exp3med(:,2)')'];
     [h,p]=ttest(exp3med(:,1),exp3med(:,2));
     if h
@@ -360,8 +361,9 @@ else
     end
     fprintf('NaNs on source domain:  %3.2f percent \n',srcnan/srctot*100);
     fprintf('NaNs on time domain:  %3.2f percent \n',timenan/timetot*100);
-
-    
+    scatter(exp3med(:,1),exp3med(:,2))
+    hold on
+        
     % Case by case methods against each other
     % Generate Table
     res = struct('qt',[],'th',[]);
@@ -385,7 +387,6 @@ else
         for i = 1:1750            
             res.th{i} = cell2mat(tmp{i,3})./cell2mat(tmp{i,4});
         end
-        counter = counter+2;
         res.th = cellfun(@(x) nanmedian(nanmin(x-1)),res.th);
         th = [th nanmedian(res.th)];
     end

@@ -74,9 +74,11 @@ abdm_sig = filtfilt(b_lp,a_lp,abdm_sig);
 abdm_sig = filtfilt(b_hp,a_hp,abdm_sig);
 
 % Normalizing signal
-wsign = sign(max(abdm_sig)); % looking for signal sign
+[~,I] = max(abs(abdm_sig));
+wsign = sign(abdm_sig(I)); % looking for signal sign
 abdm_sig = 2*gain*wsign(1)*abdm_sig/max(abs(abdm_sig)); % normalizing in 2 mV
-wsign = sign(max(ref_temp)); % looking for signal sign
+[~,I] = max(abs(ref_temp));
+wsign = sign(ref_temp(I)); % looking for signal sign
 ref_sig = 2*gain*wsign(1)*ref_sig/max(abs(ref_sig));
 
 
@@ -182,9 +184,9 @@ th_ref = th_ref./gain-isoel;              % in mV (or not)
 
 if debug
     figure(1)
+    clf,cla
     set(gcf,'units','normalized','outerposition',[0 0 1 1])
-    ax(1)=subplot(2,1,1);
-    cla
+    ax(1)=subplot(2,1,1);       
     ref_temp = ref_sig(1:length(ref_temp));
     plot(ref_temp./gain,'k','LineWidth',2)
     hold on
@@ -223,7 +225,7 @@ isoel = median(abdm_temp(round(qrsabdm(1)-T_LENa+0.185*fs):end)./gain);
 qt_test = qt_test*1000/(2*FS_ECGPU);          % in ms
 th_test = th_test./gain-isoel;                  % in mV (or not)
 
-if debug
+if debug&&~ident
     figure(1)
     ax(2)=subplot(2,1,2);
     cla

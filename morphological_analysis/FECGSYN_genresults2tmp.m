@@ -129,10 +129,8 @@ for i = filesproc%length(fls_ext)
     if ~(strcmp(method,'JADEICA')&&(strcmp(cas,'c10')||strcmp(cas,'bas')))
         continue
     end
-    counter = counter + 1;
-    if counter < 55; continue;end;
     
-     load(file{:});
+    load(file{:});
     load(file1{:})
     fprintf('Method %s case %s.\n',method,cas{:});
 
@@ -160,10 +158,10 @@ for i = filesproc%length(fls_ext)
         MAE = MAE*1000/fs_new;
         stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
     else %= Getting statistics (exp 3)
-        if ~exist([path_orig 'wfdb'],'dir')
-            mkdir([path_orig 'wfdb'])            
+        if ~exist([path_orig 'wfdb3'],'dir')
+            mkdir([path_orig 'wfdb3'])            
         end
-        cd([path_orig 'wfdb2'])
+        cd([path_orig 'wfdb3'])
         mkdir(num2str(i))
         cd(num2str(i))
         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
@@ -188,10 +186,7 @@ for i = filesproc%length(fls_ext)
             [qt_time,~,th_time]= morpho_loop(fecgref,fecgref,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
             if strcmp(cas,'bas')  % baseline
                 exp3dist1(end+1,:) = {outputs{2}, qt_time, outputs{4},th_time};
-                if size(exp3dist1,1)>9
-                    disp('A')
-                end
-            elseif strcmp(cas,'c0') % case 0
+             elseif strcmp(cas,'c0') % case 0
                 exp3dist2(end+1,:) = {outputs{2}, qt_time, outputs{4},th_time};
                 
             end
@@ -386,18 +381,25 @@ for j = 1:SAMPS:length(residual)
         temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
         
         % crop end of templates which have steps on them
+        try
         per80 = round(0.8*length(temp_abdm));
         [~,idx]=findpeaks(abs(diff(temp_abdm(per80:end))),'Threshold',10*median(abs(diff(temp_abdm(per80:end)))));
         if ~isempty(idx)
-            temp_abdm = temp_abdm(1:per80+idx-3);
+            idx = idx-1;            
+            med1 = median(temp_abdm(per80:per80+idx)); med2 = median(temp_abdm(per80+idx:end));
+            temp_abdm(per80+idx:end) = temp_abdm(per80+idx:end)+(med1-med2); % removing step in signals            
         end
+        
          per80 = round(0.8*length(temp_ref));
         [~,idx]=findpeaks(abs(diff(temp_ref(per80:end))),'Threshold',10*median(abs(diff(temp_ref(per80:end)))));
         if ~isempty(idx)
-            temp_ref = temp_ref(1:per80+idx-3);
+            idx = idx-1;
+            med1 = median(temp_ref(per80:per80+idx)); med2 = median(temp_ref(per80+idx:end));
+            temp_ref(per80+idx:end) = temp_ref(per80+idx:end)+(med1-med2); % removing step in signals            
         end
-        
-        
+        catch
+            disp('templategen: problems in template?')
+        end
         if (~status1||~status2)
             qt_test{ch,block} = NaN;
             qt_ref{ch,block} = NaN;

@@ -351,7 +351,8 @@ if ~exp3 % Experiment 2
 else
     %% Experiment 3
     
-    %= Distribution of ICA FQT intervals
+    %= Distribution of ICA
+    % FQT intervals
     exp3dist = exp3dist1;
     nans = sum(cellfun(@(x) sum(sum(isnan(cell2mat(x)))),exp3dist));
     tot = sum(cellfun(@(x) numel(cell2mat(x)),exp3dist));
@@ -359,7 +360,7 @@ else
     timenan = nans(2); timetot = tot(2);
     exp3med = cellfun(@(x) nanmax(cell2mat(x)),exp3dist,'UniformOutput',0);
     exp3med = [cell2mat(exp3med(:,1)')' cell2mat(exp3med(:,2)')'];
-    [h,p]=ttest(exp3med(:,1),exp3med(:,2));
+    [h,p]=ttest(exp3med(:,2),exp3med(:,1));
     if h
         fprintf('Null hypothesis can be rejected with p= %d \n',p);
     else
@@ -367,8 +368,58 @@ else
     end
     fprintf('NaNs on source domain:  %3.2f percent \n',srcnan/srctot*100);
     fprintf('NaNs on time domain:  %3.2f percent \n',timenan/timetot*100);
-    scatter(exp3med(:,1),exp3med(:,2))
-    hold on
+    x = exp3med(:,2); y = exp3med(:,1);
+    scatter(x,y,12,'filled')
+    % regression
+    A = [x,y];
+    A(any(isnan(A), 2),:)=[];
+    x = A(:,1); y = A(:,2);
+    p = polyfit(x,y,1);
+    yfit = polyval(p,x);
+    yresid = y - yfit;
+    SSresid = sum(yresid.^2);
+    SStotal = (length(y)-1) * var(y);
+    rsq = 1 - SSresid/SStotal;
+    hold on; plot(x,yfit,'r-'); 
+    text(220,140,sprintf('r^2 = %2.4f',rsq))
+    
+    xlim([120,260]),ylim([120,260])
+    xlabel('FQT in time domain (ms)')
+    ylabel('FQT in source domain (ms)')
+    
+    % FTh
+    exp3dist = exp3dist1;
+    nans = sum(cellfun(@(x) sum(sum(isnan(cell2mat(x)))),exp3dist));
+    tot = sum(cellfun(@(x) numel(cell2mat(x)),exp3dist));
+    srcnan = nans(1); srctot = tot(1);
+    timenan = nans(2); timetot = tot(2);
+    exp3med = cellfun(@(x) nanmedian(abs(cell2mat(x))),exp3dist,'UniformOutput',0);
+    exp3med = [cell2mat(exp3med(:,3)')' cell2mat(exp3med(:,4)')'];
+    [h,p]=ttest(exp3med(:,2),exp3med(:,1));
+    if h
+        fprintf('Null hypothesis can be rejected with p= %d \n',p);
+    else
+        fprintf('Null hypothesis CANNOT be rejected');
+    end
+    fprintf('NaNs on source domain:  %3.2f percent \n',srcnan/srctot*100);
+    fprintf('NaNs on time domain:  %3.2f percent \n',timenan/timetot*100);
+     x = exp3med(:,2); y = exp3med(:,1);
+    scatter(x,y,12,'filled')
+    % regression
+    A = [x,y];
+    A(any(isnan(A), 2),:)=[];
+    x = A(:,1); y = A(:,2);
+    p = polyfit(x,y,1);
+    yfit = polyval(p,x);
+    yresid = y - yfit;
+    SSresid = sum(yresid.^2);
+    SStotal = (length(y)-1) * var(y);
+    rsq = 1 - SSresid/SStotal;
+    hold on; plot(x,yfit,'r-'); 
+    text(1.5,0.1,sprintf('r^2 = %2.4f',rsq))
+   % xlim([120,260]),ylim([120,260])
+    xlabel('FT_h in time domain (n.u.)')
+    ylabel('FT_h in source domain (n.u.)')
     
     % Case by case methods against each other
     % Generate Table
@@ -382,8 +433,10 @@ else
             res.qt{i} = cell2mat(tmp{i,1})-cell2mat(tmp{i,2});
         end
         %         stat = bsxfun(@minus,morphall.(met{:})(:,col),morphall.(met{:})(:,col+1));
-        res.qt = cellfun(@(x) nanmedian(nanmin(x)),res.qt);
+        res.qt = cellfun(@(x) median(nanmin(x)),res.qt);
+        res.qtstd = cellfun(@(x) std(nanmin(x)),res.qt);
         qt = [qt nanmedian(res.qt)];
+        qtstd = [qtstd nanmedian(res.qtstd)];
     end
     
     % FTh
@@ -430,6 +483,8 @@ else
     
     
 end
+
+end
 function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
     morpho_loop(fecg,residual,fqrs,fs,SAMPS,fname,filterc)
 %% Function to perform morphological analysis for TS/BSS extracted data
@@ -469,7 +524,7 @@ for j = 1:SAMPS:length(residual)
         end
         % qrs complexes in interval
         qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
-            %% Template Generation
+        %% Template Generation
         % abdominal signal template
         [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
         % reference template
@@ -527,8 +582,7 @@ for j = 1:SAMPS:length(residual)
             end
             
         end
-        
-        
-        block = block+1;
     end
+    block = block+1;
+end
 end

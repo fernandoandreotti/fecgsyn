@@ -40,51 +40,51 @@ if debug,  mkdir([path_orig 'plots' slashchar]), end
 
 
 %% Experiment 1
-stat = stats_struct;
-cc = linspecer(5);
-ch = [2,4,6,8,12,16];
-FONT_SIZE = 14;
-LWIDTH = 2;
-
-for kk=1:length(stat)
-    mean_FASTICA_DEF(kk) = 100.*mean(stat{kk}.stats_FASTICA_DEF(:,1));
-    median_FASTICA_DEF(kk) = 100.*median(stat{kk}.stats_FASTICA_DEF(:,1));
-    mean_FASTICA_SYM(kk) = 100.*mean(stat{kk}.stats_FASTICA_SYM(:,1));
-    median_FASTICA_SYM(kk) = 100.*median(stat{kk}.stats_FASTICA_SYM(:,1));
-    mean_JADEICA(kk) = 100.*mean(stat{kk}.stats_JADEICA(:,1));
-    median_JADEICA(kk) = 100.*median(stat{kk}.stats_JADEICA(:,1));
-    mean_pca(kk) = 100.*mean(stat{kk}.stats_pca(:,1));
-    median_pca(kk) = 100.*median(stat{kk}.stats_pca(:,1));
-end
-
-for kk=1:length(stat)
-    FASTICA_DEF(:,kk) = 100.*stat{kk}.stats_FASTICA_DEF(:,1);
-    FASTICA_SYM(:,kk) = 100.*stat{kk}.stats_FASTICA_SYM(:,1);
-    JADEICA(:,kk) = 100.*stat{kk}.stats_JADEICA(:,1);
-    pca(:,kk) = 100.*stat{kk}.stats_pca(:,1);
-end
-
-figure(1)
-hold on
-plot(ch,mean_JADEICA,'s--','linewidth',LWIDTH,'MarkerFaceColor',cc(1,:),'Color',cc(1,:),'linewidth',LWIDTH)
-plot(ch,median_JADEICA,'s-','linewidth',LWIDTH,'MarkerFaceColor',cc(1,:),'Color',cc(1,:),'linewidth',LWIDTH)
-plot(ch,mean_FASTICA_SYM,'d--','linewidth',LWIDTH,'MarkerFaceColor',cc(2,:),'Color',cc(2,:),'linewidth',LWIDTH)
-plot(ch,median_FASTICA_SYM,'d-','linewidth',LWIDTH,'MarkerFaceColor',cc(2,:),'Color',cc(2,:),'linewidth',LWIDTH)
-plot(ch,mean_FASTICA_DEF,'s--','linewidth',LWIDTH,'MarkerFaceColor',cc(3,:),'Color',cc(3,:),'linewidth',LWIDTH)
-plot(ch,median_FASTICA_DEF,'s-','linewidth',LWIDTH,'MarkerFaceColor',cc(3,:),'Color',cc(3,:),'linewidth',LWIDTH)
-plot(ch,mean_pca,'o--','linewidth',LWIDTH,'MarkerFaceColor',cc(4,:),'Color',cc(4,:),'linewidth',LWIDTH)
-plot(ch,median_pca,'o-','linewidth',LWIDTH,'MarkerFaceColor',cc(4,:),'Color',cc(4,:),'linewidth',LWIDTH)
-xlim([2,32])
-legend('mean ICA (JADE)','median ICA (JADE)','mean ICA (sym. FAST-ICA)','median ICA (sym. FAST-ICA)',...
-    'mean ICA (defl. FAST-ICA)','median ICA (defl. FAST-ICA)','mean PCA','median PCA')
-set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
-set(gca,'FontSize',FONT_SIZE)
-set(gca,'XTick',ch)
-ylabel('F_1 (in %)')
-xlabel('Number of Channels')
-box on
-% title('PCA reduction')
-hold off
+% stat = stats_struct;
+% cc = linspecer(5);
+% ch = [2,4,6,8,12,16];
+% FONT_SIZE = 14;
+% LWIDTH = 2;
+% 
+% for kk=1:length(stat)
+%     mean_FASTICA_DEF(kk) = 100.*mean(stat{kk}.stats_FASTICA_DEF(:,1));
+%     median_FASTICA_DEF(kk) = 100.*median(stat{kk}.stats_FASTICA_DEF(:,1));
+%     mean_FASTICA_SYM(kk) = 100.*mean(stat{kk}.stats_FASTICA_SYM(:,1));
+%     median_FASTICA_SYM(kk) = 100.*median(stat{kk}.stats_FASTICA_SYM(:,1));
+%     mean_JADEICA(kk) = 100.*mean(stat{kk}.stats_JADEICA(:,1));
+%     median_JADEICA(kk) = 100.*median(stat{kk}.stats_JADEICA(:,1));
+%     mean_pca(kk) = 100.*mean(stat{kk}.stats_pca(:,1));
+%     median_pca(kk) = 100.*median(stat{kk}.stats_pca(:,1));
+% end
+% 
+% for kk=1:length(stat)
+%     FASTICA_DEF(:,kk) = 100.*stat{kk}.stats_FASTICA_DEF(:,1);
+%     FASTICA_SYM(:,kk) = 100.*stat{kk}.stats_FASTICA_SYM(:,1);
+%     JADEICA(:,kk) = 100.*stat{kk}.stats_JADEICA(:,1);
+%     pca(:,kk) = 100.*stat{kk}.stats_pca(:,1);
+% end
+% 
+% figure(1)
+% hold on
+% plot(ch,mean_JADEICA,'s--','linewidth',LWIDTH,'MarkerFaceColor',cc(1,:),'Color',cc(1,:),'linewidth',LWIDTH)
+% plot(ch,median_JADEICA,'s-','linewidth',LWIDTH,'MarkerFaceColor',cc(1,:),'Color',cc(1,:),'linewidth',LWIDTH)
+% plot(ch,mean_FASTICA_SYM,'d--','linewidth',LWIDTH,'MarkerFaceColor',cc(2,:),'Color',cc(2,:),'linewidth',LWIDTH)
+% plot(ch,median_FASTICA_SYM,'d-','linewidth',LWIDTH,'MarkerFaceColor',cc(2,:),'Color',cc(2,:),'linewidth',LWIDTH)
+% plot(ch,mean_FASTICA_DEF,'s--','linewidth',LWIDTH,'MarkerFaceColor',cc(3,:),'Color',cc(3,:),'linewidth',LWIDTH)
+% plot(ch,median_FASTICA_DEF,'s-','linewidth',LWIDTH,'MarkerFaceColor',cc(3,:),'Color',cc(3,:),'linewidth',LWIDTH)
+% plot(ch,mean_pca,'o--','linewidth',LWIDTH,'MarkerFaceColor',cc(4,:),'Color',cc(4,:),'linewidth',LWIDTH)
+% plot(ch,median_pca,'o-','linewidth',LWIDTH,'MarkerFaceColor',cc(4,:),'Color',cc(4,:),'linewidth',LWIDTH)
+% xlim([2,32])
+% legend('mean ICA (JADE)','median ICA (JADE)','mean ICA (sym. FAST-ICA)','median ICA (sym. FAST-ICA)',...
+%     'mean ICA (defl. FAST-ICA)','median ICA (defl. FAST-ICA)','mean PCA','median PCA')
+% set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
+% set(gca,'FontSize',FONT_SIZE)
+% set(gca,'XTick',ch)
+% ylabel('F_1 (in %)')
+% xlabel('Number of Channels')
+% box on
+% % title('PCA reduction')
+% hold off
 
 
 %% Experiment 2
@@ -152,7 +152,7 @@ morph.tsekf = cell(length(fls_orig),7);
 morph.alms = cell(length(fls_orig),7);
 morph.arls = cell(length(fls_orig),7);
 morph.aesn = cell(length(fls_orig),7);
-exp3dist = cell(250,1);
+exp3dist = {};
 
 % = Runs through list of extracted files
 for i = filesproc%length(fls_ext)
@@ -430,105 +430,105 @@ else
     
     
 end
-    function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
-            morpho_loop(fecg,residual,fqrs,fs,SAMPS,fname,filterc)
-        %% Function to perform morphological analysis for TS/BSS extracted data
-        %
-        % >Inputs
-        % fecg:         Propagated fetal signal before mixture with noise sources
-        % residual:     Result of fetal extraction from abdominal signals
-        % fqrs:         Reference fetal QRS samplestamps
-        % SAMPS:        Number of samples used for generating templates
-        % fname:        Filename to be used in saving plots
-        % filterc:      Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
-        %               highpass (hp) and lowpass (lp)
-        %
-        % > Outputs
-        % qt_err: Array containing QT error for each template
-        % theight_err: Array containing T-height error for each template
-        %
-        global debug
-        numNaN = 0;
-        
-        % Allocatting
-        qt_test = cell(size(residual,1),length(residual)/SAMPS,1);
-        qt_ref = qt_test;
-        th_test = qt_test;
-        th_ref = qt_test;
-        qt_err = qt_test;
-        theight_err = qt_test;
-        %= Block-wise calculation and template generation
-        block = 1;
-        for j = 1:SAMPS:length(residual)
-            for ch = 1:size(residual,1)
-                % checking borders
-                if j+SAMPS > length(residual)
-                    endsamp = length(residual);
-                else
-                    endsamp = j + SAMPS -1;
-                end
-                % qrs complexes in interval
-                qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
-                %% Template Generation
-                % abdominal signal template
-                [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
-                % reference template
-                [temp_ref,qrs_ref,status2] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
-                temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
-                
-                % crop end of templates which have steps on them
-                try
-                    per80 = round(0.8*length(temp_abdm));
-                    [~,idx]=findpeaks(abs(diff(temp_abdm(per80:end))),'Threshold',10*median(abs(diff(temp_abdm(per80:end)))));
-                    if ~isempty(idx)
-                        idx = idx-1;
-                        med1 = median(temp_abdm(per80:per80+idx)); med2 = median(temp_abdm(per80+idx:end));
-                        temp_abdm(per80+idx:end) = temp_abdm(per80+idx:end)+(med1-med2); % removing step in signals
-                    end
-                    clear idx med1 med2 per 80
-                    per80 = round(0.8*length(temp_ref));
-                    [~,idx]=findpeaks(abs(diff(temp_ref(per80:end))),'Threshold',10*median(abs(diff(temp_ref(per80:end)))));
-                    if ~isempty(idx)
-                        idx = idx-1;
-                        med1 = median(temp_ref(per80:per80+idx)); med2 = median(temp_ref(per80+idx:end));
-                        temp_ref(per80+idx:end) = temp_ref(per80+idx:end)+(med1-med2); % removing step in signals
-                    end
-                    clear idx med1 med2 per 80
-                catch
-                    disp('templategen: problems in template?')
-                end
-                
-                if (~status1||~status2)
-                    qt_test{ch,block} = NaN;
-                    qt_ref{ch,block} = NaN;
-                    th_test{ch,block} = NaN;
-                    th_ref{ch,block} = NaN;
-                    qt_err{ch,block} = NaN;
-                    theight_err{ch,block} = NaN;
-                else
-                    %% Performs morphological analysis
-                    [qt_ref{ch,block},qt_test{ch,block},th_ref{ch,block},th_test{ch,block},...
-                        qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,fname);
-                end
-                % Saves generated plots
-                if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})
-                    try
-                        drawnow
-                        subplot(2,1,1)
-                        hold on
-                        text(0,0,['QT = ' strcat(num2str(qt_ref{ch,block}))])
-                        
-                        subplot(2,1,2)
-                        hold on
-                        text(0,0,['QT = ' strcat(num2str(qt_test{ch,block}))])
-                        print('-dpng','-r72',[fname '_ch' num2str(ch) '_s' num2str(block) '.png'])
-                    catch
-                        warning('Failed to save plot')
-                    end
-                    
-                end
-                
-            end
-            block = block+1;
+function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
+    morpho_loop(fecg,residual,fqrs,fs,SAMPS,fname,filterc)
+%% Function to perform morphological analysis for TS/BSS extracted data
+%
+% >Inputs
+% fecg:         Propagated fetal signal before mixture with noise sources
+% residual:     Result of fetal extraction from abdominal signals
+% fqrs:         Reference fetal QRS samplestamps
+% SAMPS:        Number of samples used for generating templates
+% fname:        Filename to be used in saving plots
+% filterc:      Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
+%               highpass (hp) and lowpass (lp)
+%
+% > Outputs
+% qt_err: Array containing QT error for each template
+% theight_err: Array containing T-height error for each template
+%
+global debug
+numNaN = 0;
+
+% Allocatting
+qt_test = cell(size(residual,1),length(residual)/SAMPS,1);
+qt_ref = qt_test;
+th_test = qt_test;
+th_ref = qt_test;
+qt_err = qt_test;
+theight_err = qt_test;
+%= Block-wise calculation and template generation
+block = 1;
+for j = 1:SAMPS:length(residual)
+    for ch = 1:size(residual,1)
+        % checking borders
+        if j+SAMPS > length(residual)
+            endsamp = length(residual);
+        else
+            endsamp = j + SAMPS -1;
         end
+        % qrs complexes in interval
+        qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
+            %% Template Generation
+        % abdominal signal template
+        [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
+        % reference template
+        [temp_ref,qrs_ref,status2] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
+        temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
+        
+        % crop end of templates which have steps on them
+        try
+            per80 = round(0.8*length(temp_abdm));
+            [~,idx]=findpeaks(abs(diff(temp_abdm(per80:end))),'Threshold',10*median(abs(diff(temp_abdm(per80:end)))));
+            if ~isempty(idx)
+                idx = idx-1;
+                med1 = median(temp_abdm(per80:per80+idx)); med2 = median(temp_abdm(per80+idx:end));
+                temp_abdm(per80+idx:end) = temp_abdm(per80+idx:end)+(med1-med2); % removing step in signals
+            end
+            clear idx med1 med2 per 80
+            per80 = round(0.8*length(temp_ref));
+            [~,idx]=findpeaks(abs(diff(temp_ref(per80:end))),'Threshold',10*median(abs(diff(temp_ref(per80:end)))));
+            if ~isempty(idx)
+                idx = idx-1;
+                med1 = median(temp_ref(per80:per80+idx)); med2 = median(temp_ref(per80+idx:end));
+                temp_ref(per80+idx:end) = temp_ref(per80+idx:end)+(med1-med2); % removing step in signals
+            end
+            clear idx med1 med2 per 80
+        catch
+            disp('templategen: problems in template?')
+        end
+        
+        if (~status1||~status2)
+            qt_test{ch,block} = NaN;
+            qt_ref{ch,block} = NaN;
+            th_test{ch,block} = NaN;
+            th_ref{ch,block} = NaN;
+            qt_err{ch,block} = NaN;
+            theight_err{ch,block} = NaN;
+        else
+            %% Performs morphological analysis
+            [qt_ref{ch,block},qt_test{ch,block},th_ref{ch,block},th_test{ch,block},...
+                qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,fname);
+        end
+        % Saves generated plots
+        if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})
+            try
+                drawnow
+                subplot(2,1,1)
+                hold on
+                text(0,0,['QT = ' strcat(num2str(qt_ref{ch,block}))])
+                
+                subplot(2,1,2)
+                hold on
+                text(0,0,['QT = ' strcat(num2str(qt_test{ch,block}))])
+                print('-dpng','-r72',[fname '_ch' num2str(ch) '_s' num2str(block) '.png'])
+            catch
+                warning('Failed to save plot')
+            end
+            
+        end
+        
+        
+        block = block+1;
     end
+end

@@ -152,7 +152,7 @@ morph.tsekf = cell(length(fls_orig),7);
 morph.alms = cell(length(fls_orig),7);
 morph.arls = cell(length(fls_orig),7);
 morph.aesn = cell(length(fls_orig),7);
-exp3dist = cell(250,1);
+exp3dist = {};
 
 % = Runs through list of extracted files
 for i = filesproc%length(fls_ext)
@@ -486,6 +486,7 @@ else
     
     
 end
+
 end
 function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
     morpho_loop(fecg,residual,fqrs,fs,SAMPS,fname,filterc)
@@ -564,8 +565,7 @@ for j = 1:SAMPS:length(residual)
             theight_err{ch,block} = NaN;
         else
             %% Performs morphological analysis
-            [qt_ref{ch,block},qt_test{ch,block},th_ref{ch,block},th_test{ch,block},...
-                qt_err{ch,block},theight_err{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,fname);
+            [qt_ref{ch,block},qt_test{ch,block},th_ref{ch,block},th_test{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,fname);
         end
         % Saves generated plots
         if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})
@@ -584,7 +584,6 @@ for j = 1:SAMPS:length(residual)
             end
             
         end
-        
     end
     block = block+1;
 end

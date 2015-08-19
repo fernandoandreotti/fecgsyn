@@ -1,4 +1,4 @@
-function [qt_ref,qt_test,th_ref,th_test,qt_err,th_err] = FECGSYN_manalysis(abdm_temp,ref_temp,qrsabdm,qrsref,fs,filterc,filen)
+function [qt_ref,qt_test,tqrs_ref,tqrs_test] = FECGSYN_manalysis(abdm_temp,ref_temp,qrsabdm,qrsref,fs,filterc,filen)
 % This function calculates morphological features form signals given two
 % templates (reference and abdm). Statistics are give as %.
 %
@@ -49,8 +49,8 @@ b_hp = filterc(1); a_hp = filterc(2); b_lp = filterc(3);a_lp= filterc(4);
 if isnan(qrsabdm)||isnan(qrsref)
     qt_test = NaN;
     qt_ref = NaN;
-    th_test = NaN;
-    th_ref = NaN;
+    tqrs_test = NaN;
+    tqrs_ref = NaN;
     qt_err = NaN;
     th_err = NaN;
     disp('manalysis: could not generate a TEMPLATE.')
@@ -162,13 +162,15 @@ end
 
 %% QT-intervals from ref
 
-[qt_ref,th_ref,qs,tends,tpeak] = QTcalc(alltypes_r,allref,ref_sig,fs);
+[qt_ref,th_ref,qs,tends,tpeak,qrs_ref] = QTcalc(alltypes_r,allref,ref_sig,fs);
 % test if QT analysis feasible
 if isnan(qt_ref)||isnan(th_ref)
     qt_test = NaN;
     qt_ref = NaN;
-    th_test = NaN;
-    th_ref = NaN;
+    tqrs_test = NaN;
+    tqrs_ref = NaN;    
+    tqrs_test = NaN;
+    tqrs_ref = NaN;
     qt_err = NaN;
     th_err = NaN;
     disp('manalysis: Could not encounter QT wave for REFERENCE.')
@@ -178,9 +180,8 @@ end
 isoel = median(ref_temp(round(qrsref(1)-T_LENr+0.185*fs):end)./gain);
 qt_ref = qt_ref*1000/(2*FS_ECGPU);          % in ms
 th_ref = th_ref./gain-isoel;              % in mV (or not)
-
-
-
+qrs_ref = qrs_ref./gain;
+tqrs_ref = 100*abs(th_ref/qrs_ref);
 
 if debug
     figure(1)
@@ -201,21 +202,25 @@ end
 
 if ident
     qt_test = qt_ref;
-    th_test = th_ref;
+    tqrs_test = tqrs_ref;
     th_ref = 0;
+    tqrs_test = NaN;
+    tqrs_ref = NaN;
     qt_err = 0;
     th_err = 0;
     return
 end
 
 %% QT-intervals from test
-[qt_test,th_test,qs,tends,tpeak] = QTcalc(alltypes_t,alltest,abdm_sig,fs);
+[qt_test,th_test,qs,tends,tpeak,qrs_test] = QTcalc(alltypes_t,alltest,abdm_sig,fs);
 % test if QT analysis feasible
 if isnan(qt_test)||isnan(th_test)
     qt_test = NaN;
     qt_ref = NaN;
-    th_test = NaN;
-    th_ref = NaN;
+    tqrs_test = NaN;
+    tqrs_ref = NaN;
+    tqrs_test = NaN;
+    tqrs_ref = NaN;
     qt_err = NaN;
     th_err = NaN;
     disp('manalysis: Could not encounter QT wave for TEST.')
@@ -224,6 +229,8 @@ end
 isoel = median(abdm_temp(round(qrsabdm(1)-T_LENa+0.185*fs):end)./gain);
 qt_test = qt_test*1000/(2*FS_ECGPU);          % in ms
 th_test = th_test./gain-isoel;                  % in mV (or not)
+qrs_test = qrs_test./gain;
+tqrs_test = 100*abs(th_test/qrs_test);
 
 if debug&&~ident
     figure(1)
@@ -256,7 +263,7 @@ end
 end
 
 
-function [qtint,tqrs,qs,tends,tpeak] = QTcalc(ann_types,ann_stamp,signal,fs)
+function [qtint,th,qs,tends,tpeak,qrs] = QTcalc(ann_types,ann_stamp,signal,fs)
 %% Function that contains heuristics behind QT interval calculation
 % Based on assumption that ECGPUWAVE only outputs a wave (p,N,t) if it can
 % detect its begin and end. Only highest peak of T-waves marked as biphasic
@@ -357,7 +364,6 @@ end
 
 qrs = [qs ss]+temp_stamp(Rpeaks(1));
 qrs = max(signal(qrs(1):qrs(2)))-min(signal(qrs(1):qrs(2)));
-tqrs = 100*abs(th/qrs);
 
 if isempty(tends), tends = NaN; end
 if qtint>QT_MAX*fs, qtint = NaN; end

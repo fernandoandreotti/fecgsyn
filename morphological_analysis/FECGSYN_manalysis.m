@@ -256,7 +256,7 @@ end
 end
 
 
-function [qtint,th,qs,tends,tpeak] = QTcalc(ann_types,ann_stamp,signal,fs)
+function [qtint,tqrs,qs,tends,tpeak] = QTcalc(ann_types,ann_stamp,signal,fs)
 %% Function that contains heuristics behind QT interval calculation
 % Based on assumption that ECGPUWAVE only outputs a wave (p,N,t) if it can
 % detect its begin and end. Only highest peak of T-waves marked as biphasic
@@ -314,6 +314,8 @@ goodR = ismember(temp_stamp(rees),validR);
 Rpeaks = find(rees);   % annotation number
 Rpeaks(~goodR) = [];   % eliminating R's without T
 qs = round(mean(temp_stamp(Rpeaks-1)-temp_stamp(Rpeaks)));  % Q locations
+ss = round(mean(temp_stamp(Rpeaks+1)-temp_stamp(Rpeaks)));  % S locations
+
 
 clear goodR rees
 
@@ -353,6 +355,9 @@ else
     end
 end
 
+qrs = [qs ss]+temp_stamp(Rpeaks(1));
+qrs = max(signal(qrs(1):qrs(2)))-min(signal(qrs(1):qrs(2)));
+tqrs = 100*abs(th/qrs);
 
 if isempty(tends), tends = NaN; end
 if qtint>QT_MAX*fs, qtint = NaN; end

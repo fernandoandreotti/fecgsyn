@@ -40,51 +40,51 @@ if debug,  mkdir([path_orig 'plots' slashchar]), end
 
 
 %% Experiment 1
-stat = stats_struct;
-cc = linspecer(5);
-ch = [2,4,6,8,12,16];
-FONT_SIZE = 14;
-LWIDTH = 2;
-
-for kk=1:length(stat)
-    mean_FASTICA_DEF(kk) = 100.*mean(stat{kk}.stats_FASTICA_DEF(:,1));
-    median_FASTICA_DEF(kk) = 100.*median(stat{kk}.stats_FASTICA_DEF(:,1));
-    mean_FASTICA_SYM(kk) = 100.*mean(stat{kk}.stats_FASTICA_SYM(:,1));
-    median_FASTICA_SYM(kk) = 100.*median(stat{kk}.stats_FASTICA_SYM(:,1));
-    mean_JADEICA(kk) = 100.*mean(stat{kk}.stats_JADEICA(:,1));
-    median_JADEICA(kk) = 100.*median(stat{kk}.stats_JADEICA(:,1));
-    mean_pca(kk) = 100.*mean(stat{kk}.stats_pca(:,1));
-    median_pca(kk) = 100.*median(stat{kk}.stats_pca(:,1));
-end
-
-for kk=1:length(stat)
-    FASTICA_DEF(:,kk) = 100.*stat{kk}.stats_FASTICA_DEF(:,1);
-    FASTICA_SYM(:,kk) = 100.*stat{kk}.stats_FASTICA_SYM(:,1);
-    JADEICA(:,kk) = 100.*stat{kk}.stats_JADEICA(:,1);
-    pca(:,kk) = 100.*stat{kk}.stats_pca(:,1);
-end
-
-figure(1)
-hold on
-plot(ch,mean_JADEICA,'s--','linewidth',LWIDTH,'MarkerFaceColor',cc(1,:),'Color',cc(1,:),'linewidth',LWIDTH)
-plot(ch,median_JADEICA,'s-','linewidth',LWIDTH,'MarkerFaceColor',cc(1,:),'Color',cc(1,:),'linewidth',LWIDTH)
-plot(ch,mean_FASTICA_SYM,'d--','linewidth',LWIDTH,'MarkerFaceColor',cc(2,:),'Color',cc(2,:),'linewidth',LWIDTH)
-plot(ch,median_FASTICA_SYM,'d-','linewidth',LWIDTH,'MarkerFaceColor',cc(2,:),'Color',cc(2,:),'linewidth',LWIDTH)
-plot(ch,mean_FASTICA_DEF,'s--','linewidth',LWIDTH,'MarkerFaceColor',cc(3,:),'Color',cc(3,:),'linewidth',LWIDTH)
-plot(ch,median_FASTICA_DEF,'s-','linewidth',LWIDTH,'MarkerFaceColor',cc(3,:),'Color',cc(3,:),'linewidth',LWIDTH)
-plot(ch,mean_pca,'o--','linewidth',LWIDTH,'MarkerFaceColor',cc(4,:),'Color',cc(4,:),'linewidth',LWIDTH)
-plot(ch,median_pca,'o-','linewidth',LWIDTH,'MarkerFaceColor',cc(4,:),'Color',cc(4,:),'linewidth',LWIDTH)
-xlim([2,32])
-legend('mean ICA (JADE)','median ICA (JADE)','mean ICA (sym. FAST-ICA)','median ICA (sym. FAST-ICA)',...
-    'mean ICA (defl. FAST-ICA)','median ICA (defl. FAST-ICA)','mean PCA','median PCA')
-set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
-set(gca,'FontSize',FONT_SIZE)
-set(gca,'XTick',ch)
-ylabel('F_1 (in %)')
-xlabel('Number of Channels')
-box on
-% title('PCA reduction')
-hold off
+% stat = stats_struct;
+% cc = linspecer(5);
+% ch = [2,4,6,8,12,16];
+% FONT_SIZE = 14;
+% LWIDTH = 2;
+% 
+% for kk=1:length(stat)
+%     mean_FASTICA_DEF(kk) = 100.*mean(stat{kk}.stats_FASTICA_DEF(:,1));
+%     median_FASTICA_DEF(kk) = 100.*median(stat{kk}.stats_FASTICA_DEF(:,1));
+%     mean_FASTICA_SYM(kk) = 100.*mean(stat{kk}.stats_FASTICA_SYM(:,1));
+%     median_FASTICA_SYM(kk) = 100.*median(stat{kk}.stats_FASTICA_SYM(:,1));
+%     mean_JADEICA(kk) = 100.*mean(stat{kk}.stats_JADEICA(:,1));
+%     median_JADEICA(kk) = 100.*median(stat{kk}.stats_JADEICA(:,1));
+%     mean_pca(kk) = 100.*mean(stat{kk}.stats_pca(:,1));
+%     median_pca(kk) = 100.*median(stat{kk}.stats_pca(:,1));
+% end
+% 
+% for kk=1:length(stat)
+%     FASTICA_DEF(:,kk) = 100.*stat{kk}.stats_FASTICA_DEF(:,1);
+%     FASTICA_SYM(:,kk) = 100.*stat{kk}.stats_FASTICA_SYM(:,1);
+%     JADEICA(:,kk) = 100.*stat{kk}.stats_JADEICA(:,1);
+%     pca(:,kk) = 100.*stat{kk}.stats_pca(:,1);
+% end
+% 
+% figure(1)
+% hold on
+% plot(ch,mean_JADEICA,'s--','linewidth',LWIDTH,'MarkerFaceColor',cc(1,:),'Color',cc(1,:),'linewidth',LWIDTH)
+% plot(ch,median_JADEICA,'s-','linewidth',LWIDTH,'MarkerFaceColor',cc(1,:),'Color',cc(1,:),'linewidth',LWIDTH)
+% plot(ch,mean_FASTICA_SYM,'d--','linewidth',LWIDTH,'MarkerFaceColor',cc(2,:),'Color',cc(2,:),'linewidth',LWIDTH)
+% plot(ch,median_FASTICA_SYM,'d-','linewidth',LWIDTH,'MarkerFaceColor',cc(2,:),'Color',cc(2,:),'linewidth',LWIDTH)
+% plot(ch,mean_FASTICA_DEF,'s--','linewidth',LWIDTH,'MarkerFaceColor',cc(3,:),'Color',cc(3,:),'linewidth',LWIDTH)
+% plot(ch,median_FASTICA_DEF,'s-','linewidth',LWIDTH,'MarkerFaceColor',cc(3,:),'Color',cc(3,:),'linewidth',LWIDTH)
+% plot(ch,mean_pca,'o--','linewidth',LWIDTH,'MarkerFaceColor',cc(4,:),'Color',cc(4,:),'linewidth',LWIDTH)
+% plot(ch,median_pca,'o-','linewidth',LWIDTH,'MarkerFaceColor',cc(4,:),'Color',cc(4,:),'linewidth',LWIDTH)
+% xlim([2,32])
+% legend('mean ICA (JADE)','median ICA (JADE)','mean ICA (sym. FAST-ICA)','median ICA (sym. FAST-ICA)',...
+%     'mean ICA (defl. FAST-ICA)','median ICA (defl. FAST-ICA)','mean PCA','median PCA')
+% set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
+% set(gca,'FontSize',FONT_SIZE)
+% set(gca,'XTick',ch)
+% ylabel('F_1 (in %)')
+% xlabel('Number of Channels')
+% box on
+% % title('PCA reduction')
+% hold off
 
 
 %% Experiment 2
@@ -350,6 +350,9 @@ if ~exp3 % Experiment 2
     
 else
     %% Experiment 3
+    
+    load('/mnt/Data/Andreotti/PhD/Publications/Periodicals/2015.03 Physiol Meas - ICA breaks down/Simulator Paper/Final_Results/tqrsresult.mat')
+    bas = cellfun(@(x) isempty(regexp(x,'_c[0-7]','match')),fls_orig); % find out which case it depicts  baselines  
     
     %= Distribution of ICA
     % FQT intervals

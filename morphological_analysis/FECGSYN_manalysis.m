@@ -51,8 +51,6 @@ if isnan(qrsabdm)||isnan(qrsref)
     qt_ref = NaN;
     tqrs_test = NaN;
     tqrs_ref = NaN;
-    qt_err = NaN;
-    th_err = NaN;
     disp('manalysis: could not generate a TEMPLATE.')
     return % does not extract from test
 end
@@ -95,21 +93,13 @@ filen = filen(regexp(filen,'rec'):end);
 
 %% Segmentation using ECGPUWAVE
 % ref signal
-if ~ident
     counter = 1; % avoind rewriting file
     while exist(['refsig_' filen '_' num2str(counter) '.hea'],'file')
         counter = counter + 1;
     end
     filen = [filen '_' num2str(counter)];
     recordName = ['refsig_' filen];
-else
-     counter = 1; % avoind rewriting file
-    while exist(['refsig2_' filen '_' num2str(counter) '.hea'],'file')
-        counter = counter + 1;
-    end
-    filen = [filen '_' num2str(counter)];
-    recordName = ['refsig2_' filen];
-end
+
 
 wrsamp(tm2,ref_sig',recordName,FS_ECGPU,gain,'')
 wrann(recordName,'qrs',qrsref',repmat('N',20,1));
@@ -171,8 +161,6 @@ if isnan(qt_ref)||isnan(th_ref)
     tqrs_ref = NaN;    
     tqrs_test = NaN;
     tqrs_ref = NaN;
-    qt_err = NaN;
-    th_err = NaN;
     disp('manalysis: Could not encounter QT wave for REFERENCE.')
     return % does not extract from test
 end
@@ -201,13 +189,8 @@ if debug
 end
 
 if ident
-    qt_test = qt_ref;
-    tqrs_test = tqrs_ref;
-    th_ref = 0;
-    tqrs_test = NaN;
-    tqrs_ref = NaN;
-    qt_err = 0;
-    th_err = 0;
+    qt_test = '';
+    tqrs_test = '';
     return
 end
 
@@ -221,8 +204,6 @@ if isnan(qt_test)||isnan(th_test)
     tqrs_ref = NaN;
     tqrs_test = NaN;
     tqrs_ref = NaN;
-    qt_err = NaN;
-    th_err = NaN;
     disp('manalysis: Could not encounter QT wave for TEST.')
     return
 end

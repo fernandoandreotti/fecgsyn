@@ -387,7 +387,7 @@ else
 end
 
 end
-function [qt_test,qt_ref,th_test,th_ref,qt_err,theight_err,numNaN]=...
+function [qt_test,qt_ref,tqrs_test,tqrs_ref,qt_err,theight_err,numNaN]=...
     morpho_loop(fecg,residual,fqrs,fs,SAMPS,fname,filterc)
 %% Function to perform morphological analysis for TS/BSS extracted data
 %
@@ -410,14 +410,14 @@ numNaN = 0;
 % Allocatting
 qt_test = cell(size(residual,1),length(residual)/SAMPS,1);
 qt_ref = qt_test;
-th_test = qt_test;
-th_ref = qt_test;
+tqrs_test = qt_test;
+tqrs_ref = qt_test;
 qt_err = qt_test;
 theight_err = qt_test;
 %= Block-wise calculation and template generation
 block = 1;
 for j = 1:SAMPS:length(residual)
-    for ch = 1:size(residual,1)
+    for ch = 1:size(fecg,1)
         % checking borders
         if j+SAMPS > length(residual)
             endsamp = length(residual);
@@ -427,10 +427,18 @@ for j = 1:SAMPS:length(residual)
         % qrs complexes in interval
         qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
         %% Template Generation
-        % abdominal signal template
-        [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
         % reference template
         [temp_ref,qrs_ref,status2] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
+        % abdominal signal template
+        if ch <= size(residual,1)        
+        [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
+        else % usually relevant for ICA cases, where number of components is smaller than the number of input channels
+            temp_abdm = temp_ref;
+             qrs_abdm = qrs_ref;
+            status2 = status1;
+        end
+        
+        
         temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
         
         % crop end of templates which have steps on them
@@ -458,13 +466,13 @@ for j = 1:SAMPS:length(residual)
         if (~status1||~status2)
             qt_test{ch,block} = NaN;
             qt_ref{ch,block} = NaN;
-            th_test{ch,block} = NaN;
-            th_ref{ch,block} = NaN;
+            tqrs_test{ch,block} = NaN;
+            tqrs_ref{ch,block} = NaN;
             qt_err{ch,block} = NaN;
             theight_err{ch,block} = NaN;
         else
             %% Performs morphological analysis
-            [qt_ref{ch,block},qt_test{ch,block},th_ref{ch,block},th_test{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,fname);
+            [qt_ref{ch,block},qt_test{ch,block},tqrs_ref{ch,block},tqrs_test{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,fname);
         end
         % Saves generated plots
         if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})

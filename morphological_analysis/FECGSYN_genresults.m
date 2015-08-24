@@ -152,94 +152,95 @@ morph.tsekf = cell(length(fls_orig),7);
 morph.alms = cell(length(fls_orig),7);
 morph.arls = cell(length(fls_orig),7);
 morph.aesn = cell(length(fls_orig),7);
-exp3dist = {};
 
-% % % % = Runs through list of extracted files
-% % % for i = filesproc%length(fls_ext)
-% % %     % for i = randperm(length(fls_ext))
-% % %     disp(fls_ext{i})
-% % %     fprintf('Data %d out of %d \n',i,length(fls_ext));
-% % %     
-% % %     %= loading extracted file
-% % %     [rec,met] = strtok(fls_ext(i),'_');
-% % %     % Figuring out which extraction method was used, possibilities are:
-% % %     % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
-% % %     method = met{:}(2:end-4);
-% % %     file = strcat(path_ext,fls_ext(i));
-% % %     load(file{:})
-% % %     %= loading original file
-% % %     origrec = str2double(rec{:}(4:end));
-% % %     file = strcat(path_orig,fls_orig(origrec));
-% % %     cas = regexp(file{:},'_c[0-7]','match'); % find out which case it depicts
-% % %     if isempty(cas)
-% % %         cas = {'bas'};
-% % %     end
-% % %     
-% % %     load(file{:});
-% % %     fecg = double(out.fecg{1}(ch,:)); % selecting channels
-% % %     %= Resampling original data to match extracted (fs - if necessary)
-% % %     if size(out.mecg,2) ~= size(residual,2)
-% % %         % fref:          fetal QRS reference
-% % %         % fecgref:       fetal ECG signals (before mixture)
-% % %         fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
-% % %         fecgref = zeros(length(ch),size(residual,2));
-% % %         for k = 1:size(fecgref,1)
-% % %             fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
-% % %         end
-% % %     else
-% % %         fecgref = fecg;
-% % %         fref = out.fqrs{1};
-% % %     end
-% % %     [elif,~]=strtok(file{:}(end:-1:1),slashchar);
-% % %     disp(elif(end:-1:1))
-% % %     clear fecg outdata rec file elif k
-% % %     
-% % %     %= Getting statistics (exp 2)
-% % %     if ~exp3
-% % %         [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
-% % %         MAE = MAE*1000/fs_new;
-% % %         stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
-% % %     else %= Getting statistics (exp 3)
-% % %         if ~exist([path_orig 'wfdb'],'dir')
-% % %             mkdir([path_orig 'wfdb'])
-% % %         end
-% % %         cd([path_orig 'wfdb'])
-% % %         mkdir(num2str(i))
-% % %         cd(num2str(i))
-% % %         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
-% % %         fname = strcat(fname{:});
-% % %         % Until this point, input signals were prepared for the
-% % %         % morphological analysis. M
-% % %         
-% % %         % Analysis for BSS, evaluate if application of mixing matrix changes
-% % %         % FQT interval
-% % %         if strcmp(method,'JADEICA')
-% % %             tmpfref = cell(1,length(A));
-% % %             pad = max(cellfun(@(x) size(x,1),A));
-% % %             for i = 1:length(A)
-% % %                 tmpfref{i} = A{i}*fecgref(:,(i-1)*TEMP_SAMPS+1:i*TEMP_SAMPS);
-% % %                 tmpfref{i} = [tmpfref{i};zeros(pad-size(tmpfref{i},1),length(tmpfref{i}))];
-% % %             end
-% % %             fecgref2 = cell2mat(tmpfref);   % source domain FECG reference signal
-% % %             [outputs{1:7}]= morpho_loop(fecgref2,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-% % %             % Evaluating if applying mixing matrix makes a difference
-% % %             [qt_time,~,th_time]= morpho_loop(fecgref,fecgref,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-% % %             if strcmp(cas,'bas')  % baseline
-% % %                 exp3dist(end+1,:) = {outputs{2}, qt_time, outputs{4},th_time};
-% % %             end
-% % %         else
-% % %             [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-% % %             
-% % %         end
-% % %         morph.(method)(origrec,:) = outputs;
-% % %         
-% % %         
-% % %     end
-% % %     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err outputs
-% % %     cd ..
-% % % end
-% % % 
-% % % save([path_orig 'wksp' num2str(filesproc(end))])
+% = Runs through list of extracted files
+for i = filesproc%length(fls_ext)
+    % for i = randperm(length(fls_ext))
+    disp(fls_ext{i})
+    fprintf('Data %d out of %d \n',i,length(fls_ext));
+    
+    %= loading extracted file
+    [rec,met] = strtok(fls_ext(i),'_');
+    % Figuring out which extraction method was used, possibilities are:
+    % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
+    method = met{:}(2:end-4);
+    if ~strcmp(method,'JADEICA')
+        continue
+    end
+    file = strcat(path_ext,fls_ext(i));
+    load(file{:})
+    %= loading original file
+    origrec = str2double(rec{:}(4:end));
+    file = strcat(path_orig,fls_orig(origrec));
+    cas = regexp(file{:},'_c[0-7]','match'); % find out which case it depicts
+    if isempty(cas)
+        cas = {'bas'};
+    end
+    
+    load(file{:});
+    fecg = double(out.fecg{1}(ch,:)); % selecting channels
+    %= Resampling original data to match extracted (fs - if necessary)
+    if size(out.mecg,2) ~= size(residual,2)
+        % fref:          fetal QRS reference
+        % fecgref:       fetal ECG signals (before mixture)
+        fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
+        fecgref = zeros(length(ch),size(residual,2));
+        for k = 1:size(fecgref,1)
+            fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
+        end
+    else
+        fecgref = fecg;
+        fref = out.fqrs{1};
+    end
+    [elif,~]=strtok(file{:}(end:-1:1),slashchar);
+    disp(elif(end:-1:1))
+    clear fecg outdata rec file elif k
+    
+    %= Getting statistics (exp 2)
+    if ~exp3
+        [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
+        MAE = MAE*1000/fs_new;
+        stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
+    else %= Getting statistics (exp 3)
+        if ~exist([path_orig 'wfdb'],'dir')
+            mkdir([path_orig 'wfdb'])
+        end
+        cd([path_orig 'wfdb'])
+        mkdir(num2str(i))
+        cd(num2str(i))
+        fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
+        fname = strcat(fname{:});
+        % Until this point, input signals were prepared for the
+        % morphological analysis.
+        
+        % Obsolete mix matrix transform on reference
+        % Analysis for BSS, evaluate if application of mixing matrix changes
+        % FQT interval
+        %         if strcmp(method,'JADEICA')
+        %             tmpfref = cell(1,length(A));
+        %             pad = max(cellfun(@(x) size(x,1),A));
+        %             for i = 1:length(A)
+        %                 tmpfref{i} = A{i}*fecgref(:,(i-1)*TEMP_SAMPS+1:i*TEMP_SAMPS);
+         %                 tmpfref{i} = [tmpfref{i};zeros(pad-size(tmpfref{i},1),length(tmpfref{i}))];
+        %             end
+        %             fecgref2 = cell2mat(tmpfref);   % source domain FECG reference signal
+        %             [outputs{1:7}]= morpho_loop(fecgref2,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+        %             % Evaluating if applying mixing matrix makes a difference
+        %             [qt_time,~,th_time]= morpho_loop(fecgref,fecgref,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+        %             if strcmp(cas,'bas')  % baseline
+        %                 exp3dist(end+1,:) = {outputs{2}, qt_time, outputs{4},th_time};
+        %             end
+        %         else
+        [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+            
+%         end
+        morph.(method)(origrec,:) = outputs;               
+    end
+    clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err outputs
+    cd ..
+end
+
+save([path_orig 'wksp' num2str(filesproc(end))])
 
 
 

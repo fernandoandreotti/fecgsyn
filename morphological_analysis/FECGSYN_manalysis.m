@@ -362,9 +362,12 @@ else
     end
 end
 
-qrs = [qs ss]+temp_stamp(Rpeaks(1));
-qrs = max(signal(qrs(1):qrs(2)))-min(signal(qrs(1):qrs(2)));
-
+if numel(Rpeaks) >= 1
+    qrs = [qs ss]+temp_stamp(Rpeaks(1));
+    qrs = max(signal(qrs(1):qrs(2)))-min(signal(qrs(1):qrs(2)));
+else
+    qrs = NaN;
+end
 if isempty(tends), tends = NaN; end
 if qtint>QT_MAX*fs, qtint = NaN; end
 if qtint<QT_MIN*fs, qtint = NaN; end

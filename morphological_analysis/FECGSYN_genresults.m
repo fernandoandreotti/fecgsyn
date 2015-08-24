@@ -154,92 +154,92 @@ morph.arls = cell(length(fls_orig),7);
 morph.aesn = cell(length(fls_orig),7);
 exp3dist = {};
 
-% = Runs through list of extracted files
-for i = filesproc%length(fls_ext)
-    % for i = randperm(length(fls_ext))
-    disp(fls_ext{i})
-    fprintf('Data %d out of %d \n',i,length(fls_ext));
-    
-    %= loading extracted file
-    [rec,met] = strtok(fls_ext(i),'_');
-    % Figuring out which extraction method was used, possibilities are:
-    % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
-    method = met{:}(2:end-4);
-    file = strcat(path_ext,fls_ext(i));
-    load(file{:})
-    %= loading original file
-    origrec = str2double(rec{:}(4:end));
-    file = strcat(path_orig,fls_orig(origrec));
-    cas = regexp(file{:},'_c[0-7]','match'); % find out which case it depicts
-    if isempty(cas)
-        cas = {'bas'};
-    end
-    
-    load(file{:});
-    fecg = double(out.fecg{1}(ch,:)); % selecting channels
-    %= Resampling original data to match extracted (fs - if necessary)
-    if size(out.mecg,2) ~= size(residual,2)
-        % fref:          fetal QRS reference
-        % fecgref:       fetal ECG signals (before mixture)
-        fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
-        fecgref = zeros(length(ch),size(residual,2));
-        for k = 1:size(fecgref,1)
-            fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
-        end
-    else
-        fecgref = fecg;
-        fref = out.fqrs{1};
-    end
-    [elif,~]=strtok(file{:}(end:-1:1),slashchar);
-    disp(elif(end:-1:1))
-    clear fecg outdata rec file elif k
-    
-    %= Getting statistics (exp 2)
-    if ~exp3
-        [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
-        MAE = MAE*1000/fs_new;
-        stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
-    else %= Getting statistics (exp 3)
-        if ~exist([path_orig 'wfdb'],'dir')
-            mkdir([path_orig 'wfdb'])
-        end
-        cd([path_orig 'wfdb'])
-        mkdir(num2str(i))
-        cd(num2str(i))
-        fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
-        fname = strcat(fname{:});
-        % Until this point, input signals were prepared for the
-        % morphological analysis. M
-        
-        % Analysis for BSS, evaluate if application of mixing matrix changes
-        % FQT interval
-        if strcmp(method,'JADEICA')
-            tmpfref = cell(1,length(A));
-            pad = max(cellfun(@(x) size(x,1),A));
-            for i = 1:length(A)
-                tmpfref{i} = A{i}*fecgref(:,(i-1)*TEMP_SAMPS+1:i*TEMP_SAMPS);
-                tmpfref{i} = [tmpfref{i};zeros(pad-size(tmpfref{i},1),length(tmpfref{i}))];
-            end
-            fecgref2 = cell2mat(tmpfref);   % source domain FECG reference signal
-            [outputs{1:7}]= morpho_loop(fecgref2,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-            % Evaluating if applying mixing matrix makes a difference
-            [qt_time,~,th_time]= morpho_loop(fecgref,fecgref,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-            if strcmp(cas,'bas')  % baseline
-                exp3dist(end+1,:) = {outputs{2}, qt_time, outputs{4},th_time};
-            end
-        else
-            [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-            
-        end
-        morph.(method)(origrec,:) = outputs;
-        
-        
-    end
-    clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err outputs
-    cd ..
-end
-
-save([path_orig 'wksp' num2str(filesproc(end))])
+% % % % = Runs through list of extracted files
+% % % for i = filesproc%length(fls_ext)
+% % %     % for i = randperm(length(fls_ext))
+% % %     disp(fls_ext{i})
+% % %     fprintf('Data %d out of %d \n',i,length(fls_ext));
+% % %     
+% % %     %= loading extracted file
+% % %     [rec,met] = strtok(fls_ext(i),'_');
+% % %     % Figuring out which extraction method was used, possibilities are:
+% % %     % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
+% % %     method = met{:}(2:end-4);
+% % %     file = strcat(path_ext,fls_ext(i));
+% % %     load(file{:})
+% % %     %= loading original file
+% % %     origrec = str2double(rec{:}(4:end));
+% % %     file = strcat(path_orig,fls_orig(origrec));
+% % %     cas = regexp(file{:},'_c[0-7]','match'); % find out which case it depicts
+% % %     if isempty(cas)
+% % %         cas = {'bas'};
+% % %     end
+% % %     
+% % %     load(file{:});
+% % %     fecg = double(out.fecg{1}(ch,:)); % selecting channels
+% % %     %= Resampling original data to match extracted (fs - if necessary)
+% % %     if size(out.mecg,2) ~= size(residual,2)
+% % %         % fref:          fetal QRS reference
+% % %         % fecgref:       fetal ECG signals (before mixture)
+% % %         fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
+% % %         fecgref = zeros(length(ch),size(residual,2));
+% % %         for k = 1:size(fecgref,1)
+% % %             fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
+% % %         end
+% % %     else
+% % %         fecgref = fecg;
+% % %         fref = out.fqrs{1};
+% % %     end
+% % %     [elif,~]=strtok(file{:}(end:-1:1),slashchar);
+% % %     disp(elif(end:-1:1))
+% % %     clear fecg outdata rec file elif k
+% % %     
+% % %     %= Getting statistics (exp 2)
+% % %     if ~exp3
+% % %         [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
+% % %         MAE = MAE*1000/fs_new;
+% % %         stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
+% % %     else %= Getting statistics (exp 3)
+% % %         if ~exist([path_orig 'wfdb'],'dir')
+% % %             mkdir([path_orig 'wfdb'])
+% % %         end
+% % %         cd([path_orig 'wfdb'])
+% % %         mkdir(num2str(i))
+% % %         cd(num2str(i))
+% % %         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
+% % %         fname = strcat(fname{:});
+% % %         % Until this point, input signals were prepared for the
+% % %         % morphological analysis. M
+% % %         
+% % %         % Analysis for BSS, evaluate if application of mixing matrix changes
+% % %         % FQT interval
+% % %         if strcmp(method,'JADEICA')
+% % %             tmpfref = cell(1,length(A));
+% % %             pad = max(cellfun(@(x) size(x,1),A));
+% % %             for i = 1:length(A)
+% % %                 tmpfref{i} = A{i}*fecgref(:,(i-1)*TEMP_SAMPS+1:i*TEMP_SAMPS);
+% % %                 tmpfref{i} = [tmpfref{i};zeros(pad-size(tmpfref{i},1),length(tmpfref{i}))];
+% % %             end
+% % %             fecgref2 = cell2mat(tmpfref);   % source domain FECG reference signal
+% % %             [outputs{1:7}]= morpho_loop(fecgref2,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+% % %             % Evaluating if applying mixing matrix makes a difference
+% % %             [qt_time,~,th_time]= morpho_loop(fecgref,fecgref,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+% % %             if strcmp(cas,'bas')  % baseline
+% % %                 exp3dist(end+1,:) = {outputs{2}, qt_time, outputs{4},th_time};
+% % %             end
+% % %         else
+% % %             [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+% % %             
+% % %         end
+% % %         morph.(method)(origrec,:) = outputs;
+% % %         
+% % %         
+% % %     end
+% % %     clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err outputs
+% % %     cd ..
+% % % end
+% % % 
+% % % save([path_orig 'wksp' num2str(filesproc(end))])
 
 
 
@@ -350,108 +350,6 @@ if ~exp3 % Experiment 2
     
 else
     %% Experiment 3
-    
-    load('/mnt/Data/Andreotti/PhD/Publications/Periodicals/2015.03 Physiol Meas - ICA breaks down/Simulator Paper/Final_Results/tqrsresult.mat')
-    bas = cellfun(@(x) isempty(regexp(x,'_c[0-7]','match')),fls_orig); % find out which case it depicts  baselines  
-    
-    %= Distribution of ICA
-    % FQT intervals
-    exp3dist = exp3dist1;
-    nans = sum(cellfun(@(x) sum(sum(isnan(cell2mat(x)))),exp3dist));
-    tot = sum(cellfun(@(x) numel(cell2mat(x)),exp3dist));
-    srcnan = nans(1); srctot = tot(1);
-    timenan = nans(2); timetot = tot(2);
-    exp3med = cellfun(@(x) nanmax(cell2mat(x)),exp3dist,'UniformOutput',0);
-    exp3med = [cell2mat(exp3med(:,1)')' cell2mat(exp3med(:,2)')'];
-    [h,p]=ttest(exp3med(:,2),exp3med(:,1));
-    if h
-        fprintf('Null hypothesis can be rejected with p= %d \n',p);
-    else
-        fprintf('Null hypothesis CANNOT be rejected');
-    end
-    fprintf('NaNs on source domain:  %3.2f percent \n',srcnan/srctot*100);
-    fprintf('NaNs on time domain:  %3.2f percent \n',timenan/timetot*100);
-    x = exp3med(:,2); y = exp3med(:,1);
-    scatter(x,y,12,'filled')
-    % regression
-    A = [x,y];
-    A(any(isnan(A), 2),:)=[];
-    x = A(:,1); y = A(:,2);
-    p = polyfit(x,y,1);
-    yfit = polyval(p,x);
-    yresid = y - yfit;
-    SSresid = sum(yresid.^2);
-    SStotal = (length(y)-1) * var(y);
-    rsq = 1 - SSresid/SStotal;
-    hold on; plot(x,yfit,'r-'); 
-    text(220,140,sprintf('r^2 = %2.4f',rsq))
-    
-    xlim([120,260]),ylim([120,260])
-    xlabel('FQT in time domain (ms)')
-    ylabel('FQT in source domain (ms)')
-    
-    % FTh
-    exp3dist = exp3dist1;
-    nans = sum(cellfun(@(x) sum(sum(isnan(cell2mat(x)))),exp3dist));
-    tot = sum(cellfun(@(x) numel(cell2mat(x)),exp3dist));
-    srcnan = nans(1); srctot = tot(1);
-    timenan = nans(2); timetot = tot(2);
-    exp3med = cellfun(@(x) nanmedian(abs(cell2mat(x))),exp3dist,'UniformOutput',0);
-    exp3med = [cell2mat(exp3med(:,3)')' cell2mat(exp3med(:,4)')'];
-    [h,p]=ttest(exp3med(:,2),exp3med(:,1));
-    if h
-        fprintf('Null hypothesis can be rejected with p= %d \n',p);
-    else
-        fprintf('Null hypothesis CANNOT be rejected');
-    end
-    fprintf('NaNs on source domain:  %3.2f percent \n',srcnan/srctot*100);
-    fprintf('NaNs on time domain:  %3.2f percent \n',timenan/timetot*100);
-     x = exp3med(:,2); y = exp3med(:,1);
-    scatter(x,y,12,'filled')
-    % regression
-    A = [x,y];
-    A(any(isnan(A), 2),:)=[];
-    x = A(:,1); y = A(:,2);
-    p = polyfit(x,y,1);
-    yfit = polyval(p,x);
-    yresid = y - yfit;
-    SSresid = sum(yresid.^2);
-    SStotal = (length(y)-1) * var(y);
-    rsq = 1 - SSresid/SStotal;
-    hold on; plot(x,yfit,'r-'); 
-    text(1.5,0.1,sprintf('r^2 = %2.4f',rsq))
-   % xlim([120,260]),ylim([120,260])
-    xlabel('FT_h in time domain (n.u.)')
-    ylabel('FT_h in source domain (n.u.)')
-    
-    % Case by case methods against each other
-    % Generate Table
-    res = struct('qt',[],'th',[]);
-    qt = []; th = [];
-    % FQT
-    for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
-        tmp = morphall.(met{:});
-        res.qt=cell(1750,1);
-        for i = 1:1750
-            res.qt{i} = cell2mat(tmp{i,1})-cell2mat(tmp{i,2});
-        end
-        %         stat = bsxfun(@minus,morphall.(met{:})(:,col),morphall.(met{:})(:,col+1));
-        res.qt = cellfun(@(x) median(nanmin(x)),res.qt);
-        res.qtstd = cellfun(@(x) std(nanmin(x)),res.qt);
-        qt = [qt nanmedian(res.qt)];
-        qtstd = [qtstd nanmedian(res.qtstd)];
-    end
-    
-    % FTh
-    for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
-        tmp = morphall.(met{:});
-        res.th=cell(1750,1);
-        for i = 1:1750
-            res.th{i} = cell2mat(tmp{i,3})./cell2mat(tmp{i,4});
-        end
-        res.th = cellfun(@(x) nanmedian(nanmin(x-1)),res.th);
-        th = [th nanmedian(res.th)];
-    end
     
     
     %         eval(['stat = cellfun(@(x) x,morphall.' met{:}(col:col+1) ');']);

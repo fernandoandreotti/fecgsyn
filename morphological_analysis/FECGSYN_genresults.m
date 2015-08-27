@@ -350,39 +350,7 @@ if ~exp3 % Experiment 2
     
     
 else
-    %% Experiment 3
-    
-    
-    %         eval(['stat = cellfun(@(x) x,morphall.' met{:}(col:col+1) ');']);
-    %         % F1
-    %         statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
-    %         auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
-    %         auxtab2(counter1,:) = median(statscase)';
-    %         table(counter1,:) = reshape(auxtab',1,7*4);
-    %         counter1 = counter1 + 1;
-    %
-    %         % MAE
-    %         statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
-    %         auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
-    %         table(counter1,:) = reshape(auxtab',1,7*4);
-    %         counter1 = counter1 + 1;
-    %
-    %
-    
-    
-    
-    
-    %     res3.mean = [];
-    %     res3.std = [];
-    %     c = 1;
-    %     for method = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn'}
-    %         tmpvec = morph.(method{:})(:,[5 6]); % hold results temporarilly
-    %         tmpvec = cell2mat(cellfun(@(x) nanmean(min(abs(cell2mat(x)))),tmpvec,'UniformOutput',0)); % minimal error per channel/component
-    %         res3.mean(c,:) = nanmean(tmpvec);
-    %         res3.std(c,:) = nanstd(tmpvec);
-    %         c = c+1; % simple counter
-    %     end
-    
+
     
 end
 

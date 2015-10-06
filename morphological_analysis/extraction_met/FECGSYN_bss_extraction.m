@@ -88,7 +88,7 @@ while (loop)  % will quit as soon as complete signal is filtered
      tmpdata = bsxfun(@rdivide,tmpdata,std(tmpdata,0,2)); % divide by standard deviation
      [coeff, score, latent] = pca(tmpdata');
      perc = cumsum(latent)./sum(latent);
-     Ncomp = find(perc>=0.999,1,'first');   % keeping 99.9% data variance
+     Ncomp = find(perc>=0.99,1,'first');   % keeping 99.9% data variance
      tmpdata = score(:,1:Ncomp)*coeff(:,1:Ncomp)';
      tmpdata = tmpdata';
      

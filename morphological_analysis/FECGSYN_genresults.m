@@ -156,72 +156,72 @@ morph.aesn = cell(length(fls_orig),7);
 
 %% Check specific results
 
-for ff =  [50    337    547    582    589]
-    file = strcat(path_ext,['rec' num2str(ff) '_JADEICA.mat']);
-    load(file)
-    file = strcat(path_orig,fls_orig{ff});
-    load(file)
-    fecg = double(out.fecg{1}(ch,:)); % selecting channels
-    %= Resampling original data to match extracted (fs - if necessary)
-    if size(out.mecg,2) ~= size(residual,2)
-        % fref:          fetal QRS reference
-        % fecgref:       fetal ECG signals (before mixture)
-        fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
-        fecgref = zeros(length(ch),size(residual,2));
-        for k = 1:size(fecgref,1)
-            fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
-        end
-    else
-        fecgref = fecg;
-        fref = out.fqrs{1};
-    end
-    ax(1)=subplot(1,2,1)
-    fecgref = (fecgref'*diag(1./max(fecgref')))';
-    plot(fecgref(4,:),'k')
-    hold on
-    for lres = 1:5
-        res((lres-1)*15000+1:lres*15000) = residual(maxch(lres),(lres-1)*15000+1:lres*15000);
-    end
-    plot(res,'LineWidth',1.5)
-    plot(fref,1,'or')
-    title('Baseline')
-    xlabel(['#components = ' num2str(size(residual,1))])
-    
-    
-    file = strcat(path_ext,['rec' num2str(ff+1) '_JADEICA.mat']);
-    load(file)
-    file = strcat(path_orig,fls_orig{ff+1});
-    load(file)
-    fecg = double(out.fecg{1}(ch,:)); % selecting channels
-    %= Resampling original data to match extracted (fs - if necessary)
-    if size(out.mecg,2) ~= size(residual,2)
-        % fref:          fetal QRS reference
-        % fecgref:       fetal ECG signals (before mixture)
-        fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
-        fecgref = zeros(length(ch),size(residual,2));
-        for k = 1:size(fecgref,1)
-            fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
-        end
-    else
-        fecgref = fecg;
-        fref = out.fqrs{1};
-    end
-    ax(2)=subplot(1,2,2)
-    fecgref = (fecgref'*diag(1./max(fecgref')))';
-    plot(fecgref(4,:),'k')
-    hold on
-    for lres = 1:5
-        res((lres-1)*15000+1:lres*15000) = residual(maxch(lres),(lres-1)*15000+1:lres*15000);
-    end
-    plot(res,'LineWidth',1.5)
-    plot(fref,1,'or')
-    linkaxes(ax,'x')        
-    title('Case 0')
-    xlabel(['#components = ' num2str(size(residual,1))])
-    
-    savefig(['plot_' num2str(ff)])
-    close
-end
+% % for ff =  [50    337    547    582    589]
+% %     file = strcat(path_ext,['rec' num2str(ff) '_JADEICA.mat']);
+% %     load(file)
+% %     file = strcat(path_orig,fls_orig{ff});
+% %     load(file)
+% %     fecg = double(out.fecg{1}(ch,:)); % selecting channels
+% %     %= Resampling original data to match extracted (fs - if necessary)
+% %     if size(out.mecg,2) ~= size(residual,2)
+% %         % fref:          fetal QRS reference
+% %         % fecgref:       fetal ECG signals (before mixture)
+% %         fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
+% %         fecgref = zeros(length(ch),size(residual,2));
+% %         for k = 1:size(fecgref,1)
+% %             fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
+% %         end
+% %     else
+% %         fecgref = fecg;
+% %         fref = out.fqrs{1};
+% %     end
+% %     ax(1)=subplot(1,2,1)
+% %     fecgref = (fecgref'*diag(1./max(fecgref')))';
+% %     plot(fecgref(4,:),'k')
+% %     hold on
+% %     for lres = 1:5
+% %         res((lres-1)*15000+1:lres*15000) = residual(maxch(lres),(lres-1)*15000+1:lres*15000);
+% %     end
+% %     plot(res,'LineWidth',1.5)
+% %     plot(fref,1,'or')
+% %     title('Baseline')
+% %     xlabel(['#components = ' num2str(size(residual,1))])
+% %     
+% %     
+% %     file = strcat(path_ext,['rec' num2str(ff+1) '_JADEICA.mat']);
+% %     load(file)
+% %     file = strcat(path_orig,fls_orig{ff+1});
+% %     load(file)
+% %     fecg = double(out.fecg{1}(ch,:)); % selecting channels
+% %     %= Resampling original data to match extracted (fs - if necessary)
+% %     if size(out.mecg,2) ~= size(residual,2)
+% %         % fref:          fetal QRS reference
+% %         % fecgref:       fetal ECG signals (before mixture)
+% %         fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
+% %         fecgref = zeros(length(ch),size(residual,2));
+% %         for k = 1:size(fecgref,1)
+% %             fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
+% %         end
+% %     else
+% %         fecgref = fecg;
+% %         fref = out.fqrs{1};
+% %     end
+% %     ax(2)=subplot(1,2,2)
+% %     fecgref = (fecgref'*diag(1./max(fecgref')))';
+% %     plot(fecgref(4,:),'k')
+% %     hold on
+% %     for lres = 1:5
+% %         res((lres-1)*15000+1:lres*15000) = residual(maxch(lres),(lres-1)*15000+1:lres*15000);
+% %     end
+% %     plot(res,'LineWidth',1.5)
+% %     plot(fref,1,'or')
+% %     linkaxes(ax,'x')        
+% %     title('Case 0')
+% %     xlabel(['#components = ' num2str(size(residual,1))])
+% %     
+% %     savefig(['plot_' num2str(ff)])
+% %     close
+% % end
 
 
 

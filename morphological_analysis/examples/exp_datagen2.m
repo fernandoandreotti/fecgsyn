@@ -154,7 +154,8 @@ for i = 1:5           % generate 5 cases of each
             for b = 1:length(out.mqrs)
                size1 = randn*0.1*out.fs;
                size2 = randn*0.2*out.fs;
-               
+               modfun1 = sin(linspace(0,pi,size1));
+               modfun2 = sin(linspace(0,pi,size2));
                 
             end
             

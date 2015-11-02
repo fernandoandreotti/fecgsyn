@@ -39,7 +39,7 @@
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 function exp_datagen2()
 
-path = '/home/andreotti/tmp/';
+path = cd;
 debug = 0;
 
 % Generating simulated data with various SNR for morphological analysis
@@ -78,7 +78,7 @@ for i = 1:5           % generate 5 cases of each
         for loop = 1:5 % repeat same setup
             % just recalculating noise five times
             % reseting config    outst = out;
-            %% Baseline (noise and hearts, no event)
+            %% Case 0: Baseline (noise and hearts, no event)
             disp(['Generating for SNRmn=' num2str(SNRmn) ' simulation number ' num2str(i) '.'])
             param = paramst;
             param.SNRmn = SNRmn;    % varying SNRmn
@@ -88,42 +88,41 @@ for i = 1:5           % generate 5 cases of each
             param.SNRfm = -9 + 2*randn;
             param.SNRmn = SNRmn;    % varying SNRmn
             param.ntype = {'MA','MA'}; % noise types
-            param.fheart{1} = [pi*(2*rand-1)/10 (0.1*rand+0.25) -.2*(1+rand)]; % define first foetus position
+            param.fheart{1} = [pi*(2*rand-1)*sign(randn)/10 (0.1*rand*sign(randn)+0.2) -0.3*rand]; % define first foetus position
             param.noise_fct = {1+.5*randn,1+.5*randn}; % constant SNR (each noise may be modulated by a function)
             param.mres = 0.25 + 0.05*randn; % mother respiration frequency
             param.fres = 0.9 + 0.05*randn; % foetus respiration frequency
             parambase = param;
             out = run_ecg_generator(param,debug);  % stationary output
             out = clean_compress(out);
-            out_noise.noise = out.noise; % save for re-applyng
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c0',i,SNRmn,loop)],'out')
             clear out
-            
-            %% Case 1: rate rate accelerations
-            param = parambase;
-            param.macc = (20+10*randn)*sign(randn); % maternal acceleration in HR [bpm]
-            param.mtypeacc = 'tanh';                % hyperbolic tangent acceleration
-            out = run_ecg_generator(param,debug);   % stationary output
-            out = clean_compress(out);
-            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
-            clear out
-            
-            %% Case 2: SNR abrupt change
-            param = parambase;
-            param.noise_fct{1} = 1+sign(randn)*(rand+0.3)*tanh(linspace(-pi,2*pi,param.n));  % tanh function           
-            param.noise_fct{2} = param.noise_fct{1};  % tanh function           
-            param.ntype = {'MA' 'MA'};
-            param.SNRmn = -6;         % put additional contraction with strong power
-            out = run_ecg_generator(param,debug);  % stationary output
-            out = clean_compress(out);
-            out.noise = [out.noise out_noise.noise];
-            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
-            clear out
+% %             
+% %             %% Case 1: rate rate accelerations
+% %             param = parambase;
+% %             param.macc = (20+10*abs(randn))*sign(randn); % maternal acceleration in HR [bpm]
+% %             param.mtypeacc = 'tanh';                % hyperbolic tangent acceleration
+% %             out = run_ecg_generator(param,debug);   % stationary output
+% %             out = clean_compress(out);
+% %             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
+% %             clear out
+% %             
+% %             %% Case 2: SNR abrupt change
+% %             param = parambase;
+% %             param.noise_fct{1} = 1+sign(randn)*(rand+0.3)*tanh(linspace(-pi,2*pi,param.n));  % tanh function           
+% %             param.noise_fct{2} = param.noise_fct{1};  % tanh function           
+% %             param.ntype = {'MA' 'MA'};
+% %             param.SNRmn = -6;         % put additional contraction with strong power
+% %             out = run_ecg_generator(param,debug);  % stationary output
+% %             out = clean_compress(out);
+% %             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
+% %             clear out
             %% Case 3: overall ECG amplitude change (sinusoidal 1-10 cycles/recording)
             param = parambase;
             out = run_ecg_generator(param,debug);  % stationary output
             cyccount = randi([1,10],1,1);
-            modfun = rand*(2+sin(linspace(0,cyccount*2*pi,param.n)));
+            piinit = (2*rand-1)*pi; % [-pi,pi]
+            modfun = (1+sin(linspace(piinit,cyccount*2*pi+piinit,param.n))*(0.2*rand+0.001));
             out.mecg = repmat(modfun,34,1).*out.mecg;
             out = clean_compress(out);
             out.modfun = modfun;

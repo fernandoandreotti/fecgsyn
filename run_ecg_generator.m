@@ -263,7 +263,7 @@ m_model.type = 1; % maternal ecg is type 1
 
 % == foetal heart(s)
 L_f = eye(3); % scaling of dipole in each direction
-Rfh = 0.01; % radius allowed for foetal heart to appear
+Rfh = 0.05; % radius allowed for foetal heart to appear
 
 % = foetal dipole generation
 f_model = cell(NB_FOETUSES,1); % allocating memory

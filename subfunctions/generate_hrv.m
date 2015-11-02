@@ -1,4 +1,4 @@
-function [theta w] = generate_hrv(strhrv,n,fs,theta0)
+function [theta,w] = generate_hrv(strhrv,n,fs,theta0)
 % generate variable heart rate (HR). Add suddent change of HR 
 % in the middle of a time interval. This is meant, as an example, 
 % to model high HR variation to test the robustness of a NI-FECG 
@@ -106,7 +106,7 @@ end
 
 % == Generating a phase trend w(t)
 csum = cumsum(RR); RR(csum>n/fs)=[]; 
-csum(csum*fs>n) = [];
+csum(round(csum*fs)>n) = [];
 RR_rs = interp1(cumsum(RR),RR,RR(1):1/fs:sum(RR));
 nbm_str = ceil(RR(1)*fs);               % number of points missed at the begining
 nbm_end = ceil(n-sum(RR)*fs);           % number of points missed at the end

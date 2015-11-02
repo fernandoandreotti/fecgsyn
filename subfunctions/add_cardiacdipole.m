@@ -133,7 +133,7 @@ if (fres==0 && size(traj,1)==1) % respiration (FALSE), trajectory (FALSE)
 elseif  (fres~=0 && size(traj,1)==1) % respiration (TRUE), trajectory (FALSE)
     H = zeros(NB_EL,3,N);
     traj = repmat(traj,N,1);
-else % respiration (FALSE), trajectory (TRUE) OR respiration (TRUE), trajectory (TRUE)
+else % respiration (FALSE) AND trajectory (TRUE) OR respiration (TRUE) AND trajectory (TRUE)
     H = zeros(NB_EL,3,N);    
 end
 
@@ -158,25 +158,26 @@ for i=1:N
        end 
     end
     
+    % = guarantees that dtheta stay in [-pi,pi]
     dthetaix = mod(theta(ones(length(gp{crst}{1}.x),1),i)' - gp{crst}{1}.x + pi , 2*pi) - pi;
     dthetaiy = mod(theta(ones(length(gp{crst}{1}.y),1),i)' - gp{crst}{1}.y + pi , 2*pi) - pi;
-    dthetaiz = mod(theta(ones(length(gp{crst}{1}.z),1),i)' - gp{crst}{1}.z + pi , 2*pi) - pi;
-    
+    dthetaiz = mod(theta(ones(length(gp{crst}{1}.z),1),i)' - gp{crst}{1}.z + pi , 2*pi) - pi;  
+
     % = differential expression
-     X = X - dt*sum(w(i)*gp{crst}{2}.x ./ (gp{crst}{3}.x .^ 2) .* dthetaix .* exp(-dthetaix .^2 ./ (2*gp{crst}{3}.x .^ 2)),2);
-     Y = Y - dt*sum(w(i)*gp{crst}{2}.y ./ (gp{crst}{3}.y .^ 2) .* dthetaiy .* exp(-dthetaiy .^2 ./ (2*gp{crst}{3}.y .^ 2)),2);
-     Z = Z - dt*sum(w(i)*gp{crst}{2}.z ./ (gp{crst}{3}.z .^ 2) .* dthetaiz .* exp(-dthetaiz .^2 ./ (2*gp{crst}{3}.z .^ 2)),2);
+    X = X - dt*sum(w(i)*gp{crst}{2}.x ./ (gp{crst}{3}.x .^ 2) .* dthetaix .* exp(-dthetaix .^2 ./ (2*gp{crst}{3}.x .^ 2)),2);
+    Y = Y - dt*sum(w(i)*gp{crst}{2}.y ./ (gp{crst}{3}.y .^ 2) .* dthetaiy .* exp(-dthetaiy .^2 ./ (2*gp{crst}{3}.y .^ 2)),2);
+    Z = Z - dt*sum(w(i)*gp{crst}{2}.z ./ (gp{crst}{3}.z .^ 2) .* dthetaiz .* exp(-dthetaiz .^2 ./ (2*gp{crst}{3}.z .^ 2)),2);
     
     % = analytical expression
     % X = sum(gp{crst}{2}.x .* exp(-dthetaix .^2 ./ (2*gp{crst}{3}.x .^ 2)),2);
     % Y = sum(gp{crst}{2}.y .* exp(-dthetaiy .^2 ./ (2*gp{crst}{3}.y .^ 2)),2);
     % Z = sum(gp{crst}{2}.z .* exp(-dthetaiz .^2 ./ (2*gp{crst}{3}.z .^ 2)),2);
     
-    % rotation due to respiration     
+    % rotation due to respiration
     thetax = R0.x + RESP_ANG_X*brwave(i);
     thetay = R0.y + RESP_ANG_Y*brwave(i);
     thetaz = R0.z + RESP_ANG_Z*brwave(i);
-   
+    
     R = rotatexyz(thetax,thetay,thetaz); % rotation matrix
     
     VCG(:,i) = R*L*[X; Y; Z]; % VCG with rotation
@@ -192,8 +193,16 @@ end
 
 % == format outputs
 dmodel.H = H;
-[B,A] = butter(5,.5*2/fs,'low'); % high-pass VCG filter with .5 Hz
-for i = 1:3                      % avoid trends in the VCG (due to non-zero differentials  
+[B,A] = butter(5,.7*2/fs,'low'); % high-pass VCG filter with .5 Hz
+opol = 6;  % polynome order
+
+% == avoid trends in the VCG (due to non-zero differentials  
+for i = 1:3                      
+    % gross trends
+    [p,~,mu] = polyfit(1:N,VCG(i,:),opol);   % polynomial fit
+    f_y = polyval(p,1:N,[],mu);       
+    VCG(i,:) = VCG(i,:) - f_y; % remove rough trends
+    % fine trends
     VCG(i,:) = VCG(i,:) - filtfilt(B,A,VCG(i,:));  % at the end/beggining of cycle)
     % normalizing VCG for propagating
     VCG(i,:) = VCG(i,:)./max(abs(VCG(i,:)));   

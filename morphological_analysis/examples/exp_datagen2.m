@@ -40,7 +40,7 @@
 function exp_datagen2()
 
 path = cd;
-debug = 0;
+debug = 5;
 
 % Generating simulated data with various SNR for morphological analysis
 % global parameters

@@ -97,7 +97,7 @@ M = [vols.mheart{1};vols.mheart{1};vols.mheart{1}] + R*0.3*eye(3,3);
 MX = [vols.mheart{1};M(1,:)];
 MY = [vols.mheart{1};M(2,:)];
 MZ = [vols.mheart{1};M(3,:)];
-if ~regexp(version('-release'),'2014')||regexp(version('-release'),'2015')
+if isempty(regexp(version('-release'),'2014'))&&isempty(regexp(version('-release'),'2015'))
     arrow(MX(1,:),MX(2,:), ARROWHEAD_LENGTH, 'BaseAngle',BASE_ANGLE,'Width',2,'FaceColor','r'); text(MX(2,1),MX(2,2),MX(2,3)+0.05,'x','FontSize',FONT_SIZE+5);
     arrow(MY(1,:),MY(2,:), ARROWHEAD_LENGTH, 'BaseAngle',BASE_ANGLE,'Width',2,'FaceColor','r'); text(MY(2,1),MY(2,2),MY(2,3)+0.05,'y','FontSize',FONT_SIZE+5);
     arrow(MZ(1,:),MZ(2,:), ARROWHEAD_LENGTH, 'BaseAngle',BASE_ANGLE,'Width',2,'FaceColor','r'); text(MZ(2,1),MZ(2,2),MZ(2,3)+0.05,'z','FontSize',FONT_SIZE+5);
@@ -111,7 +111,7 @@ for ff=1:NB_FOETUSES
     FX = [vols.fheart{ff};F(1,:)];
     FY = [vols.fheart{ff};F(2,:)];
     FZ = [vols.fheart{ff};F(3,:)];
-    if ~regexp(version('-release'),'2014')||regexp(version('-release'),'2015')
+    if isempty(regexp(version('-release'),'2014'))&&isempty(regexp(version('-release'),'2015'))
         arrow(FX(1,:),FX(2,:), ARROWHEAD_LENGTH, 'BaseAngle',BASE_ANGLE,'Width',2,'FaceColor','b'); text(FX(2,1),FX(2,2),FX(2,3)-0.05,'x','FontSize',FONT_SIZE+5);
         arrow(FY(1,:),FY(2,:), ARROWHEAD_LENGTH, 'BaseAngle',BASE_ANGLE,'Width',2,'FaceColor','b'); text(FY(2,1),FY(2,2),FY(2,3)-0.05,'y','FontSize',FONT_SIZE+5);
         arrow(FZ(1,:),FZ(2,:), ARROWHEAD_LENGTH, 'BaseAngle',BASE_ANGLE,'Width',2,'FaceColor','b'); text(FZ(2,1),FZ(2,2),FZ(2,3)-0.05,'z','FontSize',FONT_SIZE+5);

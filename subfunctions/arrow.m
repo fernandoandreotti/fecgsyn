@@ -64,6 +64,8 @@ function [h,yy,zz] = arrow(varargin)
 % http://www.usc.edu/civil_eng/johnsone/
 
 % Revision history:
+%    3/11/15  David Mercier  Updated function to make Matlab R2014b
+%    compatible
 %    5/20/09  EAJ  Fix view direction in (3D) demo.
 %    6/26/08  EAJ  Replace eval('trycmd','catchcmd') with try, trycmd; catch,
 %                    catchcmd; end; -- break's MATLAB 5 compatibility.
@@ -119,32 +121,6 @@ function [h,yy,zz] = arrow(varargin)
 
 % Permission is granted to Dr. Josef Bigun to distribute ARROW with his
 % software to reproduce the figures in his image analysis text.
-
-
-% Permission was granted for releasing the arrow.m function with the 
-% NI-FECG simulator toolbox. 2013/2014
-% 
-% fecgsyn toolbox, version 1.0, July 2014
-% Released under the GNU General Public License
-%
-% Copyright (C) 2014  Joachim Behar & Fernando Andreotti
-% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
-% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
-%
-% Last updated : 03-06-2014
-%
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-% 
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-% 
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 % global variable initialization
 global ARROW_PERSP_WARN ARROW_STRETCH_WARN ARROW_AXLIMITS
@@ -446,7 +422,7 @@ if (length(page      )==1),   page       = o * page      ;   end;
 if (size(crossdir  ,1)==1),   crossdir   = o * crossdir  ;   end;
 if (length(ends      )==1),   ends       = o * ends      ;   end;
 if (length(ispatch   )==1),   ispatch    = o * ispatch   ;   end;
-ax = o * gca;
+ax = repmat(gca,narrows,1);
 
 % if we've got handles, get the defaults from the handles
 if ~isempty(oldh),
@@ -527,7 +503,7 @@ while (any(axnotdone)),
 	curpage = page(ii);
 	% get axes limits and aspect ratio
 	axl = [get(curax,'XLim'); get(curax,'YLim'); get(curax,'ZLim')];
-	oldaxlims(min(find(oldaxlims(:,1)==0)),:) = [curax reshape(axl',1,6)];
+	oldaxlims(min(find(oldaxlims(:,1)==0)),:) = [ii reshape(axl',1,6)];
 	% get axes size in pixels (points)
 	u = get(curax,'Units');
 	axposoldunits = get(curax,'Position');
@@ -613,7 +589,8 @@ while (any(axnotdone)),
 		axl(ii,[1 2])=-axl(ii,[2 1]);
 	end;
 	% compute the range of 2-D values
-	curT = get(curax,'Xform');
+	[azA,elA] = view(curax); 
+    curT = viewmtx(azA,elA);
 	lim = curT*[0 1 0 1 0 1 0 1;0 0 1 1 0 0 1 1;0 0 0 0 1 1 1 1;1 1 1 1 1 1 1 1];
 	lim = lim(1:2,:)./([1;1]*lim(4,:));
 	curlimmin = min(lim')';
@@ -980,18 +957,17 @@ if (nargout<=1),
 	% make sure the axis limits did not change
 	if isempty(oldaxlims),
 		ARROW_AXLIMITS = [];
-	else,
-		lims = get(oldaxlims(:,1),{'XLim','YLim','ZLim'})';
-		lims = reshape(cat(2,lims{:}),6,size(lims,2));
-		mask = arrow_is2DXY(oldaxlims(:,1));
+    else
+		lims = get(ax(oldaxlims(:,1)),{'XLim','YLim','ZLim'})';
+        lims = reshape(cat(2,lims{:}),6,size(lims,2));
+		mask = arrow_is2DXY(ax(oldaxlims(:,1)));
 		oldaxlims(mask,6:7) = lims(5:6,mask)';
 		ARROW_AXLIMITS = oldaxlims(find(any(oldaxlims(:,2:7)'~=lims)),:);
 		if ~isempty(ARROW_AXLIMITS),
-%			warning(arrow_warnlimits(ARROW_AXLIMITS,narrows)); % JB -
-%			17-12-2013
+			warning(arrow_warnlimits(ARROW_AXLIMITS,narrows));
 		end;
 	end;
-else,
+else
 	% don't create the patch, just return the data
 	h=x;
 	yy=y;
@@ -1055,9 +1031,6 @@ function [wasInterrupted,errstr] = arrow_click(lockStart,H,prop,ax)
 	% save some things
 	oldFigProps = {'Pointer','WindowButtonMotionFcn','WindowButtonUpFcn'};
 	oldFigValue = get(fig,oldFigProps);
-	oldArrowProps = {'EraseMode'};
-	oldArrowValue = get(H,oldArrowProps);
-	set(H,'EraseMode','background'); %because 'xor' makes shaft invisible unless Width>1
 	global ARROW_CLICK_H ARROW_CLICK_PROP ARROW_CLICK_AX ARROW_CLICK_USE_Z
 	ARROW_CLICK_H=H; ARROW_CLICK_PROP=prop; ARROW_CLICK_AX=ax;
 	ARROW_CLICK_USE_Z=~arrow_is2DXY(ax)|~arrow_planarkids(ax);
@@ -1089,7 +1062,6 @@ function [wasInterrupted,errstr] = arrow_click(lockStart,H,prop,ax)
 	if ~wasInterrupted, feval(mfilename,'callback','motion'); end;
 	% restore some things
 	set(gcf,oldFigProps,oldFigValue);
-	set(H,oldArrowProps,oldArrowValue);
 
 function arrow_callback(varargin)
 % handle redrawing callbacks

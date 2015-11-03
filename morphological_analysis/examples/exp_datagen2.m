@@ -11,7 +11,7 @@
 % - Case 2 - SNR abrupt change (by 1/3 using tanh() modulation, amplitude and direction normally distributed)
 % - Case 3 - overall ECG amplitude change (sinusoidal 1-10 cycles/recording)
 % - Case 4 - overall ECG amplitude change (skewed with Gamma distribution, 1-10 cycles/recording, amplitude, width and direction normally dist.)
-% - Case 5 - T+P waves + amplitude change (sinusoidal)
+% - Case 5 - T+P waves + amplitude change (gaussian)
 % - Case 6 - T+P waves + amplitude change (skewed)
 % - Case 7 -T+P waves + amplitude change (skewed) + ECG amplitude change (sinusoidal)
 %
@@ -97,68 +97,132 @@ for i = 1:5           % generate 5 cases of each
             out = clean_compress(out);
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c0',i,SNRmn,loop)],'out')
             clear out
-% %             
-% %             %% Case 1: rate rate accelerations
-% %             param = parambase;
-% %             param.macc = (20+10*abs(randn))*sign(randn); % maternal acceleration in HR [bpm]
-% %             param.mtypeacc = 'tanh';                % hyperbolic tangent acceleration
-% %             out = run_ecg_generator(param,debug);   % stationary output
-% %             out = clean_compress(out);
-% %             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
-% %             clear out
-% %             
-% %             %% Case 2: SNR abrupt change
-% %             param = parambase;
-% %             param.noise_fct{1} = 1+sign(randn)*(rand+0.3)*tanh(linspace(-pi,2*pi,param.n));  % tanh function           
-% %             param.noise_fct{2} = param.noise_fct{1};  % tanh function           
-% %             param.ntype = {'MA' 'MA'};
-% %             param.SNRmn = -6;         % put additional contraction with strong power
-% %             out = run_ecg_generator(param,debug);  % stationary output
-% %             out = clean_compress(out);
-% %             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
-% %             clear out
-% %             %% Case 3: overall ECG amplitude change (sinusoidal 1-10 cycles/recording)
-% %             param = parambase;
-% %             out = run_ecg_generator(param,debug);  % stationary output
-            cyccount = randi([1,10],1,1);
-% %             piinit = (2*rand-1)*pi; % [-pi,pi]
-% %             modfun = (1+sin(linspace(piinit,cyccount*2*pi+piinit,param.n))*(0.2*rand+0.001));
-% %             out.mecg = repmat(modfun,34,1).*out.mecg;
-% %             out = clean_compress(out);
-% %             out.modfun = modfun;
-% %             out.cycles = cyccount;
-% %             out.noise = out_noise.noise;    % re-inserting noise
-% %             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c3',i,SNRmn,loop)],'out')
-% %             clear out
-% %             %% Case 4: previous case skewed      
-% %             param = parambase;
-% %             samps = param.n/cyccount;
-% %             epsilon = round(samps/2);
-% %             w = (0.1*rand+0.05)*samps;
-% %             alpha = 3*randn;
-% %             skewgauss = @(x) (1/(2*w*pi))*exp(-(x-epsilon)^2/(2*w)^2)*(1+erf((alpha*(x-epsilon)/w)/sqrt(2)));
-% %             modfun = arrayfun(skewgauss,1:samps);
-% %             modfun = repmat(modfun,1,cyccount);
-% %             modfun = 1+0.3*rand*sign(rand)*(modfun./max(modfun));
-% %             out = run_ecg_generator(param,debug);  % stationary output           
-% %             out.mecg = repmat(modfun,34,1).*out.mecg;
-% %             out = clean_compress(out);
-% %             out.cycles = cyccount;
-% %             out.noise = out_noise.noise;    % re-inserting noise
-% %             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c4',i,SNRmn,loop)],'out')
-% %             clear out
-            %% Case 5 - T+P waves + amplitude change (sinusoidal)
+            % %
+            % %             %% Case 1: rate rate accelerations
+            % %             param = parambase;
+            % %             param.macc = (20+10*abs(randn))*sign(randn); % maternal acceleration in HR [bpm]
+            % %             param.mtypeacc = 'tanh';                % hyperbolic tangent acceleration
+            % %             out = run_ecg_generator(param,debug);   % stationary output
+            % %             out = clean_compress(out);
+            % %             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
+            % %             clear out
+            % %
+            % %             %% Case 2: SNR abrupt change
+            % %             param = parambase;
+            % %             param.noise_fct{1} = 1+sign(randn)*(rand+0.3)*tanh(linspace(-pi,2*pi,param.n));  % tanh function
+            % %             param.noise_fct{2} = param.noise_fct{1};  % tanh function
+            % %             param.ntype = {'MA' 'MA'};
+            % %             param.SNRmn = -6;         % put additional contraction with strong power
+            % %             out = run_ecg_generator(param,debug);  % stationary output
+            % %             out = clean_compress(out);
+            % %             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
+            % %             clear out
+            % %             %% Case 3: overall ECG amplitude change (sinusoidal 1-10 cycles/recording)
+            % %             param = parambase;
+            % %             out = run_ecg_generator(param,debug);  % stationary output
+            % %             cyccount = randi([1,10],1,1);
+            % %             piinit = (2*rand-1)*pi; % [-pi,pi]
+            % %             modfun = (1+sin(linspace(piinit,cyccount*2*pi+piinit,param.n))*(0.2*rand+0.001));
+            % %             out.mecg = repmat(modfun,34,1).*out.mecg;
+            % %             out = clean_compress(out);
+            % %             out.modfun = modfun;
+            % %             out.cycles = cyccount;
+            % %             out.noise = out_noise.noise;    % re-inserting noise
+            % %             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c3',i,SNRmn,loop)],'out')
+            % %             clear out
+            % %             %% Case 4: previous case skewed
+            % %             param = parambase;
+            % %             samps = param.n/cyccount;
+            % %             epsilon = round(samps/2);
+            % %             w = (0.1*rand+0.05)*samps;
+            % %             alpha = 3*randn;
+            % %             skewgauss = @(x) (1/(2*w*pi))*exp(-(x-epsilon)^2/(2*w)^2)*(1+erf((alpha*(x-epsilon)/w)/sqrt(2)));
+            % %             modfun = arrayfun(skewgauss,1:samps);
+            % %             modfun = repmat(modfun,1,cyccount);
+            % %             modfun = 1+0.3*rand*sign(rand)*(modfun./max(modfun));
+            % %             out = run_ecg_generator(param,debug);  % stationary output
+            % %             out.mecg = repmat(modfun,34,1).*out.mecg;
+            % %             out = clean_compress(out);
+            % %             out.cycles = cyccount;
+            % %             out.noise = out_noise.noise;    % re-inserting noise
+            % %             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c4',i,SNRmn,loop)],'out')
+            % %             clear out
+            %% Case 5 - T+P waves + amplitude change (gaussian)
             param = parambase;
-            out = run_ecg_generator(param,debug);  % stationary output           
-            for b = 1:length(out.mqrs)
-               size1 = randn*0.1*out.param.fs;
-               size2 = randn*0.2*out.param.fs;
-               modfun1 = sin(linspace(0,pi,size1));
-               modfun2 = sin(linspace(0,pi,size2));
-                
+            out = run_ecg_generator(param,debug);
+            % modifying individual beats
+            if debug
+                figure
+                plot(out.mecg(14,:))
+                hold on
             end
+            for b = 2:length(out.mqrs)-1
+                    % P wave
+                    size1 = round((0.2+0.1*rand*sign(randn))*out.param.fs);
+                    epsilon = round(size1/2);
+                    w = (0.1*rand+0.05)*size1;
+                    alpha = 0; % actually gaussian
+                    skewgauss = @(x) (1/(2*w*pi))*exp(-(x-epsilon)^2/(2*w)^2)*(1+erf((alpha*(x-epsilon)/w)/sqrt(2)));
+                    modfun = arrayfun(skewgauss,1:size1);
+                    modfun = 1+(0.5*rand)*modfun./max(modfun);
+%                   modfun1 = sin(linspace(0,pi,size1))*sign(randn);
+                    initwav = floor(out.mqrs(b)-(0.1 + 0.05*rand)*out.param.fs - size1/2);
+                    out.mecg(:,initwav:initwav+size1-1) = repmat(modfun,34,1).*out.mecg(:,initwav:initwav+size1-1);
+                    if debug,plot(initwav:initwav+size1-1, modfun),end
+                    % T wave
+                    size2 = round((0.25+0.1*rand*sign(randn))*out.param.fs);
+                    epsilon = round(size1/2);
+                    w = (0.1*rand+0.05)*size1;
+                    alpha = 0; % actually gaussian
+                    skewgauss = @(x) (1/(2*w*pi))*exp(-(x-epsilon)^2/(2*w)^2)*(1+erf((alpha*(x-epsilon)/w)/sqrt(2)));
+                    modfun = arrayfun(skewgauss,1:size2);
+                    modfun = 1+(0.5*rand)*modfun./max(modfun);
+%                     modfun2 = sin(linspace(0,pi,size2))*sign(randn);
+                    initwav = floor(out.mqrs(b)+(0.2 + 0.05*rand)*out.param.fs - size2/2);
+                    if debug,plot(initwav:initwav+size2-1, modfun), end
+                    out.mecg(:,initwav:initwav+size2-1) = repmat(modfun,34,1).*out.mecg(:,initwav:initwav+size2-1);
+                    clear size1 size2 modfun1 modfun2 initwav
+            end
+            if debug,plot(out.mecg(14,:)), end
+
             
-            
+            %% Case 6 - T+P waves + amplitude change (skewed)
+            param = parambase;
+            out = run_ecg_generator(param,debug);
+            % modifying individual beats
+            if debug
+                figure
+                plot(out.mecg(14,:))
+                hold on
+            end
+            for b = 2:length(out.mqrs)-1
+                    % P wave
+                    size1 = round((0.2+0.1*rand*sign(randn))*out.param.fs);
+                    epsilon = round(size1/2);
+                    w = (0.1*rand+0.05)*size1;
+                    alpha = 3*randn; % actually gaussian
+                    skewgauss = @(x) (1/(2*w*pi))*exp(-(x-epsilon)^2/(2*w)^2)*(1+erf((alpha*(x-epsilon)/w)/sqrt(2)));
+                    modfun = arrayfun(skewgauss,1:size1);
+                    modfun = 1+(0.5*rand)*modfun./max(modfun);
+%                   modfun1 = sin(linspace(0,pi,size1))*sign(randn);
+                    initwav = floor(out.mqrs(b)-(0.1 + 0.05*rand)*out.param.fs - size1/2);
+                    out.mecg(:,initwav:initwav+size1-1) = repmat(modfun,34,1).*out.mecg(:,initwav:initwav+size1-1);
+                    if debug,plot(initwav:initwav+size1-1, modfun),end
+                    % T wave
+                    size2 = round((0.25+0.1*rand*sign(randn))*out.param.fs);
+                    epsilon = round(size1/2);
+                    w = (0.1*rand+0.05)*size1;
+                    alpha = 3*randn; % actually gaussian
+                    skewgauss = @(x) (1/(2*w*pi))*exp(-(x-epsilon)^2/(2*w)^2)*(1+erf((alpha*(x-epsilon)/w)/sqrt(2)));
+                    modfun = arrayfun(skewgauss,1:size2);
+                    modfun = 1+(0.5*rand)*modfun./max(modfun);
+%                     modfun2 = sin(linspace(0,pi,size2))*sign(randn);
+                    initwav = floor(out.mqrs(b)+(0.2 + 0.05*rand)*out.param.fs - size2/2);
+                    if debug,plot(initwav:initwav+size2-1, modfun), end
+                    out.mecg(:,initwav:initwav+size2-1) = repmat(modfun,34,1).*out.mecg(:,initwav:initwav+size2-1);
+                    clear size1 size2 modfun1 modfun2 initwav
+            end
+            if debug,plot(out.mecg(14,:)), end
         end
     end
 end

@@ -67,7 +67,8 @@ AR_ORDER = 12; % number of poles
 FS_NSTDB = 360; % sampling frequency of NSTDB
 NP_NSTDB = 20*FS_NSTDB; % number of points to select in NSTDB records to generate the AR coefficients
 LG_NSTDB = FS_NSTDB*29*60-NP_NSTDB; % number of points in NSTDB
-N_SAMP = floor(N/(fs/FS_NSTDB)); % N samples at fs correspond to N_SAMP at FS_NSTDB
+%JOs no need to resample...
+N_SAMP = N;%floor(N/(fs/FS_NSTDB)); % N samples at fs correspond to N_SAMP at FS_NSTDB
 NB_EL = size(epos,1); % number of electrodes
 
 f_handles = [];
@@ -96,16 +97,21 @@ if strcmp('MA',ntype) || strcmp('EM',ntype)
     [B,A] = butter(5,1*2/FS_NSTDB,'high'); % high-pass filter with 1 Hz
     noise(:,1) = filtfilt(B,A,noise(:,1));
     noise(:,2) = filtfilt(B,A,noise(:,2));
+    noiser(:,1) = resample(noise(:,1),fs,FS_NSTDB);
+    noiser(:,2) = resample(noise(:,2),fs,FS_NSTDB);
+    noise = noiser;
 end
 
 % == AR model
 x = randn(N_SAMP+AR_ORDER,2); % generating random signal to be filtered by AR model
 a = zeros(AR_ORDER,N_SAMP+AR_ORDER); % allocating
-noise_ar = zeros(N,3);
+%JOs only two sources needed...
+noise_ar = zeros(N,2);
 y = zeros(N_SAMP+AR_ORDER,1);          
 st = -0.001; % start
 ed = 0.001; % end
-rdNb = st + (ed-st).*rand(AR_ORDER,2*max(N,N_SAMP),2); % generate rd number in [st ed]
+%JOs non need to create new signal
+%rdNb = st + (ed-st).*rand(AR_ORDER,2*max(N,N_SAMP),2); % generate rd number in [st ed]
                                            % generating for both noise channels
 for cc=1:2
     % for each channel vary the poles in the same fashion
@@ -118,7 +124,9 @@ for cc=1:2
         r = roots(atemp); % gets the poles
         sImg = imag(r);
         sRea = real(r);
-        dz = diag(sRea)*rdNb(:,(cc-1)*N+ev,1) + diag(sImg)*rdNb(:,(cc-1)*N+ev,2).*1i;
+        %JOs compute new rand evolution for new sample..
+        rdNb = st + (ed-st).*rand(AR_ORDER,2);
+        dz = diag(sRea)*rdNb(:,1) + diag(sImg)*rdNb(:,2).*1i;
         pn = r + dz; % varying the poles
         ind = find(abs(rinit - pn)>0.05); % constrain the AR coeff not to move too far from initial coeff location
         pn(ind) = r(ind);
@@ -126,17 +134,22 @@ for cc=1:2
         pn(indlim) = r(indlim);
         [~,atemp] = zp2tf(0,pn,1); % back to filter coefficients (gain set to 1)
         a(:,ev) = atemp(2:end);
+        %JOs no double loop.. just check for ev>AR_ORDER
+        %end
+    %for i = AR_ORDER+1:N_SAMP+AR_ORDER
+        if ev>AR_ORDER
+            y(ev) = x(ev,cc)-a(:,ev)'*y(ev-1:-1:ev-AR_ORDER);
+        end
     end
-    for i = AR_ORDER+1:N_SAMP+AR_ORDER
-        y(i) = x(i,cc)-a(:,i)'*y(i-1:-1:i-AR_ORDER);
-    end
-    y = y(AR_ORDER+1:end); % skipping initialisation
-    noise_ar(:,cc) = resample((y-mean(y))/std(y),fs,FS_NSTDB); % resampling, zero mean and unit variance
+    %JOs no need to resample...
+    noise_ar(:,cc) = y(AR_ORDER+1:end); % skipping initialisation
+    %y = y(AR_ORDER+1:end); % skipping initialisation
+    %noise_ar(:,cc) = resample((y-mean(y))/std(y),fs,FS_NSTDB); % resampling, zero mean and unit variance
 end
 
 % == produce third channel using PCA
-[~,pc] = princomp(noise_ar);
-noise_ar(:,3) = pc(:,1)/std(pc(:,1));
+%[~,pc] = princomp(noise_ar);
+%noise_ar(:,3) = pc(:,1)/std(pc(:,1));
 
 % == Generating projection matrix (here implying no translation of dipole)
 den_norm = diag(1./sqrt(sum((epos-repmat(noisepos,NB_EL,1)).^2,2)).^3); % denominator's norm (from H equation)

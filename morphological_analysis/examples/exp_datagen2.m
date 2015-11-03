@@ -59,15 +59,15 @@ cd(path)
 for i = 1:5           % generate 5 cases of each
     close all
     paramst = paramorig;
-    paramst.fhr = 135+25*randn;   % choosing foetal heart rate
+    paramst.fhr = 135+10*randn;   % choosing foetal heart rate
     % mean=135, std= 25 [bpm]
-    paramst.mhr = 80+20*randn;    % choosing maternal heart rate
+    paramst.mhr = 80+10*randn;    % choosing maternal heart rate
     % mean = 80, std = 20 [bpm]
     
     % setting up stationary mixture
     paramst.mtypeacc = 'nsr';      % force constant mother heart rate
     paramst.ftypeacc = {'nsr'};    % force constant foetal heart rate
-    paramst.SNRfm = -7 + 2*randn;
+    paramst.SNRfm = -9 + randn;
     out = run_ecg_generator(paramst,debug);  % stationary output
     %plotmix(out)
     out = clean_compress(out);
@@ -117,36 +117,36 @@ for i = 1:5           % generate 5 cases of each
 % %             out = clean_compress(out);
 % %             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
 % %             clear out
-            %% Case 3: overall ECG amplitude change (sinusoidal 1-10 cycles/recording)
-            param = parambase;
-            out = run_ecg_generator(param,debug);  % stationary output
+% %             %% Case 3: overall ECG amplitude change (sinusoidal 1-10 cycles/recording)
+% %             param = parambase;
+% %             out = run_ecg_generator(param,debug);  % stationary output
             cyccount = randi([1,10],1,1);
-            piinit = (2*rand-1)*pi; % [-pi,pi]
-            modfun = (1+sin(linspace(piinit,cyccount*2*pi+piinit,param.n))*(0.2*rand+0.001));
-            out.mecg = repmat(modfun,34,1).*out.mecg;
-            out = clean_compress(out);
-            out.modfun = modfun;
-            out.cycles = cyccount;
-            out.noise = out_noise.noise;    % re-inserting noise
-            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c3',i,SNRmn,loop)],'out')
-            clear out
-            %% Case 4: previous case skewed      
-            param = parambase;
-            samps = param.n/cyccount;
-            epsilon = round(samps/2);
-            w = 0.3*rand*samps;
-            alpha = 5*randn;
-            skewgauss = @(x) (1/(2*w*pi))*exp(-(x-epsilon)^2/(2*w)^2)*(1+erf((alpha*(x-epsilon)/w)/sqrt(2)));
-            modfun = arrayfun(skewgauss,1:samps);
-            modfun = repmat(modfun,1,cyccount);
-            modfun = 1+(rand-rand)*(modfun./max(modfun));
-            out = run_ecg_generator(param,debug);  % stationary output           
-            out.mecg = repmat(modfun,34,1).*out.mecg;
-            out = clean_compress(out);
-            out.cycles = cyccount;
-            out.noise = out_noise.noise;    % re-inserting noise
-            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c4',i,SNRmn,loop)],'out')
-            clear out
+% %             piinit = (2*rand-1)*pi; % [-pi,pi]
+% %             modfun = (1+sin(linspace(piinit,cyccount*2*pi+piinit,param.n))*(0.2*rand+0.001));
+% %             out.mecg = repmat(modfun,34,1).*out.mecg;
+% %             out = clean_compress(out);
+% %             out.modfun = modfun;
+% %             out.cycles = cyccount;
+% %             out.noise = out_noise.noise;    % re-inserting noise
+% %             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c3',i,SNRmn,loop)],'out')
+% %             clear out
+% %             %% Case 4: previous case skewed      
+% %             param = parambase;
+% %             samps = param.n/cyccount;
+% %             epsilon = round(samps/2);
+% %             w = (0.1*rand+0.05)*samps;
+% %             alpha = 3*randn;
+% %             skewgauss = @(x) (1/(2*w*pi))*exp(-(x-epsilon)^2/(2*w)^2)*(1+erf((alpha*(x-epsilon)/w)/sqrt(2)));
+% %             modfun = arrayfun(skewgauss,1:samps);
+% %             modfun = repmat(modfun,1,cyccount);
+% %             modfun = 1+0.3*rand*sign(rand)*(modfun./max(modfun));
+% %             out = run_ecg_generator(param,debug);  % stationary output           
+% %             out.mecg = repmat(modfun,34,1).*out.mecg;
+% %             out = clean_compress(out);
+% %             out.cycles = cyccount;
+% %             out.noise = out_noise.noise;    % re-inserting noise
+% %             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c4',i,SNRmn,loop)],'out')
+% %             clear out
             %% Case 5 - T+P waves + amplitude change (sinusoidal)
             param = parambase;
             out = run_ecg_generator(param,debug);  % stationary output           

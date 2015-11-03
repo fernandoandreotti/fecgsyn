@@ -39,14 +39,14 @@
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 function exp_datagen2()
 
-path = cd;
-debug = 5;
+path = 'D:\Users\Andreotti\Desktop\data\';
+debug = 0;
 dbstop if error
 
 % Generating simulated data with various SNR for morphological analysis
 % global parameters
 paramorig.fs = 1000;            % sampling frequency [Hz]
-paramorig.n = 10*paramorig.fs;  % number of data points to generate (5 min)
+paramorig.n = 90*paramorig.fs;  % number of data points to generate (5 min)
 
 % electrode positions
 x = pi/12*[3 4 5 6 7 8 9 10]' -pi/2;     % 32 abdominal channels

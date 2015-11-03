@@ -151,8 +151,8 @@ for i = 1:5           % generate 5 cases of each
             param = parambase;
             out = run_ecg_generator(param,debug);  % stationary output           
             for b = 1:length(out.mqrs)
-               size1 = randn*0.1*out.fs;
-               size2 = randn*0.2*out.fs;
+               size1 = randn*0.1*out.param.fs;
+               size2 = randn*0.2*out.param.fs;
                modfun1 = sin(linspace(0,pi,size1));
                modfun2 = sin(linspace(0,pi,size2));
                 

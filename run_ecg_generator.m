@@ -223,7 +223,7 @@ if param.mectb % add ectopic beats?
     VCGnorm = ecg_model([gp_m.norm{2}.z gp_m.norm{3}.z gp_m.norm{1}.z ] ,linspace(-pi,pi,250));
     gp_m.ecto{2}.z = gp_m.ecto{2}.z.*(max(abs(VCGnorm))/max(abs(VCGect)));
 end
-rm = 0.01; % radius around origin allowed for maternal heart to be
+rm = 0.05; % radius around origin allowed for maternal heart to be
 L_m = eye(3); % scaling of dipole in each direction
 theta0_m = pi/3; % inital phase of the model for the MECG
 vols.Rm = struct('x', 0, 'y', 0, 'z', 0); % rotation matrix
@@ -263,7 +263,7 @@ m_model.type = 1; % maternal ecg is type 1
 
 % == foetal heart(s)
 L_f = eye(3); % scaling of dipole in each direction
-Rfh = 0.05; % radius allowed for foetal heart to appear
+Rfh = 0.1; % radius allowed for foetal heart to appear
 
 % = foetal dipole generation
 f_model = cell(NB_FOETUSES,1); % allocating memory

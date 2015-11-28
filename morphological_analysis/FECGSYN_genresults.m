@@ -366,18 +366,16 @@ if ~exp3 % Experiment 2
         eval(['stat = stats.' met{:} ';']);
         % F1
         statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
-        auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
-        auxtab2(counter1,:) = median(statscase)';
+        auxtab = [median(statscase)',-1.*ones(7,1),iqr(statscase)',-2.*ones(7,1)];
         table(counter1,:) = reshape(auxtab',1,7*4);
         counter1 = counter1 + 1;
         
         % MAE
         statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
-        auxtab = [mean(statscase)',-1.*ones(7,1),std(statscase)',-2.*ones(7,1)];
+        auxtab = [median(statscase)',-1.*ones(7,1),iqr(statscase)',-2.*ones(7,1)];
         table(counter1,:) = reshape(auxtab',1,7*4);
         counter1 = counter1 + 1;
-    end
-    table = round(table.*10)./10;
+    end    
     % F1
     c=3;
     for met = {'JADEICA' 'aesn'}%{'ica' 'pca' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
@@ -397,8 +395,7 @@ if ~exp3 % Experiment 2
         set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
     end
     
-    % MAE
-    
+    % MAE   
     for met = {'JADEICA' 'aesn'}%{'tsekf' 'tspca' 'aesn' 'ica'}
         figure(c)
         c= c+1;

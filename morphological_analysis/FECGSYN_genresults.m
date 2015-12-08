@@ -416,6 +416,47 @@ if ~exp3 % Experiment 2
         set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
     end
     
+    
+    %% Statistical tests
+    %F1
+    for str1 = {'base','c0','c1','c2','c3','c4','c5'}
+        statsf1(count,:) = eval(['median(stats_f1(' str1{:} ',:))']);
+        count = count +1;
+    end
+    p = friedman(statsf1,1,'on');
+    if p < 0.05
+        sprintf('Group central tendency (median) are significantly different at p = %d',p)
+    else
+        sprintf('Group central tendency (median) is NOT significantly different (p = %d)',p)
+    end
+    psig = eye(8);
+    hsig = eye(8);
+    for i = 1:8
+        for j = 1:8
+            [psig(i,j),hsig(i,j)] = signtest(statsf1(:,i),statsf1(:,j));
+        end
+    end
+    disp(psig)
+     %MAE
+    for str1 = {'base','c0','c1','c2','c3','c4','c5'}
+        statsmae(count,:) = eval(['median(stats_MAE(' str1{:} ',:))']);
+        count = count +1;
+    end
+    p = friedman(statsmae,1,'on');
+    if p < 0.05
+        sprintf('Group central tendency (median) are significantly different at p = %d',p)
+    else
+        sprintf('Group central tendency (median) is NOT significantly different (p = %d)',p)
+    end
+    psig = eye(8);
+    hsig = eye(8);
+    for i = 1:8
+        for j = 1:8
+            [psig(i,j),hsig(i,j)] = signtest(statsmae(:,i),statsmae(:,j));
+        end
+    end
+    disp(psig)
+
 else
 
     

@@ -17,8 +17,8 @@ count1=1;
 figure
 hold on
 statsall = zeros(5,7,8);
-symlist = {'+' 'o' '*' '.' 'x' 's' 'd'};
-snrlist = [0.690196078431373 0.831372549019608 0.674509803921569;...
+symlist = {'+' 'o' '*' '^' 'x' 's' 'd'};
+snrlist = [0.560784313725490 0.764705882352941 0.596078431372549;...
     0.462745098039216 0.709803921568628 0.541176470588235;...
     0.243137254901961 0.615686274509804 0.447058823529412;...
     0.0352941176470588 0.541176470588235 0.360784313725490;...
@@ -45,6 +45,7 @@ for i1 = 1:size(statsall,1)
         plot([1:8]+ones(1,8).*count3(i2),reshape(statsall(i1,i2,:),1,8),symlist{i2},'Color',snrlist(i1,:),'MarkerSize',2*i1+3);
     end
 end
+legend('baseline','case 0','case 1','case 2','case 3','case 4','case 5')
 LWIDTH = 1.5;
 FSIZE = 15;
 h=gca;

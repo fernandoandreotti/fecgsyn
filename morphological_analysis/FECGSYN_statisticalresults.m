@@ -138,12 +138,17 @@ for snr = 1:size(statsf1,1)
         end
     end      
     gridp = reshape(psig(snr,:,:),8,8);
-    gridp(gridp < 0.01) = 2;
-    gridp(gridp < 0.05) = 1;    
+    gridp(gridp >= 0.05) = 0;
+    gridp(gridp < 0.01&gridp>0) =  2;   
+    gridp(gridp < 0.05&gridp>0) =  1;
     subplot(1,5,snr)
-    imagesc(gridp,[0 2])
+    imagesc(gridp)%,[0 2])
     colormap(flipud(gray))
-    xlim([1 8]),ylim([1 8])
+    %xlim([0 8]),ylim([0 8])
+    set(gca,'xtick', linspace(0.5,8+0.5,8+1), 'ytick', linspace(0.5,8+.5,8+1));
+    set(gca,'xticklabel', {[1:9]}, 'yticklabel', {[1:9]});
+%     set(gca,'xgrid', 'on', 'ygrid', 'on', 'gridlinestyle', '-', 'xcolor', 'k', 'ycolor', 'k');
+grid on
 end
 
 disp(psig)

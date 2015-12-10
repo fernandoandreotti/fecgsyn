@@ -16,7 +16,7 @@ snr06 = cellfun(@(x) ~isempty(regexp(x,'.snr06dB','ONCE')),fls_orig);
 snr09 = cellfun(@(x) ~isempty(regexp(x,'.snr09dB','ONCE')),fls_orig);
 snr12 = cellfun(@(x) ~isempty(regexp(x,'.snr12dB','ONCE')),fls_orig);
 
-symlist = {'o' '^' 'p' 'v' 's' '>' 'd' }; % symbol selection for plot
+symlist = {'o' '^' '<' 'v' 's' '>' 'd' }; % symbol selection for plot
 snrlist = zeros(7,5,3);
 % color selection for plot, different colors for each case
 snrlist(1,:,:) = [[0.800000000000000 0.800000000000000 0.800000000000000] ;...
@@ -102,6 +102,7 @@ set(gca,'XTick',[1:2:16])  % This automatically sets
 set(gca,'XTickLabel',{'BSS_{ica}';'BSS_{pca}';'TS_c';'TS_{pca}';'TS_{ekf}';'AM_{lms}';'AM_{rls}';'AM_{esn}'})
 set(gca,'FontSize',FSIZE);
 set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
+box on
 hold off
 
 % MAE
@@ -121,6 +122,7 @@ set(gca,'XTick',[1:2:16])  % This automatically sets
 set(gca,'XTickLabel',{'BSS_{ica}';'BSS_{pca}';'TS_c';'TS_{pca}';'TS_{ekf}';'AM_{lms}';'AM_{rls}';'AM_{esn}'})
 set(gca,'FontSize',FSIZE);
 set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
+box on
 hold off
 clear count1 count2 count3 i1 i2 h 
 %% Statistical tests

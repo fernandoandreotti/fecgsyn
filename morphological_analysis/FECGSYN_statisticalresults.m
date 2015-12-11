@@ -130,27 +130,32 @@ clear count1 count2 count3 i1 i2 h
 % re-calculating to include baseline
 statsf1(:,1,:) = []; statsmae(:,1,:) = []; % removing baseline since it does not make sense on significance analysis
 count1 = 1;
-for snr = 1:size(statsf1,1)
-    tempstat = reshape(statsf1(snr,:,:),[],8);
-    p(snr,1) = friedman(tempstat,1,'off');
-    p(snr,2) = friedman(tempstat',1,'off');      
-    for i = 1:8
-        for j = 1:8
-            [psig(snr,i,j),hsig(snr,i,j)] = signtest(tempstat(:,i),tempstat(:,j));
+for var = {'statsf1' 'statsmae'}
+    stastuse = eval(var{:});
+    figure
+    for snr = 1:size(stastuse,1)
+        tempstat = reshape(stastuse(snr,:,:),[],8);
+        p(snr,1) = friedman(tempstat,1,'off');
+        p(snr,2) = friedman(tempstat',1,'off');
+        for i = 1:8
+            for j = 1:8
+                [psig(snr,i,j),hsig(snr,i,j)] = signtest(tempstat(:,i),tempstat(:,j));
+            end
         end
-    end      
-    gridp = reshape(psig(snr,:,:),8,8);
-    gridp(gridp >= 0.05) = 0;
-    gridp(gridp < 0.01&gridp>0) =  2;   
-    gridp(gridp < 0.05&gridp>0) =  1;
-    subplot(1,5,snr)
-    imagesc(gridp)%,[0 2])
-    colormap(flipud(gray))
-    %xlim([0 8]),ylim([0 8])
-    set(gca,'xtick', linspace(0.5,8+0.5,8+1), 'ytick', linspace(0.5,8+.5,8+1));
-    set(gca,'xticklabel', {[1:9]}, 'yticklabel', {[1:9]});
-%     set(gca,'xgrid', 'on', 'ygrid', 'on', 'gridlinestyle', '-', 'xcolor', 'k', 'ycolor', 'k');
-grid on
+        gridp = reshape(psig(snr,:,:),8,8);
+        gridp(gridp >= 0.05) = 0;
+        gridp(gridp < 0.01&gridp>0) =  2;
+        gridp(gridp < 0.05&gridp>0) =  1;
+        subplot(1,5,snr)
+        pcolor([gridp NaN(8,1);NaN(1,9)])%,[0 2])
+        colormap(flipud(gray))
+        %xlim([0 8]),ylim([0 8])
+        set(gca,'xtick', linspace(0.5,8.5,8), 'ytick', linspace(0.5,8.5,8));
+        set(gca,'xticklabel', {[1:8]}, 'yticklabel', {[1:8]});
+        axis square
+        %     set(gca,'xgrid', 'on', 'ygrid', 'on', 'gridlinestyle', '-', 'xcolor', 'k', 'ycolor', 'k');
+        grid on
+    end
 end
 
 disp(psig)

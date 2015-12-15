@@ -1,6 +1,6 @@
 % Loading data
 load('D:\Users\Andreotti\Dropbox\sharelatex\[Andreotti et al 2016] Standardising FECGSYN (in review)\fecgsyn_morphology\mats\exp2.mat')
-fls_orig(1751:end) = []
+fls_orig(1751:end) = [];
 
 % Marking cases
 c0 = cellfun(@(x) ~isempty(regexp(x,'.c0','ONCE')),fls_orig);

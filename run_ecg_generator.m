@@ -238,6 +238,7 @@ if param.posdev
 end
 
 [vols.mheart{1}(1),vols.mheart{1}(2),vols.mheart{1}(3)] = cart2pol(mh_cart(1),mh_cart(2),mh_cart(3));  % new location (cyl. coord.)
+param.mheart = vols.mheart{1};
 
 % == maternal heart rate variability
 strhrv.hr = param.mhr;
@@ -292,6 +293,7 @@ for fet=1:NB_FOETUSES
     posf_end = [xl(idx(1)) yl(idx(2)) zl(idx(3))];
     
     [vols.fheart{fet}(1), vols.fheart{fet}(2), vols.fheart{fet}(3)] = cart2pol(posf_start(1),posf_start(2),posf_start(3));
+    param.fheart{fet} = vols.fheart{fet};
     % = randomly pick VCG model for fetus (load Gaussian parameters)
     [gp_f{fet}.norm,selvcgf{fet}] = load_gparam(param.fvcg(fet),'normal');
     if param.fectb;

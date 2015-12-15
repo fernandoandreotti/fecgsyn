@@ -12,7 +12,7 @@
 % - Case 0 - Baseline
 % - Case 1 - fetal and maternal HR abrupt change (by 1/3 using tanh() normally distributed)
 % - Case 2 - SNR abrupt change (by 1/3 using tanh() modulation, amplitude and direction normally distributed)
-% - Case 3 - SNR sinusoidal change (1-10 cycles/recording) modulated by 
+% - Case 3 - SNR sinusoidal change (1-10 cycles/recording) modulated by decaying/increasing exponential 
 % - Case 4 - overall ECG amplitude change (sinusoidal 1-10 cycles/recording)
 
 %
@@ -24,7 +24,7 @@
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-11-2015
+% Last updated : 15-12-2015
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -98,42 +98,42 @@ for i = 1:5           % generate 5 cases of each
             param.mres = 0.25 + 0.05*randn; % mother respiration frequency
             param.fres = 0.9 + 0.05*randn; % foetus respiration frequency
             parambase = param;              % these parameters are mostly maintained
-%             out = run_ecg_generator(param,debug);  % stationary output
-%             out = clean_compress(out);
-%             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c0',i,SNRmn,loop)],'out')
-%             toc
-%             clear out
+            out = run_ecg_generator(param,debug);  % stationary output
+            out = clean_compress(out);
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c0',i,SNRmn,loop)],'out')
+            toc
+            clear out
             
-%             %% Case 1: rate rate accelerations (both fetal and maternal)
-%             disp('Case 1')
-%             tic
-%             param = parambase;
-%             param.macc = (20+10*abs(randn))*sign(randn); % maternal acceleration in HR [bpm]
-%             param.mtypeacc = 'tanh';                % hyperbolic tangent acceleration
-%             param.maccmean = [2*rand-1];
-%             param.ftypeacc = {'tanh'};                % hyperbolic tangent acceleration
-%             param.faccmean{1} = [2*rand-1];
-%             param.facc = (30 + 10*randn)*sign(randn); % foetal decceleration in HR [bpm]
-%             out = run_ecg_generator(param,debug);   % stationary output
-%             out = clean_compress(out);
-%             out.macc = param.macc;
-%             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
-%             toc
-%             clear out
-%             
-%             %% Case 2: SNR abrupt change
-%             disp('Case 2')
-%             tic
-%             param = parambase;
-%             param.noise_fct{1} = 1+sign(randn)*(rand+0.3)*tanh(linspace(-rand*pi,(1+rand)*pi,param.n));  % tanh function
-%             param.noise_fct{2} = param.noise_fct{1};  % tanh function
-%             param.ntype = {'MA' 'MA'};
-%             out = run_ecg_generator(param,debug);  % stationary output
-%             out = clean_compress(out);
-%             out.noisefcn = param.noise_fct{1};
-%             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
-%             toc
-%             clear out
+            %% Case 1: rate rate accelerations (both fetal and maternal)
+            disp('Case 1')
+            tic
+            param = parambase;
+            param.macc = (20+10*abs(randn))*sign(randn); % maternal acceleration in HR [bpm]
+            param.mtypeacc = 'tanh';                % hyperbolic tangent acceleration
+            param.maccmean = [2*rand-1];
+            param.ftypeacc = {'tanh'};                % hyperbolic tangent acceleration
+            param.faccmean{1} = [2*rand-1];
+            param.facc = (30 + 10*randn)*sign(randn); % foetal decceleration in HR [bpm]
+            out = run_ecg_generator(param,debug);   % stationary output
+            out = clean_compress(out);
+            out.macc = param.macc;
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
+            toc
+            clear out
+            
+            %% Case 2: SNR abrupt change
+            disp('Case 2')
+            tic
+            param = parambase;
+            param.noise_fct{1} = 1+sign(randn)*(rand+0.3)*tanh(linspace(-rand*pi,(1+rand)*pi,param.n));  % tanh function
+            param.noise_fct{2} = param.noise_fct{1};  % tanh function
+            param.ntype = {'MA' 'MA'};
+            out = run_ecg_generator(param,debug);  % stationary output
+            out = clean_compress(out);
+            out.noisefcn = param.noise_fct{1};
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
+            toc
+            clear out
             
             %% Case 3: SNR oscilating
             disp('Case 3')
@@ -141,8 +141,9 @@ for i = 1:5           % generate 5 cases of each
             param = parambase;
             cyccount = randi([1,10],1,1);
             piinit = (2*rand-1);
-            modfun1 = (1+sin(linspace(piinit*pi,cyccount*2*pi+piinit,param.n))*(0.2*rand+0.001));
-            param.noise_fct{1} = modfun1;  % tanh function
+            modfun1 = (1+sin(linspace(piinit*pi,cyccount*2*pi+piinit,param.n))*(0.2*rand+0.001)); % sinusoidal
+            modfun2 = (rand/2+0.5)*exp(sign(randn).*linspace(0,rand,param.n)); % decaying/increasing exponential
+            param.noise_fct{1} = modfun1.*modfun2;  % tanh function
             param.noise_fct{2} = param.noise_fct{1};  % tanh function
             param.ntype = {'MA' 'MA'};
             out = run_ecg_generator(param,debug);  % stationary output
@@ -150,9 +151,9 @@ for i = 1:5           % generate 5 cases of each
             out.noisefcn = param.noise_fct{1};
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c3',i,SNRmn,loop)],'out')
             toc
-            clear out
+            clear out modfun1 modfun2
             
-            %% Case 4: overall ECG amplitude change (sinusoidal 1-10 cycles/recording)
+            %% Case 4: overall MECG amplitude change (sinusoidal 1-10 cycles/recording)
             disp('Case 4') 
             tic
             param = parambase;

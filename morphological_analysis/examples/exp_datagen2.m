@@ -134,9 +134,11 @@ for i = 1:5           % generate 5 cases of each
             toc
             clear out
             %% Case 3: overall MECG amplitude change (tanh center)
+            % modelled as maternal heart changing its position once
             disp('Case 2')
             tic
             param = parambase;
+            
             out = run_ecg_generator(param,debug);  % stationary output
             
 

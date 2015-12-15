@@ -104,42 +104,44 @@ for i = 1:5           % generate 5 cases of each
 %             toc
 %             clear out
             
-            %% Case 1: rate rate accelerations (both fetal and maternal)
-            disp('Case 1')
-            tic
-            param = parambase;
-            param.macc = (20+10*abs(randn))*sign(randn); % maternal acceleration in HR [bpm]
-            param.mtypeacc = 'tanh';                % hyperbolic tangent acceleration
-            param.macc = [2*rand-1];
-            param.ftypeacc = {'tanh'};                % hyperbolic tangent acceleration
-            param.facc(1) = [2*rand-1];
-            param.facc = (30 + 10*randn)*sign(randn); % foetal decceleration in HR [bpm]
-            out = run_ecg_generator(param,debug);   % stationary output
-            out = clean_compress(out);
-            out.macc = param.macc;
-            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
-            toc
-            clear out
-            
-            %% Case 2: SNR abrupt change
-            disp('Case 2')
-            tic
-            param = parambase;
-            param.noise_fct{1} = 1+sign(randn)*(rand+0.3)*tanh(linspace(-pi,2*pi,param.n));  % tanh function
-            param.noise_fct{2} = param.noise_fct{1};  % tanh function
-            param.ntype = {'MA' 'MA'};
-            out = run_ecg_generator(param,debug);  % stationary output
-            out = clean_compress(out);
-            out.noisefcn = param.noise_fct{1};
-            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
-            toc
-            clear out
+%             %% Case 1: rate rate accelerations (both fetal and maternal)
+%             disp('Case 1')
+%             tic
+%             param = parambase;
+%             param.macc = (20+10*abs(randn))*sign(randn); % maternal acceleration in HR [bpm]
+%             param.mtypeacc = 'tanh';                % hyperbolic tangent acceleration
+%             param.maccmean = [2*rand-1];
+%             param.ftypeacc = {'tanh'};                % hyperbolic tangent acceleration
+%             param.faccmean{1} = [2*rand-1];
+%             param.facc = (30 + 10*randn)*sign(randn); % foetal decceleration in HR [bpm]
+%             out = run_ecg_generator(param,debug);   % stationary output
+%             out = clean_compress(out);
+%             out.macc = param.macc;
+%             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
+%             toc
+%             clear out
+%             
+%             %% Case 2: SNR abrupt change
+%             disp('Case 2')
+%             tic
+%             param = parambase;
+%             param.noise_fct{1} = 1+sign(randn)*(rand+0.3)*tanh(linspace(-rand*pi,(1+rand)*pi,param.n));  % tanh function
+%             param.noise_fct{2} = param.noise_fct{1};  % tanh function
+%             param.ntype = {'MA' 'MA'};
+%             out = run_ecg_generator(param,debug);  % stationary output
+%             out = clean_compress(out);
+%             out.noisefcn = param.noise_fct{1};
+%             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
+%             toc
+%             clear out
             
             %% Case 3: SNR oscilating
-            disp('Case 2')
+            disp('Case 3')
             tic
             param = parambase;
-            modfun1 = (1+sin(linspace((2*rand-1)*pi,cyccount*2*pi+piinit,param.n))*(0.2*rand+0.001));
+            cyccount = randi([1,10],1,1);
+            piinit = (2*rand-1);
+            modfun1 = (1+sin(linspace(piinit*pi,cyccount*2*pi+piinit,param.n))*(0.2*rand+0.001));
             param.noise_fct{1} = modfun1;  % tanh function
             param.noise_fct{2} = param.noise_fct{1};  % tanh function
             param.ntype = {'MA' 'MA'};

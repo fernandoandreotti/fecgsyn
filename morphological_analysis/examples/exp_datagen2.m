@@ -1,4 +1,7 @@
 %% Another example of data generation
+% Focus of this work is following MECG changes of both amplitude and form.
+% Fetal and noise changes are therefore less important.
+% 
 %  Here are the specifics
 % - 5 feto-maternal combinations
 % - 3 SNR levels (3,6,9 dB)
@@ -9,11 +12,12 @@
 % - Case 0 - Baseline
 % - Case 1 - HR abrupt change (by 1/3 using tanh() normally distributed)
 % - Case 2 - SNR abrupt change (by 1/3 using tanh() modulation, amplitude and direction normally distributed)
-% - Case 3 - overall ECG amplitude change (sinusoidal 1-10 cycles/recording)
-% - Case 4 - overall ECG amplitude change (skewed with Gamma distribution, 1-10 cycles/recording, amplitude, width and direction normally dist.)
-% - Case 5 - T+P waves + amplitude change (gaussian)
-% - Case 6 - T+P waves + amplitude change (skewed)
-% - Case 7 -T+P waves + amplitude change (skewed) + ECG amplitude change (sinusoidal)
+% - Case 3 - overall ECG amplitude change (tanh centered)
+% - Case 4 - overall ECG amplitude change (sinusoidal 1-10 cycles/recording)
+% - Case 5 - overall ECG amplitude change (skewed with Gamma distribution, 1-10 cycles/recording, amplitude, width and direction normally dist.)
+% - Case 6 - T+P waves + amplitude change (gaussian)
+% - Case 7 - T+P waves + amplitude change (skewed)
+% - Case 8 -T+P waves + amplitude change (skewed) + ECG amplitude change (sinusoidal)
 %
 %
 % NI-FECG simulator toolbox, version 1.0, February 2014
@@ -129,8 +133,16 @@ for i = 1:5           % generate 5 cases of each
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
             toc
             clear out
-            %% Case 3: overall ECG amplitude change (sinusoidal 1-10 cycles/recording)
-            disp('Case 3') 
+            %% Case 3: overall MECG amplitude change (tanh center)
+            disp('Case 2')
+            tic
+            param = parambase;
+            out = run_ecg_generator(param,debug);  % stationary output
+            
+
+            
+            %% Case 4: overall MECG amplitude change (sinusoidal 1-10 cycles/recording)
+            disp('Case 4') 
             tic
             param = parambase;
             out = run_ecg_generator(param,debug);  % stationary output
@@ -141,11 +153,11 @@ for i = 1:5           % generate 5 cases of each
             out = clean_compress(out);
             out.modfun = modfun;
             out.cycles = cyccount;
-            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c3',i,SNRmn,loop)],'out') 
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c4',i,SNRmn,loop)],'out') 
             toc
             clear out
-            %% Case 4: previous case skewed
-            disp('Case 4')
+            %% Case 5: previous case skewed
+            disp('Case 5')
             tic
             param = parambase;
             samps = round(param.n/cyccount);
@@ -166,11 +178,11 @@ for i = 1:5           % generate 5 cases of each
             out = clean_compress(out);
             out.cycles = cyccount;
             out.modfun = modfun;
-            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c4',i,SNRmn,loop)],'out')
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c5',i,SNRmn,loop)],'out')
             toc
             clear out
-            %% Case 5 - T+P waves + amplitude change (gaussian)
-            disp('Case 5')
+            %% Case 6 - T+P waves + amplitude change (gaussian)
+            disp('Case 6')
             tic
             param = parambase;
             out = run_ecg_generator(param,debug);
@@ -213,12 +225,12 @@ for i = 1:5           % generate 5 cases of each
             modfun = out.mecg - origmecg;
             out = clean_compress(out);
             out.modfun = modfun;
-            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c5',i,SNRmn,loop)],'out')
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c6',i,SNRmn,loop)],'out')
             toc
             clear out modfun origmecg
             
-            %% Case 6 - T+P waves + amplitude change (skewed)
-            disp('Case 6')
+            %% Case 7 - T+P waves + amplitude change (skewed)
+            disp('Case 7')
             tic
             param = parambase;
             out = run_ecg_generator(param,debug);
@@ -262,12 +274,12 @@ for i = 1:5           % generate 5 cases of each
             modfun = out.mecg - origmecg;
             out = clean_compress(out);
             out.modfun = modfun;
-            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c6',i,SNRmn,loop)],'out')
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c7',i,SNRmn,loop)],'out')
             toc
             clear out modfun origmecg
             
-            %% Case 7 -T+P waves + amplitude change (skewed) + ECG amplitude change (sinusoidal)
-            disp('Case 7')
+            %% Case 8 -T+P waves + amplitude change (skewed) + ECG amplitude change (sinusoidal)
+            disp('Case 8')
             tic
             param = parambase;
             out = run_ecg_generator(param,debug);
@@ -312,7 +324,7 @@ for i = 1:5           % generate 5 cases of each
             out.mecg = repmat(modfun2,34,1).*out.mecg;
             out = clean_compress(out);
             out.modfun = modfun.*modfun2;
-            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c7',i,SNRmn,loop)],'out')
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c8',i,SNRmn,loop)],'out')
             toc
             clear out modfun origmecg modfun2
         end

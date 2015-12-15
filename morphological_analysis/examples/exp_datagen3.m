@@ -10,7 +10,7 @@
 %
 % * Cases/events:
 % - Case 0 - Baseline
-% - Case 1 - HR abrupt change (by 1/3 using tanh() normally distributed)
+% - Case 1 - fetal and maternal HR abrupt change (by 1/3 using tanh() normally distributed)
 % - Case 2 - SNR abrupt change (by 1/3 using tanh() modulation, amplitude and direction normally distributed)
 % - Case 3 - SNR sinusoidal change (1-10 cycles/recording) modulated by 
 % - Case 4 - overall ECG amplitude change (sinusoidal 1-10 cycles/recording)
@@ -104,18 +104,22 @@ for i = 1:5           % generate 5 cases of each
 %             toc
 %             clear out
             
-%             %% Case 1: rate rate accelerations
-%             disp('Case 1')
-%             tic
-%             param = parambase;
-%             param.macc = (20+10*abs(randn))*sign(randn); % maternal acceleration in HR [bpm]
-%             param.mtypeacc = 'tanh';                % hyperbolic tangent acceleration
-%             out = run_ecg_generator(param,debug);   % stationary output
-%             out = clean_compress(out);
-%             out.macc = param.macc;
-%             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
-%             toc
-%             clear out
+            %% Case 1: rate rate accelerations (both fetal and maternal)
+            disp('Case 1')
+            tic
+            param = parambase;
+            param.macc = (20+10*abs(randn))*sign(randn); % maternal acceleration in HR [bpm]
+            param.mtypeacc = 'tanh';                % hyperbolic tangent acceleration
+            param.macc = [2*rand-1];
+            param.ftypeacc = {'tanh'};                % hyperbolic tangent acceleration
+            param.facc(1) = [2*rand-1];
+            param.facc = (30 + 10*randn)*sign(randn); % foetal decceleration in HR [bpm]
+            out = run_ecg_generator(param,debug);   % stationary output
+            out = clean_compress(out);
+            out.macc = param.macc;
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
+            toc
+            clear out
             
             %% Case 2: SNR abrupt change
             disp('Case 2')
@@ -135,7 +139,8 @@ for i = 1:5           % generate 5 cases of each
             disp('Case 2')
             tic
             param = parambase;
-            param.noise_fct{1} = 1+sign(randn)*(rand+0.3)*tanh(linspace(-pi,2*pi,param.n));  % tanh function
+            modfun1 = (1+sin(linspace((2*rand-1)*pi,cyccount*2*pi+piinit,param.n))*(0.2*rand+0.001));
+            param.noise_fct{1} = modfun1;  % tanh function
             param.noise_fct{2} = param.noise_fct{1};  % tanh function
             param.ntype = {'MA' 'MA'};
             out = run_ecg_generator(param,debug);  % stationary output

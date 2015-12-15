@@ -103,7 +103,7 @@ for i = 1:5           % generate 5 cases of each
             toc
             clear out
             
-            %% Case 1: rate rate accelerations
+            %% Case 1: maternal rate rate accelerations
             disp('Case 1')
             tic
             param = parambase;

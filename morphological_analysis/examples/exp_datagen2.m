@@ -134,15 +134,20 @@ for i = 1:5           % generate 5 cases of each
 %             toc
 %             clear out
             %% Case 3: overall MECG amplitude change (tanh center)
-            % modelled as maternal heart changing its position once
+            % modelled as maternal heart changing its position once exactly
+            % in the middle of the measurement. The amplitude and direction
+            % is randomly chosen.
+            
             disp('Case 2')
             tic
             param = parambase;
             param.mtraj = 'step';
             out = run_ecg_generator(param,debug);  % stationary output
-            
+            out = clean_compress(out);
+            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c3',i,SNRmn,loop)],'out') 
+            toc
+            clear out
 
-            
             %% Case 4: overall MECG amplitude change (sinusoidal 1-10 cycles/recording)
             disp('Case 4') 
             tic

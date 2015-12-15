@@ -101,44 +101,44 @@ for i = 1:5           % generate 5 cases of each
             param.mres = 0.25 + 0.05*randn; % mother respiration frequency
             param.fres = 0.9 + 0.05*randn; % foetus respiration frequency
             parambase = param;              % these parameters are mostly maintained
-            out = run_ecg_generator(param,debug);  % stationary output
-            out = clean_compress(out);
-            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c0',i,SNRmn,loop)],'out')
-            toc
-            clear out
-            
-            %% Case 1: maternal rate rate accelerations
-            disp('Case 1')
-            tic
-            param = parambase;
-            param.macc = (20+10*abs(randn))*sign(randn); % maternal acceleration in HR [bpm]
-            param.mtypeacc = 'tanh';                % hyperbolic tangent acceleration
-            out = run_ecg_generator(param,debug);   % stationary output
-            out = clean_compress(out);
-            out.macc = param.macc;
-            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
-            toc
-            clear out
-            
-            %% Case 2: SNR abrupt change
-            disp('Case 2')
-            tic
-            param = parambase;
-            param.noise_fct{1} = 1+sign(randn)*(rand+0.3)*tanh(linspace(-pi,2*pi,param.n));  % tanh function
-            param.noise_fct{2} = param.noise_fct{1};  % tanh function
-            param.ntype = {'MA' 'MA'};
-            out = run_ecg_generator(param,debug);  % stationary output
-            out = clean_compress(out);
-            out.noisefcn = param.noise_fct{1};
-            save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
-            toc
-            clear out
+%             out = run_ecg_generator(param,debug);  % stationary output
+%             out = clean_compress(out);
+%             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c0',i,SNRmn,loop)],'out')
+%             toc
+%             clear out
+%             
+%             %% Case 1: maternal rate rate accelerations
+%             disp('Case 1')
+%             tic
+%             param = parambase;
+%             param.macc = (20+10*abs(randn))*sign(randn); % maternal acceleration in HR [bpm]
+%             param.mtypeacc = 'tanh';                % hyperbolic tangent acceleration
+%             out = run_ecg_generator(param,debug);   % stationary output
+%             out = clean_compress(out);
+%             out.macc = param.macc;
+%             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
+%             toc
+%             clear out
+%             
+%             %% Case 2: SNR abrupt change
+%             disp('Case 2')
+%             tic
+%             param = parambase;
+%             param.noise_fct{1} = 1+sign(randn)*(rand+0.3)*tanh(linspace(-pi,2*pi,param.n));  % tanh function
+%             param.noise_fct{2} = param.noise_fct{1};  % tanh function
+%             param.ntype = {'MA' 'MA'};
+%             out = run_ecg_generator(param,debug);  % stationary output
+%             out = clean_compress(out);
+%             out.noisefcn = param.noise_fct{1};
+%             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
+%             toc
+%             clear out
             %% Case 3: overall MECG amplitude change (tanh center)
             % modelled as maternal heart changing its position once
             disp('Case 2')
             tic
             param = parambase;
-            
+            param.mtraj = 'step';
             out = run_ecg_generator(param,debug);  % stationary output
             
 

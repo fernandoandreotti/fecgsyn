@@ -54,7 +54,10 @@ function out = run_ecg_generator(param,debug)
 %                       e.g. 'none', 'mexhat', 'gauss' or 'flattop')
 %       param.ftypeacc: foetus acceleration type (chosen from switch inside function,
 %                       e.g. 'none', 'mexhat', 'gauss' or 'flattop')
-%       param.ftraj:    trajectory given to fetus heart (e.g. 'none','linear', 'spline' or 'spiral')
+%       param.ftraj:    trajectory given to fetus heart (e.g. 'none', 
+%                       'step','linear', 'spline' or 'spiral')
+%       param.mtraj     movement trajectory to maternal heart (e.g. case of
+%                       maternal movement). Analogous to fetal trajectory
 %       param.fname:    record name for saving output (default 'aecg') if
 %                       empty then no file is saved
 %       param.mres:     respiratory frequency of mother (default 0) [Hz]
@@ -185,6 +188,7 @@ if ~any(strcmp('ftypeacc',fieldnames(param))); param.ftypeacc = arrayfun(@(x){sp
 if ~any(strcmp('faccmean',fieldnames(param))); param.faccmean = repmat({0},1,NB_FOETUSES); end;
 if ~any(strcmp('faccstd',fieldnames(param))); param.faccstd = repmat({1},1,NB_FOETUSES); end;
 if ~any(strcmp('ftraj',fieldnames(param))); for cc=1:length(param.fhr); param.ftraj{cc} = 'none'; end; end;
+if ~any(strcmp('mtraj',fieldnames(param))); param.mtraj = 'none'; end;
 if ~any(strcmp('fname',fieldnames(param))); param.fname = 'aecg'; end;
 if ~any(strcmp('mres',fieldnames(param))); param.mres = 0; end;
 if ~any(strcmp('fres',fieldnames(param))); param.fres = zeros(1,NB_FOETUSES); end;
@@ -207,7 +211,7 @@ else
     NB_NOISES = 0;
 end
 
-% == MATERNAL heart dipole generation
+%% == MATERNAL heart dipole generation
 param.elpos = [param.elpos; param.refpos]; % calculating reference in same manner as other electrodes
 [gp_m.norm,selvcgm] = load_gparam(param.mvcg,'normal'); % randomly pick VCG model for mother
 if param.mectb % add ectopic beats?
@@ -257,12 +261,22 @@ vols.elpos = param.elpos;
 [Xc,Yc] = pol2cart(vols.elpos(:,1),vols.elpos(:,2)); % converting from polar to cartesian coordinate system
 epos = [Xc,Yc,vols.elpos(:,3)]; % electrodes position
 
-% = generate MATERNAL heart dipole
+%== adding maternal heart trajectory (e.g. position change)
+if strcmp(param.mtraj,'none')
+   mtraj = mh_cart;
+else
+   xl=linspace(0,mh_cart(1));yl=linspace(0,mh_cart(2));zl=linspace(0,mh_cart(3)); % line towards origin
+   idx=randi([50,100],1,3); % picking three coordinates on second half
+   mh_cart2 = [xl(idx(1)) yl(idx(2)) zl(idx(3))];
+   mtraj = traject_generator(param.n,mh_cart,mh_cart2,param.mtraj); % defining a trajectory to foetal movement
+end
+
+%== generate MATERNAL heart dipole
 disp('Generating maternal model...')
-m_model = add_cardiacdipole(param.n,param.fs,gp_m,L_m,theta_m,w_m,param.mres,vols.Rm,epos,mh_cart,0);
+m_model = add_cardiacdipole(param.n,param.fs,gp_m,L_m,theta_m,w_m,param.mres,vols.Rm,epos,mtraj,0);
 m_model.type = 1; % maternal ecg is type 1
 
-% == foetal heart(s)
+%% == Foetal heart(s) generation
 L_f = eye(3); % scaling of dipole in each direction
 Rfh = 0.1; % radius allowed for foetal heart to appear
 
@@ -319,7 +333,7 @@ for fet=1:NB_FOETUSES
         vols.Rf{fet} = struct('x', -3*pi/4, 'y', 0, 'z', -pi/2);
     end
     
-    % == heart cycle parameters
+    %== Heart cycle parameters
     strhrv.hr = param.fhr(fet);
     strhrv.lfhf = 0.8;
     strhrv.hrstd = 3;
@@ -332,7 +346,7 @@ for fet=1:NB_FOETUSES
     
     [theta_f{fet},w_f{fet}] = generate_hrv(strhrv,param.n,param.fs,theta0_f);
     
-    % = translation
+    %== Translation
     traj = traject_generator(param.n,posf_start,posf_end,param.ftraj{fet}); % defining a trajectory to foetal movement
     
     % = Generating foetal dipole
@@ -341,7 +355,7 @@ for fet=1:NB_FOETUSES
     f_model{fet}.type = 2; % foetal ecg is type 2
 end
 
-% == NOISE DIPOLE(s)
+%% == NOISE DIPOLE(s)
 % considering that noise sources are stationary (no rotation nor translation). Case noise
 % should follow a cardiac dipole, just use the H matrix from the heart dipole for
 % propagating the noise source.
@@ -391,7 +405,7 @@ end
 vols.refpos = param.refpos;
 vols.elpos = vols.elpos(1:end-1,:); % removing ground electrode
 
-% == FORMATING OUTPUT ARGUMENTS
+%% == FORMATING OUTPUT ARGUMENTS
 out.mixture = mixture;
 out.mecg = mecg;
 out.fecg = fecg;

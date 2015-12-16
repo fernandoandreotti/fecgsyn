@@ -41,8 +41,8 @@ end
 
 % creating statistics in 1-min blocks
 min = 1;
-maxch = zeros(1,length(data)/fs/60);
-fqrs_temp = cell(1,length(data)/fs/60);
+maxch = zeros(1,ceil(length(data)/fs/60));
+fqrs_temp = cell(1,ceil(length(data)/fs/60));
 while min <= length(data)/fs/60;
     F1max = 0;
     idxref = (fref>=(min-1)*fs*60+1)&(fref<=min*fs*60);

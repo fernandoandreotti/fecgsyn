@@ -1,4 +1,4 @@
-% function FECGSYN_genresults(path_orig,fs,ch,exp3)
+function FECGSYN_genresults(path_orig,fs,ch,exp3)
 % this script generates a series of abdominal mixtures, containing i) a
 % stationary case and ii) non-stationary case (when adding breathing
 % effects, foetal movement etc).
@@ -282,27 +282,6 @@ for i = filesproc%length(fls_ext)
         cd(num2str(i))
         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
         fname = strcat(fname{:});
-        % Until this point, input signals were prepared for the
-        % morphological analysis.
-        
-        % Obsolete mix matrix transform on reference
-        % Analysis for BSS, evaluate if application of mixing matrix changes
-        % FQT interval
-        %         if strcmp(method,'JADEICA')
-        %             tmpfref = cell(1,length(A));
-        %             pad = max(cellfun(@(x) size(x,1),A));
-        %             for i = 1:length(A)
-        %                 tmpfref{i} = A{i}*fecgref(:,(i-1)*TEMP_SAMPS+1:i*TEMP_SAMPS);
-         %                 tmpfref{i} = [tmpfref{i};zeros(pad-size(tmpfref{i},1),length(tmpfref{i}))];
-        %             end
-        %             fecgref2 = cell2mat(tmpfref);   % source domain FECG reference signal
-        %             [outputs{1:7}]= morpho_loop(fecgref2,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-        %             % Evaluating if applying mixing matrix makes a difference
-        %             [qt_time,~,th_time]= morpho_loop(fecgref,fecgref,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-        %             if strcmp(cas,'bas')  % baseline
-        %                 exp3dist(end+1,:) = {outputs{2}, qt_time, outputs{4},th_time};
-        %             end
-        %         else
         [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
             
 %         end
@@ -429,112 +408,112 @@ else
     
 end
 
-% end
-% function [qt_test,qt_ref,tqrs_test,tqrs_ref,qt_err,theight_err,numNaN]=...
-%     morpho_loop(fecg,residual,fqrs,fs,SAMPS,fname,filterc)
-% %% Function to perform morphological analysis for TS/BSS extracted data
-% %
-% % >Inputs
-% % fecg:         Propagated fetal signal before mixture with noise sources
-% % residual:     Result of fetal extraction from abdominal signals
-% % fqrs:         Reference fetal QRS samplestamps
-% % SAMPS:        Number of samples used for generating templates
-% % fname:        Filename to be used in saving plots
-% % filterc:      Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
-% %               highpass (hp) and lowpass (lp)
-% %
-% % > Outputs
-% % qt_err: Array containing QT error for each template
-% % theight_err: Array containing T-height error for each template
-% %
-% global debug
-% numNaN = 0;
-% 
-% % Allocatting
-% qt_test = cell(size(residual,1),length(residual)/SAMPS,1);
-% qt_ref = qt_test;
-% tqrs_test = qt_test;
-% tqrs_ref = qt_test;
-% qt_err = qt_test;
-% theight_err = qt_test;
-% %= Block-wise calculation and template generation
-% block = 1;
-% for j = 1:SAMPS:length(residual)
-%     for ch = 1:size(fecg,1)
-%         % checking borders
-%         if j+SAMPS > length(residual)
-%             endsamp = length(residual);
-%         else
-%             endsamp = j + SAMPS -1;
-%         end
-%         % qrs complexes in interval
-%         qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
-%         %% Template Generation
-%         % reference template
-%         [temp_ref,qrs_ref,status2] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
-%         % abdominal signal template
-%         if ch <= size(residual,1)        
-%         [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
-%         else % usually relevant for ICA cases, where number of components is smaller than the number of input channels
-%             temp_abdm = temp_ref;
-%              qrs_abdm = qrs_ref;
-%             status2 = status1;
-%         end
-%         
-%         
-%         temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
-%         
-%         % crop end of templates which have steps on them
-%         try
-%             per80 = round(0.8*length(temp_abdm));
-%             [~,idx]=findpeaks(abs(diff(temp_abdm(per80:end))),'Threshold',10*median(abs(diff(temp_abdm(per80:end)))));
-%             if ~isempty(idx)
-%                 idx = idx-1;
-%                 med1 = median(temp_abdm(per80:per80+idx)); med2 = median(temp_abdm(per80+idx:end));
-%                 temp_abdm(per80+idx:end) = temp_abdm(per80+idx:end)+(med1-med2); % removing step in signals
-%             end
-%             clear idx med1 med2 per 80
-%             per80 = round(0.8*length(temp_ref));
-%             [~,idx]=findpeaks(abs(diff(temp_ref(per80:end))),'Threshold',10*median(abs(diff(temp_ref(per80:end)))));
-%             if ~isempty(idx)
-%                 idx = idx-1;
-%                 med1 = median(temp_ref(per80:per80+idx)); med2 = median(temp_ref(per80+idx:end));
-%                 temp_ref(per80+idx:end) = temp_ref(per80+idx:end)+(med1-med2); % removing step in signals
-%             end
-%             clear idx med1 med2 per 80
-%         catch
-%             disp('templategen: problems in template?')
-%         end
-%         
-%         if (~status1||~status2)
-%             qt_test{ch,block} = NaN;
-%             qt_ref{ch,block} = NaN;
-%             tqrs_test{ch,block} = NaN;
-%             tqrs_ref{ch,block} = NaN;
-%             qt_err{ch,block} = NaN;
-%             theight_err{ch,block} = NaN;
-%         else
-%             %% Performs morphological analysis
-%             [qt_ref{ch,block},qt_test{ch,block},tqrs_ref{ch,block},tqrs_test{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,fname);
-%         end
-%         % Saves generated plots
-%         if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})
-%             try
-%                 drawnow
-%                 subplot(2,1,1)
-%                 hold on
-%                 text(0,0,['QT = ' strcat(num2str(qt_ref{ch,block}))])
-%                 
-%                 subplot(2,1,2)
-%                 hold on
-%                 text(0,0,['QT = ' strcat(num2str(qt_test{ch,block}))])
-%                 print('-dpng','-r72',[fname '_ch' num2str(ch) '_s' num2str(block) '.png'])
-%             catch
-%                 warning('Failed to save plot')
-%             end
-%             
-%         end
-%     end
-%     block = block+1;
-% end
-% end
+end
+function [qt_test,qt_ref,tqrs_test,tqrs_ref,qt_err,theight_err,numNaN]=...
+    morpho_loop(fecg,residual,fqrs,fs,SAMPS,fname,filterc)
+%% Function to perform morphological analysis for TS/BSS extracted data
+%
+% >Inputs
+% fecg:         Propagated fetal signal before mixture with noise sources
+% residual:     Result of fetal extraction from abdominal signals
+% fqrs:         Reference fetal QRS samplestamps
+% SAMPS:        Number of samples used for generating templates
+% fname:        Filename to be used in saving plots
+% filterc:      Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
+%               highpass (hp) and lowpass (lp)
+%
+% > Outputs
+% qt_err: Array containing QT error for each template
+% theight_err: Array containing T-height error for each template
+%
+global debug
+numNaN = 0;
+
+% Allocatting
+qt_test = cell(size(residual,1),length(residual)/SAMPS,1);
+qt_ref = qt_test;
+tqrs_test = qt_test;
+tqrs_ref = qt_test;
+qt_err = qt_test;
+theight_err = qt_test;
+%= Block-wise calculation and template generation
+block = 1;
+for j = 1:SAMPS:length(residual)
+    for ch = 1:size(fecg,1)
+        % checking borders
+        if j+SAMPS > length(residual)
+            endsamp = length(residual);
+        else
+            endsamp = j + SAMPS -1;
+        end
+        % qrs complexes in interval
+        qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
+        %% Template Generation
+        % reference template
+        [temp_ref,qrs_ref,status2] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
+        % abdominal signal template
+        if ch <= size(residual,1)        
+        [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
+        else % usually relevant for ICA cases, where number of components is smaller than the number of input channels
+            temp_abdm = temp_ref;
+             qrs_abdm = qrs_ref;
+            status2 = status1;
+        end
+        
+        
+        temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
+        
+        % crop end of templates which have steps on them
+        try
+            per80 = round(0.8*length(temp_abdm));
+            [~,idx]=findpeaks(abs(diff(temp_abdm(per80:end))),'Threshold',10*median(abs(diff(temp_abdm(per80:end)))));
+            if ~isempty(idx)
+                idx = idx-1;
+                med1 = median(temp_abdm(per80:per80+idx)); med2 = median(temp_abdm(per80+idx:end));
+                temp_abdm(per80+idx:end) = temp_abdm(per80+idx:end)+(med1-med2); % removing step in signals
+            end
+            clear idx med1 med2 per 80
+            per80 = round(0.8*length(temp_ref));
+            [~,idx]=findpeaks(abs(diff(temp_ref(per80:end))),'Threshold',10*median(abs(diff(temp_ref(per80:end)))));
+            if ~isempty(idx)
+                idx = idx-1;
+                med1 = median(temp_ref(per80:per80+idx)); med2 = median(temp_ref(per80+idx:end));
+                temp_ref(per80+idx:end) = temp_ref(per80+idx:end)+(med1-med2); % removing step in signals
+            end
+            clear idx med1 med2 per 80
+        catch
+            disp('templategen: problems in template?')
+        end
+        
+        if (~status1||~status2)
+            qt_test{ch,block} = NaN;
+            qt_ref{ch,block} = NaN;
+            tqrs_test{ch,block} = NaN;
+            tqrs_ref{ch,block} = NaN;
+            qt_err{ch,block} = NaN;
+            theight_err{ch,block} = NaN;
+        else
+            %% Performs morphological analysis
+            [qt_ref{ch,block},qt_test{ch,block},tqrs_ref{ch,block},tqrs_test{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,fname);
+        end
+        % Saves generated plots
+        if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})
+            try
+                drawnow
+                subplot(2,1,1)
+                hold on
+                text(0,0,['QT = ' strcat(num2str(qt_ref{ch,block}))])
+                
+                subplot(2,1,2)
+                hold on
+                text(0,0,['QT = ' strcat(num2str(qt_test{ch,block}))])
+                print('-dpng','-r72',[fname '_ch' num2str(ch) '_s' num2str(block) '.png'])
+            catch
+                warning('Failed to save plot')
+            end
+            
+        end
+    end
+    block = block+1;
+end
+end

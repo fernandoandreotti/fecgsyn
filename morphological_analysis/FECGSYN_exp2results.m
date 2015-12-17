@@ -26,7 +26,7 @@
 % You should have received a copy of the GNU General Public License
 % along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-global debug filesproc
+global debug 
 slashchar = char('/'*isunix + '\'*(~isunix));
 if debug,  mkdir([path_orig 'plots' slashchar]), end
 
@@ -94,7 +94,7 @@ if calc
     stats.aesn = zeros(length(fls_orig),4);
     
     % = Runs through list of extracted files
-    for i = filesproc%length(fls_ext)
+    for i = length(fls_ext)
         % for i = randperm(length(fls_ext))
         disp(fls_ext{i})
         fprintf('Data %d out of %d \n',i,length(fls_ext));
@@ -159,7 +159,7 @@ if calc
         cd ..
     end
     
-    save([path_orig 'wksp' num2str(filesproc(end))])
+    save([path_orig 'wksp_exp2'])
 end
 
 %% Plots and statistics generation
@@ -275,6 +275,25 @@ snrlist(7,:,:) = [[0.721568627450980 0.776470588235294 0.901960784313726] ;...
 
 %F1
 % re-calculating to include baseline
+statsf1 = zeros(5,7,8); statsmae = statsf1;
+count1 = 1;
+for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn'}
+    eval(['stat = stats.' met{:} ';']);
+    count2 = 1;
+     for snr = {'snr00' 'snr03' 'snr06' 'snr09' 'snr12'}
+         snrloop = eval(snr{:});
+         statsf1(count2,1:7,count1) = median(100*[stat(base&snrloop,1) stat(c0&snrloop,1)...
+             stat(c1&snrloop,1) stat(c2&snrloop,1) stat(c3&snrloop,1) ...
+             stat(c4&snrloop,1) stat(c5&snrloop,1)]); % F1
+          statsmae(count2,1:7,count1) = median([stat(base&snrloop,2) stat(c0&snrloop,2)...
+             stat(c1&snrloop,2) stat(c2&snrloop,2) stat(c3&snrloop,2) ...
+             stat(c4&snrloop,2) stat(c5&snrloop,2)]);% MAE
+         count2 = count2 + 1; 
+     end
+     count1 = count1 + 1;
+end
+
+
 statsf1(:,1,:) = []; statsmae(:,1,:) = []; % removing baseline since it does not make sense on significance analysis
 count1 = 1;
 for var = {'statsf1' 'statsmae'}
@@ -311,6 +330,37 @@ disp(psig)
     
     
 %% Original plots
+% %== F1 plot
+% figure
+% stats_f1 = 100*[stats.JADEICA(:,1) stats.PCA(:,1) stats.tsc(:,1) stats.tspca(:,1) ...
+%     stats.tsekf(:,1) stats.alms(:,1) stats.arls(:,1) stats.aesn(:,1)];
+% h = boxplot(stats_f1);
+% set(gca,'XTick',[1:8])  % This automatically sets
+% set(gca,'XTickLabel',{'BSSica';'BSSpca';'TSc';'TSpca';'TSekf';'Alms';'Arls';'Aesn'})
+% set(h, 'LineWidth',LWIDTH)
+% ylabel('F_1 (%)','FontSize',FSIZE)
+% xlabel('Method','FontSize',FSIZE)
+% h=gca;
+% rotateticklabel(h,45);
+% set(gca,'FontSize',FSIZE)
+% set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE)
+% 
+% % MAE
+% figure
+% stats_MAE = [stats.JADEICA(:,2) stats.PCA(:,2) stats.tsc(:,2) stats.tspca(:,2) ...
+%     stats.tsekf(:,2) stats.alms(:,2) stats.arls(:,2) stats.aesn(:,2)];
+% h = boxplot(stats_MAE);
+% set(gca,'XTick',1:8)  % This automatically sets
+% set(gca,'XTickLabel',{'BSSica';'BSSpca';'TSc';'TSpca';'TSekf';'Alms';'Arls';'Aesn'})
+% set(h, 'LineWidth',LWIDTH)
+% ylabel('MAE (ms)','FontSize',FSIZE)
+% xlabel('Method','FontSize',FSIZE)
+% h=gca;
+% rotateticklabel(h,45);
+% set(gca,'FontSize',FSIZE)
+% set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE)
+%
+%
 % % F1
 % c=3;
 % for met = {'JADEICA' 'aesn'}%{'ica' 'pca' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }

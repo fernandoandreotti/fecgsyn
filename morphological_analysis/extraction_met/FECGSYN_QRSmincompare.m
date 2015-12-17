@@ -1,9 +1,15 @@
-function [fqrs,maxch] = FECGSYN_QRSmincompare(data,fref,fs)
+function [fqrs,maxch] = FECGSYN_QRSmincompare(data,fref,fs,varargin)
 %% BxB compare on minute basis
 %
 % This is function detects and performs comparison between reference and
-% detection on a minute basis.
+% detection on a minute basis or pre-defined interval.
 %
+% data                         Extracted signals
+% fref                         Fetal referenec signal (samplestamps)
+% fs                           Sampling frequency (in Hz)
+% window (optional input)      Window to compare beats (in seconds) 
+% 
+% 
 %
 % NI-FECG simulator toolbox, version 1.0, February 2014
 % Released under the GNU General Public License
@@ -12,7 +18,7 @@ function [fqrs,maxch] = FECGSYN_QRSmincompare(data,fref,fs)
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-06-2014
+% Last updated : 17-12-2015
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -27,6 +33,18 @@ function [fqrs,maxch] = FECGSYN_QRSmincompare(data,fref,fs)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+% Input check
+switch length(varargin)
+    case 0
+        window = 60; % default minute window
+    case 1
+        window = varargin{1};
+    otherwise
+        error('FECGSYN_QRSmincompare: Too many inputs')
+end
+
+
+
 % Parameters
 INTERV = round(0.05*fs);    % BxB acceptance interval
 TH = 0.3;                   % detector threshold
@@ -38,16 +56,20 @@ for j = 1:size(data,1)
     fqrs{j} = qrs_detect(data(j,:),TH,REFRAC,fs);
 end
 
-
 % creating statistics in 1-min blocks
 min = 1;
-maxch = zeros(1,ceil(length(data)/fs/60));
-fqrs_temp = cell(1,ceil(length(data)/fs/60));
-while min <= length(data)/fs/60;
+numblock = length(data)/fs/window;
+if rem(numblock,1) ~= 0
+    warning('FECGSYN_QRSmincompare: non-integer division of data length and block window. Dataset will be only partially evaluated!')
+    numblock = floor(numblock);
+end
+maxch = zeros(1,numblock);
+fqrs_temp = cell(1,numblock);
+while min <= length(data)/fs/window;
     F1max = 0;
-    idxref = (fref>=(min-1)*fs*60+1)&(fref<=min*fs*60);
+    idxref = (fref>=(min-1)*fs*window+1)&(fref<=min*fs*window);
     for j = 1:size(data,1)
-        idx = (fqrs{j}>=(min-1)*fs*60+1)&(fqrs{j}<=min*fs*60);
+        idx = (fqrs{j}>=(min-1)*fs*window+1)&(fqrs{j}<=min*fs*window);
         [F1,~,~,~] = Bxb_compare(fref(idxref),fqrs{j}(idx),INTERV);
         if F1 > F1max    % compare and see if this channel provides max F1
             maxch(min) = j;

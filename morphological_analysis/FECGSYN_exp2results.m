@@ -219,6 +219,9 @@ for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
     subplot(2,4,count2)
     boxplot(statscasesnr,{labelscase labelssnr},'factorgap',3,'color',colors,...
         'medianstyle','target','plotstyle','compact','boxstyle','filled') 
+    for i = 1:7 % go through each case and do a Kruskal-Wallis test
+        p(count2,i)=kruskalwallis(statscasesnr(:,(i-1)*5+1:5*i));
+    end
     h=findobj(gca,'tag','Outliers'); % not ploting outliers
     delete(h) 
     count2 = count2 +1;
@@ -293,7 +296,7 @@ for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn'}
      count1 = count1 + 1;
 end
 
-
+% Evaluating across different SNRs
 statsf1(:,1,:) = []; statsmae(:,1,:) = []; % removing baseline since it does not make sense on significance analysis
 count1 = 1;
 for var = {'statsf1' 'statsmae'}
@@ -323,7 +326,57 @@ for var = {'statsf1' 'statsmae'}
         grid on
     end
 end
+disp(psig)
+clear p statuse gridp statsf1 statsmae psig hsig
 
+
+% Evaluating across different cases
+statsf1 = zeros(6,5,8); statsmae = statsf1;
+count1 = 1;
+for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn'}
+    eval(['stat = stats.' met{:} ';']);
+    count2 = 1;
+     for cases = {'c0' 'c1' 'c2' 'c3' 'c4' 'c5'}
+         caseloop = eval(cases{:});
+         statsf1(count2,1:5,count1) = median(100*[stat(snr00&caseloop,1)...
+             stat(snr03&caseloop,1) stat(snr06&caseloop,1) stat(snr09&caseloop,1) ...
+             stat(snr12&caseloop,1)]); % F1
+          statsmae(count2,1:5,count1) = median([stat(snr00&caseloop,2)...
+             stat(snr03&caseloop,2) stat(snr06&caseloop,2) stat(snr09&caseloop,2) ...
+             stat(snr12&caseloop,2)]);% MAE
+         count2 = count2 + 1; 
+     end
+     count1 = count1 + 1;
+end
+
+count1 = 1;
+for var = {'statsf1' 'statsmae'}
+    stastuse = eval(var{:});
+    figure
+    for snr = 1:size(stastuse,1)
+        tempstat = reshape(stastuse(snr,:,:),[],8);
+        p(snr,1) = friedman(tempstat,1,'off');
+        p(snr,2) = friedman(tempstat',1,'off');
+        for i = 1:8
+            for j = 1:8
+                [psig(snr,i,j),hsig(snr,i,j)] = signtest(tempstat(:,i),tempstat(:,j));
+            end
+        end
+        gridp = reshape(psig(snr,:,:),8,8);
+        gridp(gridp >= 0.05) = 0;
+        gridp(gridp < 0.01&gridp>0) =  2;
+        gridp(gridp < 0.05&gridp>0) =  1;
+        subplot(1,size(stastuse,1),snr)
+        pcolor([gridp NaN(8,1);NaN(1,9)])%,[0 2])
+        colormap(flipud(gray))
+        %xlim([0 8]),ylim([0 8])
+        set(gca,'xtick', linspace(0.5,8.5,8), 'ytick', linspace(0.5,8.5,8));
+        set(gca,'xticklabel', {[1:8]}, 'yticklabel', {[1:8]});
+        axis square
+        %     set(gca,'xgrid', 'on', 'ygrid', 'on', 'gridlinestyle', '-', 'xcolor', 'k', 'ycolor', 'k');
+        grid on
+    end
+end
 disp(psig)
 
 

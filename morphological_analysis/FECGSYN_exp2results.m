@@ -219,11 +219,12 @@ for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
     subplot(2,4,count2)
     boxplot(statscasesnr,{labelscase labelssnr},'factorgap',3,'color',colors,...
         'medianstyle','target','plotstyle','compact','boxstyle','filled') 
+    h=findobj(gca,'tag','Outliers'); % not ploting outliers
+    delete(h) 
     for i = 1:7 % go through each case and do a Kruskal-Wallis test
         p(count2,i)=kruskalwallis(statscasesnr(:,(i-1)*5+1:5*i));
     end
-    h=findobj(gca,'tag','Outliers'); % not ploting outliers
-    delete(h) 
+    
     count2 = count2 +1;
 end   
     

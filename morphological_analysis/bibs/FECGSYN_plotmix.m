@@ -5,7 +5,7 @@ LINE_WIDTH = 1.2;
 MARKER_SIZE = 5;
 N = 5;      % number of plots
 
-if ~exist('out.mixture')
+if ~exist('out.mixture','var')
     if ~isempty(out.noise)
         out.mixture = double(out.mecg) + sum(cat(3,out.fecg{:}),3) ...
             + sum(cat(3,out.noise{:}),3);     % re-creating abdominal mixture

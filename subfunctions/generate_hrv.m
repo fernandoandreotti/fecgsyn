@@ -68,7 +68,6 @@ switch strhrv.typeacc
     %          'tanh'            Hyperbolical tangent
     %          'mexhat'          Mexican hat
     %          'gauss'           Gaussian
-    %          'flattop'         Flat top window
     case 'none'
         rr = 60/strhrv.hr;
         RR = repmat(rr,NB_SUB,1);

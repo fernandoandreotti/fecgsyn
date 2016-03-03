@@ -282,27 +282,6 @@ for i = filesproc%length(fls_ext)
         cd(num2str(i))
         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
         fname = strcat(fname{:});
-        % Until this point, input signals were prepared for the
-        % morphological analysis.
-        
-        % Obsolete mix matrix transform on reference
-        % Analysis for BSS, evaluate if application of mixing matrix changes
-        % FQT interval
-        %         if strcmp(method,'JADEICA')
-        %             tmpfref = cell(1,length(A));
-        %             pad = max(cellfun(@(x) size(x,1),A));
-        %             for i = 1:length(A)
-        %                 tmpfref{i} = A{i}*fecgref(:,(i-1)*TEMP_SAMPS+1:i*TEMP_SAMPS);
-         %                 tmpfref{i} = [tmpfref{i};zeros(pad-size(tmpfref{i},1),length(tmpfref{i}))];
-        %             end
-        %             fecgref2 = cell2mat(tmpfref);   % source domain FECG reference signal
-        %             [outputs{1:7}]= morpho_loop(fecgref2,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-        %             % Evaluating if applying mixing matrix makes a difference
-        %             [qt_time,~,th_time]= morpho_loop(fecgref,fecgref,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-        %             if strcmp(cas,'bas')  % baseline
-        %                 exp3dist(end+1,:) = {outputs{2}, qt_time, outputs{4},th_time};
-        %             end
-        %         else
         [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
             
 %         end
@@ -358,6 +337,11 @@ if ~exp3 % Experiment 2
     c4 = cellfun(@(x) ~isempty(regexp(x,'.c4','ONCE')),fls_orig);
     c5 = cellfun(@(x) ~isempty(regexp(x,'.c5','ONCE')),fls_orig);
     base = ~(c0|c1|c2|c3|c4|c5);
+    snr00 = cellfun(@(x) ~isempty(regexp(x,'.snr00dB','ONCE')),fls_orig);
+    snr03 = cellfun(@(x) ~isempty(regexp(x,'.snr03dB','ONCE')),fls_orig);
+    snr06 = cellfun(@(x) ~isempty(regexp(x,'.snr06dB','ONCE')),fls_orig);
+    snr09 = cellfun(@(x) ~isempty(regexp(x,'.snr09dB','ONCE')),fls_orig);
+    snr12 = cellfun(@(x) ~isempty(regexp(x,'.snr12dB','ONCE')),fls_orig);
     
     % Generate Table
     counter1 = 1;
@@ -413,6 +397,9 @@ if ~exp3 % Experiment 2
         set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
     end
     
+    
+    
+
 else
 
     

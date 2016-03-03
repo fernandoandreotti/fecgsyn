@@ -46,6 +46,9 @@ traj = zeros(N,3);
 switch type
     case 'none'
         traj = pos_i;
+    case 'step' % step change in trajectory
+        traj = repmat(pos_i,N,1);
+        traj(round(N/2)+1:end,:) = repmat(pos_f,round(N/2),1);
     case 'linear' % linear trajectory
         trajx = linspace(pos_i(1),pos_f(1),N)'; % linear trajectory for X
         trajy = linspace(pos_i(2),pos_f(2),N)'; % linear trajectory for Y

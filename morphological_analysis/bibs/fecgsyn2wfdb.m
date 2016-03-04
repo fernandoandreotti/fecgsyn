@@ -43,6 +43,7 @@ for i = 1:length(fls)
     signame = regexprep(cellstr([repmat('ch',size(out.mecg,1),1),num2str([1:size(out.mecg,1)]')]),'[^\w'']','');
     % save out.param as comment
     out.param = rmfield(out.param,'elpos'); % not necessary
+    if isfield(out.param,'noise_fct'), out.param = rmfield(out.param,'noise_fct');end
     sn=fieldnames(out.param); % check struct
     sc=struct2cell(out.param);
     convt=cellfun(@(x) iscell(x), sc); % some cells to strings
@@ -74,6 +75,7 @@ for i = 1:length(fls)
     % converting data    
     nlist = (arrayfun(@(x) strcat(sprintf('noise{%d}\n',x)),1:length(out.noise),'UniformOutput',0)); % list of noise sources
     flist = cellstr(arrayfun(@(x) strcat(sprintf('fecg{%d}\n',x)),1:length(out.fecg),'UniformOutput',0)); % list of fecg sources
+        
     for signals = {'mecg' flist{:} nlist{:}}
         % resampling
         sig = eval(['out.' signals{:}])';

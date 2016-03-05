@@ -40,10 +40,13 @@ for i = 1:length(fls)
     % getting information
     filename = ['sub' fls{i}(8:end-4)];
     fs = out.param.fs;
-    signame = regexprep(cellstr([repmat('ch',size(out.mecg,1),1),num2str([1:size(out.mecg,1)]')]),'[^\w'']','');
+    signame = regexprep(cellstr([repmat('ch',size(out.mecg,1),1),...
+        num2str([1:size(out.mecg,1)]')]),'[^\w'']','');
     % save out.param as comment
     out.param = rmfield(out.param,'elpos'); % not necessary
-    if isfield(out.param,'noise_fct'), out.param = rmfield(out.param,'noise_fct');end
+    out.param = rmfield(out.param,'fs');    % not necessary, specified in wfdb header
+    if isfield(out.param,'noise_fct'), out.param = ...
+            rmfield(out.param,'noise_fct');end % applied noise function can be derived from signal itself
     sn=fieldnames(out.param); % check struct
     sc=struct2cell(out.param);
     convt=cellfun(@(x) iscell(x), sc); % some cells to strings

@@ -1,14 +1,13 @@
 function residual = FECGSYN_kf_extraction(peaks,ecg,varargin)
 % MECG cancellation algorithms using the Extended Kalman Filter/Smoother.
-% The code is based on the PhD from Dr. Reza Sameni and the code provided in
-% OSET Toolbox (http://www.oset.ir/).
+% The code is based on the code provided in OSET Toolbox (http://www.oset.ir/)
+% by Dr. Reza Sameni and and also in (Andreotti 2014)
 %
 % Inputs
 %   peaks:      MQRS markers in ms. Each marker corresponds to the
 %               position of a MQRS
 %   ecg:        matrix of abdominal ecg channels
-%   method:     method to use (TS,TS-CERUTTI,TS-SUZANNA,TS-LP,TS-PCA)
-%   varargin:
+%   varargin (in this order):
 %       nbCycles:   number of cycles to use in order to build the mean MECG template
 %       fs:         sampling frequency (NOTE: this code is meant to work at 1kHz)
 %       smoothFlag: 0 for extraction using EKF and 1 for extraction using
@@ -17,34 +16,55 @@ function residual = FECGSYN_kf_extraction(peaks,ecg,varargin)
 %   residual:   residual containing the FECG
 %
 %
-% Adapted from:
-% Fetal Extraction Toolbox, version 1.0, February 2014
-% Released under the GNU General Public License
+% Reference
+% (Andreotti 2014) Andreotti, F., Riedl, M., Himmelsbach, T., Wedekind, D., 
+% Wessel, N., Stepan, H., … Zaunseder, S. (2014). Robust fetal ECG extraction and 
+% detection from abdominal leads. Physiol. Meas., 35(8), 1551–1567. 
+% 
+% (OSET) Sameni, R. (2010). The Open-Source Electrophysiological Toolbox (OSET). 
+% Retrieved from http://www.oset.ir
+% 
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
 %
-% Copyright (C) 2014 Fernando Andreotti
-% Dresden University of Technology, Institute of Biomedical Engineering
-% fernando.andreotti@mailbox.tu-dresden.de
-% Available at: http://fernando.planetarium.com.br
+% Examples:
+% TODO
 %
-% Current version:
-%
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% See also:
+% FECGSYN_ts_extraction
+% FECGSYN_bss_extraction
+% FECGSYN_adaptfilt_extraction
+% 
+% fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
-% Last updated : 24-07-2014
 %
+% 
+% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
+% 
+% Referencing this work
 %
-% This program is free software; you can redistribute it and/or modify it
-% under the terms of the GNU General Public License as published by the
-% Free Software Foundation; either version 2 of the License, or (at your
-% option) any later version.
-% This program is distributed in the hope that it will be useful, but
-% WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-% Public License for more details.
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Physiological Measurement.35 1537-1550. 2014.
+% 
+% 
+% Last updated : 10-03-2016
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %
 
 %% == Manage inputs
@@ -102,12 +122,13 @@ Wmean = [OptimumParams w 0]';
 Vmean = [0 0]'; % mean observation noise vector
 % initialize state
 X0 = [-pi 0]';  % state initialization
-% control input
-u = zeros(1,length(ecg));
 
 % = Run KF
 Xhat = FECGSYN_kf_EKFilter(y,X0,P0,Q0,R0,Wmean,Vmean,OptimumParams,w,fs,flag);
 
+if smoothFlag
+    warning('Smoothing not currently implemented.')
+end
 %% == compute residual
 residual = ecg - Xhat(2,:);
 

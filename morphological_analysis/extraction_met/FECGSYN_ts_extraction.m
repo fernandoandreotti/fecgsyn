@@ -1,15 +1,28 @@
 function residual = FECGSYN_ts_extraction(peaks,ecg,method,debug,varargin)
-% MECG cancellation algorithms using template subtraction-like methods.
-% Five template subtraction techniques are implemented going from the least
-% adaptive to the more adaptive ones:
-% TS,TS-CERUTTI,TS-SUZANNA,TS-LP,TS-PCA. If a more adaptive technique is
-% required then an the EKF technique as in Sameni et al. is the best.
+% Template subtraction for MECG cancellation. Five template subtraction techniques 
+% are implemented, namely TS,TS-CERUTTI,TS-SUZANNA,TS-LP,TS-PCA. If a more adaptive 
+% technique is required then an the EKF technique as in (Sameni 2007) is recommended.
 %
 % inputs
 %   peaks:      MQRS markers in ms. Each marker corresponds to the
 %               position of a MQRS
 %   ecg:        matrix of abdominal ecg channels
-%   method:     method to use (TS,TS-CERUTTI,TS-SUZANNA,TS-LP,TS-PCA)
+%   method:     method to use ('TS','TS-CERUTTI','TS-SUZANNA','TS-LP','TS-PCA')
+%               TS - simple template removal with no adaptation
+% 
+%               TS-CERUTTI - simply adapts the template to each beat using
+%               a scalar gain (Cerutti 1986)
+% 
+%               TS-SUZANNA - the scaling procedure was performed for the P, QRS, 
+%               and T waves independently. (Martens 2007)
+%               
+%               TS-LP - the template ECG is built by weighing the former cycles in 
+%               order to minimize the mean square error (as opposed to the other TS 
+%               where the weights of the different cycles are equal)(Vullings 2009)
+% 
+%               TS-PCA - stacks MECG cycles, selects some of the principal components, 
+%               next a back-propagation step takes place on a beat-to-beat basis, thus 
+%               producing MECG estimates every cycle (Kanjilal 1997)
 %   varargin:
 %       nbCycles:   number of cycles to use in order to build the mean MECG template
 %       NbPC:       number of principal components to use for PCA
@@ -18,29 +31,62 @@ function residual = FECGSYN_ts_extraction(peaks,ecg,method,debug,varargin)
 % output
 %   residual:   residual containing the FECG
 %
+% References:
+% (Cerutti 1986) Cerutti S, Baselli G, Civardi S, Ferrazzi E, Marconi A M and Pagani M Pardi G 1986 
+% Variability analysis of fetal heart rate signals as obtained from abdominal 
+% electrocardiographic recordings J. Perinatal Med. Off. J. WAPM 14 445–52
+% (Kanjilal 1997) Kanjilal P P, Palit S and Saha G 1997 Fetal ECG extraction 
+% from single-channel maternal ECG using singular value decomposition IEEE 
+% Trans. Biomed. Eng. 44 51–9
+% (Martens 2007) Martens S M M, Rabotti C, Mischi M and Sluijter R J 2007 A 
+% robust fetal ECG detection method for abdominal recordings Physiol. Meas. 28 373–88
+% (Sameni 2007)
+% (Vullings 2009) Vullings R, Peters C, Sluijter R, Mischi M, Oei S G and 
+% Bergmans J W M 2009 Dynamic segmentation linear prediction for maternal ECG removal in antenatal 
+% abdominal recordings Physiol. Meas. 30 291
+% 
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% Examples:
+% TODO
+%
+% See also:
+% FECGSYN_kf_extraction
+% FECGSYN_bss_extraction
+% FECGSYN_adaptfilt_extraction
+% 
+% fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 22-07-2014
+% 
+% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
+% 
+% Referencing this work
 %
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Physiological Measurement.35 1537-1550. 2014.
+% 
+% 
+%
+% Last updated : 10-03-2016
+% 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-%
+% 
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-%
+% 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 
 % == manage inputs
 nbCycles = 20;

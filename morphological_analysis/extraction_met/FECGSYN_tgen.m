@@ -1,6 +1,7 @@
-function [template,qrsloc,status] = FECGSYN_tgen(ecg,qrs,fs)
-% this function is used to contruct a template ecg based on the location of
-% the R-peaks. A series of peaks that match with each other are stacked to
+function [template,qrsloc,status] = FECGSYN_tgen(ecg,qrs,fs,debug)
+% function [template,qrsloc,status] = FECGSYN_tgen(ecg,qrs,fs,debug)
+% This function contructs a template ECG based on the location of the R-peaks, 
+% based on (Oster 2015). A series of peaks that match with each other are stacked to
 % build a template. This template can then be used for ecg morphological
 % analysis or further processing. Note that the qrs location inputed must
 % be as precise as possible. This approach for building the template ECG
@@ -18,12 +19,7 @@ function [template,qrsloc,status] = FECGSYN_tgen(ecg,qrs,fs)
 %    fs:            sampling frequency
 %
 % outputs
-%   relevantMode:   structure containing cycle, cycleMean and cycleStd
-%                   representing how many cycles have been selected to build the stack, the
-%                   mean ecg cycle that is built upon these selected cycles and the
-%                   standard deviation for each point of the template cycle as an indicator
-%                   of the precision of the estimation. *Only the dominant mode is outputted
-%                   for this application.*
+% 
 %   status:         bool, success or failed to extract a dominant mode
 %
 %
@@ -47,27 +43,65 @@ function [template,qrsloc,status] = FECGSYN_tgen(ecg,qrs,fs)
 %   nbcyc:   number of cycles used to build the template
 %
 %
-% Dual EKF, version 1.0, March 2014
+% Reference
+% Oster, J., Behar, J., Sayadi, O., Nemati, S., Johnson, A., & Clifford, G. (2015). Semi-supervised ECG 
+% Ventricular Beat Classification with Novelty Detection Based on Switching Kalman Filters. IEEE Trans. 
+% Biomed. Eng., 62(9), 2125–2134. http://doi.org/10.1109/TBME.2015.2402236
+% 
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+%
+% Examples:
+% TODO
+%
+% See also:
+% FECGSYN_kf_extraction
+% FECGSYN_kf_linearization
+% FECGSYN_kf_EKFilter
+% 
+% 
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+%
+% Examples:
+% TODO
+%
+% See also:
+% FECGSYN_kf_modelling
+% FECGSYN_kf_extraction
+% FECGSYN_kf_linearization
+% FECGSYN_kf_ECGmodelling
+% 
+% fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
-% Copyright (C) 2014  Joachim Behar
-% Oxford university, Intelligent Patient Monitoring Group
-% joachim.behar@eng.ox.ac.uk
+% Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
+% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 07-07-2014
-% This function is adapted from the OSET toolbox of Dr Reza Sameni
+% 
+% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
+% 
+% Referencing this work
 %
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Physiological Measurement.35 1537-1550. 2014.
+% 
+% 
+% Last updated : 10-03-2016
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %
-% This program is free software; you can redistribute it and/or modify it
-% under the terms of the GNU General Public License as published by the
-% Free Software Foundation; either version 2 of the License, or (at your
-% option) any later version.
-% This program is distributed in the hope that it will be useful, but
-% WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-% Public License for more details.
-
-global debug
 
 % == manage inputs
 if nargin<2; error('ecg_template_build: wrong number of input arguments \n'); end;
@@ -148,6 +182,12 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
     end
     
     % == detecting what mode is relevant
+    %   relevantMode:   structure containing cycle, cycleMean and cycleStd
+    %                   representing how many cycles have been selected to build the stack, the
+    %                   mean ecg cycle that is built upon these selected cycles and the
+    %                   standard deviation for each point of the template cycle as an indicator
+    %                   of the precision of the estimation. *Only the dominant mode is outputted
+    %                   for this application.*
     for i=1:length(Mode)
         % minimum amount of cycles and length
         if Mode{i}.NbCycles>NB_REL && mean(Mode{i}.cycleLen) >= MIN_TLEN*fs

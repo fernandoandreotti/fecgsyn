@@ -1,36 +1,72 @@
-function [OptimumParams,phase,ECGsd,w,wsd] = FECGSYN_kf_ECGmodelling(x,peaksidx,NbCycles,fs)
-%ecg_filt = FECGSYN_kf_ECGfiltering(ecg,peaks,nbCycles,fs,debug);
-%ECG FILTERING BLOCK Generates a model and call EKF/EKS
-%   > Inputs
+function [OptimumParams,phase,ECGsd,w,wsd] = FECGSYN_kf_ECGmodelling(x,peaksidx,NbCycles,fs,debug)
+% function [OptimumParams,phase,ECGsd,w,wsd] = FECGSYN_kf_ECGmodelling(x,peaksidx,NbCycles,fs)
+% Generates Kalman filter's ECG model. The code is based on the code provided in OSET Toolbox 
+% (http://www.oset.ir/) by Dr. Reza Sameni and also in (Andreotti 2014)
+% 
+%   Inputs
 %      x:            data to be preprocessed
 %      peaksidx:     maternal peak location
 %      NbCycles:     number of cycles used to initialize template
 %      fs:           sampling frequency [Hz]
-%      flag:         flag = 0 to use EKF, if flag=1 to use EKS
+%      flag:         flag = 0 to use EKF, if flag=1 to use EKS (TODO not implemented)
 %
-%  > Output
+%  Output
 %       Xhat:           filtered signal
 %
+% Reference
+% (Andreotti 2014) Andreotti, F., Riedl, M., Himmelsbach, T., Wedekind, D., 
+% Wessel, N., Stepan, H., … Zaunseder, S. (2014). Robust fetal ECG extraction and 
+% detection from abdominal leads. Physiol. Meas., 35(8), 1551–1567. 
+% 
+% (OSET) Sameni, R. (2010). The Open-Source Electrophysiological Toolbox (OSET). 
+% Retrieved from http://www.oset.ir
+% 
+% 
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% Examples:
+% TODO
+%
+% See also:
+% FECGSYN_kf_extraction
+% FECGSYN_kf_linearization
+% FECGSYN_kf_EKFilter
+%
+% 
+% fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
-% Last updated : 24-07-2014
+%
+% 
+% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
+% 
+% Referencing this work
+%
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Physiological Measurement.35 1537-1550. 2014.
+% 
+% 
+% Last updated : 10-03-2016
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %
 %
-% This program is free software; you can redistribute it and/or modify it
-% under the terms of the GNU General Public License as published by the
-% Free Software Foundation; either version 2 of the License, or (at your
-% option) any later version.
-% This program is distributed in the hope that it will be useful, but
-% WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-% Public License for more details.
-%
-global debug
+
 %% Parameters
 Nkernels = 7;          % number of kernels for Gaussian modelling
 NB_BINS = 500;          % number of phase bins (SWT depends on this number!!)
@@ -47,9 +83,9 @@ wsd = std(2*pi*fm,1);       % heart-rate standard deviation in rads.
 
 
 %% Generating average ECG beat
-phase = PhaseCalc(find(peaks),length(x)); % phase calculation
-phase_tmp = PhaseCalc(peaksidx(1:NbCycles),peaksidx(NbCycles)+300); % phase calculation
-[ECGmean,ECGsd,meanphase] = ECG_tgen(x(1:peaksidx(NbCycles)+300),phase_tmp,NB_BINS); % mean ECG extraction
+phase = FECGSYN_kf_phasecalc(find(peaks),length(x)); % phase calculation
+phase_tmp = FECGSYN_kf_phasecalc(peaksidx(1:NbCycles),peaksidx(NbCycles)+300); % phase calculation
+[ECGmean,ECGsd,meanphase] = FECGSYN_kf_templategen(x(1:peaksidx(NbCycles)+300),phase_tmp,NB_BINS); % mean ECG extraction
 
 if debug>1
     % = phase calculation figure
@@ -182,7 +218,7 @@ for i = 1:Nkernels
     
 end
 
-% = Re-run optimization procedure for definite solution
+%% = Re-run optimization procedure for definite solution
 % optimization procedure options (more consuming than first)
 options = optimset('TolX',1e-4,'TolFun',1e-4,'MaxIter',Nkernels*100,'MaxFunEval',Nkernels*1000,'Display','off');
 % adapting Gaussians coordinates to bins coordinates
@@ -218,7 +254,7 @@ if any(idx2high)
 end
 
 
-% = Final Gaussian fitting
+%% = Final Gaussian fitting
 OptimumParams = lsqnonlin(@(InitParams) FECGSYN_kf_ECGModelError(InitParams,ECGmean,meanphase),InitParams,LowBound,UpBound,options);
 
 clear L Li LowBound Model OptimPar ECGmean_aux
@@ -256,71 +292,6 @@ end
 
 end
 
-%% Phase Calculation
-%
-% This function generates a saw-tooth phase signal, based on QRS locations
-%
-% > Inputs
-%       peaks:          fidutials location, in these points phase is zero
-%       NbSamples:      number of samples on the signal
-%
-% This function is based on Dr. Sameni's OSET
-%
-%
-function phase = PhaseCalc(peaks,NbSamples)
-phase = zeros(1,NbSamples);
-m = diff(peaks);            % gets distance between peaks
-% = dealing with borders (first and last peaks may not be full waves)
-
-% first interval uses second interval as reference
-L = peaks(1);       %length of first interval
-if isempty(m)       % only ONE peak was detected
-    phase(1:NbSamples) = linspace(-2*pi,2*pi,NbSamples);
-else
-    phase(1:L) = linspace(2*pi-L*2*pi/m(1),2*pi,L);
-    % beats in the middle
-    for i = 1:length(peaks)-1;      % generate phases between 0 and 2pi for almos all peaks
-        phase(peaks(i):peaks(i+1)) = linspace(0,2*pi,m(i)+1);
-    end                             % 2pi is overlapped by 0 on every loop
-    % last interval
-    % uses second last interval as reference
-    L = length(phase)-peaks(end);   %length of last interval
-    phase(peaks(end):end) = linspace(0,L*2*pi/m(end),L+1);
-end
-phase = mod(phase,2*pi);
-phase(phase>pi) = phase(phase>pi)- 2*pi;
-end
 
 
-%% Calculation of the mean and SD of ECG waveforms in different beats
-%
-% > Inputs
-%       ecg:            input ECG signal
-%       phase:          ECG phase
-%       NB_BINS:        number of desired phase bins
-%
-% > Outputs
-%       ECGmean:        mean ECG beat
-%       ECGsd:          standard deviation of ECG beats
-%       meanPhase:      the corresponding phase for one ECG beat
-%
-%
-% Although this function structure is based on OSET's toolbox, the
-% averaging procedure itself is based on Dr. Oster's approach for stacking
-% and averaging beats.
-function [ECGmean,ECGsd,meanPhase] = ECG_tgen(ecg,phase,NB_BINS)
-
-ini_cycles = find(phase(2:end)<0&phase(1:end-1)>0)+1; % start of cycles
-cycle_len = diff(ini_cycles); % distance between cycles
-end_cycles = ini_cycles(1:end-1)+cycle_len-1; % start of cycles
-meanPhase = linspace(-pi,pi,NB_BINS);
-% stacking cycles
-cycle = arrayfun(@(x) interp1(phase(ini_cycles(x):end_cycles(x)),...
-    ecg(1,ini_cycles(x):end_cycles(x)),meanPhase,'spline'),...
-    1:length(ini_cycles)-1,'UniformOutput',0);
-cycle = cell2mat(cycle');
-ECGmean = mean(cycle);
-ECGsd = std(cycle);
-
-end
 

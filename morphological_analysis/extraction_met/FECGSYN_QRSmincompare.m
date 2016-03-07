@@ -1,5 +1,6 @@
 function [fqrs,maxch] = FECGSYN_QRSmincompare(data,fref,fs,varargin)
-%% BxB compare on minute basis
+% function [fqrs,maxch] = FECGSYN_QRSmincompare(data,fref,fs,varargin)
+% BxB compare on minute basis
 %
 % This is function detects and performs comparison between reference and
 % detection on a minute basis or pre-defined interval.

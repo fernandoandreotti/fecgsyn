@@ -1,4 +1,4 @@
-function FECGSYNDB_datagen(path,debug)
+function FECGSYNDB_datagen(path,debug,varargin)
 %function FECGSYN_generate_data(path,debug)
 % Script used for generating data in FECGSYNDB (see https://www.physionet.org/physiotools/ipmcode/fecgsyn/)
 % 
@@ -54,7 +54,13 @@ function FECGSYNDB_datagen(path,debug)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+%% == check inputs
+if nargin >2, error('Too many inputs to data generation function'),end
+slashchar = char('/'*isunix + '\'*(~isunix));
+optargs = {[pwd slashchar] 5};  % default values for input arguments
+newVals = cellfun(@(x) ~isempty(x), varargin);
+optargs(newVals) = varargin(newVals);
+[path,debug] = optargs{:};
 
 % Generating simulated data with various SNR for morphological analysis
 % global parameters
@@ -189,29 +195,4 @@ for i = 1:10            % generate 5 cases of each
         end
     end
 end
-end
-% this function eliminates some of the substructures from "out" and
-% compresses the variables to int16 for saving disk space
-function out=clean_compress(out)
-    gain = 3000;
-    out_tmp=rmfield(out,{'f_model' 'm_model' 'vols' 'selvcgm' 'selvcgf'});
-    out = struct();
-    out.mecg = int16(round(3000*out_tmp.mecg));
-    if ~isempty(out_tmp.fecg)
-        for i = 1:length(out_tmp.fecg)
-            out.fecg{i} = int16(round(3000*out_tmp.fecg{i}));
-        end
-    else
-        out.fecg = {};
-    end
-    if ~isempty(out_tmp.noise)
-        for i = 1:length(out_tmp.noise)
-            out.noise{i} = int16(round(gain*out_tmp.noise{i}));
-        end
-    else
-        out.noise = {};
-    end
-    out.mqrs = out_tmp.mqrs;
-    out.fqrs = out_tmp.fqrs;
-    out.param = out_tmp.param;
 end

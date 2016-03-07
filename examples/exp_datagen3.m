@@ -1,4 +1,4 @@
-function exp_datagen3(path,debug)
+function exp_datagen3(path,debug,varargin)
 % Yet another example of data generation
 % based on exp_datagen2.m The focus is however rather in having various SNR 
 % levels. Used for training SQI algorithms.
@@ -65,7 +65,16 @@ function exp_datagen3(path,debug)
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 %  Generating simulated data with various SNR for morphological analysis
-%% global parameters
+
+%% == check inputs
+if nargin >2, error('Too many inputs to data generation function'),end
+slashchar = char('/'*isunix + '\'*(~isunix));
+optargs = {[pwd slashchar] 5};  % default values for input arguments
+newVals = cellfun(@(x) ~isempty(x), varargin);
+optargs(newVals) = varargin(newVals);
+[path,debug] = optargs{:};
+
+%% Global parameters
 paramorig.fs = 1000;            % sampling frequency [Hz]
 paramorig.n = 90*paramorig.fs;  % number of data points to generate (5 min)
 % electrode positions
@@ -120,7 +129,7 @@ for i = 1:5           % generate 5 cases of each
             param.fres = 0.9 + 0.05*randn; % foetus respiration frequency
             parambase = param;              % these parameters are mostly maintained
             out = run_ecg_generator(param,debug);  % stationary output
-            out = clean_compress(out);
+            out = clean_compress(out); %#ok<*NASGU>
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c0',i,SNRmn,loop)],'out')
             toc
             clear out

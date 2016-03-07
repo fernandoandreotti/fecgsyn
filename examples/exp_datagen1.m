@@ -67,11 +67,16 @@ function exp_datagen1(path,debug,varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%%% == check inputs
-
+%% == check inputs
+if nargin >2, error('Too many inputs to data generation function'),end
+slashchar = char('/'*isunix + '\'*(~isunix));
+optargs = {[pwd slashchar] 5};  % default values for input arguments
+newVals = cellfun(@(x) ~isempty(x), varargin);
+optargs(newVals) = varargin(newVals);
+[path,debug] = optargs{:};
     
 
-%%% == parameters for simulations
+%% == parameters for simulations
 close all; clc;
 THR = 0.2; % threshold of QRS detector
 mVCG = 5; % choose mother VCG (if empty then the simulator randomly choose one within the set of available VCGs)
@@ -80,8 +85,9 @@ CH_CANC = 5; % channel onto which to perform MECG cancellation
 POS_DEV = 0; % slight deviation from default hearts and electrodes positions 
              % (0: hard coded values, 1: random deviation and phase initialisation)
 
+%% Simulating data
 %%% == (1) SIMPLE RUN
-close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
+close all, clear param out
 disp('---- Example (1): SIMPLE RUN ----');
 param.fs = 1000; % sampling frequency [Hz]
 
@@ -90,11 +96,12 @@ if ~isempty(fVCG); param.fvcg = fVCG; end;
 if ~isempty(POS_DEV); param.posdev = 0; end;
     
 out = run_ecg_generator(param,debug);
+out=clean_compress(out);
 save([path 'fecgsyn_c1'],'out')
 
 
 %%% == (2) ADDING NOISE
-close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
+close all, clear param out
 disp('---- Example (2): ADDING NOISE ----');
 param.fs = 1000;
 param.ntype = {'MA'}; % noise types
@@ -103,7 +110,8 @@ if ~isempty(mVCG); param.mvcg = mVCG; end;
 if ~isempty(fVCG); param.fvcg = fVCG; end;
 if ~isempty(POS_DEV); param.posdev = 0; end;
 
-out = run_ecg_generator(param,debug); %#ok<*NASGU>
+out = run_ecg_generator(param,debug);
+out=clean_compress(out);
 save([path 'fecgsyn_c2'],'out')
 
 
@@ -120,7 +128,7 @@ save([path 'fecgsyn_c2'],'out')
 % param.noise_fct{3} = 0.1;                                   % e.g. of weighting noise power 
 
 %%% == (3) ADDING RESPIRATION
-close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
+close all, clear param out
 disp('---- Example (3): ADDING RESPIRATION ----');
 param.fs = 1000;
 param.mres = 0.25; % mother respiration frequency
@@ -130,11 +138,12 @@ if ~isempty(fVCG); param.fvcg = fVCG; end;
 if ~isempty(POS_DEV); param.posdev = 0; end;
 
 out = run_ecg_generator(param,debug);
+out=clean_compress(out); %#ok<*NASGU>
 save([path 'fecgsyn_c3'],'out')
 
 
 %%% == (4) ADDING FOETAL MOVEMENT
-close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
+close all, clear param out
 disp('---- Example (4): ADDING FOETAL MOVEMENT ----');
 param.fs = 1000;
 debug=4;
@@ -144,11 +153,12 @@ if ~isempty(fVCG); param.fvcg = fVCG; end;
 if ~isempty(POS_DEV); param.posdev = 0; end;
 
 out = run_ecg_generator(param,debug);
+out=clean_compress(out);
 save([path 'fecgsyn_c4'],'out')
 
 
 %%% == (5) ADDING HEART RATE VARIABILITY
-close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
+close all, clear param out
 disp('---- Example (5): ADDING HEART RATE VARIABILITY ----');
 param.fs = 1000;
 
@@ -168,13 +178,15 @@ if ~isempty(fVCG); param.fvcg = fVCG; end;
 if ~isempty(POS_DEV); param.posdev = 0; end;
 
 out = run_ecg_generator(param,debug);
+out=clean_compress(out);
 save([path 'fecgsyn_c5'],'out')
 
 
 %%% == (6) ADDING UTERINE CONTRACTION
 % simulating uterus activity (through muscular noise) and heart rate changes for both 
 % fetus (umbilical cord compression) and mother (acceleration followed by decelleration)
-close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
+close all; 
+clear param out
 disp('---- Example (6): ADDING UTERINE CONTRACTION ----');
 param.fs = 1000;
 param.n = 60000;
@@ -204,12 +216,13 @@ param.fhr = 130;
 param.ftypeacc = {'mexhat'};
 param.faccstd{1} = 0.5;
 out = run_ecg_generator(param,debug);
+out=clean_compress(out);
 save([path 'fecgsyn_c6'],'out')
 
 
 
 %%% == (7) ADDING ECTOPIC BEATS
-close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
+close all, clear param out
 disp('---- Example (7): ADDING ECTOPIC BEATS ----');
 
 param.fs = 1000; % sampling frequency [Hz]
@@ -219,11 +232,12 @@ if ~isempty(POS_DEV); param.posdev = 0; end;
 param.mectb = 1; param.fectb = 1; 
 
 out = run_ecg_generator(param,debug);
+out=clean_compress(out);
 save([path 'fecgsyn_c7'],'out')
 
 
 %%% == (8) MULTIPLE PREGNANCIES (e.g twins)
-close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
+close all, clear param out
 disp('---- Example (8): MULTIPLE PREGNANCIES ----');
 
 param.fs = 1000;
@@ -239,5 +253,6 @@ param.fheart{1} = [-pi/10 0.35 -0.1];
 param.fheart{2} = [pi/10 0.4 -0.2];
 
 out = run_ecg_generator(param,debug);
+out=clean_compress(out);
 save([path 'fecgsyn_c8'],'out')
 

@@ -24,11 +24,12 @@ function exp_datagen3(path,debug)
 % More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
 %
 % Examples:
-% exp_datagen3(pwd,5) % generate data and 
+% exp_datagen3(pwd,5) % generate data and plots
 %
 % See also:
+% exp_datagen1
 % exp_datagen2 
-% generate_FECGSYNDB
+% FECGSYNDB_datagen
 % 
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License

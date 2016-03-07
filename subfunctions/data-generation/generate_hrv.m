@@ -114,8 +114,8 @@ hr = 1./RR_rs(1:n);             % heart rate in Hz
 w = 2*pi*hr;                    % angular frequency
 
 % == Generating theta
-theta = FECGx_kf_PhaseCalc(round(csum*fs),n);
+theta = FECGSYN_kf_phasecalc(round(csum*fs),n);
 nshift = find(theta>theta0,1,'first'); % considering theta0
-theta = FECGx_kf_PhaseCalc(round(csum*fs),n+nshift-1);
+theta = FECGSYN_kf_phasecalc(round(csum*fs),n+nshift-1);
 theta(1:nshift-1) = [];
 end

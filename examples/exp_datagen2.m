@@ -3,6 +3,10 @@ function exp_datagen2(path,debug)
 % Focus of this work is following MECG changes of both amplitude and form.
 % Fetal and noise changes are therefore less important.
 % 
+%  Input
+%   path:            path where data shall be stored
+%   debug:           flag to debug plots
+% 
 %  Here are the specifics
 % - 5 feto-maternal combinations
 % - 3 SNR levels (3,6,9 dB)
@@ -25,11 +29,13 @@ function exp_datagen2(path,debug)
 % More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
 %
 % Examples:
-% exp_datagen3(pwd,5) % generate data and 
+% exp_datagen2(pwd,5) % generate data and plots
 %
 % See also:
-% exp_datagen3
-% generate_FECGSYNDB
+% exp_datagen1
+% exp_datagen3 
+% FECGSYNDB_datagen
+% 
 % 
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License

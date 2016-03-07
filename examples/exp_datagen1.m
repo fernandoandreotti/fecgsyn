@@ -1,10 +1,40 @@
-%% main function for the fecg model
+function exp_datagen1(path,debug,varargin)
+% function exp_datagen1(path,debug)
+% Exemplary function to generate realistic NI-FECG signals
+%  
 % 
 % this script presents the various physiological events modelled by the
 % mecg-fecg model. For each example only one of these events is used. 
+% The code provides a good start to understant the model parametrization.
 % This is in order to better highlight the effect of each individual event
-% on the ECG morphology.
+% on the ECG morphology. This code was used in Behar et al 2014, mostly
+% default settings from the generator were used.
+% 
 %
+% Cases/events:
+% - Case 1 - Baseline
+% - Case 2 - Noise addition
+% - Case 3 - Adding respiratory movements for both mother and foetus
+% - Case 4 - Foetal movements added (helixoidal)
+% - Case 5 - Maternal and foetal similar heart rate (alternatively changes
+%            in the heart rates)
+% - Case 6 - Simulation of uterine contraction with noise and physiological
+%            based heart rate changes
+% - Case 7 - Ectopic beats
+% - Case 8 - Twin pregnancy
+%
+% 
+%
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+%
+% Examples:
+% exp_datagen1(pwd,5) % generate data and plots
+%
+% See also:
+% exp_datagen2
+% exp_datagen3 
+% FECGSYNDB_datagen
+% 
 % 
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
@@ -37,18 +67,20 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+%%% == check inputs
 
-%% == GLOBAL
+    
+
+%%% == parameters for simulations
 close all; clc;
 THR = 0.2; % threshold of QRS detector
 mVCG = 5; % choose mother VCG (if empty then the simulator randomly choose one within the set of available VCGs)
 fVCG = 4; % choose foetus VCG (ibid)
-debug = 5; % debug level
 CH_CANC = 5; % channel onto which to perform MECG cancellation
 POS_DEV = 0; % slight deviation from default hearts and electrodes positions 
              % (0: hard coded values, 1: random deviation and phase initialisation)
 
-%% == (1) SIMPLE RUN
+%%% == (1) SIMPLE RUN
 close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
 disp('---- Example (1): SIMPLE RUN ----');
 param.fs = 1000; % sampling frequency [Hz]
@@ -58,12 +90,10 @@ if ~isempty(fVCG); param.fvcg = fVCG; end;
 if ~isempty(POS_DEV); param.posdev = 0; end;
     
 out = run_ecg_generator(param,debug);
-cmqrs = adjust_mqrs_location(out.mixture(CH_CANC,:),out.mqrs,param.fs,0);
-res = mecg_cancellation(cmqrs,out.mixture(CH_CANC,:),'TS-CERUTTI');
-[qrs_det,~,~] = qrs_detect(res,THR,0.150,param.fs,[],[],debug);
-stats(out.fqrs{1}/param.fs,qrs_det/param.fs,0.05,0.5,out.param.n/param.fs,param.fs);
+save([path 'fecgsyn_c1'],'out')
 
-%% == (2) ADDING NOISE
+
+%%% == (2) ADDING NOISE
 close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
 disp('---- Example (2): ADDING NOISE ----');
 param.fs = 1000;
@@ -73,11 +103,9 @@ if ~isempty(mVCG); param.mvcg = mVCG; end;
 if ~isempty(fVCG); param.fvcg = fVCG; end;
 if ~isempty(POS_DEV); param.posdev = 0; end;
 
-out = run_ecg_generator(param,debug);
-cmqrs = adjust_mqrs_location(out.mixture(CH_CANC,:),out.mqrs,param.fs,0);
-res = mecg_cancellation(cmqrs,out.mixture(CH_CANC,:),'TS-CERUTTI');
-[qrs_det,~,~] = qrs_detect(res,THR,0.150,param.fs,[],[],debug);
-stats(out.fqrs{1}/param.fs,qrs_det/param.fs,0.05,0.5,out.param.n/param.fs,param.fs);
+out = run_ecg_generator(param,debug); %#ok<*NASGU>
+save([path 'fecgsyn_c2'],'out')
+
 
 % % multiple noise sources
 % This commented script is an example of how multiple sources can be added
@@ -91,7 +119,7 @@ stats(out.fqrs{1}/param.fs,qrs_det/param.fs,0.05,0.5,out.param.n/param.fs,param.
 % param.noise_fct{2} = 1+sin(linspace(-2*pi,2*pi,param.n));   % sinus function
 % param.noise_fct{3} = 0.1;                                   % e.g. of weighting noise power 
 
-%% == (3) ADDING RESPIRATION
+%%% == (3) ADDING RESPIRATION
 close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
 disp('---- Example (3): ADDING RESPIRATION ----');
 param.fs = 1000;
@@ -102,12 +130,10 @@ if ~isempty(fVCG); param.fvcg = fVCG; end;
 if ~isempty(POS_DEV); param.posdev = 0; end;
 
 out = run_ecg_generator(param,debug);
-cmqrs = adjust_mqrs_location(out.mixture(CH_CANC,:),out.mqrs,param.fs,0);
-res = mecg_cancellation(cmqrs,out.mixture(CH_CANC,:),'TS-CERUTTI');
-[qrs_det,~,~] = qrs_detect(res,THR,0.150,param.fs,[],[],debug);
-stats(out.fqrs{1}/param.fs,qrs_det/param.fs,0.05,0.5,out.param.n/param.fs,param.fs);
+save([path 'fecgsyn_c3'],'out')
 
-%% == (4) ADDING FOETAL MOVEMENT
+
+%%% == (4) ADDING FOETAL MOVEMENT
 close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
 disp('---- Example (4): ADDING FOETAL MOVEMENT ----');
 param.fs = 1000;
@@ -118,12 +144,10 @@ if ~isempty(fVCG); param.fvcg = fVCG; end;
 if ~isempty(POS_DEV); param.posdev = 0; end;
 
 out = run_ecg_generator(param,debug);
-cmqrs = adjust_mqrs_location(out.mixture(CH_CANC,:),out.mqrs,param.fs,0);
-res = mecg_cancellation(cmqrs,out.mixture(CH_CANC,:),'TS-CERUTTI');
-[qrs_det,~,~] = qrs_detect(res,THR,0.150,param.fs,[],[],debug);
-stats(out.fqrs{1}/param.fs,qrs_det/param.fs,0.05,0.5,out.param.n/param.fs,param.fs);
+save([path 'fecgsyn_c4'],'out')
 
-%% == (5) ADDING HEART RATE VARIABILITY
+
+%%% == (5) ADDING HEART RATE VARIABILITY
 close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
 disp('---- Example (5): ADDING HEART RATE VARIABILITY ----');
 param.fs = 1000;
@@ -144,12 +168,10 @@ if ~isempty(fVCG); param.fvcg = fVCG; end;
 if ~isempty(POS_DEV); param.posdev = 0; end;
 
 out = run_ecg_generator(param,debug);
-cmqrs = adjust_mqrs_location(out.mixture(CH_CANC,:),out.mqrs,param.fs,0);
-res = mecg_cancellation(cmqrs,out.mixture(CH_CANC,:),'TS-CERUTTI');
-[qrs_det,~,~] = qrs_detect(res,THR,0.150,param.fs,[],[],debug);
-stats(out.fqrs{1}/param.fs,qrs_det/param.fs,0.05,0.5,out.param.n/param.fs,param.fs);
+save([path 'fecgsyn_c5'],'out')
 
-%% == (6) ADDING UTERINE CONTRACTION
+
+%%% == (6) ADDING UTERINE CONTRACTION
 % simulating uterus activity (through muscular noise) and heart rate changes for both 
 % fetus (umbilical cord compression) and mother (acceleration followed by decelleration)
 close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
@@ -162,7 +184,7 @@ if ~isempty(POS_DEV); param.posdev = 0; end;
 
 % Case 6a (early deceleration)
 x = linspace(-param.n/10,param.n/10,param.n);
-
+% mu = 0;
 % Case 6b (late deceleration)
  mu = 0.5; % distance from center-beginning [%]
 param.maccmean = -mu;
@@ -182,13 +204,11 @@ param.fhr = 130;
 param.ftypeacc = {'mexhat'};
 param.faccstd{1} = 0.5;
 out = run_ecg_generator(param,debug);
-cmqrs = adjust_mqrs_location(out.mixture(CH_CANC,:),out.mqrs,param.fs,0);
-res = mecg_cancellation(cmqrs,out.mixture(CH_CANC,:),'TS-CERUTTI');
-[qrs_det,~,~] = qrs_detect(res,THR,0.150,param.fs,[],[],debug);
-stats(out.fqrs{1}/param.fs,qrs_det/param.fs,0.05,0.5,out.param.n/param.fs,param.fs);
+save([path 'fecgsyn_c6'],'out')
 
 
-%% == (7) ADDING ECTOPIC BEATS
+
+%%% == (7) ADDING ECTOPIC BEATS
 close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
 disp('---- Example (7): ADDING ECTOPIC BEATS ----');
 
@@ -199,12 +219,10 @@ if ~isempty(POS_DEV); param.posdev = 0; end;
 param.mectb = 1; param.fectb = 1; 
 
 out = run_ecg_generator(param,debug);
-cmqrs = adjust_mqrs_location(out.mixture(CH_CANC,:),out.mqrs,param.fs,0);
-res = mecg_cancellation(cmqrs,out.mixture(CH_CANC,:),'TS-CERUTTI');
-[qrs_det,~,~] = qrs_detect(res,THR,0.150,param.fs,[],[],debug);
-stats(out.fqrs{1}/param.fs,qrs_det/param.fs,0.05,0.5,out.param.n/param.fs,param.fs);
+save([path 'fecgsyn_c7'],'out')
 
-%% == (8) MULTIPLE PREGNANCIES (e.g twins)
+
+%%% == (8) MULTIPLE PREGNANCIES (e.g twins)
 close all; clear param; clear res; clear out; clear cmqrs; clear qrs_det;
 disp('---- Example (8): MULTIPLE PREGNANCIES ----');
 
@@ -221,7 +239,5 @@ param.fheart{1} = [-pi/10 0.35 -0.1];
 param.fheart{2} = [pi/10 0.4 -0.2];
 
 out = run_ecg_generator(param,debug);
-cmqrs = adjust_mqrs_location(out.mixture(CH_CANC,:),out.mqrs,param.fs,0);
-res = mecg_cancellation(cmqrs,out.mixture(CH_CANC,:),'TS-CERUTTI');
-[qrs_det,~,~] = qrs_detect(res,THR,0.150,param.fs,[],[],debug);
-stats(out.fqrs{1}/param.fs,qrs_det/param.fs,0.05,0.5,out.param.n/param.fs,param.fs);
+save([path 'fecgsyn_c8'],'out')
+

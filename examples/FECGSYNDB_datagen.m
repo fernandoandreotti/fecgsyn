@@ -1,10 +1,28 @@
-%% Script for generating data for stress testing spatial filtering techniques
+function FECGSYNDB_datagen(path,debug)
+%function FECGSYN_generate_data(path,debug)
+% Script used for generating data in FECGSYNDB (see https://www.physionet.org/physiotools/ipmcode/fecgsyn/)
+% 
 %
 % this script generates a series of abdominal mixtures, containing i) a
 % stationary case and ii) non-stationary case (when adding breathing
 % effects, foetal movement etc.).
 %
+%  Input
+%   path:            path where data shall be stored
+%   debug:           flag to debug plots
+% 
 %
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+%
+% Examples:
+% FECGSYNDB_datagen(pwd,5) % generate data and plots
+%
+% See also:
+% exp_datagen1
+% exp_datagen2 
+% FECGSYNDB_datagen
+% 
+% 
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
@@ -36,11 +54,9 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function FECGSYN_generate_data(path)
 
-debug = 0;
 
-%% Generating simulated data with various SNR for morphological analysis
+% Generating simulated data with various SNR for morphological analysis
 % global parameters
 paramorig.fs = 1000;            % sampling frequency [Hz]
 paramorig.n = 180*paramorig.fs;  % number of data points to generate (5 min)
@@ -101,12 +117,12 @@ for i = 1:10            % generate 5 cases of each
             param_noise = rmfield(param_noise,{'ntype' 'noise_fct'});         % will not be re-simulated
             param_noise.posdev = 0;    % maternal and fetal hearts fixed
             
-            % Baseline: no noise added
+            % Case 0: baseline, no noise added
             out.noise = [];
             out.param = rmfield(out.param,{'ntype' 'noise_fct'});
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d',i,SNRmn,loop)],'out')
             clear out
-            %% non-stationary mixture
+            
             % Case 1: foetal movement
             % no need to simulate again
             param = param_noise;
@@ -116,6 +132,7 @@ for i = 1:10            % generate 5 cases of each
             out.noise = out_noise.noise;    % re-inserting noise
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c1',i,SNRmn,loop)],'out')
             clear out
+            
             % Case 2: rate rate accelerations
             param = param_noise;
             param.macc = (20+10*randn)*sign(randn); % maternal acceleration in HR [bpm]
@@ -127,6 +144,7 @@ for i = 1:10            % generate 5 cases of each
             out.noise = out_noise.noise;    % re-inserting noise
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
             clear out
+            
             % Case 3: contraction
             param = param_noise;
             x = linspace(-param.n/10,param.n/10,param.n);
@@ -146,6 +164,7 @@ for i = 1:10            % generate 5 cases of each
             out.noise = [out.noise out_noise.noise];
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c3',i,SNRmn,loop)],'out')
             clear out
+            
             % Case 4: ectopic beats
             param = param_noise;
             param.mectb = 1; param.fectb = 1;
@@ -154,6 +173,7 @@ for i = 1:10            % generate 5 cases of each
             out.noise = out_noise.noise;    % re-inserting noise
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c4',i,SNRmn,loop)],'out')
             clear out
+            
             % Case 5: twins
             param = param_noise;
             param.fhr(2) = 135+25*randn;

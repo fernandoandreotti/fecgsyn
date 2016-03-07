@@ -31,6 +31,12 @@ function [dmodel, f_handles, misc] = add_noisedipole(N,fs,ntype,epos,noisepos,de
 %        dmodel.SNRfct - function which modulates SNR of noise. E.g. 
 %                             sin(linspace(-pi,pi,N)
 % 
+% Change log:
+% 2015.11.03 - Changes made by Julien Oster have been incorporated, several
+% improvements to the AR model should allow faster generation
+% 
+% 
+% 
 % fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
@@ -38,7 +44,7 @@ function [dmodel, f_handles, misc] = add_noisedipole(N,fs,ntype,epos,noisepos,de
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 12-08-2014
+% Last updated : 03-11-2015
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -67,7 +73,6 @@ AR_ORDER = 12; % number of poles
 FS_NSTDB = 360; % sampling frequency of NSTDB
 NP_NSTDB = 20*FS_NSTDB; % number of points to select in NSTDB records to generate the AR coefficients
 LG_NSTDB = FS_NSTDB*29*60-NP_NSTDB; % number of points in NSTDB
-N_SAMP = floor(N/(fs/FS_NSTDB)); % N samples at fs correspond to N_SAMP at FS_NSTDB
 NB_EL = size(epos,1); % number of electrodes
 
 f_handles = [];
@@ -96,17 +101,19 @@ if strcmp('MA',ntype) || strcmp('EM',ntype)
     [B,A] = butter(5,1*2/FS_NSTDB,'high'); % high-pass filter with 1 Hz
     noise(:,1) = filtfilt(B,A,noise(:,1));
     noise(:,2) = filtfilt(B,A,noise(:,2));
+    noiser(:,1) = resample(noise(:,1),fs,FS_NSTDB);
+    noiser(:,2) = resample(noise(:,2),fs,FS_NSTDB);
+    noise = noiser;
 end
 
 % == AR model
-x = randn(N_SAMP+AR_ORDER,2); % generating random signal to be filtered by AR model
-a = zeros(AR_ORDER,N_SAMP+AR_ORDER); % allocating
-noise_ar = zeros(N,3);
-y = zeros(N_SAMP+AR_ORDER,1);          
+x = randn(N+AR_ORDER,2); % generating random signal to be filtered by AR model
+a = zeros(AR_ORDER,N+AR_ORDER); % allocating
+noise_ar = zeros(N,2);
+y = zeros(N+AR_ORDER,1);          
 st = -0.001; % start
 ed = 0.001; % end
-rdNb = st + (ed-st).*rand(AR_ORDER,2*max(N,N_SAMP),2); % generate rd number in [st ed]
-                                           % generating for both noise channels
+
 for cc=1:2
     % for each channel vary the poles in the same fashion
     [atemp,~] = aryule(noise(:,cc),AR_ORDER); % a global AR model
@@ -114,11 +121,12 @@ for cc=1:2
     rinit = roots(atemp); % gets the poles
     ainit = atemp;
     % evolving AR model
-    for ev=2:N_SAMP+AR_ORDER
+    for ev=2:N+AR_ORDER
         r = roots(atemp); % gets the poles
         sImg = imag(r);
         sRea = real(r);
-        dz = diag(sRea)*rdNb(:,(cc-1)*N+ev,1) + diag(sImg)*rdNb(:,(cc-1)*N+ev,2).*1i;
+        rdNb = st + (ed-st).*rand(AR_ORDER,2); % compute new rand evolution for new sample
+        dz = diag(sRea)*rdNb(:,1) + diag(sImg)*rdNb(:,2).*1i;
         pn = r + dz; % varying the poles
         ind = find(abs(rinit - pn)>0.05); % constrain the AR coeff not to move too far from initial coeff location
         pn(ind) = r(ind);
@@ -126,12 +134,11 @@ for cc=1:2
         pn(indlim) = r(indlim);
         [~,atemp] = zp2tf(0,pn,1); % back to filter coefficients (gain set to 1)
         a(:,ev) = atemp(2:end);
+        if ev>AR_ORDER
+            y(ev) = x(ev,cc)-a(:,ev)'*y(ev-1:-1:ev-AR_ORDER);
+        end
     end
-    for i = AR_ORDER+1:N_SAMP+AR_ORDER
-        y(i) = x(i,cc)-a(:,i)'*y(i-1:-1:i-AR_ORDER);
-    end
-    y = y(AR_ORDER+1:end); % skipping initialisation
-    noise_ar(:,cc) = resample((y-mean(y))/std(y),fs,FS_NSTDB); % resampling, zero mean and unit variance
+    noise_ar(:,cc) = y(AR_ORDER+1:end); % skipping initialisation
 end
 
 % == produce third channel using PCA
@@ -180,25 +187,25 @@ if debug>0
     xlim([-1 1]); ylim([-1 1]);
 end
 
-if debug>1
-    % == selected noise analysis
-    tmp_handle = figure('name','real noise');
-    if debug == 11 % corresponds to running the code from the gui
-        set(tmp_handle, 'Visible', 'off');
-    end
-    f_handles = [f_handles, tmp_handle];
-    tm = 1/FS_NSTDB:1/FS_NSTDB:NP_NSTDB/FS_NSTDB;
-    for cc=1:2
-        subplot(2,1,cc); plot(tm,noise(:,cc),'color',col(cc,:),'LineWidth',LINE_WIDTH);
-        xlim([0 10]);
-        set(gca,'FontSize',FONT_SIZE);
-        set(findall(gcf,'type','text'),'fontSize',FONT_SIZE); 
-    end
-    xlabel('Time [sec]'); ylabel('Amplitude [NU]');
-    xlim([0 10]);
-    set(gca,'FontSize',FONT_SIZE);
-    set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);    
-end
+% if debug>1
+%     % == selected noise analysis
+%     tmp_handle = figure('name','real noise');
+%     if debug == 11 % corresponds to running the code from the gui
+%         set(tmp_handle, 'Visible', 'off');
+%     end
+%     f_handles = [f_handles, tmp_handle];
+%     tm = 1/FS_NSTDB:1/FS_NSTDB:NP_NSTDB/FS_NSTDB;
+%     for cc=1:2
+%         subplot(2,1,cc); plot(tm,noise(:,cc),'color',col(cc,:),'LineWidth',LINE_WIDTH);
+%         xlim([0 10]);
+%         set(gca,'FontSize',FONT_SIZE);
+%         set(findall(gcf,'type','text'),'fontSize',FONT_SIZE); 
+%     end
+%     xlabel('Time [sec]'); ylabel('Amplitude [NU]');
+%     xlim([0 10]);
+%     set(gca,'FontSize',FONT_SIZE);
+%     set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);    
+% end
 
 if debug>2
    % == plot the noise generate using AR model and PCA
@@ -251,7 +258,6 @@ if debug>3
    %leg{2} = 'AR segment PSD';
    %plot_psd(noise(:,1),y(:,1),FS_NSTDB,'welch',leg);
 end
-
 
 misc.a = a;
 misc.noise = noise;

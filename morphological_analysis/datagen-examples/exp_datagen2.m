@@ -1,4 +1,5 @@
-%% Another example of data generation
+function exp_datagen2(path,debug)
+% Another example of data generation
 % Focus of this work is following MECG changes of both amplitude and form.
 % Fetal and noise changes are therefore less important.
 % 
@@ -8,7 +9,7 @@
 % - Each dataset with 1,5min duration
 % - 5x repetition for statistics
 %
-% * Cases/events:
+% Cases/events:
 % - Case 0 - Baseline
 % - Case 1 - HR abrupt change (by 1/3 using tanh() normally distributed)
 % - Case 2 - SNR abrupt change (by 1/3 using tanh() modulation, amplitude and direction normally distributed)
@@ -20,35 +21,52 @@
 % - Case 8 -T+P waves + amplitude change (skewed) + ECG amplitude change (sinusoidal)
 %
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+%
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+%
+% Examples:
+% exp_datagen3(pwd,5) % generate data and 
+%
+% See also:
+% exp_datagen3
+% generate_FECGSYNDB
+% 
+% fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-11-2015
+% 
+% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
+% 
+% Referencing this work
 %
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Physiological Measurement.35 1537-1550. 2014.
+% 
+% 
+%
+% Last updated : 10-03-2016
+% 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-%
+% 
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-%
+% 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
-function exp_datagen2()
 
-path = 'D:\Users\Andreotti\Desktop\data_julius\';
-debug = 0;
-dbstop if error
 
 % Generating simulated data with various SNR for morphological analysis
-% global parameters
+%% Global parameters
 paramorig.fs = 1000;            % sampling frequency [Hz]
 paramorig.n = 90*paramorig.fs;  % number of data points to generate (5 min)
 
@@ -83,7 +101,7 @@ for i = 1:5           % generate 5 cases of each
         for loop = 1:5 % repeat same setup
             % just recalculating noise five times
             % reseting config    outst = out;
-            %% Case 0: Baseline (noise and hearts, no event)
+            %%% Case 0: Baseline (noise and hearts, no event)
             disp('Case 0')
             tic
             disp(['Generating for SNRmn=' num2str(SNRmn) ' simulation number ' num2str(i) '.'])
@@ -107,7 +125,7 @@ for i = 1:5           % generate 5 cases of each
             toc
             clear out
             
-            %% Case 1: maternal rate rate accelerations
+           %%% Case 1: maternal rate rate accelerations
             disp('Case 1')
             tic
             param = parambase;
@@ -120,7 +138,7 @@ for i = 1:5           % generate 5 cases of each
             toc
             clear out
             
-            %% Case 2: SNR abrupt change
+           %%% Case 2: SNR abrupt change
             disp('Case 2')
             tic
             param = parambase;
@@ -133,7 +151,7 @@ for i = 1:5           % generate 5 cases of each
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c2',i,SNRmn,loop)],'out')
             toc
             clear out
-            %% Case 3: overall MECG amplitude change (tanh center)           
+           %%% Case 3: overall MECG amplitude change (tanh center)           
             disp('Case 3')
             tic
             param = parambase;
@@ -145,7 +163,7 @@ for i = 1:5           % generate 5 cases of each
             toc
             clear out
 
-            %% Case 4: overall MECG amplitude change (sinusoidal 1-10 cycles/recording)
+           %%% Case 4: overall MECG amplitude change (sinusoidal 1-10 cycles/recording)
             disp('Case 4') 
             tic
             param = parambase;
@@ -160,7 +178,7 @@ for i = 1:5           % generate 5 cases of each
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c4',i,SNRmn,loop)],'out') 
             toc
             clear out
-            %% Case 5: previous case skewed
+           %%% Case 5: previous case skewed
             disp('Case 5')
             tic
             param = parambase;
@@ -185,7 +203,7 @@ for i = 1:5           % generate 5 cases of each
             save([path 'fecgsyn' sprintf('%2.2d_snr%2.2ddB_l%d_c5',i,SNRmn,loop)],'out')
             toc
             clear out
-            %% Case 6 - T+P waves + amplitude change (gaussian)
+           %%% Case 6 - T+P waves + amplitude change (gaussian)
             disp('Case 6')
             tic
             param = parambase;
@@ -233,7 +251,7 @@ for i = 1:5           % generate 5 cases of each
             toc
             clear out modfun origmecg
             
-            %% Case 7 - T+P waves + amplitude change (skewed)
+           %%% Case 7 - T+P waves + amplitude change (skewed)
             disp('Case 7')
             tic
             param = parambase;
@@ -282,7 +300,7 @@ for i = 1:5           % generate 5 cases of each
             toc
             clear out modfun origmecg
             
-            %% Case 8 -T+P waves + amplitude change (skewed) + ECG amplitude change (sinusoidal)
+           %%% Case 8 -T+P waves + amplitude change (skewed) + ECG amplitude change (sinusoidal)
             disp('Case 8')
             tic
             param = parambase;

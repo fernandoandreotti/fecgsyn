@@ -1,54 +1,72 @@
-%% Yet another exampel of data generation
+function exp_datagen3(path,debug)
+% Yet another example of data generation
 % based on exp_datagen2.m The focus is however rather in having various SNR 
-% levels for training SQI algorithms.
+% levels. Used for training SQI algorithms.
+% 
+% Input:
+%   path:            path where data shall be stored
+%   debug:           flag to debug plots
 %
 % Overall information:
-% - 5 feto-maternal combinations
-% - 3 SNR levels (0,3,6,9,12 dB)
-% - Each dataset with 1,5min duration
-% - 5x repetition for statistical evaluation
+%   -  5 feto-maternal combinations
+%   -  3 SNR levels (0,3,6,9,12 dB)
+%   -  Each dataset with 1,5min duration
+%   -  5x repetition for statistical evaluation
 %
-% * Cases/events:
-% - Case 0 - Baseline
-% - Case 1 - fetal and maternal HR abrupt change (by 1/3 using tanh() normally distributed)
-% - Case 2 - SNR abrupt change (by 1/3 using tanh() modulation, amplitude and direction normally distributed)
-% - Case 3 - SNR sinusoidal change (1-10 cycles/recording) modulated by decaying/increasing exponential 
-% - Case 4 - overall ECG amplitude change (sinusoidal 1-10 cycles/recording)
-
+% Cases/events:
+%   - Case 0 - Baseline
+%   - Case 1 - fetal and maternal HR abrupt change (by 1/3 using tanh() normally distributed)
+%   - Case 2 - SNR abrupt change (by 1/3 using tanh() modulation, amplitude and direction normally distributed)
+%   - Case 3 - SNR sinusoidal change (1-10 cycles/recording) modulated by decaying/increasing exponential 
+%   - Case 4 - overall ECG amplitude change (sinusoidal 1-10 cycles/recording)
+% 
 %
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% Examples:
+% exp_datagen3(pwd,5) % generate data and 
+%
+% See also:
+% exp_datagen2 
+% generate_FECGSYNDB
+% 
+% fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 15-12-2015
+% 
+% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
+% 
+% Referencing this work
 %
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Physiological Measurement.35 1537-1550. 2014.
+% 
+% 
+%
+% Last updated : 10-03-2016
+% 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-%
+% 
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-%
+% 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
-function exp_datagen3()
 
-path = 'D:\Users\Andreotti\Desktop\data\';
-debug = 0;
-dbstop if error
-
-% Generating simulated data with various SNR for morphological analysis
-% global parameters
+%  Generating simulated data with various SNR for morphological analysis
+%% global parameters
 paramorig.fs = 1000;            % sampling frequency [Hz]
 paramorig.n = 90*paramorig.fs;  % number of data points to generate (5 min)
-
 % electrode positions
 x = pi/12*[3 4 5 6 7 8 9 10]' -pi/2;     % 32 abdominal channels
 y = .5*ones(8,1);
@@ -57,6 +75,8 @@ z = repmat([-.1 -.2 -.3 -.4],8,1); z = reshape(z,32,1);
 abdmleads = [xy z];
 refs = [-pi/4 0.5 0.4;(5/6-.5)*pi 0.5 0.4];  % + 2 reference leads
 paramorig.elpos = [abdmleads;refs];
+
+%% Data generation
 cd(path)
 for i = 1:5           % generate 5 cases of each
     close all
@@ -80,7 +100,7 @@ for i = 1:5           % generate 5 cases of each
         for loop = 1:5 % repeat same setup
             % just recalculating noise five times
             % reseting config    outst = out;
-            %% Case 0: Baseline (noise and hearts, no event)
+            %%% Case 0: Baseline (noise and hearts, no event)
             disp('Case 0')
             tic
             disp(['Generating for SNRmn=' num2str(SNRmn) ' simulation number ' num2str(i) '.'])
@@ -104,7 +124,7 @@ for i = 1:5           % generate 5 cases of each
             toc
             clear out
             
-            %% Case 1: rate rate accelerations (both fetal and maternal)
+            %%% Case 1: rate rate accelerations (both fetal and maternal)
             disp('Case 1')
             tic
             param = parambase;
@@ -121,7 +141,7 @@ for i = 1:5           % generate 5 cases of each
             toc
             clear out
             
-            %% Case 2: SNR abrupt change
+            %%% Case 2: SNR abrupt change
             disp('Case 2')
             tic
             param = parambase;
@@ -135,7 +155,7 @@ for i = 1:5           % generate 5 cases of each
             toc
             clear out
             
-            %% Case 3: SNR oscilating
+           %%% Case 3: SNR oscilating
             disp('Case 3')
             tic
             param = parambase;
@@ -153,7 +173,7 @@ for i = 1:5           % generate 5 cases of each
             toc
             clear out modfun1 modfun2
             
-            %% Case 4: overall MECG amplitude change (sinusoidal 1-10 cycles/recording)
+           %%% Case 4: overall MECG amplitude change (sinusoidal 1-10 cycles/recording)
             disp('Case 4') 
             tic
             param = parambase;

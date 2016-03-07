@@ -1,8 +1,9 @@
 function [F1,MAE,PPV,SE,TP,FN,FP] = Bxb_compare(refqrs, testqrs, acceptint)
-% This function is similar to the function bxb.exe from Physionet. It
-% compares in a beat-by-beat basis if the detections match the reference.
-% The algorithm is based on the entry by Joachim Behar on the Physionet / 
-% Computing in Cardiology Challenge 2013 and on ANSI/AAMI EC57 Norm 1998
+% This function is similar to the function bxb.exe from Physionet's
+% WFDB-App toolbox. It compares in a beat-by-beat basis if the detections 
+% match the reference. The algorithm is based on the entry by Joachim Behar 
+% on the Physionet / Computing in Cardiology Challenge 2013 and on ANSI/AAMI 
+% EC57 Norm 1998
 % 
 % Input
 % refqrs:        reference QRS detections
@@ -20,19 +21,38 @@ function [F1,MAE,PPV,SE,TP,FN,FP] = Bxb_compare(refqrs, testqrs, acceptint)
 % FP:            number of false positives
 %
 % References
+% [ANSI/AAMI Norm]  American National Standard ANSI/AAMI EC57:1998, Testing and Reporting Performance 
+% Results of Cardiac Rhythm and ST Segment Measurement Algorithms 
+% 
+% [WFDB-APP] Silva, I, Moody, G. "An Open-source Toolbox for Analysing and Processing PhysioNet Databases 
+% in MATLAB and Octave." Journal of Open Research Software 2(1):e27 [http://dx.doi.org/10.5334/jors.bi]; 
+% 2014 (September 24). 
+% 
+% [Behar2014] Behar, J., Oster, J., & Clifford, G. D. (2014). Combining and Benchmarking Methods of Foetal
+% ECG Extraction Without Maternal or Scalp Electrode Data. Physiological Measurement, 35(8), 1569–1589.
+% 
+% 
 %
-% TODO
-% 
-% 
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 30-06-2014
+% 
+% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
+% 
+% Referencing this work
 %
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Physiological Measurement.35 1537-1550. 2014.
+% 
+% 
+%
+% Last updated : 10-03-2016
+% 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or

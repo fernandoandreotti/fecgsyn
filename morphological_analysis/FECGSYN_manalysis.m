@@ -1,36 +1,61 @@
 function [qt_ref,qt_test,tqrs_ref,tqrs_test] = FECGSYN_manalysis(abdm_temp,ref_temp,qrsabdm,qrsref,fs,filterc,filen)
 % This function calculates morphological features form signals given two
-% templates (reference and abdm). Statistics are give as %.
+% templates (reference and abdominal). Statistics are given in percentage.
+% This functin makes use of the ECGPUWAVE script (Jane et al 1996) and
+% required that the WFDB-App is installed and in Matlab's path.
 %
 % Input:
 %  abdm_temp:               Template to be tested
 %  ref_temp:                Reference template
-%  qrs_abdm/qrs_ref:        Location of qrs in template
+%  qrs_abdm/qrs_ref:        Location of qrs in each template
 %  fs:                      Sampling frequency
 %  filterc:                 Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
 %                           highpass (hp) and lowpass (lp)
 %  filen:                   number to be added to ecgpuwaves outputs
 %
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% 
+% Reference to functions:
+% 
+%  ECGPUWAVE: Jane, R., Blasi, A., Garcia, J., & Laguna, P. (1997). Evaluation of an automatic 
+%  threshold based detector of waveform limits in Holter ECG with the QT database. In Computers in 
+%  Cardiology 1997 (pp. 295–298). IEEE. http://doi.org/10.1109/CIC.1997.647889
+%  This script is available at http://www.physionet.org/physiotools/ecgpuwave/
+%  and 
+%  in the WFDB-App Toolbox: Silva, I, Moody, G. "An Open-source Toolbox for Analysing and Processing 
+%  PhysioNet Databases in MATLAB and Octave." Journal of Open Research Software 2(1):e27 
+%  [http://dx.doi.org/10.5334/jors.bi] ; 2014. 
+% 
+% fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 26-09-2014
+% 
+% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
+% 
+% Referencing this work
 %
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Physiological Measurement.35 1537-1550. 2014.
+% 
+% 
+%
+% Last updated : 10-03-2016
+% 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-%
+% 
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-%
+% 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -263,8 +288,37 @@ function [qtint,th,qs,tends,tpeak,qrs] = QTcalc(ann_types,ann_stamp,signal,fs)
 % tends:              Locations of T-wave (end)
 % twave:              Locations of T-waves (peak)
 %
+% fecgsyn toolbox, version 1.1, March 2016
+% Released under the GNU General Public License
 %
+% Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
+% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
+% 
+% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
+% 
+% Referencing this work
+%
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Physiological Measurement.35 1537-1550. 2014.
+%
+% Last updated : 10-03-2016
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 QT_MAX = 0.5; % Maximal QT length (in s)  MAY VARY DEPENDING ON APPLICATION!
 QT_MIN = 0.1; % Minimal QT length (in s)  MAY VARY DEPENDING ON APPLICATION!
 temp_types = ann_types;     % allows exclusion of unsuitable annotations

@@ -1,9 +1,9 @@
 # Site title and subtitle. This is used in _includes/header.html
-title: 'jekyll-docs-template'
+title: 'FECGSYN'
 subtitle: 'Painless documentation for your projects'
 
 # if you wish to integrate disqus on pages set your shortname here
-disqus_shortname: ''
+disqus_shortname: 'FECGSYN'
 
 # if you use google analytics, add your tracking id here
 google_analytics_id: ''
@@ -12,10 +12,10 @@ google_analytics_id: ''
 #   0 - always hide
 #   1 - always show
 #   2 - show only if posts are present
-navigation: 2
+navigation: 1
 
 # URL to source code, used in _includes/footer.html
-codeurl: 'https://github.com/bruth/jekyll-docs-template'
+codeurl: 'https://github.com/fernandoandreotti/fecgsyn'
 
 # Default categories (in order) to appear in the navigation
 sections: [
@@ -31,7 +31,7 @@ sections: [
 baseurl: ''
 
 # Dates are not included in permalinks
-permalink: none
+permalink: fecgsyn/:title
 
 # Syntax highlighting
 highlighter: rouge

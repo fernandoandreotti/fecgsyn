@@ -1,6 +1,6 @@
 # Site title and subtitle. This is used in _includes/header.html
 title: 'FECGSYN'
-subtitle: 'Painless documentation for your projects'
+subtitle: 'A realistic non-invasive foetal ECG generator'
 
 # if you wish to integrate disqus on pages set your shortname here
 disqus_shortname: 'FECGSYN'
@@ -15,7 +15,7 @@ google_analytics_id: ''
 navigation: 1
 
 # URL to source code, used in _includes/footer.html
-codeurl: 'https://github.com/fernandoandreotti/fecgsyn'
+codeurl: 'https://github.com/fernandoandreotti/fecgsyn/'
 
 # Default categories (in order) to appear in the navigation
 sections: [

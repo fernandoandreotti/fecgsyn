@@ -33,8 +33,8 @@ analytics:
 
 # github buttons
 githubButton:
-  user: mistic100
-  repo: jekyll-bootstrap-doc
+  user: fernandoandreotti
+  repo: fecgsyn
 
 # twitter buttons
 twitter:
@@ -48,6 +48,12 @@ facebook:
   enabled: true
   profileUrl:
 
+# Conversion
+markdown:    kramdown
+highlighter: rouge
+lsi:         false
+excerpt_separator: "\n\n"
+incremental: false
 
 exclude: ['README.md', 'LICENSE', 'bower.json', 'Gemfile.lock', 'Gemfile']
 

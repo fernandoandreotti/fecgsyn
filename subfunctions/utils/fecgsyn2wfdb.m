@@ -1,4 +1,4 @@
-function fecgsyn2wfdb(lpath)
+function fecgsyn2wfdb(arg)
 % function fecgsyn2wfdb(argument)
 % Convert all .mat files in directory to WFDB format
 %
@@ -6,8 +6,8 @@ function fecgsyn2wfdb(lpath)
 % Physionet's WFDB format.
 %
 %  Input:
-%  argument         either a local path (string) or the "out" structure
-%                   intern from fecgsyn
+%  arg         either a local path (string) or the "out" structure
+%              intern from fecgsyn
 %
 %
 % fecgsyn toolbox, version 1.1, March 2016

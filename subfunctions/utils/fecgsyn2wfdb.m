@@ -58,8 +58,8 @@ for i = 1:length(fls)
     % getting information
     filename = ['sub' fls{i}(8:end-4)];
     fs = out.param.fs;
-    signame = regexprep(cellstr([repmat('ch',size(out.mecg,1),1),...
-        num2str([1:size(out.mecg,1)]')]),'[^\w'']','');
+    signame = cellstr(regexprep(cellstr([repmat('ch',size(out.mecg,1),1),...
+        num2str([1:size(out.mecg,1)]')]),'[^\w'']',''));
     % save out.param as comment
     out.param = rmfield(out.param,'elpos'); % not necessary
     out.param = rmfield(out.param,'fs');    % not necessary, specified in wfdb header
@@ -117,7 +117,8 @@ for i = 1:length(fls)
             sigres(:,ch) = resample(double(sig(:,ch)),fsnew,fs);
         end
         ext = regexprep(signals{:},'[^a-zA-Z0-9]',''); % extension
-        xbit=mat2wfdb(sigres,[filename '_' ext],fsnew,bit,[],info,gain,signame,[],false); % save in wfdb format
+%        wrsamp(tm2,ref_sig',recordName,FS_ECGPU,gain,'')
+    xbit=mat2wfdb(sigres,[filename '_' ext],fsnew,bit,{'nu'},info,gain,signame,0,false); % save in wfdb format
     end
     flist = cellstr(arrayfun(@(x) strcat(sprintf('fqrs{%d}\n',x)),1:length(out.fqrs),'UniformOutput',0)); % list of fecg sources
     for ann = {'mqrs' flist{:}}

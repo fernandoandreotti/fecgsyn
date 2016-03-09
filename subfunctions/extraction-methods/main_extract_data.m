@@ -2,7 +2,8 @@ function main_extract_data(path,narrowband,wfdb)
 % Extraction script for FECG morphological analysis
 %
 % This script performs NIFECG extractin on fecgsyn files in a given path using pre-defined
-% bandwidths (defined in Experiment 2 and 3 of Andreotti2016)
+% bandwidths (defined in Experiment 2 and 3 of Andreotti2016). Results are
+% saved in Matlab format.
 %
 % Input:
 % path                  Path where datasets are saved
@@ -13,7 +14,8 @@ function main_extract_data(path,narrowband,wfdb)
 % More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
 %
 % Examples:
-% TODO
+% exp_datagen1
+% main_extract_data(cd,1,1)
 %
 % See also:
 % exp_datagen1
@@ -57,12 +59,14 @@ function main_extract_data(path,narrowband,wfdb)
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
+slashchar = char('/'*isunix + '\'*(~isunix));
 %% Parameters
 % Channels to be used
 ch = [1 8 11 14 19 22 25 32];   % ADAPT TO YOUR ELECTRODE CONFIG (abdominal leads)
 refchs = 33:34;               % ADAPT TO YOUR ELECTRODE CONFIG (reference channels)
 fs_new = 250;           % extraction occurs at 250 Hz, data will be resampled, if necessary
+spath = [path slashchar 'ext' slashchar]; % saving folder
+if ~exist(spath,'dir'), mkdir(spath);end
 
 % = Defining preprocessing bands (narrow/wide)
 if narrowband
@@ -71,7 +75,6 @@ if narrowband
     [b_lp,a_lp] = butter(5,HF_CUT/(fs_new/2),'low');
     [b_hp,a_hp] = butter(3,LF_CUT/(fs_new/2),'high');
     clear HF_CUT LF_CUT
-    path2save = [path 'exp2/'] ;
 else
     % Preprocessing more carefully
     % high-pass filter
@@ -96,7 +99,6 @@ else
         'SOSScaleNorm', 'Linf');
     [b_lp,a_lp] = tf(Hlp);
     clear Fstop Fpass Astop Apass h Hhp Hlp
-    path2save = [path 'exp3/'] ;
 end
 
 
@@ -114,11 +116,14 @@ end
 
 for i = 1:length(fls)
     disp(['Extracting file ' fls{i} '..'])
-    filename = [path2save 'rec' num2str(i)];
+    filename = [spath 'rec' num2str(i)];
     disp(num2str(i))
     % = loading data (wfdb or mat)
     if wfdb
-        out = wfdb2fecgsyn(cd,[ch refchs]);
+        out = wfdb2fecgsyn([path slashchar fls{i}],[ch refchs]);
+        ch = 1:length(ch);
+        refchs = length(ch)+[1:length(refchs)];
+        warning('For batch processing, avoid converting data to WFDB format, sinceit may cause slow downs.')
     else    
         load(fls{i}) % out structure
     end

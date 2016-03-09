@@ -53,9 +53,9 @@ function outstr = wfdb2fecgsyn(path,ch)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-slashchar = char('/'*isunix + '\'*(~isunix));
-fls = dir([path slashchar '*']);
+fls = dir([path '*']);
 fls = arrayfun(@(x) x.name,fls,'UniformOutput',false);
+if isempty(fls); error('wfdb2fecgsyn: No file to convert');end;
 outstr = struct('mecg',[],'fecg',cell(1,1),'noise',cell(1,1),'mqrs',[],'fqrs',cell(1,1),'param',[]);
 % read one header to figure out how many fetal and noise sources are
 % present
@@ -87,7 +87,8 @@ for d = 1:length(datfls)
     wfdb2mat(datfls{d}(1:end-4),ch);
     signal = load([datfls{d}(1:end-4) 'm.mat']);
     signal = signal.val';
-    delete([datfls{d}(1:end-4) 'm.mat']);
+    delete([datfls{d}(1:end-4) 'm.mat']); % deleting tmp files
+    delete([datfls{d}(1:end-4) 'm.hea']);
     entry = fliplr(strtok(datfls{d}(end-4:-1:1),'_'));
     if strcmp(entry,'mecg')
         outstr.mecg = signal';

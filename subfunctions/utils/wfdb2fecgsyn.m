@@ -1,4 +1,4 @@
-% function outstr = wfdb2fecgsyn(path,ch)
+function outstr = wfdb2fecgsyn(path,ch)
 % function out = wfdb2fecgsyn(path)
 % loading FECGSYNDB from WFDB format
 % 
@@ -10,6 +10,14 @@
 % 
 % Ouput:
 %  outstr              structure used by fecgsyn toolbox
+% 
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+%
+% Examples:
+% TODO
+%
+% See also:
+% fecgsyn2wfdb
 % 
 % 
 % fecgsyn toolbox, version 1.1, March 2016
@@ -45,8 +53,8 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-fls = dir([path '*']);
+slashchar = char('/'*isunix + '\'*(~isunix));
+fls = dir([path slashchar '*']);
 fls = arrayfun(@(x) x.name,fls,'UniformOutput',false);
 outstr = struct('mecg',[],'fecg',cell(1,1),'noise',cell(1,1),'mqrs',[],'fqrs',cell(1,1),'param',[]);
 % read one header to figure out how many fetal and noise sources are
@@ -59,11 +67,11 @@ data = data{1};
 fclose(fid);
 key   = '#nfetus:';
 idx = strfind(data, key);
-N_FET = textscan(data{~cellfun(@isempty,idx)},[key '%d']); % number of fetal signals
+param.Nfetuses = textscan(data{~cellfun(@isempty,idx)},[key '%d']); % number of fetal signals
 
 key   = '#nnoise:';
 idx = strfind(data, key);
-N_NOISE = textscan(data{~cellfun(@isempty,idx)},[key '%d']); % number of noise signals
+param.Nnoise = textscan(data{~cellfun(@isempty,idx)},[key '%d']); % number of noise signals
 [~,fs]=wfdbdesc(recordName(1:end-4));
 param.fs = fs(1);                        % sampling frequency [Hz]
 clear fid data recordName idx key formatSp
@@ -76,7 +84,10 @@ outstr.param = param; % more information can be included, case necessary
 
 % loads .dat into outstr structure
 for d = 1:length(datfls)
-    [~,signal] = rdsamp(datfls{d}(1:end-4),ch);   
+    wfdb2mat(datfls{d}(1:end-4),ch);
+    signal = load([datfls{d}(1:end-4) 'm.mat']);
+    signal = signal.val';
+    delete([datfls{d}(1:end-4) 'm.mat']);
     entry = fliplr(strtok(datfls{d}(end-4:-1:1),'_'));
     if strcmp(entry,'mecg')
         outstr.mecg = signal';

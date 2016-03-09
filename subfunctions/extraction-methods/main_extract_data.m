@@ -1,37 +1,68 @@
-%% Extraction script for FECG morphological analysis
+function main_extract_data(path,narrowband,wfdb)
+% Extraction script for FECG morphological analysis
 %
-% This script performs FECG extractin on the given path using pre-defined
+% This script performs NIFECG extractin on fecgsyn files in a given path using pre-defined
 % bandwidths (defined in Experiment 2 and 3 of Andreotti2016)
 %
 % Input:
 % path                  Path where datasets are saved
 % narrowband            Bandpass to be used [boolean]. 1 (3-100 Hz) or 0 (0.5-100 Hz)
+% wfdb                  Load data in WFDB format? [boolean]
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% 
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+%
+% Examples:
+% TODO
+%
+% See also:
+% exp_datagen1
+% FECGSYN_kf_extraction
+% FECGSYN_adaptfilt_extraction
+% FECGSYN_bss_extraction
+% FECGSYN_ts_extraction
+% 
+% 
+% fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 03-11-2015
+% 
+% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
+% 
+% Referencing this work
 %
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Physiological Measurement.35 1537-1550. 2014.
+% 
+% 
+%
+% Last updated : 10-03-2016
+% 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
-% the Free So                                                           it will be useful,
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-%
+% 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function FECGSYN_extract_data(path,narrowband)
+
 
 %% Parameters
 % Channels to be used
-ch = [1 8 11 14 19 22 25 32]; % using 8 channels (decided considering Exp. 1)
-refchs = 33:34;               % reference channels
+ch = [1 8 11 14 19 22 25 32];   % ADAPT TO YOUR ELECTRODE CONFIG (abdominal leads)
+refchs = 33:34;               % ADAPT TO YOUR ELECTRODE CONFIG (reference channels)
+fs_new = 250;           % extraction occurs at 250 Hz, data will be resampled, if necessary
 
 % = Defining preprocessing bands (narrow/wide)
 if narrowband
@@ -70,15 +101,28 @@ end
 
 
 %= Read files
-fls = dir('*.mat');     % looking for .mat (creating index)
-fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
+if wfdb
+    fls = dir('*.hea');
+    fls =  arrayfun(@(x) x.name,fls,'UniformOutput',false);
+    remfls = cellfun(@(x) length(strtok(x(end:-1:1),'_')),fls);
+    for i = 1:length(fls), fls{i} = fls{i}(1:end-remfls(i)-1);end
+    fls = unique(fls); % had to remove duplicates
+else    
+    fls = dir('*.mat');     % looking for .mat (creating index)
+    fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
+end
 
 for i = 1:length(fls)
     disp(['Extracting file ' fls{i} '..'])
     filename = [path2save 'rec' num2str(i)];
-    % = loading data
-    load(fls{i})
     disp(num2str(i))
+    % = loading data (wfdb or mat)
+    if wfdb
+        out = wfdb2fecgsyn(cd,[ch refchs]);
+    else    
+        load(fls{i}) % out structure
+    end
+    %% Mixing separate sources
     if isempty(out.noise)
         noise = zeros(size(out.mecg));
     else
@@ -97,7 +141,7 @@ for i = 1:length(fls)
     fref = round(out.fqrs{1}/(fs/fs_new));
     mref = round(out.mqrs/(fs/fs_new));
     
-    % = preprocessing channels
+    %% Preprocessing channels
     ppmixture = zeros(size(mixture,1),size(mixture,2)/(fs/fs_new));
     fecg = ppmixture;
     for j=1:length(ch)
@@ -108,13 +152,14 @@ for i = 1:length(fls)
     end
     mixture = ppmixture;
     
-    %             % == Extraction
+    
+    %% Extraction Methods
     %-------------------
     %ICA Independent Component Analysis
     %-------------------
     disp('ICA extracthion ..')
     loopsec = 60;   % in seconds
-    [residual,~,A] = FECGSYN_bss_extraction(mixture,'JADEICA',fs_new,loopsec,1);     % extract using IC
+    [residual,~,A] = FECGSYN_bss_extraction(mixture,'JADEICA',fs_new,loopsec,1);     %#ok<*ASGLU> % extract using IC
     [fqrs,maxch] = FECGSYN_QRSmincompare(residual,fref,fs_new);     % detect QRS and channel with highest F1
     %== saving results
     save([filename '_JADEICA'],'maxch','residual','fqrs','fref','A')

@@ -11,6 +11,13 @@ function fecgsyn2wfdb(lpath,outstr,filename,varargin)
 %  outstr      intern structure from fecgsyn
 %  filename    if single file, destination filename is required
 %
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+%
+% Examples:
+% TODO
+%
+% See also:
+% wfdb2fecgsyn
 %
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License

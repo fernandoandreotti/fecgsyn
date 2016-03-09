@@ -1,4 +1,4 @@
-function [y,e,W] = FECGESN_adaptfilt_lms(u,tar,mu,nC)
+function [y,e,W] = FECGESN_lms(u,tar,mu,nC)
 % least mean square adaptive filter.
 %
 % inputs

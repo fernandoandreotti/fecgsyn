@@ -24,29 +24,39 @@ function ecg_res = FECGSYN_adaptfilt_extraction(ecg_target,ecg_ref,method,debug,
 %     Comparison of Single Channel Fetal ECG Extraction Methods. Annals of
 %     Biomedical Engineering. doi:10.1007/s10439-014-0993-9
 %
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
 %
+% Examples:
+% TODO
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% See also:
+% FECGSYN_ts_extraction
+% FECGSYN_bss_extraction
+% FECGSYN_kf_extraction
+%
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 23-07-2014
+% Last updated : 19-01-2014
 %
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
+% This code was initialy developed by Joachim Behar for the Physionet
+% Challenge 2013. More code available here:
+% http://physionet.org/challenge/2013/sources/joachim.behar@gmail.com/
 %
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
 %
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% This program is free software; you can redistribute it and/or modify it
+% under the terms of the GNU General Public License as published by the
+% Free Software Foundation; either version 2 of the License, or (at your
+% option) any later version.
+% This program is distributed in the hope that it will be useful, but
+% WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+% Public License for more details.
 
 
 
@@ -76,7 +86,6 @@ ecg_ref = resample(ecg_ref,fs_new,fs_orig);
 
 
 % == running methods
-
 switch method
     case 'LMS'
         % - using Least Mean Square -
@@ -86,7 +95,7 @@ switch method
             metStruct.learningMode   = 'online'; % 'online'/'offline'
             metStruct.method         = 'LMS';
         end
-        ecg_res = ESNTOOL_lmsrls_canceller(ecg_ref,ecg_target,fs_new,metStruct,debug);
+        ecg_res =FECGESN_lmsrls_canceller(ecg_ref,ecg_target,fs_new,metStruct,debug);
     case 'RLS'
         % - using RLS -
         if default_param
@@ -94,7 +103,7 @@ switch method
             metStruct.Nunits         = 20; % 20- filter length
             metStruct.method         = 'RLS';
         end
-        ecg_res = ESNTOOL_lmsrls_canceller(ecg_ref,ecg_target,fs_new,metStruct,debug);
+        ecg_res = FECGESN_lmsrls_canceller(ecg_ref,ecg_target,fs_new,metStruct,debug);
     case 'ESN'
         % - using ESN -
         if default_param
@@ -122,7 +131,7 @@ switch method
             esn.internalWeights = esn.spectralRadius*esn.internalWeights_UnitSR;
 %             save('esn','esn');
         end
-        ecg_res = ESNTOOL_esn_canceller(ecg_ref,ecg_target,fs_new,esn,debug);
+        ecg_res = FECGESN_esn_canceller(ecg_ref,ecg_target,fs_new,esn,debug);
     otherwise
         error('adaptfilt_extraction: Method not implemented.')
 end

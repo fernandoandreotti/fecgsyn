@@ -1,4 +1,4 @@
-function residual = FECGESN_adaptfilt_lmsrls_canceller(ref_ecg,tar_ecg,fs,metStruct,debug)
+function residual = FECGESN_lmsrls_canceller(ref_ecg,tar_ecg,fs,metStruct,debug)
 % Adaptive Noise cancelling filter for FECG source separation.
 %
 % This function uses the least mean square (LMS) or the recursive least square 
@@ -62,13 +62,13 @@ TIME_INIT = 30;
 try
     % == normalize the data
     % assumes that the first 5sec are representative (no huge noise) for normalizaiton purposes.   
-    [input_norm,~] = ESNTOOL_normalise_ecg(ref_ecg,1,5*fs);
-    [output_norm,~] = ESNTOOL_normalise_ecg(tar_ecg,1,5*fs);
+    [input_norm,~] = FECGESN_normalise_ecg(ref_ecg,1,5*fs);
+    [output_norm,~] = FECGESN_normalise_ecg(tar_ecg,1,5*fs);
     
     if strcmp(metStruct.method,'LMS')
     % == least mean square
         if strcmp(metStruct.learningMode,'online')
-            [y,residual,~] = ESNTOOL_lms(input_norm,output_norm,metStruct.mu,metStruct.Nunits);
+            [y,residual,~] = FECGESN_lms(input_norm,output_norm,metStruct.mu,metStruct.Nunits);
         else
             % training readout on first 30sec and test on ALL signal using
             % constant weights
@@ -79,7 +79,7 @@ try
             [train_out,~] = split_train_test(output_norm,train_fraction);
 
             % find lms param using training sequence
-            [y,~,W] = ESNTOOL_lms(train_in,train_out,metStruct.mu,metStruct.Nunits);
+            [y,~,W] = FECGESN_lms(train_in,train_out,metStruct.mu,metStruct.Nunits);
             w = W(:,end);
             
             % now apply trained lms to all the signal

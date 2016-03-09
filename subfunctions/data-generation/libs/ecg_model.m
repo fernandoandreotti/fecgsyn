@@ -1,13 +1,12 @@
-function qrs = phase2qrs(phase,debug)
-% this function is used for finding the qrs locations using the phase generated 
-% with the ecg model. A qrs is defined as a zero crossing.
+function Z = ecg_model(X,Phasemn)
 %
-% inputs
-%   phase:  phase [sample]
-%   debug:  enter debug? (default: 0) [bool]
+% Synthetic ECG model
 %
-% output
-%   qrs:    qrs position [sample]
+% Open Source ECG Toolbox, version 1.0, November 2006
+% Released under the GNU General Public License
+% Copyright (C) 2006  Reza Sameni
+% Sharif University of Technology, Tehran, Iran -- LIS-INPG, Grenoble, France
+% reza.sameni@gmail.com
 %
 %
 % fecgsyn toolbox, version 1.1, March 2016
@@ -43,23 +42,14 @@ function qrs = phase2qrs(phase,debug)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-% == check inputs
-if nargin<2; debug=0; end;
+L = (length(X)/3);
 
-% == zero phase crossing
-sy = sign(phase);
-flag_cross = (diff(sy)==2)|(sy(1:end-1)==0); % only from negative to positive (and not positive to negative) and zeros
-qrs = find(flag_cross);
+alphai = X(1:L);
+bi = X(L+1:2*L);
+tetai = X(2*L+1:3*L);
 
-% == debug
-if debug
-   FONT_SIZE = 15;
-   plot(phase,'LineWidth',3);
-   hold on, plot(qrs,phase(qrs),'+r','LineWidth',2);
-   legend('phase','QRS');
-   xlabel('Time [sec]'); ylabel('FHR [bpm]')
-   set(gca,'FontSize',FONT_SIZE);
-   set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
-end
-
+Z = zeros(size(Phasemn));
+for j = 1:length(alphai),
+    dtetai = rem(Phasemn - tetai(j) + pi,2*pi)-pi;
+    Z = Z + alphai(j) .* exp(-dtetai .^2 ./ (2*bi(j) .^ 2));
 end

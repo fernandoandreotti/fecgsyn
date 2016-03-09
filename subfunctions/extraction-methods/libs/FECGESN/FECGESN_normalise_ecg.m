@@ -1,4 +1,4 @@
-function [necg,scalings] = FECGESN_adaptfilt_normalise_ecg(ecg,start,stop)
+function [necg,scalings] = FECGESN_normalise_ecg(ecg,start,stop)
 % normalisation function. See STEP 1-3 in the code below to understand 
 % what it does.
 % 

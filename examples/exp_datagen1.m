@@ -245,7 +245,6 @@ else
 end
 
 
-
 %%% == (7) ADDING ECTOPIC BEATS
 close all, clear param out
 disp('---- Example (7): ADDING ECTOPIC BEATS ----');

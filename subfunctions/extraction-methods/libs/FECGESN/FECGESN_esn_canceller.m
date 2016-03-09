@@ -1,4 +1,4 @@
-function residual = FECGESN_adaptfilt_esn_canceller(ref_ecg,tar_ecg,fs,esn,debug)
+function residual = FECGESN_esn_canceller(ref_ecg,tar_ecg,fs,esn,debug)
 % ESN network using modified Frank Jaeger ESN toolbox and for its application
 % to source separation for NI-FECG extraction. This function runs the ESN
 % on the inputed signal ref_ecg to match the tar_ecg signal.

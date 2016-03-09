@@ -23,28 +23,39 @@ function [out_comps,qrsmethod,W] = FECGSYN_bss_extraction(data,method,fs,blen,de
 % qrsmethod:    BSS techniques chosen QRS detections   
 % W:            used mixing matrices
 %
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
 %
-% NI-FECG simulator toolbox, version 1.0, February 2014
+% Examples:
+% TODO
+%
+% See also:
+% FECGSYN_ts_extraction
+% FECGSYN_kf_extraction
+% FECGSYN_adaptfilt_extraction
+%
+% fecgsyn toolbox, version 1.0, July 2014
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% Last updated : 22-07-2014
+% Last updated : 19-01-2014
 %
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
+% This code was initialy developed by Joachim Behar for the Physionet
+% Challenge 2013. More code available here:
+% http://physionet.org/challenge/2013/sources/joachim.behar@gmail.com/
 %
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
 %
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+% This program is free software; you can redistribute it and/or modify it
+% under the terms of the GNU General Public License as published by the
+% Free Software Foundation; either version 2 of the License, or (at your
+% option) any later version.
+% This program is distributed in the hope that it will be useful, but
+% WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+% Public License for more details.
 
 %% == Input test
 if size(data,1) > size(data,2)

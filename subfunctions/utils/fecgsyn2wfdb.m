@@ -4,7 +4,7 @@ function fecgsyn2wfdb(lpath)
 %
 % This script converts recording(s) from fecgsyn's Matlab/Octave format to
 % Physionet's WFDB format.
-% 
+%
 %  Input:
 %  argument         either a local path (string) or the "out" structure
 %                   intern from fecgsyn
@@ -17,29 +17,29 @@ function fecgsyn2wfdb(lpath)
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% 
+%
 % For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
-% 
+%
 % Referencing this work
 %
-%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
-%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D.
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings.
 %   Physiological Measurement.35 1537-1550. 2014.
-% 
-% 
+%
+%
 %
 % Last updated : 10-03-2016
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -68,6 +68,9 @@ for i = 1:length(fls)
     sn=fieldnames(out.param); % check struct
     sc=struct2cell(out.param);
     convt=cellfun(@(x) iscell(x), sc); % some cells to strings
+    % The struct is fairly heterogeneous and requires this kind of
+    % workarounds to convert every data type possible and human readable
+    % strings
     sa = sc(convt); idx = find(convt);
     for i = 1:length(sa)
         value = sa{i};
@@ -76,13 +79,13 @@ for i = 1:length(fls)
                 sc(idx(i)) = {'none'};
             case 1
                 if isnumeric(value{:})
-                    sc(idx(i)) = {value{:}};
+                    sc(idx(i)) = {sprintf('%2.4f ',value{:})};
                 else
                     sc(idx(i)) = cellstr(strjoin(value));
                 end
             otherwise
                 if isnumeric(value{:,1})
-                    sc(idx(i)) = cellstr(strjoin(cellfun(@(x) sprintf('%d ',x),value,'UniformOutput',0)));
+                    sc(idx(i)) = cellstr(strjoin(cellfun(@(x) sprintf('%2.4f ',x),value,'UniformOutput',0)));
                 else
                     sc(idx(i)) = cellstr(strjoin(value));
                 end
@@ -90,13 +93,22 @@ for i = 1:length(fls)
         
     end
     convt=cellfun(@(x) isnumeric(x), sc); % some number need to be converted to strings
-    sc(convt)=cellfun(@(x) sprintf('%d',x),sc(convt),'UniformOutput',0);
+    % converting remaining floats/integers
+    convt = find(convt);
+    for idx = 1:length(convt)        
+        if rem(sc{convt(idx)},1)==0
+            sc(convt(idx))= cellstr(sprintf('%d ',sc{convt(idx)}));
+        else
+            sc(convt(idx))= cellstr(sprintf('%2.4f ',sc{convt(idx)}));
+        end
+    end
     info=cellstr(strcat(char(sn),repmat(':',size(sc)),char(sc))); % set information
-    
-    % converting data    
+    info(end+1,1) = cellstr(sprintf('nfetus:%d',length(out.fecg)));
+    info(end+1,1) = cellstr(sprintf('nnoise:%d',length(out.noise)));
+    % converting data
     nlist = (arrayfun(@(x) strcat(sprintf('noise{%d}\n',x)),1:length(out.noise),'UniformOutput',0)); % list of noise sources
     flist = cellstr(arrayfun(@(x) strcat(sprintf('fecg{%d}\n',x)),1:length(out.fecg),'UniformOutput',0)); % list of fecg sources
-        
+    
     for signals = {'mecg' flist{:} nlist{:}}
         % resampling
         sig = eval(['out.' signals{:}])';
@@ -104,15 +116,14 @@ for i = 1:length(fls)
         for ch = 1:size(sigres,2)
             sigres(:,ch) = resample(double(sig(:,ch)),fsnew,fs);
         end
-        xbit=mat2wfdb(sigres,filename,fsnew,bit,[],info,gain,signame,[],false); % save in wfdb format
         ext = regexprep(signals{:},'[^a-zA-Z0-9]',''); % extension
-        movefile([filename '.dat'], [filename '.' ext]); % renaming extension
+        xbit=mat2wfdb(sigres,[filename '_' ext],fsnew,bit,[],info,gain,signame,[],false); % save in wfdb format
     end
     flist = cellstr(arrayfun(@(x) strcat(sprintf('fqrs{%d}\n',x)),1:length(out.fqrs),'UniformOutput',0)); % list of fecg sources
     for ann = {'mqrs' flist{:}}
-        annot = eval(['out.' ann{:}])/(fs/fsnew);
+        annot = round(eval(['out.' ann{:}])/(fs/fsnew));
         ext = regexprep(ann{:},'[^a-zA-Z0-9]',''); % extension
-        wrann(filename,ext,annot',repmat('N',length(annot),1));
+        wrann([filename '_mecg'],ext,annot',repmat('N',length(annot),1));
     end
 end
 

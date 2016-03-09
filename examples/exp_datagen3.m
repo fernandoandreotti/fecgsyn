@@ -4,8 +4,8 @@ function exp_datagen3(path,debug,varargin)
 % levels. Used for training SQI algorithms.
 % 
 % Input:
-%   path:            path where data shall be stored
-%   debug:           flag to debug plots
+%   path        saving path (default pwd)
+%   debug       toggle debug (default true)
 %
 % Overall information:
 %   -  5 feto-maternal combinations
@@ -140,9 +140,9 @@ for i = 1:5           % generate 5 cases of each
             param = parambase;
             param.macc = (20+10*abs(randn))*sign(randn); % maternal acceleration in HR [bpm]
             param.mtypeacc = 'tanh';                % hyperbolic tangent acceleration
-            param.maccmean = [2*rand-1];
+            param.maccmean = 2*rand-1;
             param.ftypeacc = {'tanh'};                % hyperbolic tangent acceleration
-            param.faccmean{1} = [2*rand-1];
+            param.faccmean{1} = 2*rand-1;
             param.facc = (30 + 10*randn)*sign(randn); % foetal decceleration in HR [bpm]
             out = run_ecg_generator(param,debug);   % stationary output
             out = clean_compress(out);

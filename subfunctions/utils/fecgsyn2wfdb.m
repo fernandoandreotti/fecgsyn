@@ -1,4 +1,4 @@
-function fecgsyn2wfdb(arg)
+function fecgsyn2wfdb(lpath,outstr,filename,varargin)
 % function fecgsyn2wfdb(argument)
 % Convert all .mat files in directory to WFDB format
 %
@@ -6,8 +6,10 @@ function fecgsyn2wfdb(arg)
 % Physionet's WFDB format.
 %
 %  Input:
-%  arg         either a local path (string) or the "out" structure
-%              intern from fecgsyn
+%  lpath       either a local path (string) with many .mat files
+%              or save path (if second argument is additionally given)
+%  outstr      intern structure from fecgsyn
+%  filename    if single file, destination filename is required
 %
 %
 % fecgsyn toolbox, version 1.1, March 2016
@@ -36,7 +38,7 @@ function fecgsyn2wfdb(arg)
 % (at your option) any later version.
 %
 % This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% but WITHOUT ANY WARRANTY; withoutstr even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
@@ -45,28 +47,40 @@ function fecgsyn2wfdb(arg)
 
 slashchar = char('/'*isunix + '\'*(~isunix));
 
-outpath = [lpath slashchar 'wfdb' slashchar];
-fls = dir([lpath  '*.mat']);   % looking for .mat (creating index)
-fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
+switch nargin
+    case 1
+        outstrpath = [lpath slashchar 'wfdb' slashchar];
+        fls = dir([lpath  '*.mat']);   % looking for .mat (creating index)
+        fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
+    case 3
+        outstrpath = lpath;
+        fls = {'skip'};
+    otherwise
+        error('Too many inputs to fecgsyn2wfdb() function')
+end    
+
+
 gain = 3000; % files are converted to integers with a 3000 gain
 bit = 16;
 fsnew = 250; % new sampling rate
-cd(outpath)
+cd(outstrpath)
 
 for i = 1:length(fls)
-    load([lpath fls{i}],'out') % load dataset
+    if ~strcmp(fls{i},'skip')
+        outstr = load([lpath fls{i}],'outstr'); % load dataset, case necessary
+        filename = ['sub' fls{i}(8:end-4)];
+    end
     % getting information
-    filename = ['sub' fls{i}(8:end-4)];
-    fs = out.param.fs;
-    signame = cellstr(regexprep(cellstr([repmat('ch',size(out.mecg,1),1),...
-        num2str([1:size(out.mecg,1)]')]),'[^\w'']',''));
-    % save out.param as comment
-    out.param = rmfield(out.param,'elpos'); % not necessary
-    out.param = rmfield(out.param,'fs');    % not necessary, specified in wfdb header
-    if isfield(out.param,'noise_fct'), out.param = ...
-            rmfield(out.param,'noise_fct');end % applied noise function can be derived from signal itself
-    sn=fieldnames(out.param); % check struct
-    sc=struct2cell(out.param);
+    fs = outstr.param.fs;
+    signame = cellstr(regexprep(cellstr([repmat('ch',size(outstr.mecg,1),1),...
+        num2str([1:size(outstr.mecg,1)]')]),'[^\w'']',''));
+    % save outstr.param as comment
+    outstr.param = rmfield(outstr.param,'elpos'); % not necessary
+    outstr.param = rmfield(outstr.param,'fs');    % not necessary, specified in wfdb header
+    if isfield(outstr.param,'noise_fct'), outstr.param = ...
+            rmfield(outstr.param,'noise_fct');end % applied noise function can be derived from signal itself
+    sn=fieldnames(outstr.param); % check struct
+    sc=struct2cell(outstr.param);
     convt=cellfun(@(x) iscell(x), sc); % some cells to strings
     % The struct is fairly heterogeneous and requires this kind of
     % workarounds to convert every data type possible and human readable
@@ -103,15 +117,15 @@ for i = 1:length(fls)
         end
     end
     info=cellstr(strcat(char(sn),repmat(':',size(sc)),char(sc))); % set information
-    info(end+1,1) = cellstr(sprintf('nfetus:%d',length(out.fecg)));
-    info(end+1,1) = cellstr(sprintf('nnoise:%d',length(out.noise)));
+    info(end+1,1) = cellstr(sprintf('nfetus:%d',length(outstr.fecg)));
+    info(end+1,1) = cellstr(sprintf('nnoise:%d',length(outstr.noise)));
     % converting data
-    nlist = (arrayfun(@(x) strcat(sprintf('noise{%d}\n',x)),1:length(out.noise),'UniformOutput',0)); % list of noise sources
-    flist = cellstr(arrayfun(@(x) strcat(sprintf('fecg{%d}\n',x)),1:length(out.fecg),'UniformOutput',0)); % list of fecg sources
+    nlist = (arrayfun(@(x) strcat(sprintf('noise{%d}\n',x)),1:length(outstr.noise),'UniformOutput',0)); % list of noise sources
+    flist = cellstr(arrayfun(@(x) strcat(sprintf('fecg{%d}\n',x)),1:length(outstr.fecg),'UniformOutput',0)); % list of fecg sources
     
     for signals = {'mecg' flist{:} nlist{:}}
         % resampling
-        sig = eval(['out.' signals{:}])';
+        sig = eval(['outstr.' signals{:}])';
         sigres = zeros(size(sig,1)/(fs/fsnew),size(sig,2));
         for ch = 1:size(sigres,2)
             sigres(:,ch) = resample(double(sig(:,ch)),fsnew,fs);
@@ -120,9 +134,9 @@ for i = 1:length(fls)
 %        wrsamp(tm2,ref_sig',recordName,FS_ECGPU,gain,'')
     xbit=mat2wfdb(sigres,[filename '_' ext],fsnew,bit,{'nu'},info,gain,signame,0,false); % save in wfdb format
     end
-    flist = cellstr(arrayfun(@(x) strcat(sprintf('fqrs{%d}\n',x)),1:length(out.fqrs),'UniformOutput',0)); % list of fecg sources
+    flist = cellstr(arrayfun(@(x) strcat(sprintf('fqrs{%d}\n',x)),1:length(outstr.fqrs),'UniformOutput',0)); % list of fecg sources
     for ann = {'mqrs' flist{:}}
-        annot = round(eval(['out.' ann{:}])/(fs/fsnew));
+        annot = round(eval(['outstr.' ann{:}])/(fs/fsnew));
         ext = regexprep(ann{:},'[^a-zA-Z0-9]',''); % extension
         wrann([filename '_mecg'],ext,annot',repmat('N',length(annot),1));
     end

@@ -1,14 +1,16 @@
 function exp_datagen1(path,debug,varargin)
 % function exp_datagen1(path,debug)
 % Exemplary function to generate realistic NI-FECG signals
-%  
-% 
 % this script presents the various physiological events modelled by the
 % mecg-fecg model. For each example only one of these events is used. 
 % The code provides a good start to understant the model parametrization.
 % This is in order to better highlight the effect of each individual event
 % on the ECG morphology. This code was used in Behar et al 2014, mostly
 % default settings from the generator were used.
+% 
+% Input:
+%   path        saving path (default pwd)
+%   debug       toggle debug (default true)
 % 
 %
 % Cases/events:
@@ -78,6 +80,7 @@ optargs(newVals) = varargin(newVals);
 
 %% == parameters for simulations
 close all; clc;
+wfdb = true; % save in WFDB format?
 THR = 0.2; % threshold of QRS detector
 mVCG = 5; % choose mother VCG (if empty then the simulator randomly choose one within the set of available VCGs)
 fVCG = 4; % choose foetus VCG (ibid)
@@ -97,8 +100,12 @@ if ~isempty(POS_DEV); param.posdev = 0; end;
     
 out = run_ecg_generator(param,debug);
 out=clean_compress(out);
-save([path 'fecgsyn_c1'],'out')
 
+if wfdb
+    fecgsyn2wfdb(path,out,'fecgsyn_c1') % save as WFDB
+else
+    save([path 'fecgsyn_c1'],'out') % save as .mat
+end
 
 %%% == (2) ADDING NOISE
 close all, clear param out
@@ -112,7 +119,11 @@ if ~isempty(POS_DEV); param.posdev = 0; end;
 
 out = run_ecg_generator(param,debug);
 out=clean_compress(out);
-save([path 'fecgsyn_c2'],'out')
+if wfdb
+    fecgsyn2wfdb(path,out,'fecgsyn_c2') % save as WFDB
+else
+    save([path 'fecgsyn_c2'],'out') % save as .mat
+end
 
 
 % % multiple noise sources
@@ -136,10 +147,13 @@ param.fres = 0.8; % foetus respiration frequency
 if ~isempty(mVCG); param.mvcg = mVCG; end;
 if ~isempty(fVCG); param.fvcg = fVCG; end;
 if ~isempty(POS_DEV); param.posdev = 0; end;
-
 out = run_ecg_generator(param,debug);
 out=clean_compress(out); %#ok<*NASGU>
-save([path 'fecgsyn_c3'],'out')
+if wfdb
+    fecgsyn2wfdb(path,out,'fecgsyn_c3') % save as WFDB
+else
+    save([path 'fecgsyn_c3'],'out') % save as .mat
+end
 
 
 %%% == (4) ADDING FOETAL MOVEMENT
@@ -151,10 +165,13 @@ param.ftraj{1} = 'helix'; % giving spiral-like movement to fetus
 if ~isempty(mVCG); param.mvcg = mVCG; end;
 if ~isempty(fVCG); param.fvcg = fVCG; end;
 if ~isempty(POS_DEV); param.posdev = 0; end;
-
 out = run_ecg_generator(param,debug);
 out=clean_compress(out);
-save([path 'fecgsyn_c4'],'out')
+if wfdb
+    fecgsyn2wfdb(path,out,'fecgsyn_c4') % save as WFDB
+else
+    save([path 'fecgsyn_c4'],'out') % save as .mat
+end
 
 
 %%% == (5) ADDING HEART RATE VARIABILITY
@@ -179,7 +196,11 @@ if ~isempty(POS_DEV); param.posdev = 0; end;
 
 out = run_ecg_generator(param,debug);
 out=clean_compress(out);
-save([path 'fecgsyn_c5'],'out')
+if wfdb
+    fecgsyn2wfdb(path,out,'fecgsyn_c5') % save as WFDB
+else
+    save([path 'fecgsyn_c5'],'out') % save as .mat
+end
 
 
 %%% == (6) ADDING UTERINE CONTRACTION
@@ -217,7 +238,11 @@ param.ftypeacc = {'mexhat'};
 param.faccstd{1} = 0.5;
 out = run_ecg_generator(param,debug);
 out=clean_compress(out);
-save([path 'fecgsyn_c6'],'out')
+if wfdb
+    fecgsyn2wfdb(path,out,'fecgsyn_c6') % save as WFDB
+else
+    save([path 'fecgsyn_c6'],'out') %#ok<*UNRCH> % save as .mat
+end
 
 
 
@@ -233,8 +258,11 @@ param.mectb = 1; param.fectb = 1;
 
 out = run_ecg_generator(param,debug);
 out=clean_compress(out);
-save([path 'fecgsyn_c7'],'out')
-
+if wfdb
+    fecgsyn2wfdb(path,out,'fecgsyn_c7') % save as WFDB
+else
+    save([path 'fecgsyn_c7'],'out') % save as .mat
+end
 
 %%% == (8) MULTIPLE PREGNANCIES (e.g twins)
 close all, clear param out
@@ -254,5 +282,9 @@ param.fheart{2} = [pi/10 0.4 -0.2];
 
 out = run_ecg_generator(param,debug);
 out=clean_compress(out);
-save([path 'fecgsyn_c8'],'out')
+if wfdb
+    fecgsyn2wfdb(path,out,'fecgsyn_c8') % save as WFDB
+else
+    save([path 'fecgsyn_c8'],'out') % save as .mat
+end
 

@@ -7,9 +7,9 @@ function FECGSYNDB_datagen(path,debug,varargin)
 % stationary case and ii) non-stationary case (when adding breathing
 % effects, foetal movement etc.).
 %
-%  Input
-%   path:            path where data shall be stored
-%   debug:           flag to debug plots
+% Input:
+%   path        saving path (default pwd)
+%   debug       toggle debug (default true)
 % 
 %
 % More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.

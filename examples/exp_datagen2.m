@@ -3,9 +3,9 @@ function exp_datagen2(path,debug,varargin)
 % Focus of this work is following MECG changes of both amplitude and form.
 % Fetal and noise changes are therefore less important.
 % 
-%  Input
-%   path:            path where data shall be stored
-%   debug:           flag to debug plots
+% Input:
+%   path        saving path (default pwd)
+%   debug       toggle debug (default true)
 % 
 %  Here are the specifics
 % - 5 feto-maternal combinations

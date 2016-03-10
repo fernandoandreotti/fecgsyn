@@ -22,7 +22,11 @@ footerLinks:
 
 # header
 header:
+<<<<<<< HEAD
   color1: "#3366ff"
+=======
+  color1: "#6666ff"
+>>>>>>> 6dde7ef3f0acb7c003cca52987b3d511f1080241
   color2: "#46466d"
   trianglify: true
 

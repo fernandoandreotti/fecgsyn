@@ -50,7 +50,11 @@
         {% for p in sorted_pages %}
           {% if p.isHome != true and p.hide != true and p.title !=  %}
           <li {% if page.title == p.title %}class="active"{% endif %}>
-            <a href="{{site.github.url}}{{p.url}}">{{p.title}}</a>
+            {% if p.title == "Collaborate" %}
+            <a href="{{site.github.url}}{{p.url}}"><span class="octicon octicon-light-bulb"></span> {{p.title}}</a>
+            {%else%}
+            <a href="{{site.github.url}}{{p.url}}"> {{p.title}}</a>
+            {% endif %}
           </li>
           {% endif %}
         {% endfor %}
@@ -58,14 +62,13 @@
         <ul class="nav navbar-nav navbar-right">
         {% for p in site.headerLinks %}
           <li>
-            <a href="{{p.url}}">{{p.title}}</a>
+            <a href="{{p.url}}"><span class="octicon octicon-octoface"></span> View on {{p.title}}</a>
           </li>
         {% endfor %}
         </ul>
       </nav>
     </div>
   </header>
-
 
   <!-- Header
   =========================================== -->
@@ -75,9 +78,11 @@
       <h1 class="home-title">{{site.name}}</h1>
       <p class="lead">{{page.description}}</p>
       <p class="lead">
-        <a href="{{site.downloadUrl}}" class="btn btn-outline-inverse btn-lg"> <span class="mega-octicon octicon-mark-github"></span> Download</a>
-      </p>
-      <p class="version">Currently v{{site.version}}</p>
+        <a href="{{site.downloadUrl}}" class="btn btn-outline-inverse btn-lg"> <span class="mega-octicon octicon-mark-github"></span> Project on GitHub</a>
+        <a href="{{site.downloadUrl}}/archive/v1.0.zip" class="btn btn-outline-inverse btn-lg"> <span class="mega-octicon octicon-file-zip"></span> Download .zip</a>
+        <a href="{{site.downloadUrl}}/archive/v1.0.tar.gz" class="btn btn-outline-inverse btn-lg"> <span class="mega-octicon octicon-file-zip"></span> Download .tar.gz</a>
+      </p>       
+      <p class="version">Currently v{{site.version}}  - {{site.license}}</p>
     </div>
   </div>
 

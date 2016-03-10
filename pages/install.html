@@ -4,32 +4,20 @@ title: Installation
 author:  "Fernando Andreotti"
 ---
  
- 
- <a href="https://github.com/soarpenguin" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
-
-<span class="octicon octicon-link">a</span>
- 
-	<span class="octicon octicon-light-bulb"></span>
-
-<span class="octicon octicon-calendar"></span>
- 
 <section class="bs-docs-section">
-  <h1 id="download" class="page-header">Downloading</h1>
+<h1 id="download" class="page-header">Downloading</h1>
   
-  <p>The latest stable version of the source code for MATLAB/Octave is available in [compressed format here](https://git.io/v2Nym).<span class="octicon octicon-calendar"></span> </p>
+<p>The latest stable version of the source code for MATLAB/Octave is available in <a href="https://git.io/v2Nym"><span class="octicon octicon-file-zip"></span>  compressed format</a>.
 
-If you have git installed and would rather have the latest stable _FECGSYN_, you may consider cloning branch master from GitHub.
+<p>If you have git installed and would rather have the latest stable <em>FECGSYN</em>, you may consider cloning branch master from GitHub:</p>
 
-```bash 
+{% highlight bash %}
 git clone https://github.com/fernandoandreotti/fecgsyn.git
-```
-  
-</section>
-
+{% endhighlight %}
+ </section>
 
 <section class="bs-docs-section">
 
-  
   <h1 id="installation" class="page-header">Installing</h1>
 
   <h2 id="install-jekyll">Install on Matlab</h2>
@@ -44,5 +32,11 @@ cd fecgsyn_toolbox
 addpath(pwd);savepath
 {% endhighlight %}
 
-  
+After installing  <em>FECGSYN</em> you may verify your installation by running:
+
+{% highlight matlab %}
+fecgsyntest  % tests FECGSYN
+{% endhighlight %}
+
+
 </section>

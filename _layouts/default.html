@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>{{site.name}}</title>
+  <!-- Octicons -->
+  <link rel="stylesheet" href="{{site.github.url}}/assets/octicons/octicons/octicons.css">
 
   <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -73,7 +75,7 @@
       <h1 class="home-title">{{site.name}}</h1>
       <p class="lead">{{page.description}}</p>
       <p class="lead">
-        <a href="{{site.downloadUrl}}" class="btn btn-outline-inverse btn-lg">Download</a>
+        <a href="{{site.downloadUrl}}" class="btn btn-outline-inverse btn-lg"> <span class="mega-octicon octicon-mark-github"></span> Download</a>
       </p>
       <p class="version">Currently v{{site.version}}</p>
     </div>
@@ -161,7 +163,7 @@
         <li>Currently v{{site.version}}</li>
       {% for l in site.footerLinks %}
         <li>&middot;</li>
-        <li><a href="{{l.url}}">{{l.title}}</a></li>
+        <li><a href="{{l.url}}"><span class="octicon octicon-mark-github"></span> {{l.title}}</a></li>
       {% endfor %}
       </ul>
     </div>

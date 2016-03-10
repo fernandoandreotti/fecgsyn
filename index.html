@@ -1,20 +1,32 @@
 ---
 layout: default
 title: Home
-description: FECGSYN - realistic FECG synthetic generator
+description: a realistic foetal ECG synthetic generator
 isHome: true
 author:  "Fernando Andreotti"
 ---
 <section class="bs-docs-section">
   <h1 id="overview" class="page-header">Overview</h1>
   
-FECGSYN is a realistic non-invasive foetal ECG (NI-FECG) generator that uses the Gaussian ECG model originally introduced by McSharry et al (2003). The toolbox generates synthetic  NI-FECG mixtures considering various user-defined settings, e.g. noise sources, heart rate and heart rate variability, rotation of the maternal and foetal heart axes due to respiration, foetus movement, contractions, ectopic beats and multiple pregnancy. Any number of electrodes can be freely placed on the maternal abdomen. The synthetic ECG simulator is a good tool for modelling realistic FECG-MECG mixtures and specific events such as abrupt heart rate increase, in order to benchmark signal processing algorithms on realistic  data and for scenarios that resemble important clinical events. 
+<div align="center">
+<!--<img src="images/French_fecgsyn.png" alt="[]" height="420" width="420">-->
+<img src="pages/images/simplecaseeg.png" alt="[]" height="320" width="720"><br>
+<small><b>Fig.</b> Examplary simulated signal.</small>
+</div> <br>
 
-<em>FECGSYN</em> is fruit of the collaboration between the Department of Engineering Science, University of Oxford (DES-OX) and the Institute of Biomedical Engineering, TU Dresden (IBMT-TUD). The authors are <a href="mailto:joachim.behar@eng.ox.ac.uk?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Joachim Behar</a> (DES-OX), <a href="mailto:fernando.andreotti@mailbox.tu-dresden.de?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Fernando Andreotti</a> (IBMT-TUD), <a href="mailto:julien.oster@eng.ox.ac.uk?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Julien Oster</a> (DES-OX), <a href="mailto:sebastian.zaunseder@tu-dresden.de?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Sebastian Zaunseder</a> (IBMT-TUD) and <a href="mailto:gari@alum.mit.edu?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Gari D. Clifford (DES-OX) </a>.
+<p><em>FECGSYN</em> is a realistic non-invasive foetal ECG (NI-FECG) generator that uses the Gaussian ECG model originally introduced by McSharry et al (2003). The toolbox generates synthetic  NI-FECG mixtures considering various user-defined settings, e.g. noise sources, heart rate and heart rate variability, rotation of the maternal and foetal heart axes due to respiration, foetus movement, contractions, ectopic beats and multiple pregnancy. Any number of electrodes can be freely placed on the maternal abdomen. The synthetic ECG simulator is a good tool for modelling realistic feto-maternal mixtures and specific events such as abrupt heart rate increase, in order to benchmark signal processing algorithms on realistic  data and for scenarios that resemble important clinical events. </p>
 
-<em>FECGSYN</em> is also available at Physionet under <a href="https://www.physionet.org/physiotools/ipmcode/fecgsyn/">https://www.physionet.org/physiotools/ipmcode/fecgsyn/</a>.
-  
-  
+The toolbox is fruit of the collaboration between the Department of Engineering Science, University of Oxford (DES-OX) and the Institute of Biomedical Engineering, TU Dresden (IBMT-TUD). The authors are <a href="mailto:joachim.behar@eng.ox.ac.uk?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Joachim Behar</a> (DES-OX), <a href="mailto:fernando.andreotti@mailbox.tu-dresden.de?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Fernando Andreotti</a> (IBMT-TUD), <a href="mailto:julien.oster@eng.ox.ac.uk?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Julien Oster</a> (DES-OX), <a href="mailto:sebastian.zaunseder@tu-dresden.de?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Sebastian Zaunseder</a> (IBMT-TUD) and <a href="mailto:gari@alum.mit.edu?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Gari D. Clifford (DES-OX) </a>. </p>
+
+<p>Physionet's FECG Synthetic Database <a href="https://www.physionet.org/physiotools/ipmcode/fecgsyn/"><span class="octicon octicon-globe"></span> <em>FECGSYNDB</em></a> was build by using the <em>FECGSYN</em> toolbox.</p>
+
+<br>
+<div align="center">
+<b>We invite researchers contribute new algorithms or databases to this toolbox.</b> <br>
+Check out the <a href="{{site.github.url}}/pages/documentation.html"><span class="octicon octicon-globe"></span> Documentation</a> and how to <a href="{{site.github.url}}/pages/contribute.html"><span class="octicon octicon-globe"></span> Contribute</a>!
+</div>
+
+<br>  <br>
 <h3 id="feat">Features</h3>
   <ul>
     <li>Realistic modelling of maternal and foetal ECGs</li>
@@ -22,6 +34,19 @@ FECGSYN is a realistic non-invasive foetal ECG (NI-FECG) generator that uses the
     <li>...</li>
     
   </ul>
+
+
+<h3 id="ss">Screenshots</h3>
+
+<div align="center">  
+ <img src="pages/images/volume_conductor.png" alt="[]" height="300" width="300"> &nbsp &nbsp &nbsp &nbsp  <img src="pages/images/interface.png" alt="[]" height="300" width="320"><br>
+ <small><b>Fig.</b> Volume conductor (left) and Graphical User Interface (right).</small> <br>
+ <img src="pages/images/template_subtraction_eg.png" alt="[]" height="220" width="520"><br>
+ <small><b>Fig.</b> Extracted FECG signal.</small> <br>
+</div>
+<br>
+
+
 </section>
 <section class="bs-docs-section">
 
@@ -45,7 +70,6 @@ A summary of the change log is available on the Changelog section. For a detaile
 <section class="bs-docs-section">
 <h1 id="ref">Referencing</h1>
 
-
 When using <tt>FECGSYN</tt>, please reference at least one of the following articles:
 
 <blockquote>
@@ -60,12 +84,6 @@ and/or
 <blockquote>
 Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., 
 <a href="http://iopscience.iop.org/....">An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms.</a> <i>Physiol Meas</i> <b>++issue++</b>, pp. ++pages++, 2016.
-</blockquote>
-
-Also include the standard PhysioNet citation:
-
-<blockquote>
-Goldberger AL, Amaral LAN, Glass L, Hausdorff JM, Ivanov PCh, Mark RG, Mietus JE, Moody GB, Peng C-K, Stanley HE. <a href="http://circ.ahajournals.org/cgi/content/full/101/23/e215"> PhysioBank, PhysioToolkit, and PhysioNet: Components of a New Research Resource for Complex Physiologic Signals.</a> <i>Circulation</i> <b>101</b>(23), pp.e215-e220, 2000.
 </blockquote>
 
 </section>

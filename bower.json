@@ -6,3 +6,10 @@
 
   }
 }
+
+{
+  "name": "fecgsyn",
+  "dependencies": {
+    "octicons": "*"
+  }
+}

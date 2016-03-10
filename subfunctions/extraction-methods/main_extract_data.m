@@ -62,6 +62,7 @@ function main_extract_data(path,narrowband,wfdb)
 slashchar = char('/'*isunix + '\'*(~isunix));
 %% Parameters
 % Channels to be used
+debug = 0;
 ch = [1 8 11 14 19 22 25 32];   % ADAPT TO YOUR ELECTRODE CONFIG (abdominal leads)
 refchs = 33:34;               % ADAPT TO YOUR ELECTRODE CONFIG (reference channels)
 fs_new = 250;           % extraction occurs at 250 Hz, data will be resampled, if necessary
@@ -220,7 +221,7 @@ for i = 1:length(fls)
     NbCycles = 30; % first 30 cycles will be used for template generation
     residual = zeros(size(mixture));
     for j = 1:length(ch)
-        residual(j,:) = FECGSYN_kf_extraction(mref,mixture(j,:),NbCycles,fs_new);
+        residual(j,:) = FECGSYN_kf_extraction(mref,mixture(j,:),debug,NbCycles,fs_new);
     end
     [fqrs,maxch] = FECGSYN_QRSmincompare(residual,fref,fs_new);    % detect QRS and channel with highest F1
     save([filename '_tsekf'],'residual','maxch','fqrs','fref');

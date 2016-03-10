@@ -60,10 +60,10 @@ function residual = FECGSYN_kf_extraction(peaks,ecg,debug,varargin)
 % Public License for more details.
 
 %% == Manage inputs
-optargs = {20 1000 0};  % default values for [nbCycles fs smoothFlag]
+optargs = {30 1000 0};  % default values for [nbCycles fs smoothFlag]
 newVals = cellfun(@(x) ~isempty(x), varargin);
 optargs(newVals) = varargin(newVals);
-[nbCycles,fs,smoothFlag] = optargs{:};
+[nbCycles, fs,smoothFlag] = optargs{:};
 
 % = input test
 if nargin > 5
@@ -72,7 +72,7 @@ end
 
 % check that number of peaks is higher than nbCycles
 if nbCycles>length(peaks)
-    error('MECGcancellation Error: more peaks than number of cycles for average ecg');
+    error('KF Error: more peaks than number of cycles for average ecg');
 end
 
 %% == Re-aligning maternal peaks to match channel's peaks
@@ -94,7 +94,7 @@ if peaks(1)<1;peaks(1) = 1; end;
 if peaks(end)>length(ecg);peaks(end) = length(ecg); end;
 
 %% == Generate KF's mode
-[OptimumParams,phase,ECGsd,w,wsd] = FECGSYN_kf_ECGmodelling(ecg,peaks,nbCycles,fs);
+[OptimumParams,phase,ECGsd,w,wsd] = FECGSYN_kf_ECGmodelling(ecg,peaks,nbCycles,fs,debug);
 
 
 %% == MECG estimation using KF

@@ -166,7 +166,7 @@ switch trained_esn.learningMode
             state = [internalState;in] ; 
             stateCollection(iInput, :) = state';
 
-            [netOut,P,trained_esn.outputWeights,e] = ESNTOOL_rls(state,trainOutput(iInput,1),trained_esn.RLS_lambda,P,trained_esn.outputWeights);
+            [netOut,P,trained_esn.outputWeights,e] = FECGESN_rls(state,trainOutput(iInput,1),trained_esn.RLS_lambda,P,trained_esn.outputWeights);
             error(iInput , 1 ) = e*e ; % collect the error that will be plotted 
             
             % collect the weights for plotting 

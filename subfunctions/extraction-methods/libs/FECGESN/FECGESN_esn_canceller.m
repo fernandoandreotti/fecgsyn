@@ -55,8 +55,8 @@ TIME_INIT = 30; % time used for initialising the weights
 try
     % == normalize the data
     % assumes that the first 1 to 5sec are representative (no huge noise) for normalizaiton purposes.   
-    [input_norm,~]  = ESNTOOL_normalise_ecg(ref_ecg,1,5*fs);
-    [output_norm,~] = ESNTOOL_normalise_ecg(tar_ecg,1,5*fs);
+    [input_norm,~]  = FECGESN_normalise_ecg(ref_ecg,1,5*fs);
+    [output_norm,~] = FECGESN_normalise_ecg(tar_ecg,1,5*fs);
     
     train_frac = TIME_INIT/(length(input_norm)/fs);
     

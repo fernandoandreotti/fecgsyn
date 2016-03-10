@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Collaborate
+title: Contribute
 author:  "Fernando Andreotti"
 ---
 

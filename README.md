@@ -1,5 +1,7 @@
-NI-FECG simulator toolbox, version 1.0, August 2014
+NI-FECG simulator toolbox, version 1.1, August 2014
 ====
+Documentation: [http://fernandoandreotti.github.io/fecgsyn](http://fernandoandreotti.github.io/fecgsyn)
+
 Released under the GNU General Public License
 
 

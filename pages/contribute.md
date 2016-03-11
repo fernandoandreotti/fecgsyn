@@ -17,6 +17,8 @@ _FECGSYN_ is being constantly updated. Fellow researchers and collaborators are 
 
 - Feel free to pitch in your ideas for future releases by [<span class="octicon octicon-light-bulb"></span> suggesting an enhancement](https://github.com/fernandoandreotti/fecgsyn/issues).
 
+If you have any doubt, do not hesitate to [<span class="octicon octicon-mail"></span> contact us](mailto:fernando.andreotti@mailbox.tu-dresden.de;joachim.behar@eng.ox.ac.uk)
+
 
 ### Acknowledgments
 

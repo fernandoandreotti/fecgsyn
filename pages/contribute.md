@@ -8,6 +8,7 @@ priority: 3
 _FECGSYN_ is being constantly updated. Fellow researchers and collaborators are more than welcome to contribute with their own code.
 
 ### How to contribute
+There are many ways to contribute to the _FECGSYN_:
 
 - Feel free to fork the repository on the [<span class="octicon octicon-mark-github"></span> project's main page](https://github.com/fernandoandreotti/fecgsyn) (how to [fork a repo](https://help.github.com/articles/fork-a-repo/)) and submit pull requests.
 
@@ -16,7 +17,7 @@ _FECGSYN_ is being constantly updated. Fellow researchers and collaborators are 
 - In case you in encounter some bug please have a look on the opened issues before [<span class="octicon octicon-bug"></span> creating a new bug issue](https://github.com/fernandoandreotti/fecgsyn/issues).
 
 - Feel free to pitch in your ideas for future releases by [<span class="octicon octicon-light-bulb"></span> suggesting an enhancement](https://github.com/fernandoandreotti/fecgsyn/issues).
-
+<br>
 If you have any doubt, do not hesitate to [<span class="octicon octicon-mail"></span> contact us](mailto:fernando.andreotti@mailbox.tu-dresden.de;joachim.behar@eng.ox.ac.uk)
 
 

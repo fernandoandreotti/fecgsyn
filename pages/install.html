@@ -20,8 +20,31 @@ git clone https://github.com/fernandoandreotti/fecgsyn.git
 <section class="bs-docs-section">
 
   <h1 id="installation" class="page-header">Installing</h1>
+ <h2 id="install-wfdb">Dependencies</h2>
+ 
+  <p>If you are working with WFDB format, the WFDB Toolbox for Matlab/OCtave (<a href="https://physionet.org/physiotools/matlab/wfdb-app-matlab/"><span class="octicon octicon-globe"></span> available here</a>) should be installed.</p>
+  
+  <p>As mentioned on WFDB's Toolbox website, to install or update a previous installation of this toolbox: </p>
+  
+ <ul>
+ <li>Open MATLAB or Octave</li>
+ <li>Go into the directory where you wish to install the toolbox:</li>
+ {% highlight matlab %}
+ cd directoryname
+ {% endhighlight %}
+ {% highlight matlab %}
+ <li>Type (or copy and paste) the following commands into the MATLAB or Octave window:</li>
+ [old_path]=which('rdsamp');if(~isempty(old_path)) rmpath(old_path(1:end-8)); end
+ wfdb_url='http://physionet.org/physiotools/matlab/wfdb-app-matlab/wfdb-app-toolbox-0-9-9.zip';
+ [filestr,status] = urlwrite(wfdb_url,'wfdb-app-toolbox-0-9-9.zip');%Octave users may have to download manually
+ unzip('wfdb-app-toolbox-0-9-9.zip');
+ cd wfdb-app-toolbox-0-9-9;cd mcode
+ addpath(pwd);savepath
+{% endhighlight %}
+</ul>
 
-  <h2 id="install-jekyll">Install on Matlab</h2>
+
+  <h2 id="install-mat">Install on Matlab</h2>
   <p>Simply extract the compressed package or include your git folder to Matlab/Octave's path. Matlab users can download and install the toolbox using the following lines of code:</p>
 
 {% highlight matlab %}

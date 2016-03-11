@@ -52,14 +52,17 @@ function outstr = wfdb2fecgsyn(path,ch)
 % 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
+slashchar = char('/'*isunix + '\'*(~isunix));
 
 fls = dir([path '*']);
+[~,folder] = strtok(path(end:-1:1),slashchar); folder = fliplr(folder);
 fls = arrayfun(@(x) x.name,fls,'UniformOutput',false);
 if isempty(fls); error('wfdb2fecgsyn: No file to convert');end;
 outstr = struct('mecg',[],'fecg',cell(1,1),'noise',cell(1,1),'mqrs',[],'fqrs',cell(1,1),'param',[]);
 % read one header to figure out how many fetal and noise sources are
 % present
 recordName = fls{find(~cellfun(@isempty,regexp(fls,'.hea')),1)};
+recordName = [folder recordName];
 fid = fopen(recordName,'r');
 formatSp = '%29s%[^\n\r]';
 data = textscan(fid, formatSp, 'Delimiter', '', 'WhiteSpace', '',  'ReturnOnError', false);
@@ -81,7 +84,7 @@ datfls = fls(~cellfun(@isempty, regexp(fls,'\.dat')));
 
 
 outstr.param = param; % more information can be included, case necessary
-
+cd(folder)
 % loads .dat into outstr structure
 for d = 1:length(datfls)
     wfdb2mat(datfls{d}(1:end-4),ch);

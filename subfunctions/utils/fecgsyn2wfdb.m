@@ -74,7 +74,7 @@ cd(outstrpath)
 
 for i = 1:length(fls)
     if ~strcmp(fls{i},'skip')
-        outstr = load([lpath fls{i}],'outstr'); % load dataset, case necessary
+        outstr = importdata([lpath fls{i}],'out'); % load dataset, case necessary        
         filename = ['sub' fls{i}(8:end-4)];
     end
     % getting information

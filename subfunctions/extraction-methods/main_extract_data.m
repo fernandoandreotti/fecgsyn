@@ -68,6 +68,7 @@ refchs = 33:34;               % ADAPT TO YOUR ELECTRODE CONFIG (reference channe
 fs_new = 250;           % extraction occurs at 250 Hz, data will be resampled, if necessary
 spath = [path slashchar 'ext' slashchar]; % saving folder
 if ~exist(spath,'dir'), mkdir(spath);end
+if ~strcmp(path(end),slashchar), path = [path slashchar];end
 
 % = Defining preprocessing bands (narrow/wide)
 if narrowband
@@ -105,26 +106,26 @@ end
 
 %= Read files
 if wfdb
-    fls = dir('*.hea');
+    fls = dir([path '*.hea']);
     fls =  arrayfun(@(x) x.name,fls,'UniformOutput',false);
     remfls = cellfun(@(x) length(strtok(x(end:-1:1),'_')),fls);
     for i = 1:length(fls), fls{i} = fls{i}(1:end-remfls(i)-1);end
     fls = unique(fls); % had to remove duplicates
 else    
-    fls = dir('*.mat');     % looking for .mat (creating index)
+    fls = dir([path '*.mat']);     % looking for .mat (creating index)
     fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
 end
-
+% cd(path)
 for i = 1:length(fls)
     disp(['Extracting file ' fls{i} '..'])
     filename = [spath 'rec' num2str(i)];
     disp(num2str(i))
     % = loading data (wfdb or mat)
     if wfdb
-        out = wfdb2fecgsyn([path slashchar fls{i}],[ch refchs]);
+        out = wfdb2fecgsyn([path fls{i}],[ch refchs]);
         ch = 1:length(ch);
         refchs = length(ch)+[1:length(refchs)];
-        warning('For batch processing, avoid converting data to WFDB format, sinceit may cause slow downs.')
+        warning('For batch processing, avoid converting data to WFDB format, since it may cause slow downs.')
     else    
         load(fls{i}) % out structure
     end

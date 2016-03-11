@@ -2,6 +2,7 @@
 layout: default
 title: Contribute
 author:  "Fernando Andreotti"
+priority: 3
 ---
 
 _FECGSYN_ is being constantly updated. Fellow researchers and collaborators are more than welcome to contribute with their own code.

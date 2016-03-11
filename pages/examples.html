@@ -50,7 +50,14 @@ Examplary TS
 
 <h2 id="multiext">Multi-method extraction</h2>
 
-Examplary TS
+Extraction using multiple extraction routines is performed by applying the <code>main_extract_data</code> script, such as:
+
+{% highlight matlab %}
+main_extract_data('/FECGSYNDB_PATH/',1,1)
+{% endhighlight %}
+
+The function accept directories with both .mat and wfdb formatted data. However, for batch processing, avoid converting data to WFDB format, since it may cause slow downs
+
 </section>
 
 <!-- ----------- Benchmarking ------- -->
@@ -61,7 +68,7 @@ Examplary TS
 Examplary TS
 
 <h2 id="morpho">Morphological features</h2>
-Examplary TS
+Examplary 
 
 
 

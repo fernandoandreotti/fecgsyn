@@ -1,80 +1,2847 @@
-<h1 id=""></h1>
-
-<h1 id="benchmark-tools">benchmark-tools</h1>
-
-<h3 id="FECGSYN_exp3results">FECGSYN_exp3results</h3>
-
-<h3 id="FECGSYN_genresults">FECGSYN_genresults</h3>
-
-<h3 id="FECGSYN_benchFQRS">FECGSYN_benchFQRS</h3>
-
-<h2 id="benchmark-tools/bibs">benchmark-tools/bibs</h2>
-
-<h3 id="FECGSYN_QRSmincompare">FECGSYN_QRSmincompare</h3>
-
-<h3 id="qrs_detect">qrs_detect</h3>
-
-<h3 id="FECGSYN_manalysis">FECGSYN_manalysis</h3>
-
-<h1 id="data-generation">data-generation</h1>
-
-<h3 id="phase2qrs">phase2qrs</h3>
-
-<h3 id="plot3_volume">plot3_volume</h3>
-
-<h3 id="traject_generator">traject_generator</h3>
-
-<h3 id="generate_ecg_mixture">generate_ecg_mixture</h3>
-
-<h3 id="generate_hrv">generate_hrv</h3>
-
-<h3 id="clean_compress">clean_compress</h3>
-
-<h3 id="generate_breathing">generate_breathing</h3>
-
-<h3 id="add_cardiacdipole">add_cardiacdipole</h3>
-
-<h3 id="load_gparam">load_gparam</h3>
-
-<h3 id="run_ecg_generator">run_ecg_generator</h3>
-
-<h3 id="add_noisedipole">add_noisedipole</h3>
-
-<h2 id="data-generation/libs">data-generation/libs</h2>
-
-<h3 id="ecg_model">ecg_model</h3>
-
-<h3 id="rrprocess">rrprocess</h3>
-
-<h3 id="arrow">arrow</h3>
-
-<h3 id="rotatexyz">rotatexyz</h3>
-
-<h1 id="extraction-methods">extraction-methods</h1>
-
-<h3 id="FECGSYN_kf_extraction">FECGSYN_kf_extraction</h3>
-
-<h3 id="FECGSYN_adaptfilt_extraction">FECGSYN_adaptfilt_extraction</h3>
-
-<h3 id="main_extract_data">main_extract_data</h3>
-
-<h3 id="FECGSYN_ts_extraction">FECGSYN_ts_extraction</h3>
-
-<h3 id="FECGSYN_bss_extraction">FECGSYN_bss_extraction</h3>
-
-<h2 id="extraction-methods/libs">extraction-methods/libs</h2>
-
-<h3 id="FECGSYN_tgen">FECGSYN_tgen</h3>
-
-<h3 id="jadeR">jadeR</h3>
-
-<h1 id="utils">utils</h1>
-
-<h3 id="FECGSYN_plotmix">FECGSYN_plotmix</h3>
-
-<h3 id="wfdb2fecgsyn">wfdb2fecgsyn</h3>
-
-<h3 id="Bxb_compare">Bxb_compare</h3>
-
-<h3 id="fecgsyn2wfdb">fecgsyn2wfdb</h3>
-
+<h1 id=""></h1><br><h1 id="benchmark-tools">benchmark-tools</h1><br><h3 id="FECGSYN_exp3results">FECGSYN_exp3results</h3><br>this script extracts  morphological features of NI-FECG signals and makes
+<br>Andreotti, F., Behar, J., Zaunseder, S., Oster, J., Clifford, G. D., 
+<br>Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms. 
+<br>
+<br>
+<br>
+<br><h3 id="FECGSYN_genresults">FECGSYN_genresults</h3><br>this script generates a series of abdominal mixtures, containing i) a
+<br>effects, foetal movement etc).
+<br>Experiment 3 - Morphologycal Analysis
+<br><b>Input:</b><br>fs:               Sampling frequency
+<br>exp3:            Boolean, if 0 runs exp2 and 1 exp3
+<br><br>Released under the GNU General Public License
+<br>Copyright (C) 2014 Joachim Behar & Fernando Andreotti
+<br>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+<br>Last updated : 30-05-2014
+<br>This program is free software: you can redistribute it and/or modify
+<br>the Free Software Foundation, either version 3 of the License, or
+<br><br>but WITHOUT ANY WARRANTY; without even the implied warranty of
+<br>GNU General Public License for more details.
+<br>You should have received a copy of the GNU General Public License
+<br><br> debug,  mkdir([path_orig 'plots' slashchar]), end
+<br><br>stat = stats_struct;
+<br>ch = [2,4,6,8,12,16];
+<br>LWIDTH = 2;
+<br>for kk=1:length(stat)
+<br>    median_FASTICA_DEF(kk) = 100.*median(stat{kk}.stats_FASTICA_DEF(:,1));
+<br>    median_FASTICA_SYM(kk) = 100.*median(stat{kk}.stats_FASTICA_SYM(:,1));
+<br>    median_JADEICA(kk) = 100.*median(stat{kk}.stats_JADEICA(:,1));
+<br>    median_pca(kk) = 100.*median(stat{kk}.stats_pca(:,1));
+<br>
+<br>    FASTICA_DEF(:,kk) = 100.*stat{kk}.stats_FASTICA_DEF(:,1);
+<br>    JADEICA(:,kk) = 100.*stat{kk}.stats_JADEICA(:,1);
+<br>end
+<br>figure(1)
+<br>plot(ch,mean_JADEICA,'s--','linewidth',LWIDTH,'MarkerFaceColor',cc(1,:),'Color',cc(1,:),'linewidth',LWIDTH)
+<br>plot(ch,mean_FASTICA_SYM,'d--','linewidth',LWIDTH,'MarkerFaceColor',cc(2,:),'Color',cc(2,:),'linewidth',LWIDTH)
+<br>plot(ch,mean_FASTICA_DEF,'s--','linewidth',LWIDTH,'MarkerFaceColor',cc(3,:),'Color',cc(3,:),'linewidth',LWIDTH)
+<br>plot(ch,mean_pca,'o--','linewidth',LWIDTH,'MarkerFaceColor',cc(4,:),'Color',cc(4,:),'linewidth',LWIDTH)
+<br>xlim([2,32])
+<br>    'mean ICA (defl. FAST-ICA)','median ICA (defl. FAST-ICA)','mean PCA','median PCA')
+<br>set(gca,'FontSize',FONT_SIZE)
+<br>ylabel('F_1 (in %)')
+<br>box on
+<br>hold off
+<br><br>== Parameters
+<br>MP_SAMPS = round(60*fs); % samples used for building templates
+<br><br>(path_orig)
+<br>abdominal mixtures
+<br>s_orig = arrayfun(@(x)x.name,fls_orig,'UniformOutput',false);
+<br> ~exp3
+<br>  fls_ext = dir([path_ext '*.mat']); % looking for .mat (creating index)
+<br>  path_ext = [path_orig 'exp3' slashchar];
+<br>  % Preprocessing Filter coefficiens
+<br>  Fstop = 0.5;  % Stopband Frequency
+<br>  Astop = 20;   % Stopband Attenuation (dB)
+<br>  h = fdesign.highpass('fst,fp,ast,ap', Fstop, Fpass, Astop, Apass, fs_new);
+<br>      'MatchExactly', 'stopband', ...
+<br>      'SystemObject', true);
+<br>  % low-pass filter
+<br>  Fstop = 100;  % Stopband Frequency
+<br>  Apass = 0.1;    % Passband Ripple (dB)
+<br>  Hlp = design(h, 'butter', ...
+<br>      'SOSScaleNorm', 'Linf');
+<br>  clear Fstop Fpass Astop Apass h Hhp Hlp
+<br>d
+<br>x = cellfun(@(x) strcmp(x(1:3),'rec'),fls_ext); % ignoring files not begining with 'rec'
+<br><br>ats.JADEICA = zeros(length(fls_orig),4);
+<br>ats.tsc = zeros(length(fls_orig),4);
+<br>ats.tsekf = zeros(length(fls_orig),4);
+<br>ats.arls = zeros(length(fls_orig),4);
+<br>rph.JADEICA = cell(length(fls_orig),7);
+<br>rph.tsc = cell(length(fls_orig),7);
+<br>rph.tsekf = cell(length(fls_orig),7);
+<br>rph.arls = cell(length(fls_orig),7);
+<br><br> Check specific results
+<br>% for ff =  [50    337    547    582    589]
+<br>%     load(file)
+<br>%     load(file)
+<br>%     %= Resampling original data to match extracted (fs - if necessary)
+<br>%         % fref:          fetal QRS reference
+<br>%         fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
+<br>%         for k = 1:size(fecgref,1)
+<br>%         end
+<br>%         fecgref = fecg;
+<br>%     end
+<br>%     fecgref = (fecgref'*diag(1./max(fecgref')))';
+<br>%     hold on
+<br>%         res((lres-1)*15000+1:lres*15000) = residual(maxch(lres),(lres-1)*15000+1:lres*15000);
+<br>%     plot(res,'LineWidth',1.5)
+<br>%     title('Baseline')
+<br>%     
+<br>%     file = strcat(path_ext,['rec' num2str(ff+1) '_JADEICA.mat']);
+<br>%     file = strcat(path_orig,fls_orig{ff+1});
+<br>%     fecg = double(out.fecg{1}(ch,:)); % selecting channels
+<br>%     if size(out.mecg,2) ~= size(residual,2)
+<br>%         % fecgref:       fetal ECG signals (before mixture)
+<br>%         fecgref = zeros(length(ch),size(residual,2));
+<br>%             fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
+<br>%     else
+<br>%         fref = out.fqrs{1};
+<br>%     ax(2)=subplot(1,2,2)
+<br>%     plot(fecgref(4,:),'k')
+<br>%     for lres = 1:5
+<br>%     end
+<br>%     plot(fref,1,'or')
+<br>%     title('Case 0')
+<br>%     
+<br>%     close
+<br><br><br>r i = filesproc%length(fls_ext)
+<br>  disp(fls_ext{i})
+<br>  
+<br>  [rec,met] = strtok(fls_ext(i),'_');
+<br>  % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
+<br>  if ~strcmp(method,'JADEICA')
+<br>  end
+<br>  load(file{:})
+<br>  origrec = str2double(rec{:}(4:end));
+<br>  cas = regexp(file{:},'_c[0-7]','match'); % find out which case it depicts
+<br>      cas = {'bas'};
+<br>  
+<br>  fecg = double(out.fecg{1}(ch,:)); % selecting channels
+<br>  if size(out.mecg,2) ~= size(residual,2)
+<br>      % fecgref:       fetal ECG signals (before mixture)
+<br>      fecgref = zeros(length(ch),size(residual,2));
+<br>          fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
+<br>  else
+<br>      fref = out.fqrs{1};
+<br>  [elif,~]=strtok(file{:}(end:-1:1),slashchar);
+<br>  clear fecg outdata rec file elif k
+<br>  %= Getting statistics (exp 2)
+<br>      [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
+<br>      stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
+<br>      if ~exist([path_orig 'wfdb'],'dir')
+<br>      end
+<br>      mkdir(num2str(i))
+<br>      fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
+<br>      [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+<br>        end
+<br>  end
+<br>  cd ..
+<br><br><br><br>  %= Plots and statistics generation
+<br>  FSIZE = 15;
+<br>  figure
+<br>      stats.tsekf(:,1) stats.alms(:,1) stats.arls(:,1) stats.aesn(:,1)];
+<br>  set(gca,'XTick',[1:8])  % This automatically sets
+<br>  set(h, 'LineWidth',LWIDTH)
+<br>  xlabel('Method','FontSize',FSIZE)
+<br>  rotateticklabel(h,45);
+<br>  set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE)
+<br>  % MAE
+<br>  stats_MAE = [stats.JADEICA(:,2) stats.PCA(:,2) stats.tsc(:,2) stats.tspca(:,2) ...
+<br>  h = boxplot(stats_MAE);
+<br>  set(gca,'XTickLabel',{'BSSica';'BSSpca';'TSc';'TSpca';'TSekf';'Alms';'Arls';'Aesn'})
+<br>  ylabel('MAE (ms)','FontSize',FSIZE)
+<br>  h=gca;
+<br>  set(gca,'FontSize',FSIZE)
+<br>  
+<br>  c0 = cellfun(@(x) ~isempty(regexp(x,'.c0','ONCE')),fls_orig);
+<br>  c2 = cellfun(@(x) ~isempty(regexp(x,'.c2','ONCE')),fls_orig);
+<br>  c4 = cellfun(@(x) ~isempty(regexp(x,'.c4','ONCE')),fls_orig);
+<br>  base = ~(c0|c1|c2|c3|c4|c5);
+<br>  snr03 = cellfun(@(x) ~isempty(regexp(x,'.snr03dB','ONCE')),fls_orig);
+<br>  snr09 = cellfun(@(x) ~isempty(regexp(x,'.snr09dB','ONCE')),fls_orig);
+<br>  
+<br>  counter1 = 1;
+<br>  for met = {'JADEICA' 'PCA' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
+<br>      % F1
+<br>      auxtab = [median(statscase)',-1.*ones(7,1),iqr(statscase)',-2.*ones(7,1)];
+<br>      counter1 = counter1 + 1;
+<br>      % MAE
+<br>      auxtab = [median(statscase)',-1.*ones(7,1),iqr(statscase)',-2.*ones(7,1)];
+<br>      counter1 = counter1 + 1;
+<br>  % F1
+<br>  for met = {'JADEICA' 'aesn'}%{'ica' 'pca' 'tsc' 'tspca' 'tsekf' 'alms' 'arls' 'aesn' }
+<br>      c = c+1;
+<br>      statscase = 100*[stat(base,1) stat(c0,1) stat(c1,1) stat(c2,1) stat(c3,1) stat(c4,1) stat(c5,1)];
+<br>      set(gca,'XTick',1:7)  % This automatically sets
+<br>      set(h, 'LineWidth',LWIDTH)
+<br>      title(met)
+<br>      rotateticklabel(h,45);
+<br>      set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
+<br>  
+<br>  for met = {'JADEICA' 'aesn'}%{'tsekf' 'tspca' 'aesn' 'ica'}
+<br>      c= c+1;
+<br>      statscase = [stat(base,2) stat(c0,2) stat(c1,2) stat(c2,2) stat(c3,2) stat(c4,2) stat(c5,2)];
+<br>      set(gca,'XTick',1:7)  % This automatically sets
+<br>      set(h, 'LineWidth',LWIDTH)
+<br>      set(h,'Color',([187 81 112]./255));
+<br>      h=gca;
+<br>      set(findall(gcf,'-property','FontSize'),'FontSize',FSIZE);
+<br>  
+<br>  
+<br>se
+<br>  
+<br><br>nction [qt_test,qt_ref,tqrs_test,tqrs_ref,qt_err,theight_err,numNaN]=...
+<br> Function to perform morphological analysis for TS/BSS extracted data
+<br>>Inputs
+<br>residual:     Result of fetal extraction from abdominal signals
+<br>SAMPS:        Number of samples used for generating templates
+<br>filterc:      Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
+<br><br>qt_err: Array containing QT error for each template
+<br><br>mNaN = 0;
+<br>Allocatting
+<br>_ref = qt_test;
+<br>rs_ref = qt_test;
+<br>eight_err = qt_test;
+<br>ock = 1;
+<br>  for ch = 1:size(fecg,1)
+<br>      if j+SAMPS > length(residual)
+<br>      else
+<br>      end
+<br>      qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
+<br>      % reference template
+<br>      % abdominal signal template
+<br>      [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
+<br>          temp_abdm = temp_ref;
+<br>          status2 = status1;
+<br>      
+<br>      temp_abdm = temp_abdm.avg; temp_ref = temp_ref.avg;
+<br>      % crop end of templates which have steps on them
+<br>          per80 = round(0.8*length(temp_abdm));
+<br>          if ~isempty(idx)
+<br>              med1 = median(temp_abdm(per80:per80+idx)); med2 = median(temp_abdm(per80+idx:end));
+<br>          end
+<br>          per80 = round(0.8*length(temp_ref));
+<br>          if ~isempty(idx)
+<br>              med1 = median(temp_ref(per80:per80+idx)); med2 = median(temp_ref(per80+idx:end));
+<br>          end
+<br>      catch
+<br>      end
+<br>      if (~status1||~status2)
+<br>          qt_ref{ch,block} = NaN;
+<br>          tqrs_ref{ch,block} = NaN;
+<br>          theight_err{ch,block} = NaN;
+<br>          %% Performs morphological analysis
+<br>      end
+<br>      if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})
+<br>              drawnow
+<br>              hold on
+<br>              
+<br>              hold on
+<br>              print('-dpng','-r72',[fname '_ch' num2str(ch) '_s' num2str(block) '.png'])
+<br>              warning('Failed to save plot')
+<br>          
+<br>  end
+<br>d
+<br><br><h3 id="FECGSYN_benchFQRS">FECGSYN_benchFQRS</h3><br>function FECGSYN_benchFQRS(path_orig,fs,ch,exp3)
+<br>this script generates statistics as in Experiment 2 by Andreotti et al 2016,
+<br><br>Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., An Open-Source Framework 
+<br>
+<br>
+<br>Released under the GNU General Public License
+<br>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+<br>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+<br>
+<br>
+<br><br>  An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+<br>
+<br><br>
+<br>it under the terms of the GNU General Public License as published by
+<br>(at your option) any later version.
+<br>This program is distributed in the hope that it will be useful,
+<br>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<br>
+<br>along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<br><br> debug,  mkdir([path_orig 'plots' slashchar]), end
+<br><br>th = 'D:\Users\Andreotti\Dropbox\sharelatex\[Andreotti et al 2016] Standardising FECGSYN (in review)\fecgsyn_morphology\mats\';
+<br>TERV = round(0.05*fs); % BxB acceptance interval
+<br>_new = 250;
+<br><br>(path)
+<br><br>  % abdominal mixtures
+<br>  fls_orig = arrayfun(@(x)x.name,fls_orig,'UniformOutput',false);
+<br>  if ~exp3
+<br>      fls_ext = dir([path_ext '*.mat']); % looking for .mat (creating index)
+<br>      path_ext = [path_orig 'exp3' slashchar];
+<br>      % Preprocessing Filter coefficiens
+<br>      Fstop = 0.5;  % Stopband Frequency
+<br>      Astop = 20;   % Stopband Attenuation (dB)
+<br>      h = fdesign.highpass('fst,fp,ast,ap', Fstop, Fpass, Astop, Apass, fs_new);
+<br>          'MatchExactly', 'stopband', ...
+<br>          'SystemObject', true);
+<br>      % low-pass filter
+<br>      Fstop = 100;  % Stopband Frequency
+<br>      Apass = 0.1;    % Passband Ripple (dB)
+<br>      Hlp = design(h, 'butter', ...
+<br>          'SOSScaleNorm', 'Linf');
+<br>      clear Fstop Fpass Astop Apass h Hhp Hlp
+<br>  end
+<br>  idx = cellfun(@(x) strcmp(x(1:3),'rec'),fls_ext); % ignoring files not begining with 'rec'
+<br>  
+<br>  stats.JADEICA = zeros(length(fls_orig),4);
+<br>  stats.tsc = zeros(length(fls_orig),4);
+<br>  stats.tsekf = zeros(length(fls_orig),4);
+<br>  stats.arls = zeros(length(fls_orig),4);
+<br>  
+<br>  for i = length(fls_ext)
+<br>      disp(fls_ext{i})
+<br>      
+<br>      [rec,met] = strtok(fls_ext(i),'_');
+<br>      % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
+<br>      if ~strcmp(method,'JADEICA')
+<br>      end
+<br>      load(file{:})
+<br>      origrec = str2double(rec{:}(4:end));
+<br>      cas = regexp(file{:},'_c[0-7]','match'); % find out which case it depicts
+<br>          cas = {'bas'};
+<br>      
+<br>      fecg = double(out.fecg{1}(ch,:)); % selecting channels
+<br>      if size(out.mecg,2) ~= size(residual,2)
+<br>          % fecgref:       fetal ECG signals (before mixture)
+<br>          fecgref = zeros(length(ch),size(residual,2));
+<br>              fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
+<br>      else
+<br>          fref = out.fqrs{1};
+<br>      [elif,~]=strtok(file{:}(end:-1:1),slashchar);
+<br>      clear fecg outdata rec file elif k
+<br>      %= Getting statistics (exp 2)
+<br>          [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
+<br>          stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
+<br>          if ~exist([path_orig 'wfdb'],'dir')
+<br>          end
+<br>          mkdir(num2str(i))
+<br>          fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
+<br>          [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+<br>          %         end
+<br>      end
+<br>      cd ..
+<br>  
+<br><br><br><br><h2 id="benchmark-tools/bibs">benchmark-tools/bibs</h2><br><h3 id="FECGSYN_QRSmincompare">FECGSYN_QRSmincompare</h3><br>function [fqrs,maxch] = FECGSYN_QRSmincompare(data,fref,fs,varargin)
+<br><br>detection on a minute basis or pre-defined interval.
+<br>data                         Extracted signals
+<br>fs                           Sampling frequency (in Hz)
+<br>
+<br>More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+<br><b>Examples:</b> <br> {% highlight matlab %}<br><br>qrs_detect
+<br>
+<br>Released under the GNU General Public License
+<br>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+<br>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+<br>
+<br>
+<br><br>  An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+<br>
+<br><br>
+<br>it under the terms of the GNU General Public License as published by
+<br>(at your option) any later version.
+<br>This program is distributed in the hope that it will be useful,
+<br>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<br>
+<br>along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<br><br>itch length(varargin)
+<br>      window = 60; % default minute window
+<br>      window = varargin{1};
+<br>      error('FECGSYN_QRSmincompare: Too many inputs')
+<br><br><br>TERV = round(0.05*fs);    % BxB acceptance interval
+<br>FRAC = .15;               % detector refractory period (in s)
+<br>Detect QRS complexes
+<br>r j = 1:size(data,1)
+<br>d
+<br>creating statistics in 1-min blocks
+<br>mblock = length(data)/fs/window;
+<br>  warning('FECGSYN_QRSmincompare: non-integer division of data length and block window. Dataset will be only partially evaluated!')
+<br>d
+<br>rs_temp = cell(1,numblock);
+<br>  F1max = 0;
+<br>  for j = 1:size(data,1)
+<br>      [F1,~,~,~] = Bxb_compare(fref(idxref),fqrs{j}(idx),INTERV);
+<br>          maxch(min) = j;
+<br>          fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs*60;    % adding fqrs detections to temporary cell
+<br>  end
+<br>d
+<br>d<br><h3 id="qrs_detect">qrs_detect</h3><br>QRS detector based on the P&T method. This is an offline implementation
+<br><br>  ecg:            one ecg channel on which to run the detector (required)
+<br>      THRES:      energy threshold of the detector (default: 0.6)
+<br>      fs:         sampling frequency (default: 1KHz)
+<br>                  optimal threshold of the P&Tthen input the indices of
+<br>      SIGN_FORCE: force sign of peaks (positive value/negative value).
+<br>                  unsure the sign of the peaks to be the same accross
+<br>      debug:      1: plot to bebug, 0: do not plot
+<br>outputs
+<br>  sign:           sign of the peaks (a pos or neg number)
+<br><br><br>Released under the GNU General Public License
+<br>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+<br>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+<br>Last updated : 19-01-2014
+<br>This code was initialy developed by Joachim Behar for the Physionet
+<br>http://physionet.org/challenge/2013/sources/joachim.behar@gmail.com/
+<br><br>This program is free software; you can redistribute it and/or modify it
+<br>Free Software Foundation; either version 2 of the License, or (at your
+<br>This program is distributed in the hope that it will be useful, but
+<br>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+<br><br>RES = 0.6; 
+<br>d_vec = [];
+<br>bug = 0;
+<br>itch nargin
+<br>      REF_PERIOD=varargin{1};
+<br>      REF_PERIOD=varargin{1}; 
+<br>  case 4
+<br>      THRES=varargin{2};
+<br>  case 5
+<br>      THRES=varargin{2}; 
+<br>      fid_vec=varargin{4};
+<br>      REF_PERIOD=varargin{1}; 
+<br>      fs=varargin{3};
+<br>      SIGN_FORCE=varargin{5};
+<br>      REF_PERIOD=varargin{1}; 
+<br>      fs=varargin{3};
+<br>      SIGN_FORCE=varargin{5};          
+<br>  otherwise
+<br>d
+<br> b] = size(ecg);
+<br> = 1/fs:1/fs:ceil(NB_SAMP/fs);
+<br>== constants
+<br>T_NB_COEFF = round(7*fs/256); % length is 7 for fs=256Hz
+<br>GH_CUT_FREQ = 45;
+<br>X_FORCE = []; % if you want to force the energy threshold value (FIXME: should be in function param)
+<br>y
+<br>  [b_lp,a_lp] = butter(5,HIGH_CUT_FREQ/(fs/2),'high');
+<br>  ecg = ecg-mean(ecg);                    % (1) centre
+<br>  bpfecg = filtfilt(b_bas,a_bas,bpfecg);  % (3) remove baseline (zero phase)
+<br>  % == P&T operations
+<br>  sqrecg = dffecg.*dffecg; % (5) square ecg
+<br>  mdfint = medfilt1(intecg,MED_SMOOTH_NB_COEFF);  % (7) smooth
+<br>  mdfint = circshift(mdfint,-delay); % remove filter delay for scanning back through ECG
+<br>  % look for some measure of signal quality with signal fid_vec? (FIXME)
+<br><br>  if NB_SAMP/fs>90; xs=sort(mdfintFidel(fs:fs*90)); else xs = sort(mdfintFidel(fs:end)); end;
+<br>  if isempty(MAX_FORCE)
+<br>          ind_xs = ceil(98/100*length(xs)); 
+<br>      else
+<br>          en_thres = xs(ind_xs); % else 99% CI  
+<br>  else
+<br>  end
+<br>  % build an array of segments to look into
+<br><br>  if isempty(poss_reg); poss_reg(10) = 1; end;
+<br>  % == P&T QRS detection & search back
+<br>      indAboveThreshold = find(poss_reg); % ind of samples above threshold
+<br>      medRRv = median(RRv(RRv>0.01));
+<br>      % find interval onto which a beat might have been missed
+<br>      indEnd = indAboveThreshold(indMissedBeat+1);
+<br>      for i=1:length(indStart)
+<br>          poss_reg(indStart(i):indEnd(i)) = mdfint(indStart(i):indEnd(i))>(0.5*THRES*en_thres);
+<br>  end
+<br>  % find indices into boudaries of each segment
+<br>  right = find(diff([poss_reg' 0])==-1); % remember to zero pad at end
+<br>  % looking for max/min?
+<br>      sign = SIGN_FORCE;
+<br>      nb_s = length(left<30*fs);
+<br>      for j=1:nb_s
+<br>          loc(j) = loc(j)-1+left(j);
+<br>      sign = mean(ecg(loc));  % FIXME: change to median?  
+<br><br>  compt=1;
+<br>  maxval = zeros(1,NB_PEAKS);
+<br>  for i=1:NB_PEAKS
+<br>          % if sign is positive then look for positive peaks
+<br>      else
+<br>          [maxval(compt) maxloc(compt)] = min(ecg(left(i):right(i)));
+<br>      maxloc(compt) = maxloc(compt)-1+left(i); % add offset of present location
+<br>      % refractory period - has proved to improve results
+<br>          if maxloc(compt)-maxloc(compt-1)<fs*REF_PERIOD && abs(maxval(compt))<abs(maxval(compt-1))
+<br>          elseif maxloc(compt)-maxloc(compt-1)<fs*REF_PERIOD && abs(maxval(compt))>abs(maxval(compt-1))
+<br>          else
+<br>          end
+<br>          % if first peak then increment
+<br>      end
+<br><br>  R_t = tm(maxloc); % timestamps QRS positions
+<br>  hrv = 60./diff(R_t); % heart rate
+<br>tch ME
+<br>  qrs_pos = [1 10 20]; sign = 1; en_thres = 0.5; 
+<br><br> debug>0
+<br>  if debug == 11 % corresponds to running the code from the gui
+<br>  end
+<br>      title('raw ECG (blue) and zero-pahse FIR filtered ECG (red)'); ylabel('ECG');
+<br>  ax(2) = subplot(4,1,2); plot(tm(1:length(mdfint)),mdfint);hold on;
+<br>      title('Integrated ecg with scan boundaries over scaled ECG');
+<br>  ax(3) = subplot(4,1,3); plot(tm,bpfecg,'r');hold on;
+<br>      title('ECG with R-peaks (black) and S-points (green) over ECG')
+<br>  ax(4) = subplot(4,1,4); hold off; plot(R_t(1:length(hrv)),hrv,'r+')
+<br>      ylabel('RR (s)'); xlim([0 tm(end)]);
+<br>  linkaxes(ax,'x');
+<br>d
+<br><br>  Finding the P&T energy threshold: in order to avoid crash due to local 
+<br>  first sec removed for choosing the thres because of filter init lag.
+<br>  Search back: look for missed peaks by lowering the threshold in area where the 
+<br>
+<br>  first 30sec when looking for max of abs value. Then look for the
+<br>  not alternate between positive and negative detections which might
+<br>  better than forcing to look for a max or min systematically.
+<br><br><br><br><br><h3 id="FECGSYN_manalysis">FECGSYN_manalysis</h3><br>This function calculates morphological features form signals given two
+<br>This functin makes use of the ECGPUWAVE script (Jane et al 1996) and
+<br><br> abdm_temp:               Template to be tested
+<br> qrs_abdm/qrs_ref:        Location of qrs in each template
+<br> filterc:                 Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
+<br> filen:                   number to be added to ecgpuwaves outputs
+<br><br>Reference to functions:
+<br> ECGPUWAVE: Jane, R., Blasi, A., Garcia, J., & Laguna, P. (1997). Evaluation of an automatic 
+<br> Cardiology 1997 (pp. 295–298). IEEE. http://doi.org/10.1109/CIC.1997.647889
+<br> and 
+<br> PhysioNet Databases in MATLAB and Octave." Journal of Open Research Software 2(1):e27 
+<br>
+<br>Released under the GNU General Public License
+<br>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+<br>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+<br>
+<br>
+<br><br>  An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+<br>
+<br><br>
+<br>it under the terms of the GNU General Public License as published by
+<br>(at your option) any later version.
+<br>This program is distributed in the hope that it will be useful,
+<br>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<br>
+<br>along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<br>Case second run of ICA tests (speed up a bit)
+<br><br>_ECGPU = 250;     % default sampling frequency for ECGPUWAVE
+<br><br>hp = filterc(1); a_hp = filterc(2); b_lp = filterc(3);a_lp= filterc(4);
+<br>upsampling to 500Hz so that foetal heart looks like an adult heart
+<br>  qt_test = NaN;
+<br>  tqrs_test = NaN;
+<br>  disp('manalysis: could not generate a TEMPLATE.')
+<br>d
+<br>dm_temp = resample(abdm_temp,2*FS_ECGPU,fs);
+<br>sref = round(qrsref*2*FS_ECGPU/fs);
+<br>LENa = length(abdm_temp);  % template length
+<br><br>f_sig = repmat(ref_temp',1,20);
+<br>Preprocessing reference channel
+<br>f_sig = filtfilt(b_hp,a_hp,ref_sig);
+<br>dm_sig = filtfilt(b_hp,a_hp,abdm_sig);
+<br>Normalizing signal
+<br>ign = sign(abdm_sig(I)); % looking for signal sign
+<br>,I] = max(abs(ref_temp));
+<br>f_sig = 2*gain*wsign(1)*ref_sig/max(abs(ref_sig));
+<br><br>looking for peaks in temporary signal
+<br>sabdm = cumsum([0 repmat(T_LENa,1,19)])+qrsabdm;
+<br>writting to WFDB
+<br>2 = 1:length(ref_sig); tm2 = tm2'-1;
+<br><br> Segmentation using ECGPUWAVE
+<br>  counter = 1; % avoind rewriting file
+<br>      counter = counter + 1;
+<br>  filen = [filen '_' num2str(counter)];
+<br><br>samp(tm2,ref_sig',recordName,FS_ECGPU,gain,'')
+<br><br>    system(['ecgpuwave -r ' recordName '.hea' ' -a ecgpu -i qrsref | awk ''{print $1}'' > tmpout']);
+<br>    tmp = textscan(fp,'%s','delimiter','\n');
+<br>    tmp = str2double(tmp);
+<br>else
+<br>  ecgpuwave(recordName,'ecgpu',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+<br>llref,alltypes_r] = rdann(recordName,'ecgpu');
+<br>    figure(2)
+<br>    cla
+<br>    hold on
+<br>    plot(qrsref,0,'sg')
+<br>    title('Reference Signal')
+<br>test signal
+<br> ~ident
+<br>  wrann(['absig_' filen],'qrs',qrsabdm',repmat('N',20,1));
+<br>  [alltest,alltypes_t] = rdann(['absig_' filen],'ecgpu');
+<br>if debug
+<br>    ax(2)=subplot(2,1,2);
+<br>    plot(abdm_sig./gain)
+<br>    plot(qrsabdm,0,'sg')
+<br>    text(alltest,abdm_sig(alltest)./gain+0.1,alltypes_t)
+<br>    title('Test Signal')
+<br><br><br><br>test if QT analysis feasible
+<br>  qt_test = NaN;
+<br>  tqrs_test = NaN;
+<br>  tqrs_test = NaN;
+<br>  disp('manalysis: Could not encounter QT wave for REFERENCE.')
+<br>d
+<br>oel = median(ref_temp(round(qrsref(1)-T_LENr+0.185*fs):end)./gain);
+<br>_ref = th_ref./gain-isoel;              % in mV (or not)
+<br>rs_ref = 100*abs(th_ref/qrs_ref);
+<br> debug
+<br>  clf,cla
+<br>  ax(1)=subplot(2,1,1);       
+<br>  plot(ref_temp./gain,'k','LineWidth',2)
+<br>  rpeak = qrsref(1)-T_LENr;
+<br>  plot(rpeak+tends,ref_temp(rpeak+tends)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
+<br>  
+<br>  clear qs tends twave offset rpeak
+<br><br>  qt_test = '';
+<br>  return
+<br><br>t_test,th_test,qs,tends,tpeak,qrs_test] = QTcalc(alltypes_t,alltest,abdm_sig,fs);
+<br> isnan(qt_test)||isnan(th_test)
+<br>  qt_ref = NaN;
+<br>  tqrs_ref = NaN;
+<br>  tqrs_ref = NaN;
+<br>  return
+<br>oel = median(abdm_temp(round(qrsabdm(1)-T_LENa+0.185*fs):end)./gain);
+<br>_test = th_test./gain-isoel;                  % in mV (or not)
+<br>rs_test = 100*abs(th_test/qrs_test);
+<br> debug&&~ident
+<br>  ax(2)=subplot(2,1,2);
+<br>  abdm_temp = abdm_sig(1:length(abdm_temp));
+<br>  hold on
+<br>      rpeak = qrsref(1)-T_LENa;
+<br>      plot(rpeak+tends,abdm_temp(rpeak+tends)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
+<br>  catch
+<br>  end
+<br>d
+<br>= QT error
+<br>= T-height estimation
+<br><br> ~isnan(qt_err)&&isnan(th_err)
+<br>d
+<br>d
+<br><br> Function that contains heuristics behind QT interval calculation
+<br>detect its begin and end. Only highest peak of T-waves marked as biphasic
+<br><br>Inputs
+<br>ann_stamp:          Samplestamp of ALL annotations obtained from ECGPUWAVE
+<br><br>qtint:              Length of QT (samples)
+<br>qs:                 Q onset locations
+<br>twave:              Locations of T-waves (peak)
+<br><h1 id="data-generation">data-generation</h1><br><h3 id="phase2qrs">phase2qrs</h3><br>this function is used for finding the qrs locations using the phase generated 
+<br><br>  phase:  phase [sample]
+<br><br>  qrs:    qrs position [sample]
+<br><br>Released under the GNU General Public License
+<br>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+<br>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+<br><br><br><br>  An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings.
+<br><br><br><br>it under the terms of the GNU General Public License as published by
+<br>(at your option) any later version.
+<br>This program is distributed in the hope that it will be useful,
+<br>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<br><br>along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<br>== check inputs
+<br><br> = sign(phase);
+<br>s = find(flag_cross);
+<br>== debug
+<br> FONT_SIZE = 15;
+<br> hold on, plot(qrs,phase(qrs),'+r','LineWidth',2);
+<br> xlabel('Time [sec]'); ylabel('FHR [bpm]')
+<br> set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
+<br><br><br><h3 id="plot3_volume">plot3_volume</h3><br>plot volume conductor together with foetuses and mother heart positions 
+<br>of simulation configuration. The volume conductor is represented by a
+<br>0.5]). Remember that the hearts are represented as dipoles which position 
+<br>orientation specified by the rotation matrices (vols.Rf and vols.Rm).
+<br>inputs
+<br>      vols.fheart:   foetal heart position in polar coordinates, 
+<br>                     supporting multiple pregnancies representation)
+<br>                     (one cell of 3x1 vector)
+<br>                     (3 x NB_ELECTRODES vector)
+<br>                     thetaY,thetaZ - in radian)
+<br>                     thetaY,thetaZ - in radian)
+<br><br><h3 id="traject_generator">traject_generator</h3><br>this function is used to generate trajectories within volume conductor. These
+<br>modelling, e.g. respiration or fetal movements.
+<br>inputs
+<br>  pos_i:  initial position for trajectory [1x3 number array]
+<br>  type:   type of trajectory to be build, e.g. 'none','linear', 'spline' or 'helix' [string]
+<br>output
+<br><br><br>Released under the GNU General Public License
+<br>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+<br>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+<br><br><br><br>  An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings.
+<br><br><br><br>it under the terms of the GNU General Public License as published by
+<br>(at your option) any later version.
+<br>This program is distributed in the hope that it will be useful,
+<br>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<br><br>along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<br>== check inputs
+<br>  
+<br>_CIRC = 3.5; % number of cycles for helix trajectory
+<br>== main
+<br>itch type
+<br>      traj = pos_i;
+<br>      traj = repmat(pos_i,N,1);
+<br>  case 'linear' % linear trajectory
+<br>      trajy = linspace(pos_i(2),pos_f(2),N)'; % linear trajectory for Y
+<br>      traj = [trajx trajy trajz];
+<br>      idx = randperm(3);
+<br>      for i = idx(1:2)
+<br>      end
+<br>  case 'helix' % circular trajectory in xy
+<br>      center = (pos_i(1:2)+pos_f(1:2))/2;
+<br>      w = linspace(0,2*pi*NB_CIRC,N)'; % linear in Z
+<br>      traj(:,1) = r*cos(w+phi)+center(1); % circle in X Y
+<br>  otherwise
+<br>d
+<br><br><h3 id="generate_ecg_mixture">generate_ecg_mixture</h3><br>  generate_ecg_mixture(debug,SNRfm,SNRmn,mqrs,fqrs,fs,varargin)
+<br><br>       debug:      debug [bool]
+<br>       SNRmn:      SNR of maternal signal compared to background noise
+<br>       fqrs:       foetal qrs locations
+<br>  structure as:   <source>.VCG - VCG signal for given source
+<br>                  <source>.SNR - Gain which is given to source 
+<br>                  <source>.type - Maternal (1), Fetal (2) or Noise (3)
+<br>       mixture: mixture of MECG, FECG and noise
+<br>       fecg:    cell array containing projected fetal ECG signal(s)
+<br><br><br>Released under the GNU General Public License
+<br>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+<br>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+<br><br><br><br>  An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings.
+<br><br><br><br>it under the terms of the GNU General Public License as published by
+<br>(at your option) any later version.
+<br>This program is distributed in the hope that it will be useful,
+<br>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<br><br>along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<br>== checking inputs
+<br>handle = [];
+<br>cg = [];
+<br><br>_EL = size(varargin{1}.H,1); % number of electrodes
+<br>_SAMPS = size(varargin{1}.VCG,2); % number of samples = signal length
+<br>_NOISE = 0;
+<br>  if (varargin{vv}.type==2); NB_FOETUSES = NB_FOETUSES+1; end; 
+<br>d;
+<br>number of beats present on the signal.
+<br>R = 120; %    [in bpm]
+<br>== general
+<br>gnalf = zeros(NB_FOETUSES*NB_EL,NB_SAMPS);
+<br><br>r i=1:NB_SIG2MIX
+<br>  if ndims(src.H)==3 % for time varying H
+<br>      H = num2cell(src.H,[1 2]); % transforming H matrix to use cellfun
+<br>      signal = cellfun(@(A,B) A*B,H,VCG,'UniformOutput',false); % projecting sources H(t)*VCG
+<br>  else % for time invariant H
+<br>  end
+<br>  switch src.type
+<br>          mecg = signal;          
+<br>          cpt2 = cpt2+1;
+<br>      case 3 % noise source
+<br>          signal = bsxfun(@times,signal,src.SNRfct); % multiplying by modulating function
+<br>  end
+<br><br>xture = mecg;
+<br>== SNR calculation for different sources
+<br> = sum(mixture.^2,2)*(MHR/mbeats); % average power of maternal 
+<br>werm = mean(Pm);
+<br>== calibrating FECG (fetal - mother)
+<br> ~isempty(signalf)
+<br>  fbeats = cellfun(@(x) length(x),fqrs); % multiple foetuses support
+<br>  ampf = reshape(sum((signalf).^2,2),NB_EL,[])*diag(FHR./fbeats); % power of each fetus in one column
+<br>                       % (since VCGs are not normalized)
+<br>  for i = 1:size(signalf,1)/NB_EL
+<br>      p = sqrt(powerm./powerf(i))*10.^(SNRfm/20);
+<br>      mixture = mixture + fblock;
+<br>  end
+<br><br>re-scale so that together, all noise sources have a 1/SNRmn [dB] level
+<br>  noise = cell(size(signaln)); % preallocating
+<br>  noisegain = noisegain./sum(noisegain); % percentual power of each noise source
+<br>  sig = cat(3,signaln{:});            % transforms cell in 3D matrix
+<br>  meannoisepow = mean(sigpow);        % average noise power
+<br>  p = sqrt(powerm./meannoisepow)*10.^(-SNRmn/20); % applied gain for each noise signal / channels
+<br>  % add noise to mixture signals with amplitude modulation
+<br>      nblock = noisegain(i)*diag(p)*signaln{i}; % re-scaling signals
+<br>      noise{i} = nblock; % saving signal separetely
+<br>d
+<br>== debug
+<br> FONT_SIZE = 15;
+<br> LINE_WIDTH = 2;
+<br> NB_NOISE = length(noise);
+<br> if debug ~= 11
+<br>     % plot maternal signal
+<br>     plot(mecg(1,:),'k','LineWidth',LINE_WIDTH)
+<br>     ylabel('Maternal signal ch1')
+<br>     f_handle(end+1) = figure('name', 'Maternal signal ch1');
+<br>     plot(mecg(1,:),'k','LineWidth',LINE_WIDTH)
+<br> end
+<br> 
+<br> % plot fetal signals
+<br>     if debug ~= 11
+<br>         plot(fecg{i}(1,:),'b','LineWidth',LINE_WIDTH)
+<br>         ylabel(['Fetal signal ' num2str(i) ' ch1'])
+<br>     else
+<br>         set(f_handle(end), 'Visible', 'off')
+<br>         xlabel('Sample Number','FontSize',FONT_SIZE_SMALL)
+<br> end
+<br> for i = 1:NB_NOISE
+<br>         subplot(NB_FET+NB_NOISE+2,1,1+NB_FET+i)
+<br>         %%%title(['Noise signal ' num2str(i) ' ch1'])
+<br>         %%%set(gca,'FontSize',FONT_SIZE)
+<br>         f_handle(end+1) = figure('name', ['Noise signal ' num2str(i) ' ch1']);
+<br>         plot(noise{i}(1,:),'r','LineWidth',LINE_WIDTH)
+<br>     end
+<br> 
+<br> if debug ~= 11
+<br>     plot(mixture(1,:),'m','LineWidth',LINE_WIDTH)
+<br>     ylabel('Resulting signal for ch1')
+<br>     xlabel('Sample Number','FontSize',FONT_SIZE)
+<br> else
+<br>     set(f_handle(end), 'Visible', 'off')
+<br>     xlabel('Sample Number','FontSize',FONT_SIZE_SMALL)
+<br> end
+<br><br><br><h3 id="generate_hrv">generate_hrv</h3><br>generate variable heart rate (HR). Add suddent change of HR 
+<br>to model high HR variation to test the robustness of a NI-FECG 
+<br>HR variability (HRV).
+<br>inputs
+<br>      - strhrv.hr:        mean heart rate [bpm]
+<br>                          hf->simulates respiratory sinus arrythmia
+<br>      - strhrv.hrstd:     standard deviation of heart rate [bpm]
+<br>      - strhrv.flhi:      center freqency of high frequency Gaussian (RSA) [Hz]
+<br>                          (negative) [bpm]
+<br>                          'mexhat'
+<br>      - strhrv.accstd     standard deviation (case necessary) 
+<br>  fs:                     sampling frequency    
+<br><br>  theta:                   generated phase signal theta(t)
+<br><br><h3 id="clean_compress">clean_compress</h3><br>this function eliminates some of the substructures from "out" and
+<br>
+<br><br>Released under the GNU General Public License
+<br>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+<br>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+<br>
+<br>
+<br><br>  An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+<br>
+<br><br>
+<br>it under the terms of the GNU General Public License as published by
+<br>(at your option) any later version.
+<br>This program is distributed in the hope that it will be useful,
+<br>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<br>
+<br>along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<br>  out_tmp=rmfield(out,{'f_model' 'm_model' 'vols' 'selvcgm' 'selvcgf'});
+<br>  out.mecg = int16(round(3000*out_tmp.mecg));
+<br>      for i = 1:length(out_tmp.fecg)
+<br>      end
+<br>      out.fecg = {};
+<br>  if ~isempty(out_tmp.noise)
+<br>          out.noise{i} = int16(round(gain*out_tmp.noise{i}));
+<br>  else
+<br>  end
+<br>  out.fqrs = out_tmp.fqrs;
+<br>d<br><h3 id="generate_breathing">generate_breathing</h3><br>variable sawtooth shape for modelling respiration. The intention is to
+<br>of the cardiac dipole with breathing.
+<br>reference: http://mathworld.wolfram.com/FourierSeriesSawtoothWave.html
+<br>sawtooth function are kept to make the bwa smooth.
+<br>inputs
+<br>  N:      number of datapoints
+<br>  debug:  [bool]
+<br>output
+<br>
+<br>reference:
+<br>Fibrillation". IEEE Trans Biomed. Eng , VOL. 59, NO. 10, OCTOBER 2012.
+<br><br><br>Released under the GNU General Public License
+<br>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+<br>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+<br><br><br><br>  An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings.
+<br><br><br><br>it under the terms of the GNU General Public License as published by
+<br>(at your option) any later version.
+<br>This program is distributed in the hope that it will be useful,
+<br>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<br><br>along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<br>ltaA = 0.3;   % modulation amplitude
+<br>ltaF = 0.05;  % maximum frequency deviation
+<br><br>= @(n) 2./(2*pi)*(1+deltaA*sin(2*pi*fa.*n/fs));
+<br><br>  + b(n).*sin(4*pi*fres.*n/fs + deltaF/ff*sin(2*pi*ff*n/fs))...
+<br><br>gnal_noisy = s(1:N) + 0.1*rand(1,N);
+<br>== then cubic spline to resmooth
+<br><br>a = resample(signal_noisy_interp, 100,1);
+<br>== normalise in [-0.5 0.5]
+<br>a = bwa + abs(min(bwa)) - 0.5;
+<br>== debug
+<br>  FONT_SIZE = 15;
+<br>  tm = 1/fs:1/fs:N/fs;
+<br>  xlabel('Time [sec]'); ylabel('Amplitude [Normalised]');
+<br>  set(findall(gcf,'type','text'),'fontSize',FONT_SIZE); 
+<br><br><br><h3 id="add_cardiacdipole">add_cardiacdipole</h3><br>  theta,w,fres,R0,epos,traj,debug)
+<br>dipole equation. This function generates the vectocardiogram (VCG) of 
+<br>projection of the VCG onto the electrode locations as specified by (elec.ep). 
+<br>are modelled. Rotation of the heart is modelled by dynamically updating 
+<br>heart is modelled by updating the dower-like projection matrix H. These
+<br>the FECG signal. The function returns the VCG signal, the projection
+<br>case the foetus is moving).
+<br>       N:     signal length [number of points]
+<br>      gp_all: Gaussian parameters [cell of cells]
+<br>              gp{i}{1}:  structure contaning the phase of Gaussian functions used for
+<br>                  dipole
+<br>                  modeling the x, y, and z coordinates of the cardiac dipole
+<br>                  modeling the x, y, and z coordinates of the cardiac dipole
+<br>              
+<br>    theta:     phase for heart dipole model
+<br>    fres:     respiration frequency (for heart dipole rotation) [Hz]
+<br>    epos:     position of electrodes [normalised units]
+<br>              trainslation other than respiration. If no translation is given, traj    
+<br>              x,y and z direction.
+<br><br>    dmodel   structure contaning the dipole model i.e.:
+<br>                          (variant case).
+<br>       dmodel.type:   maternal (1) or foetal (2) dipole
+<br>       dmodel.stm: state transition matrix
+<br>       dmodel.ray: max respiration angle in radian around Y
+<br>       dmodel.rht: volumes height allowed for heart translation due to respiration
+<br><br>[1] Leanderson et al. "Estimation of the respiratory frequency using spatial information in
+<br>this paper gives an idea of the Rx, Ry, Rz angles variation with breathing for the VCG.
+<br>[2] Sameni, Reza, et al. "Multichannel ECG and noise modeling: application to 
+<br>2007 (2007).
+<br>[3] Oster, Julien, and Gari D. Clifford. "An Artificial Model of the 
+<br>cardiology 2013.
+<br><br><h3 id="load_gparam">load_gparam</h3><br>load Gaussian paramters for vcg modelling. The parameters are derived 
+<br>20sec of the corresponding records. 
+<br><br>  vcgmodel: ID of Gaussian parameters to load
+<br><br>  gp: Gaussian parameters for ECG [cell]
+<br>      gp{2} = alphai
+<br><br><br>Released under the GNU General Public License
+<br>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+<br>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+<br><br><br><br>  An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings.
+<br><br><br><br>it under the terms of the GNU General Public License as published by
+<br>(at your option) any later version.
+<br>This program is distributed in the hope that it will be useful,
+<br>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<br><br>along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<br>gList = {'old1', 'old2', 's0273', 's0291', 's0302', 's0303', 's0306', 's0491', 's0533'};
+<br><br>  % == normal ECG cycles case
+<br>          case 1
+<br>              alphai.x = [0.03   .08    -0.13    .85 1.11 .75     0.06   0.1  0.17 0.39];
+<br><br>              alphai.y = [0.035 0.015 -0.019     0.32    .51     -0.32    0.04   0.08];
+<br><br>              alphai.z = [-0.03 -0.14 -0.035    .045     -0.4    .46    -.12 -.2 -.35];
+<br><br>              tetai.x  = [-0.7    -0.17    0       0.18     1.4];
+<br>              bi.x     = [.1       .03     .045     0.02    0.3];
+<br>              tetai.y  = [-0.9     -0.08   0       0.05        1.3];
+<br>              bi.y     = [.1       .05      .03    .04         .3];
+<br>              tetai.z  = [-0.8      -.3     -0.1        .06     1.35];
+<br>              bi.z     = [.1       .4      .03         .03     .3];   
+<br>          case 3
+<br>              tetai.x  = ParamX(1,:);
+<br>              bi.x     = ParamX(3,:);
+<br>              tetai.y  = ParamY(1,:);
+<br>              bi.y     = ParamY(3,:);
+<br>              tetai.z  = ParamZ(1,:);
+<br>              bi.z     = ParamZ(3,:);
+<br>          case 4
+<br>              tetai.x  = ParamX(1,:);
+<br>              bi.x     = ParamX(3,:);
+<br>              tetai.y  = ParamY(1,:);
+<br>              bi.y     = ParamY(3,:);
+<br>              tetai.z  = ParamZ(1,:);
+<br>              bi.z     = ParamZ(3,:);           
+<br>          case 5
+<br>              tetai.x  = ParamX(1,:);
+<br>              bi.x     = ParamX(3,:);
+<br>              tetai.y  = ParamY(1,:);
+<br>              bi.y     = ParamY(3,:);
+<br>              tetai.z  = ParamZ(1,:);
+<br>              bi.z     = ParamZ(3,:);     
+<br>          case 6
+<br>              tetai.x  = ParamX(1,:);
+<br>              bi.x     = ParamX(3,:);
+<br>              tetai.y  = ParamY(1,:);
+<br>              bi.y     = ParamY(3,:);
+<br>              tetai.z  = ParamZ(1,:);
+<br>              bi.z     = ParamZ(3,:);    
+<br>          case 7
+<br>              tetai.x  = ParamX(1,:);
+<br>              bi.x     = ParamX(3,:);
+<br>              tetai.y  = ParamY(1,:);
+<br>              bi.y     = ParamY(3,:);
+<br>              tetai.z  = ParamZ(1,:);
+<br>              bi.z     = ParamZ(3,:);             
+<br>          case 8
+<br>              tetai.x  = ParamX(1,:);
+<br>              bi.x     = ParamX(3,:);
+<br>              tetai.y  = ParamY(1,:);
+<br>              bi.y     = ParamY(3,:);
+<br>              tetai.z  = ParamZ(1,:);
+<br>              bi.z     = ParamZ(3,:);
+<br>          case 9
+<br>              tetai.x  = ParamX(1,:);
+<br>              bi.x     = ParamX(3,:);
+<br>              tetai.y  = ParamY(1,:);
+<br>              bi.y     = ParamY(3,:);
+<br>              tetai.z  = ParamZ(1,:);
+<br>              bi.z     = ParamZ(3,:);          
+<br><br>seif strcmp(type,'ectopic')
+<br>  %switch vcgmodel
+<br>          tetai.x  = [-1.09,  -0.83,   -0.19,     -.07,  0, .06,        0.22,    1.2, 1.42, 1.68, 2.9];
+<br>          bi.x     = [0.0906,    0.1057,    0.0453,    0.3378,    .5,    .2,    .5,    0.1040,  0.1020,   0.1812, .5];
+<br>          tetai.y  = [-1.1,  -0.9,   -0.76,     -.07,  0, .06,        0.22,    1.2, 1.42, 1.68, 2.9];
+<br>          bi.y     = [0.0906,    0.1057,    0.0453,    0.3378,    .5,    .2,    .5,    0.1040,  0.1020,   0.1812, .5];
+<br>          tetai.z  = [-1.09,  -0.83,   -0.19,     -.07,  0, .06,        0.22,    1.2, 1.42, 1.68, 2.9];
+<br>          bi.z     = [0.0906,    0.1057,    0.0453,    0.3378,    .5,    .2,    .5,    0.1040,  0.1020,   0.1812, .5];
+<br>            load('vcg_sets/EctopicBeatGaussians');
+<br>            alphai.x = OptimumParametersI2(1:7);
+<br>            tetai.x = OptimumParametersI2(15:21);
+<br>            alphai.y = OptimumParametersI2(22:28);
+<br>            tetai.y  = OptimumParametersI2(36:42);
+<br>            alphai.z = OptimumParametersI2(43:49);
+<br>            tetai.z = OptimumParametersI2(57:63);    
+<br>            load('vcg_sets/EctopicBeatGaussians');
+<br>            alphai.x = OptimumParametersI3(1:7);
+<br>            tetai.x = OptimumParametersI3(15:21);
+<br>            alphai.y = OptimumParametersI3(22:28);
+<br>            tetai.y  = OptimumParametersI3(36:42);
+<br>            alphai.z = OptimumParametersI3(43:49);
+<br>            tetai.z = OptimumParametersI3(57:63);          
+<br>            load('vcg_sets/EctopicBeatGaussians');
+<br>            alphai.x = OptimumParametersI35(1:7);
+<br>            tetai.x = OptimumParametersI35(15:21);
+<br>            alphai.y = OptimumParametersI35(22:28);
+<br>            tetai.y = OptimumParametersI35(36:42);
+<br>            alphai.z = OptimumParametersI35(43:49);
+<br>            tetai.z = OptimumParametersI35(57:63);  
+<br>se
+<br>d
+<br>== encapsule in structure
+<br><br><br><br><br><br><h3 id="run_ecg_generator">run_ecg_generator</h3><br>generate a realistic FECG-MECG mixture. The physiological phenomenon that
+<br>rotation of the heart axis with respect to breathing rate, translation
+<br>Note that in order to make repeated simulation more variable (and so more
+<br>hearts are randomly placed around the default coordinates. Note that the
+<br>the volume conductor). As a consequence, electodes location, hearts
+<br><br><br>list of abbreviation used in the toolbox:
+<br>  MECG:       maternal ECG
+<br>  NI-FECG:    non invasive FECG
+<br>  HRV:        heart rate variability
+<br>  MHR:        maternal heart rate
+<br><br>  param: structure containing all the information needed for running the
+<br>      param.mheart    maternal heart origin - actual location will be
+<br>                      0.4]) [normalised]
+<br>                      picked randomly around it* - (default [-pi/10 0.4
+<br>      param.elpos:    electrode pair locations in polar coordinate [normalised]
+<br>      param.fs:       sampling frequency (default 1000) [Hz]
+<br>      param.noise_fct function of modulating noise (each noise may be modulated by a
+<br>      param.SNRn:     SNR (MECG+FECG)/Noise (default 6)
+<br>      param.mhr:      mother reference HR (default 110) [bpm]
+<br>      param.macc:     maternal acceleration in HR
+<br>      param.mtypeacc: maternal acceleration type (chosen from switch inside function,
+<br>      param.ftypeacc: foetus acceleration type (chosen from switch inside function,
+<br>      param.ftraj:    trajectory given to fetus heart (e.g. 'none', 
+<br>      param.mtraj     movement trajectory to maternal heart (e.g. case of
+<br>      param.fname:    record name for saving output (default 'aecg') if
+<br>      param.mres:     respiratory frequency of mother (default 0) [Hz]
+<br>      param.mvcg:     mother vcg chosen (1-9)
+<br>      param.evcg:     ectopic beat params (1-4)
+<br>                      electrodes and hearts are slightly varied around
+<br>      param.mectb:    add ectopic beats to maternal ECG (bool)
+<br><br>      1:              Some generated AECG
+<br>      3:              Projected FECG and MECG before being mixed
+<br>      5:              Heart rate
+<br>* This is in order to be able to produce many simulations with the heart
+<br>location. Locations are specified in polar coordinate because it is
+<br><br>1) and height 1. The cylinder is centered on zero.
+<br>NOTE: in the case only one input is entered, the function considers it to
+<br>simulation. The function only plots them.
+<br>outputs
+<br>  mixture and all the important model information that would allow
+<br><br>      out.m_model: structure contaning dipole model for the foetus [struct]
+<br>                         (variant case).
+<br>              m_model.type: maternal (1) or foetal (2) dipole
+<br>              ibid m_model
+<br>      out.mecg:   mecg projected signal
+<br>      out.vols:   contains volume conductor information (electrodes and heart
+<br>      out.mqrs:   maternal reference QRS
+<br>      out.param:  parameters used in the simulation [struct]
+<br>      selvcgf:    selected foetal vcg [cell]
+<br><br>Released under the GNU General Public License
+<br>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+<br>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+<br>
+<br>
+<br><br>  An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+<br><br>
+<br>it under the terms of the GNU General Public License as published by
+<br>(at your option) any later version.
+<br>This program is distributed in the hope that it will be useful,
+<br>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<br>
+<br>along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<br>== the two subfolders are assumed to exist
+<br>dpath(genpath('noise_sources'));
+<br>== if we just want to plot using the inputed parameters
+<br>  debug_plots(param,5);
+<br>d
+<br>handles = [];
+<br><br> ~any(strcmp('mheart',fieldnames(param))); param.mheart = [2*pi/3 0.2 0.4]; end;
+<br> ~any(strcmp('elpos',fieldnames(param))); x = pi/12*[3 4 5 6 7 8 9 10]' -pi/2;     % 32 abdominal channels 
+<br>  abdmleads = [xy z]; refs = [-pi/4 0.5 0.4;(5/6-.5)*pi 0.5 0.4];  % + 2 reference leads
+<br>d   
+<br>_FOETUSES = size(param.fheart,2); % number of foetuses figured out from the number of foetal heart locations entered
+<br> ~any(strcmp('fs',fieldnames(param))); param.fs = 1000; end;
+<br> ~any(strcmp('noise_fct',fieldnames(param))); param.noise_fct(1:length(param.ntype)) = {1}; end;
+<br> ~any(strcmp('SNRmn',fieldnames(param))); param.SNRmn = 10; end;
+<br> ~any(strcmp('fhr',fieldnames(param))); param.fhr = repmat(150,NB_FOETUSES,1); end;
+<br> ~any(strcmp('facc',fieldnames(param))); param.facc = zeros(1,NB_FOETUSES); end;
+<br> ~any(strcmp('maccmean',fieldnames(param))); param.maccmean = 0; end;
+<br> ~any(strcmp('ftypeacc',fieldnames(param))); param.ftypeacc = arrayfun(@(x){sprintf('nsr',x)},1:NB_FOETUSES); end;
+<br> ~any(strcmp('faccstd',fieldnames(param))); param.faccstd = repmat({1},1,NB_FOETUSES); end;
+<br> ~any(strcmp('mtraj',fieldnames(param))); param.mtraj = 'none'; end;
+<br> ~any(strcmp('mres',fieldnames(param))); param.mres = 0; end;
+<br> ~any(strcmp('mvcg',fieldnames(param))); param.mvcg = randi([1,9]); end;
+<br> ~any(strcmp('evcg',fieldnames(param))); param.evcg = randi([1,4]); end;
+<br> ~any(strcmp('mectb',fieldnames(param))); param.mectb = 0; end;
+<br> isempty(debug); debug = 1; end;
+<br>== check that parameters make sense
+<br> param.fs>param.n; error('run_ecg_generator: the number of data point requested is inferior to the sampling frequency \n'); end;
+<br>== constants
+<br>  NB_NOISES = length(param.ntype);
+<br>  NB_NOISES = 0;
+<br><br>ram.elpos = [param.elpos; param.refpos]; % calculating reference in same manner as other electrodes
+<br> param.mectb % add ectopic beats?
+<br>  % normalising the alphai to unsure same as normal beats
+<br>  VCGnorm = ecg_model([gp_m.norm{2}.x gp_m.norm{3}.x gp_m.norm{1}.x ] ,linspace(-pi,pi,250));
+<br>  VCGect = ecg_model([gp_m.ecto{2}.y gp_m.ecto{3}.y gp_m.ecto{1}.y ] ,linspace(-pi,pi,250));
+<br>  gp_m.ecto{2}.y = gp_m.ecto{2}.y.*(max(abs(VCGnorm))/max(abs(VCGect)));
+<br>  VCGnorm = ecg_model([gp_m.norm{2}.z gp_m.norm{3}.z gp_m.norm{1}.z ] ,linspace(-pi,pi,250));
+<br>d
+<br>m = eye(3); % scaling of dipole in each direction
+<br>ls.Rm = struct('x', 0, 'y', 0, 'z', 0); % rotation matrix
+<br>_cart = param.mheart;
+<br><br>  % = if we do not force the location of the heart we shift it slightly
+<br>  mh_cart = mh_cart + [xp,yp,zp]; % final location for mat. heart (cartesian)
+<br><br>ram.mheart = vols.mheart{1};
+<br>== maternal heart rate variability
+<br>rhrv.lfhfr = 0.6;
+<br>rhrv.flo = param.mres;
+<br>rhrv.acc = param.macc;
+<br>rhrv.accmean = param.maccmean;
+<br>heta_m,w_m] = generate_hrv(strhrv,param.n,param.fs,theta0_m);
+<br>== electrodes position and reference electrode
+<br>c,Yc] = pol2cart(vols.elpos(:,1),vols.elpos(:,2)); % converting from polar to cartesian coordinate system
+<br><br> strcmp(param.mtraj,'none')
+<br>se
+<br> idx=randi([50,100],1,3); % picking three coordinates on second half
+<br> mtraj = traject_generator(param.n,mh_cart,mh_cart2,param.mtraj); % defining a trajectory to foetal movement
+<br><br>sp('Generating maternal model...')
+<br>model.type = 1; % maternal ecg is type 1
+<br> == Foetal heart(s) generation
+<br>h = 0.1; % radius allowed for foetal heart to appear
+<br>= foetal dipole generation
+<br>f = f_model; theta_f = f_model; gp_f = f_model; vols.param.fheart = f_model;
+<br>r fet=1:NB_FOETUSES
+<br>  
+<br>  fh_cart = param.fheart{fet};
+<br>  
+<br>      % picking random location around origin for fetus to be
+<br>                            asin(2*rand-1),...   % for fet. heart within sphere
+<br>      posf_start = [xp+fh_cart(1),yp+fh_cart(2),zp+fh_cart(3)]; % new foetal start position
+<br>      posf_start = [fh_cart(1),fh_cart(2),fh_cart(3)];
+<br>  
+<br>  xl=linspace(0,posf_start(1));yl=linspace(0,posf_start(2));zl=linspace(0,posf_start(3)); % line towards origin
+<br>  posf_end = [xl(idx(1)) yl(idx(2)) zl(idx(3))];
+<br>  [vols.fheart{fet}(1), vols.fheart{fet}(2), vols.fheart{fet}(3)] = cart2pol(posf_start(1),posf_start(2),posf_start(3));
+<br>  % = randomly pick VCG model for fetus (load Gaussian parameters)
+<br>  if param.fectb;
+<br>      % normalising the alphai to unsure same as normal beats
+<br>      VCGnorm = ecg_model([gp_f{fet}.norm{2}.x gp_f{fet}.norm{3}.x gp_f{fet}.norm{1}.x ] ,linspace(-pi,pi,250));
+<br>      VCGect = ecg_model([gp_f{fet}.ecto{2}.y gp_f{fet}.ecto{3}.y gp_f{fet}.ecto{1}.y ] ,linspace(-pi,pi,250));
+<br>      gp_f{fet}.ecto{2}.y = gp_f{fet}.ecto{2}.y.*(max(abs(VCGnorm))/max(abs(VCGect)));
+<br>      VCGnorm = ecg_model([gp_f{fet}.norm{2}.z gp_f{fet}.norm{3}.z gp_f{fet}.norm{1}.z ] ,linspace(-pi,pi,250));
+<br>  end;
+<br>  if param.posdev
+<br>      r0 = (2*rand(1,3)-[1 1 1]).*pi; % initial rotation angles
+<br>  else
+<br>      vols.Rf{fet} = struct('x', -3*pi/4, 'y', 0, 'z', -pi/2);
+<br>  
+<br>  strhrv.hr = param.fhr(fet);
+<br>  strhrv.hrstd = 3;
+<br>  strhrv.flhi = 0.25;
+<br>  strhrv.typeacc = param.ftypeacc{fet};
+<br>  strhrv.accstd = param.faccstd{fet};
+<br>  [theta_f{fet},w_f{fet}] = generate_hrv(strhrv,param.n,param.fs,theta0_f);
+<br>  %== Translation
+<br>  
+<br>  f_model{fet} = add_cardiacdipole(param.n,param.fs,gp_f{fet},L_f,theta_f{fet},w_f{fet},...
+<br>  f_model{fet}.type = 2; % foetal ecg is type 2
+<br><br>considering that noise sources are stationary (no rotation nor translation). Case noise
+<br>propagating the noise source.
+<br>model = cell(NB_NOISES,1);
+<br>  disp(['Generating model for noise source ' num2str(n) ' ..'])
+<br>  % each even noise source is going to be around center of cylinder,
+<br>  pos_noise = [xn,yn,0.1*rand-(0.5*mod(n,2))]; % inside small semi-sphere
+<br>  [n_model{n}, tmp_handle, noise_misc] = add_noisedipole(param.n,param.fs,param.ntype{n},...
+<br>  if ~isempty(tmp_handle)
+<br>  end
+<br>  n_model{n}.pos = pos_noise;
+<br>d
+<br>== Obtaining information about peak locations
+<br>rs = phase2qrs(m_model.theta);
+<br>  fqrs{ff} = phase2qrs(f_model{ff}.theta);
+<br><br>sp('Projecting dipoles...')
+<br>  param.SNRmn,mqrs,fqrs,param.fs,m_model,f_model{:},n_model{:});
+<br>== an electrode in the back of the cylinder is used as the reference 
+<br>ound = mixture(end,:);
+<br>ound = mecg(end,:);
+<br> ~isempty(fecg)
+<br>d
+<br>  noise = cellfun(@(x) x(1:end-1,:)-repmat(x(end,:),size(x,1)-1,1),noise,'UniformOutput',0);
+<br>ls.refpos = param.refpos;
+<br><br>t.mixture = mixture;
+<br>t.fecg = fecg;
+<br>t.m_model = m_model;
+<br>t.vols = vols;
+<br>t.fqrs = fqrs;
+<br>t.selvcgm = selvcgm;
+<br>t.param.elpos = out.param.elpos(1:end-1,:);
+<br>ise_misc.n_model = n_model;
+<br><br> debug
+<br>  f_handles = debug_plots(out,debug); 
+<br><br><br><br> This function generates plots for the fecgsyn model
+<br>handles = [];
+<br>== debug
+<br>sp(['Selected VCG for the mother: ' out.selvcgm]);
+<br>  disp(['Selected VCG for the foetus: ' out.selvcgf{vv}]);
+<br><br>== plots a few final AECG channels
+<br> debug == 11 % corresponds to running the code from the gui
+<br>d
+<br><br>  0,0,1; % blue
+<br>  0.4,0.4,0; % dark yellow
+<br>  0.4,0,0.8; % dark magenta
+<br>  0.4,0.4,1]; % lilac
+<br>NE_WIDTH = 3;
+<br>_EL2PLOT = 3; % number of electodes to plot
+<br> NB_EL2PLOT<NB_EL2PLOT*PACE
+<br>  tm = 1/out.param.fs:1/out.param.fs:out.param.n/out.param.fs;
+<br>  for ee=1:PACE:PACE*NB_EL2PLOT
+<br>      ax(compt) = subplot(NB_EL2PLOT,1,compt);plot(tm,out.mixture(ee,:),...
+<br>      xlabel('Time [sec]'); ylabel('Amplitude [NU]');
+<br>  end
+<br>  linkaxes(ax,'x');
+<br>  error('not enough input channel for plotting with default configuration \n');
+<br><br>  if debug ~= 11   % only close all figures if not running in gui mode
+<br>  end
+<br>  tmp_handle = figure('name','VCG plots');
+<br>      set(tmp_handle, 'Visible', 'off');
+<br>  f_handles = [f_handles, tmp_handle];
+<br>  LegCell = cell(NB_FOETUSES*2,1);
+<br>      % == plot
+<br>      hold on, plot(tm(out.mqrs),out.m_model.VCG(vv,out.mqrs),'+k','LineWidth',LINE_WIDTH);
+<br>      set(gca,'FontSize',FONT_SIZE);
+<br>      for fet=1:NB_FOETUSES
+<br>          hold on, plot(tm(out.fqrs{fet}),out.f_model{fet}.VCG(vv,out.fqrs{fet}),'+k','LineWidth',LINE_WIDTH);
+<br>          LegCell(2*fet) = {['FQRS ' int2str(fet)]};
+<br>      legend(LegCell);
+<br>      xlabel('Time [sec]'); ylabel('Amplitude [NU]');
+<br>  linkaxes(ax,'x'); xlim([0 tm(end)]);
+<br>d
+<br> debug>2
+<br>  tmp_handle = figure('name','Projected FECG and MECG before being mixed');
+<br>      set(tmp_handle, 'Visible', 'off');
+<br>  f_handles = [f_handles, tmp_handle];
+<br>  LegCell = cell(NB_FOETUSES+1,1);
+<br>  if NB_EL2PLOT<NB_EL2PLOT*PACE
+<br>      tm = 1/out.param.fs:1/out.param.fs:out.param.n/out.param.fs;
+<br>      for ee=1:PACE:PACE*NB_EL2PLOT
+<br>          ax(compt) = subplot(NB_EL2PLOT,1,compt);plot(tm,out.mecg(ee,:),...
+<br>          LegCell(1) = {'MECG'};
+<br>              hold on, plot(tm,GAIN_F*out.fecg{fet}(ee,:),'color',col(fet+3,:),'LineWidth',LINE_WIDTH);
+<br>          end
+<br>          set(gca,'FontSize',FONT_SIZE);
+<br>      end
+<br>      linkaxes(ax,'x');
+<br>      error('not enough input channel for plotting with default configuration \n');
+<br>d
+<br> debug>3
+<br>  tmp_handle = figure('name','Volume conductor');
+<br>      set(tmp_handle, 'Visible', 'off');
+<br>  f_handles = [f_handles, tmp_handle];
+<br>  plot3_volume(out.vols);
+<br>  for i=1:NB_FOETUSES % plotting each foetuses trajectory
+<br>  end
+<br>d
+<br> debug>4
+<br>  tmp_handle = figure('name','Heart rate');
+<br>      set(tmp_handle, 'Visible', 'off');
+<br>  f_handles = [f_handles, tmp_handle];
+<br>  fhr = cell(NB_FOETUSES,1);
+<br>  mhr = 60./diff(out.mqrs/1000);
+<br>  legstr{1} = 'MQRS';
+<br>      fhr{ff} = 60./diff(out.fqrs{ff}/1000);
+<br>      legstr{ff+1} = ['FQRS' int2str(ff)];
+<br>  legend(legstr);
+<br>  set(gca,'FontSize',FONT_SIZE);
+<br>  legend boxoff;
+<br><br><br><h3 id="add_noisedipole">add_noisedipole</h3><br>this function is used to generate realistic noise. The MA, EM and BW
+<br>three main limitations when using these records; 1. their length is
+<br>of them when generating multiple noise segments), 
+<br>noise on the VCG then we need three) and 3. this is noise from one
+<br>In order to tackle these problems we propose to use an AR model
+<br>as the output of an all-pole infinite impulse response filter with input 
+<br>of one of the NSTDB signals. This defines filter coefficients with 
+<br>of the records available in the NSTDB and integrate some variability, the 
+<br>unsuring they stay in the unit cicle.
+<br>inputs
+<br>  ntype:  type of noise to generate (MA,EM or BW) [string]
+<br>  debug:  debug mode level [integer]
+<br>output
+<br>       dmodel.H      - Dower-like matrix for dipole (assuming time invariance)
+<br>       dmodel.type   - always 3 (noise dipole)
+<br>                            sin(linspace(-pi,pi,N)
+<br>Change log:
+<br>improvements to the AR model should allow faster generation
+<br>
+<br><br>Released under the GNU General Public License
+<br>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+<br>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+<br><br><br><br>  An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings.
+<br><br><br><br>it under the terms of the GNU General Public License as published by
+<br>(at your option) any later version.
+<br>This program is distributed in the hope that it will be useful,
+<br>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<br><br>along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<br>== manage inputs
+<br> isempty(ntype); ntype ='MA'; end;
+<br> nargin<6; debug=0; end;
+<br>== some checking
+<br>  
+<br>_ORDER = 12; % number of poles
+<br>_NSTDB = 20*FS_NSTDB; % number of points to select in NSTDB records to generate the AR coefficients
+<br>_EL = size(epos,1); % number of electrodes
+<br>handles = [];
+<br>== randomly select noise interval of size LG_SEL
+<br>op = start + NP_NSTDB;
+<br> = []; EM = []; BW = [];
+<br> strcmp('MA',ntype)
+<br>seif strcmp('EM',ntype)
+<br>seif strcmp('BW',ntype)
+<br>se
+<br>d
+<br>power added to the ECG mixture might be contained in the baseline which 
+<br>considered baseline-free and some baseline (BW) noise can be speficied on
+<br> strcmp('MA',ntype) || strcmp('EM',ntype)
+<br>  noise(:,1) = filtfilt(B,A,noise(:,1));
+<br>  noiser(:,1) = resample(noise(:,1),fs,FS_NSTDB);
+<br>  noise = noiser;
+<br><br>= randn(N+AR_ORDER,2); % generating random signal to be filtered by AR model
+<br>ise_ar = zeros(N,2);
+<br> = -0.001; % start
+<br><br>  % for each channel vary the poles in the same fashion
+<br>  a(:,1) = atemp(2:end)'; % first is always 1
+<br>  ainit = atemp;
+<br>  for ev=2:N+AR_ORDER
+<br>      sImg = imag(r);
+<br>      rdNb = st + (ed-st).*rand(AR_ORDER,2); % compute new rand evolution for new sample
+<br>      pn = r + dz; % varying the poles
+<br>      pn(ind) = r(ind);
+<br>      pn(indlim) = r(indlim);
+<br>      a(:,ev) = atemp(2:end);
+<br>          y(ev) = x(ev,cc)-a(:,ev)'*y(ev-1:-1:ev-AR_ORDER);
+<br>  end
+<br>d
+<br>== produce third channel using PCA
+<br>ise_ar(:,3) = pc(:,1)/std(pc(:,1));
+<br>== Generating projection matrix (here implying no translation of dipole)
+<br>= den_norm*(epos-repmat(noisepos,NB_EL,1));     % projection matrix
+<br>== formatting output
+<br>odel.H = H;               % projection matrix
+<br><br> debug>0
+<br>      0,0,1; % blue
+<br>      0.4,0.4,0; % dark yellow
+<br>      0.4,0,0.8; % dark magenta
+<br>      0.4,0.4,1]; % lilac
+<br>  if debug ~= 11
+<br>  end
+<br>  LINE_WIDTH = 2;
+<br>  % will plot the old and new poles for the last generated channel
+<br>  if debug == 11 % corresponds to running the code from the gui
+<br>  end
+<br>  [~,hp_1,~] = zplane(1,roots([1 a(:,1)'])); 
+<br>  hold on, [~,hp_2,~] = zplane(1,roots([1 a(:,end)']));
+<br><br>  set(findall(gcf,'type','text'),'fontSize',FONT_SIZE); 
+<br>d
+<br>if debug>1
+<br>    tmp_handle = figure('name','real noise');
+<br>        set(tmp_handle, 'Visible', 'off');
+<br>    f_handles = [f_handles, tmp_handle];
+<br>    for cc=1:2
+<br>        xlim([0 10]);
+<br>        set(findall(gcf,'type','text'),'fontSize',FONT_SIZE); 
+<br>    xlabel('Time [sec]'); ylabel('Amplitude [NU]');
+<br>    set(gca,'FontSize',FONT_SIZE);
+<br>end
+<br> debug>2
+<br>  tmp_handle = figure('name','AR+PCA generated noise');
+<br>      set(tmp_handle, 'Visible', 'off');
+<br>  f_handles = [f_handles, tmp_handle];
+<br>  for cc=1:3
+<br>      xlim([0 10]);
+<br>      set(findall(gcf,'type','text'),'fontSize',FONT_SIZE); 
+<br>  xlabel('Time [sec]'); ylabel('Amplitude [NU]');
+<br>  set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);     
+<br><br> % == power spectral density
+<br> % = using the AR coeff computed here
+<br> if debug == 11 % corresponds to running the code from the gui
+<br> end
+<br> [h1,f1] = freqz(1,ainit,512,FS_NSTDB);
+<br> P1dB = 10*log10(P1/(mean(P1))); % power in decibels
+<br><br> P2 = abs(h2).^2;
+<br> hold on, plot(f2,P2dB,'--r','LineWidth',LINE_WIDTH);
+<br> xlabel('Frequency [Hz]');
+<br> set(gca,'FontSize',FONT_SIZE);
+<br> legend('initial AR coefficients','average AR coefficients');
+<br> legend boxoff;
+<br> %figure('name','Power Spectral Density plot');
+<br> %leg{2} = 'AR segment PSD';
+<br>d
+<br>sc.a = a;
+<br>sc.epos = epos;
+<br><br><br><h2 id="data-generation/libs">data-generation/libs</h2><br><h3 id="ecg_model">ecg_model</h3><br><br><br>Released under the GNU General Public License
+<br>Sharif University of Technology, Tehran, Iran -- LIS-INPG, Grenoble, France
+<br><br><h3 id="rrprocess">rrprocess</h3><br>this function simulates realistic hr time series
+<br>inputs
+<br>  hr:     mean heart rate [bpm]
+<br>          hf->simulates respiratory sinus arrythmia
+<br>  hrstd:  standard deviation of heart rate [bpm]
+<br>  flhi:   center freqency of high frequency Gaussian (RSA) [Hz]
+<br>output
+<br><br><br>[1] McSharry, Patrick E., et al. "A dynamical model for generating 
+<br>IEEE Transactions on 50.3 (2003): 289-294.
+<br><br>See IEEE Transactions On Biomedical Engineering, 50(3), 289-294, March 2003. and
+<br>Contact P. McSharry (patrick AT mcsharry DOT net) or 
+<br><br>   it under the terms of the GNU General Public License as published by
+<br>   (at your option) any later version.
+<br>   This program is distributed in the hope that it will be useful,
+<br>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<br><br>   along with this program; if not, write to the Free Software
+<br>
+<br>http://www.physionet.org/ - please report any bugs to the authors above.
+<br>set parameter default values
+<br> n = 512;
+<br> isempty(hrmean)
+<br>d
+<br> lfhfr = 0.5;
+<br> isempty(hrstd)
+<br>d
+<br> sfrr = 1;
+<br> isempty(flo)
+<br>d
+<br> fhi = 0.25;
+<br> isempty(flostd)
+<br>d
+<br>fhistd = 0.01;
+<br><br> = 2*pi*flo;
+<br> = 2*pi*flostd;
+<br>g2 = 1;
+<br>mean = 60/hrmean;
+<br><br>= (0:n-1)'*2*pi*df;
+<br>2 = w-w2;
+<br>1 = sig1*exp(-0.5*(dw1/c1).^2)/sqrt(2*pi*c1^2);
+<br> = Hw1 + Hw2;
+<br> = (sfrr/2)*sqrt(Hw0);
+<br>0 = 2*pi*rand(floor(n/2)-1,1);
+<br>C = Sw .* exp(1j*ph);
+<br><br>tio = rrstd/xstd;
+<br><br><h3 id="arrow">arrow</h3><br>ARROW  Draw a line with an arrowhead.
+<br> ARROW(Start,Stop) draws a line with an arrow from Start to Stop (points
+<br>       columns), and returns the graphics handle of the arrow(s).
+<br> ARROW uses the mouse (click-drag) to create an arrow.
+<br> ARROW DEMO & ARROW DEMO2 show 3-D & 2-D demos of the capabilities of ARROW.
+<br> ARROW may be called with a normal argument list or a property-based list.
+<br>       the full normal argument list, where all but the Start and Stop
+<br>       Page) but want default values of earlier ones (e.g., TipAngle),
+<br><br>       given properties, using default values for any unspecified or given as
+<br>       used in a modified fashion, others are passed directly to LINE, PATCH,
+<br><br>       Stop          The end points.                         /|\           ^
+<br>       BaseAngle     Base angle in degrees (ADE).          //|||\\        L|
+<br>       Width         Width of the base in pixels.        ////|||\\\\      n|
+<br>       CrossDir      Vector || to arrowhead plane.     ////  |||  \\\\    t|
+<br>       Ends          Which end has an arrowhead.     //<----->||      \\   |
+<br>                                                   E    angle||<-------->C
+<br>       vector of handles to previously-created arrows        |||
+<br>       created arrows according to the current view       -->|A|<-- width
+<br>       two-point line objects to corresponding arrows.  ARROW(H) will update
+<br>       handles included in H are replaced by all descendant Arrow objects.
+<br> A property list can follow any specified normal argument list, e.g.,
+<br> the origin, with an arrowhead of length 36 pixels and 60-degree base angle.
+<br> The basic arguments or properties can generally be vectorized to create
+<br> with one row per arrow, or, if all arrows are to have the same property
+<br><br> the axes on you; ARROW determines the sizes of arrow components BEFORE the
+<br><br> earlier MATLAB versions (ARROW for MATLAB 4.2c is available separately);
+<br><br>http://www.usc.edu/civil_eng/johnsone/
+<br>Revision history:
+<br>   compatible
+<br>   6/26/08  EAJ  Replace eval('trycmd','catchcmd') with try, trycmd; catch,
+<br>   8/26/03  EAJ  Eliminate OpenGL attempted fix since it didn't fix anyway.
+<br>   7/28/02  EAJ  Tried (but failed) work-around for MATLAB 6.x / OpenGL bug
+<br>  11/10/99  EAJ  Add logical() to eliminate zero index problem in MATLAB 5.3.
+<br>  11/10/99  EAJ  Update e-mail address.
+<br>   2/24/98  EAJ  Fixed bug if Start~=Stop but both colinear with viewpoint.
+<br>   7/21/97  EAJ  Fixed a few misc bugs.
+<br>   6/23/97  EAJ  MATLAB 5 compatible version, release.
+<br>   5/26/97  EAJ  Changed missing Start/Stop to mouse-selected arrows.
+<br>   4/13/97  EAJ  MATLAB 5 compatible version, alpha.
+<br>  12/05/96  EAJ  Fixed one more bug with log plots and NormalDir specified
+<br>  11/13/95  EAJ  Corrected handling for 'reverse' axis directions
+<br>   4/24/95  EAJ  A major rewrite.
+<br><br> - in the arrow_clicks section, prompt by printing to the screen so that
+<br>   to the front.
+<br> - change computing from Xform to Camera paradigms
+<br>    + if the WarpToFill section works right, remove warning code
+<br> - add cell property values and struct property name/values (like get/set)
+<br>    + perhaps change userdata to a struct and don't include (or leave
+<br>      an empty matrix for a default value
+<br><br>suggestions and beta testing.  Check out his shareware package MATDRAW
+<br>permission to distribute ARROW with MATDRAW.
+<br>Permission is granted to distribute ARROW with the toolboxes for the book
+<br>(Prentice Hall, 1999).
+<br>Permission is granted to Dr. Josef Bigun to distribute ARROW with his
+<br><br>obal ARROW_PERSP_WARN ARROW_STRETCH_WARN ARROW_AXLIMITS
+<br> isempty(ARROW_STRETCH_WARN), ARROW_STRETCH_WARN=1; end;
+<br>Handle callbacks
+<br>rrow_callback(varargin{2:end}); return;
+<br><br>= sprintf('\n');
+<br>rg1 = lower(varargin{1});
+<br>lseif strncmp(arg1,'demo',4)
+<br>demo_info = arrow_demo;
+<br>	hh=arrow_demo3(demo_info);
+<br>	hh=arrow_demo2(demo_info);
+<br>if (nargout>=1), h=hh; end;
+<br>arrow_fixlimits(ARROW_AXLIMITS);
+<br>lseif strncmp(arg1,'help',4),
+<br>lse,
+<br>nd;
+<br>d;
+<br>Check # of arguments
+<br><br>rstprop = nargin+1;
+<br>stnumeric = firstprop-1;
+<br>check property list
+<br>or k=firstprop:2:nargin,
+<br>if ~isstr(curarg) | sum(size(curarg)>1)>1,
+<br>end;
+<br>f (rem(nargin-firstprop,2)~=1),
+<br>       varargin{nargin} ''' be paired with a property value.']);
+<br>d;
+<br>default output
+<br> (nargout>1), yy=[]; end;
+<br><br>art      = [];
+<br>n        = [];
+<br>pangle   = [];
+<br>ge       = [];
+<br>ds       = [];
+<br>dh       = [];
+<br>fstart      = [NaN NaN NaN];
+<br>flen        = 16;
+<br>ftipangle   = 16;
+<br>fpage       = 0;
+<br>fends       = 1;
+<br>fispatch    = 1;
+<br>The 'Tag' we'll put on our arrows
+<br><br> (firstprop==2),
+<br>ldh = varargin{1}(:);
+<br>seif (firstprop>9),
+<br>seif (firstprop>2),
+<br>rgs = [varargin(1:firstprop-1) cell(1,length(ans)-(firstprop-1))];
+<br>d;
+<br>parse property pairs
+<br>r k=firstprop:2:nargin,
+<br>al  = varargin{k+1};
+<br>f     strncmp(prop,'start' ,5),   start      = val;
+<br>lseif strncmp(prop,'len'   ,3),   len        = val(:);
+<br>lseif strncmp(prop,'tip'   ,3),   tipangle   = val(:);
+<br>lseif strncmp(prop,'page'  ,4),   page       = val;
+<br>lseif strncmp(prop,'norm'  ,4),   if (isstr(val)), crossdir=val; else, crossdir=val*sqrt(-1); end;
+<br>lseif strncmp(prop,'object',6),   oldh       = val(:);
+<br>lseif strncmp(prop,'type'  ,4),   ispatch    = val;
+<br>lse,
+<br>try
+<br>catch
+<br>	try
+<br>	catch
+<br>		error([upper(mfilename) ' got ' errstr]);
+<br>end;
+<br>nd;
+<br><br>art     = arrow_defcheck(start    ,defstart    ,'Start'        );
+<br>n       = arrow_defcheck(len      ,deflen      ,'Length'       );
+<br>pangle  = arrow_defcheck(tipangle ,deftipangle ,'TipAngle'     );
+<br>ossdir  = arrow_defcheck(crossdir ,defcrossdir ,'CrossDir'     );
+<br>ds      = arrow_defcheck(ends     ,defends     ,''             );
+<br>patch   = arrow_defcheck(ispatch  ,defispatch  ,''             );
+<br>check transpose on arguments
+<br>,n]=size(stop    );   if any(m==[2 3])&(n==1|n>3),   stop     = stop';       end;
+<br><br> ~isempty(ends) & isstr(ends),
+<br>m,n] = size(ends);
+<br>nds = NaN*ones(m,1);
+<br>i=find(all(col'==['non']'*oo)'); if ~isempty(ii), ends(ii)=ones(length(ii),1)*0; end;
+<br>i=find(all(col'==['sta']'*oo)'); if ~isempty(ii), ends(ii)=ones(length(ii),1)*2; end;
+<br>f any(isnan(ends)),
+<br>error([upper(mfilename) ' does not recognize ''' deblank(endsorig(ii,:)) ''' as a valid ''Ends'' value.']);
+<br>se,
+<br>d;
+<br>ol = lower(ispatch(:,1));
+<br>ask = col~=patchchar & col~=linechar & col~=defchar;
+<br>error([upper(mfilename) ' does not recognize ''' deblank(ispatch(min(find(mask)),:)) ''' as a valid ''Type'' value.']);
+<br>spatch = (col==patchchar)*1 + (col==linechar)*0 + (col==defchar)*defispatch;
+<br>spatch = ispatch(:);
+<br>dh = oldh(:);
+<br>check object handles
+<br><br> ~isempty(oldh),
+<br>ask = strcmp(ohtype,'root') | strcmp(ohtype,'figure') | strcmp(ohtype,'axes');
+<br>oldh = num2cell(oldh);
+<br>	oldh(ii) = {findobj(oldh{ii},'Tag',ArrowTag)};
+<br>oldh = cat(1,oldh{:});
+<br>nd;
+<br><br>start,junk]=size(start); [mstop,junk]=size(stop); [mcrossdir,junk]=size(crossdir);
+<br>          length(len) length(baseangle) length(tipangle)         ...
+<br>gs=['length(ObjectHandle)  '; ...
+<br>    '#rows(Stop)           '; ...
+<br>    'length(BaseAngle)     '; ...
+<br>    'length(Width)         '; ...
+<br>    '#rows(CrossDir)       '; ...
+<br> (any(imag(crossdir(:))~=0)),
+<br>d;
+<br>arrows = max(argsizes);
+<br>arrows = length(oldh);
+<br> (narrows<=0), narrows=1; end;
+<br>Check size of arguments
+<br> ~isempty(ii),
+<br>hile ((size(s,2)>1)&((abs(s(:,size(s,2)))==0)|(abs(s(:,size(s,2)))==abs(' ')))),
+<br>nd;
+<br>    ones(length(ii),1)*['  equal the # of arrows (' num2str(narrows) ').' c]];
+<br> = s(:)';
+<br>rror(setstr(s));
+<br><br> ~isempty(start),
+<br>f (n==2),
+<br>lseif (n~=3),
+<br>nd;
+<br> ~isempty(stop),
+<br>f (n==2),
+<br>lseif (n~=3),
+<br>nd;
+<br> ~isempty(crossdir),
+<br>f (n<3),
+<br>lseif (n~=3),
+<br>	error([upper(mfilename) ' requires 2- or 3-element CrossDir vectors.']);
+<br>	error([upper(mfilename) ' requires 2- or 3-element NormalDir vectors.']);
+<br>nd;
+<br><br> isempty(start     ),   start      = [Inf Inf Inf];      end;
+<br> isempty(len       ),   len        = Inf;                end;
+<br> isempty(tipangle  ),   tipangle   = Inf;                end;
+<br> isempty(page      ),   page       = Inf;                end;
+<br> isempty(ends      ),   ends       = Inf;                end;
+<br><br>= ones(narrows,1);
+<br> (size(stop      ,1)==1),   stop       = o * stop      ;   end;
+<br> (length(baseangle )==1),   baseangle  = o * baseangle ;   end;
+<br> (length(wid       )==1),   wid        = o * wid       ;   end;
+<br> (size(crossdir  ,1)==1),   crossdir   = o * crossdir  ;   end;
+<br> (length(ispatch   )==1),   ispatch    = o * ispatch   ;   end;
+<br><br> ~isempty(oldh),
+<br>oh = oldh(k);
+<br>ax(k) = get(oh,'Parent');
+<br>if strcmp(get(oh,'Tag'),ArrowTag), % if it's an arrow already
+<br>	% arrow UserData format: [start' stop' len base tip wid page crossdir' ends]
+<br>	stop0  = ud(4:6);
+<br>	if (isinf(baseangle(k))),     baseangle(k)  = ud( 8);   end;
+<br>	if (isinf(wid(k))),           wid(k)        = ud(10);   end;
+<br>	if (isinf(crossdir(k,1))),    crossdir(k,1) = ud(12);   end;
+<br>	if (isinf(crossdir(k,3))),    crossdir(k,3) = ud(14);   end;
+<br>elseif strcmp(ohtype,'line')|strcmp(ohtype,'patch'), % it's a non-arrow line or patch
+<br>	if isinf(ispatch(k)), ispatch(k)=convLineToPatch|strcmp(ohtype,'patch'); end;
+<br>	y=get(oh,'YData');  y=y(~isnan(y(:)));  if isempty(y), y=NaN; end;
+<br>	start0 = [x(1)   y(1)   z(1)  ];
+<br>else,
+<br>end;
+<br>ii=find(isinf(stop( k,:)));  if ~isempty(ii),  stop( k,ii)=stop0( ii);  end;
+<br>d;
+<br>convert Inf's to NaN's
+<br>op(      isinf(stop     )) = NaN;
+<br>seangle( isinf(baseangle)) = NaN;
+<br>d(       isinf(wid      )) = NaN;
+<br>ossdir(  isinf(crossdir )) = NaN;
+<br>patch(   isinf(ispatch  )) = NaN;
+<br>set up the UserData data (here so not corrupted by log10's and such)
+<br><br>ge = ~isnan(page) & trueornan(page);
+<br>Get axes limits, range, min; correct for aspect ratio and log scale
+<br>r       = zeros(3,narrows);
+<br>        = zeros(2,narrows);
+<br>mmin    = zeros(2,narrows);
+<br>daxlims = zeros(narrows,7);
+<br> (oneax),
+<br>nvT = zeros(4,4);
+<br>    = zeros(16,narrows);
+<br>d;
+<br>ile (any(axnotdone)),
+<br>urax = ax(ii);
+<br> get axes limits and aspect ratio
+<br>ldaxlims(min(find(oldaxlims(:,1)==0)),:) = [ii reshape(axl',1,6)];
+<br> = get(curax,'Units');
+<br>eally_curpage = curpage & strcmp(u,'normalized');
+<br>curfig = get(curax,'Parent');
+<br>set(curfig,'PaperUnits','points');
+<br>set(curfig,'PaperUnits',pu);
+<br>curapscreen = get(curax,'Position');
+<br>curap = pp.*get(curax,'Position');
+<br>set(curax,'Units','pixels');
+<br>curap = curapscreen;
+<br>et(curax,'Units',u);
+<br> handle non-stretched axes position
+<br>               'PlotBoxAspectRatioMode' ; ...
+<br>tr_camera  = { 'CameraPositionMode'  ; ...
+<br>               'CameraViewAngleMode' ; ...
+<br>otstretched = strcmp(get(curax,str_stretch),'manual');
+<br>f ~arrow_WarpToFill(notstretched,manualcamera,curax),
+<br>if 0 & ARROW_STRETCH_WARN,
+<br>	strs = {str_stretch{1:2},str_camera{:}};
+<br>	warning([upper(mfilename) ' may not yet work quite right ' ...
+<br>end;
+<br>texttmp = text(axl(1,[1 2 2 1 1 2 2 1]), ...
+<br>               axl(3,[1 1 1 1 2 2 2 2]),'');
+<br>textpos = get(texttmp,'Position');
+<br>textpos = cat(1,textpos{:});
+<br>% adjust the axes position
+<br>	% adjust to printed size
+<br>	curap = [curap(1:2)+(curap(3:4)-textpos)/2 textpos];
+<br>	% adjust for pixel roundoff
+<br>	curap = [curap(1:2)+(curap(3:4)-textpos)/2 textpos];
+<br>nd;
+<br>ARROW_PERSP_WARN = 0;
+<br>nd;
+<br>urxyzlog = [strcmp(get(curax,'XScale'),'log'); ...
+<br>            strcmp(get(curax,'ZScale'),'log')];
+<br>ii = find([curxyzlog;curxyzlog]);
+<br>	error([upper(mfilename) ' does not support non-positive limits on log-scaled axes.']);
+<br>	axl(ii) = log10(axl(ii));
+<br>nd;
+<br>urreverse = [strcmp(get(curax,'XDir'),'reverse'); ...
+<br>             strcmp(get(curax,'ZDir'),'reverse')];
+<br>f ~isempty(ii),
+<br>nd;
+<br>azA,elA] = view(curax); 
+<br>im = curT*[0 1 0 1 0 1 0 1;0 0 1 1 0 0 1 1;0 0 0 0 1 1 1 1;1 1 1 1 1 1 1 1];
+<br>urlimmin = min(lim')';
+<br>urinvT = inv(curT);
+<br>curT = curT.';
+<br>curT = curT(:);
+<br>nd;
+<br>i = find((ax==curax)&(page==curpage));
+<br>xr(:,ii)      = diff(axl')' * oo;
+<br>xrev(:,ii)    = curreverse  * oo;
+<br>yzlog(:,ii)   = curxyzlog   * oo;
+<br>imrange(:,ii) = curlimrange * oo;
+<br>T    = curT;
+<br>lse,
+<br>invT(:,ii) = curinvT * oo;
+<br>xnotdone(ii) = zeros(1,length(ii));
+<br>daxlims(oldaxlims(:,1)==0,:)=[];
+<br>correct for log scales
+<br> = find(curxyzlog(:));
+<br>tart(   ii) = real(log10(start(   ii)));
+<br>f (all(imag(crossdir)==0)), % pulled (ii) subscript on crossdir, 12/5/96 eaj
+<br>nd;
+<br><br> = find(axrev.');
+<br>tart(   ii) = -start(   ii);
+<br>rossdir(ii) = -crossdir(ii);
+<br><br>art     = start.';
+<br><br>=find(isnan(start(:)       ));  if ~isempty(ii),  start(ii)       = axm(ii)+axr(ii)/2;                end;
+<br>=find(isnan(crossdir(:)    ));  if ~isempty(ii),  crossdir(ii)    = zeros(length(ii),1);              end;
+<br>=find(isnan(baseangle      ));  if ~isempty(ii),  baseangle(ii)   = ones(length(ii),1)*defbaseangle;  end;
+<br>=find(isnan(wid            ));  if ~isempty(ii),  wid(ii)         = ones(length(ii),1)*defwid;        end;
+<br><br>n       = len.';
+<br>pangle  = tipangle.';
+<br>ge      = page.';
+<br>ds      = ends.';
+<br><br>want to convert to X, the corresponding 4xN 2-space matrix
+<br>  tmp1=[(x-axm)./axr; ones(1,size(x,1))];
+<br>  else, tmp1=[tmp1;tmp1;tmp1;tmp1]; tmp1=T.*tmp1;
+<br>        X=zeros(4,N); X(:)=sum(tmp2)'; end;
+<br><br> = find(all(start==stop));
+<br> find an arrowdir vertical on screen and perpendicular to viewer
+<br>tmp1 = [(stop(:,ii)-axm(:,ii))./axr(:,ii);ones(1,length(ii))];
+<br>else, tmp1=[tmp1;tmp1;tmp1;tmp1]; tmp1=T(:,ii).*tmp1;
+<br>      twoD=zeros(4,length(ii)); twoD(:)=sum(tmp2)'; end;
+<br>	move the start point down just slightly
+<br>	transform back to 3-D
+<br>else, tmp1=[tmp1;tmp1;tmp1;tmp1]; tmp1=invT(:,ii).*tmp1;
+<br>      threeD=zeros(4,length(ii)); threeD(:)=sum(tmp2)'; end;
+<br>d;
+<br>compute along-arrow points
+<br>mp1=[(start-axm)./axr;ones(1,narrows)];
+<br>lse, tmp1=[tmp1;tmp1;tmp1;tmp1]; tmp1=T.*tmp1;
+<br>     X0=zeros(4,narrows); X0(:)=sum(tmp2)'; end;
+<br>transform Stop points
+<br>f (oneax), Xf=T*tmp1;
+<br>     tmp2=zeros(4,4*narrows); tmp2(:)=tmp1(:);
+<br>f=Xf./(ones(4,1)*Xf(4,:));
+<br> = sqrt(sum(((Xf(1:2,:)-X0(1:2,:)).*(ap./limrange)).^2));
+<br>compute and modify along-arrow distances
+<br>en2 = len - (len.*tan(tipangle/180*pi)-wid/2).*tan((90-baseangle)/180*pi);
+<br>len1 = len1 .* ((ends==2)|(ends==3));
+<br>en0 = zeros(1,narrows);
+<br>en2  = len2 .* ((ends==1)|(ends==3));
+<br>ii=find((ends==1)&(D<len2));
+<br>	slen0(ii) = D(ii)-len2(ii);
+<br>	for no end arrowhead
+<br>if ~isempty(ii),
+<br>end;
+<br>en2  = len2  + len0;
+<br>len2 = slen2 + slen0;
+<br>%        of the following are true:
+<br>%              length is large
+<br>compute stoppoints
+<br>f (oneax), tmp3=invT*tmp1;
+<br>     tmp2=zeros(4,4*narrows); tmp2(:)=tmp1(:);
+<br>toppoint = tmp3(1:3,:)./(ones(3,1)*tmp3(4,:)).*axr+axm;
+<br>mp1=X0.*(ones(4,1)*(len1./D))+Xf.*(ones(4,1)*(1-len1./D));
+<br>lse, tmp1=[tmp1;tmp1;tmp1;tmp1]; tmp1=invT.*tmp1;
+<br>     tmp3=zeros(4,narrows); tmp3(:)=sum(tmp2)'; end;
+<br>compute basepoints
+<br>f (oneax), tmp3=invT*tmp1;
+<br>     tmp2=zeros(4,4*narrows); tmp2(:)=tmp1(:);
+<br>asepoint = tmp3(1:3,:)./(ones(3,1)*tmp3(4,:)).*axr+axm;
+<br>mp1=X0.*(ones(4,1)*(1-slen0./D))+Xf.*(ones(4,1)*(slen0./D));
+<br>lse, tmp1=[tmp1;tmp1;tmp1;tmp1]; tmp1=invT.*tmp1;
+<br>     tmp3=zeros(4,narrows); tmp3(:)=sum(tmp2)'; end;
+<br>compute stippoints
+<br>f (oneax), tmp3=invT*tmp1;
+<br>     tmp2=zeros(4,4*narrows); tmp2(:)=tmp1(:);
+<br>tippoint = tmp3(1:3,:)./(ones(3,1)*tmp3(4,:)).*axr+axm;
+<br>mp1=X0.*(ones(4,1)*(1-slen2./D))+Xf.*(ones(4,1)*(slen2./D));
+<br>lse, tmp1=[tmp1;tmp1;tmp1;tmp1]; tmp1=invT.*tmp1;
+<br>     tmp3=zeros(4,narrows); tmp3(:)=sum(tmp2)'; end;
+<br><br> (any(imag(crossdir(:))~=0)),
+<br>rossdir(:,ii) = cross((stop(:,ii)-start(:,ii))./axr(:,ii), ...
+<br>d;
+<br>compute cross-arrow directions
+<br>pcross   = crossdir + tippoint;
+<br>ipcross  = crossdir + stippoint;
+<br> ~isempty(ii),
+<br>	transform start points
+<br>tmp1 = (tmp1-axm(:,[ii ii ii ii])) ./ axr(:,[ii ii ii ii]);
+<br>if (oneax), X0=T*tmp1;
+<br>      tmp2=zeros(4,16*numii); tmp2(:)=tmp1(:);
+<br>X0=X0./(ones(4,1)*X0(4,:));
+<br>tmp1 = [(2*stop(:,ii)-start(:,ii)-axm(:,ii))./axr(:,ii);ones(1,numii)];
+<br>if (oneax), Xf=T*tmp1;
+<br>      tmp2=zeros(4,16*numii); tmp2(:)=tmp1(:);
+<br>Xf=Xf./(ones(4,1)*Xf(4,:));
+<br>pixfact = ((limrange(1,ii)./limrange(2,ii)).*(ap(2,ii)./ap(1,ii))).^2;
+<br>pixfact = [pixfact;1./pixfact];
+<br>jj1 = ((1:4)'*ones(1,length(jj))==ones(4,1)*jj);
+<br>jj3 = jj1(1:2,:);
+<br>Xp = X0;
+<br>Xp(jj1) = X0(jj1) - (Xf(jj2)-X0(jj2))./(Xf(jj1)-X0(jj1)) .* pixfact(jj3);
+<br>if (oneax), Xp=invT*Xp;
+<br>      tmp2=zeros(4,16*numii); tmp2(:)=tmp1(:);
+<br>Xp=(Xp(1:3,:)./(ones(3,1)*Xp(4,:))).*axr(:,[ii ii ii ii])+axm(:,[ii ii ii ii]);
+<br>tipcross(:,ii)   = Xp(:,1*numii+(1:numii));
+<br>stipcross(:,ii)  = Xp(:,3*numii+(1:numii));
+<br><br>compute start points
+<br>xr11 = [axr axr axr axr axr axr axr axr axr axr axr];
+<br>mp1 = (st - axm11) ./ axr11;
+<br>f (oneax), X0=T*tmp1;
+<br>     tmp2=zeros(4,44*narrows); tmp2(:)=tmp1(:);
+<br>0=X0./(ones(4,1)*X0(4,:));
+<br>mp1 = ([start tipcross basecross sbasecross stipcross stop stipcross sbasecross basecross tipcross start] ...
+<br>mp1 = [tmp1; ones(1,size(tmp1,2))];
+<br>lse, tmp1=[tmp1;tmp1;tmp1;tmp1]; tmp1=[T T T T T T T T T T T].*tmp1;
+<br>     Xf=zeros(4,11*narrows); Xf(:)=sum(tmp2)'; end;
+<br>compute lengths
+<br>len0 = len.*((ends==2)|(ends==3)).*tan(tipangle/180*pi);
+<br>prange = ap./limrange;
+<br> = sqrt(sum(((Xf(1:2,:)-X0(1:2,:)).*aprange).^2));
+<br>mp1 = X0.*(ones(4,1)*(1-le./D)) + Xf.*(ones(4,1)*(le./D));
+<br>f (oneax), tmp3=invT*tmp1;
+<br>     tmp2=zeros(4,44*narrows); tmp2(:)=tmp1(:);
+<br>ts = tmp3(1:3,:)./(ones(3,1)*tmp3(4,:)) .* axr11 + axm11;
+<br>correct for ones where the crossdir was specified
+<br> ~isempty(ii),
+<br>     pts(:,2*narrows+ii)-pts(:,8*narrows+ii) ...
+<br>     pts(:,4*narrows+ii)-pts(:,6*narrows+ii) ...
+<br>     pts(:,7*narrows+ii)-pts(:,3*narrows+ii) ...
+<br>     pts(:,9*narrows+ii)-pts(:,1*narrows+ii)]/2;
+<br>i = ii(:)';
+<br>d;
+<br><br>cols=(1:narrows)'; iicols=iicols(:,ones(1,11)); iicols=iicols(:).';
+<br> = find(tmp1(:)); if ~isempty(ii), pts(ii)=-pts(ii); end;
+<br>readjust for log scale on axes
+<br> = find(tmp1(:)); if ~isempty(ii), pts(ii)=10.^pts(ii); end;
+<br>compute the x,y,z coordinates of the patches;
+<br> = ii(:)';
+<br>= zeros(11,narrows);
+<br>:) = pts(1,ii)';
+<br>:) = pts(3,ii)';
+<br>do the output
+<br>% create or modify the patches
+<br>ewline = ~trueornan(ispatch) & (isempty(oldh)|~strcmp(get(oldh,'Type'),'line'));
+<br>% make or modify the arrows
+<br>if all(isnan(ud(k,[3 6])))&arrow_is2DXY(ax(k)), zz=[]; else, zz=z(:,k); end;
+<br>if (0), % this fix didn't work, so let's not use it -- 8/26/03
+<br>	  mask=any([ones(1,2+size(zz,2));diff([xx yy zz],[],1)],2);
+<br>end;
+<br>xyz = {'XData',xx,'YData',yy,'ZData',zz,'Tag',ArrowTag};
+<br>	if newpatch(k),
+<br>	else,
+<br>	end;
+<br>else,
+<br>	set(H(k),xyz{:});
+<br>nd;
+<br>% additional properties
+<br>et(H,{'UserData'},num2cell(ud,2));
+<br> handle choosing arrow Start and/or Stop locations if unspecified
+<br>f ~isempty(errstr), error([upper(mfilename) ' got ' errstr]); end;
+<br>f (nargout>0), h=H; end;
+<br>f isempty(oldaxlims),
+<br>  else
+<br>      lims = reshape(cat(2,lims{:}),6,size(lims,2));
+<br>oldaxlims(mask,6:7) = lims(5:6,mask)';
+<br>if ~isempty(ARROW_AXLIMITS),
+<br>end;
+<br>se
+<br>=x;
+<br>z=z;
+<br><br><br>check if we got 'default' values
+<br>f ~isstr(in), return; end;
+<br>out = def;
+<br>error([upper(mfilename) ' does not recognize ''' in(:)' ''' as a valid ''' prop ''' string.']);
+<br><br><br>handle choosing arrow Start and/or Stop locations if necessary
+<br>f isempty(H)|isempty(ud)|isempty(x), return; end;
+<br>eedStart = all(isnan(ud(:,1:3)'))';
+<br>ask = any(needStart|needStop);
+<br>d(~mask,:)=[]; ax(:,~mask)=[];
+<br> make them invisible for the time being
+<br> save the current axes and limits modes; set to manual for the time being
+<br>imModes=get(ax(:),{'XLimMode','YLimMode','ZLimMode'});
+<br> loop over each arrow that requires attention
+<br>or ii=1:length(jj),
+<br>axes(ax(ii));
+<br>if needStart(ii), prop='Start'; else, prop='Stop'; end;
+<br>% handle errors and control-C
+<br>	delete(H(jj(ii:end)));
+<br>	oldaxlims(jj(ii:end),:)=[];
+<br>end;
+<br> restore the axes and limit modes
+<br>et(ax(:),{'XLimMode','YLimMode','ZLimMode'},limModes);
+<br>nction [wasInterrupted,errstr] = arrow_click(lockStart,H,prop,ax)
+<br>ig = get(ax,'Parent');
+<br>ldFigProps = {'Pointer','WindowButtonMotionFcn','WindowButtonUpFcn'};
+<br>lobal ARROW_CLICK_H ARROW_CLICK_PROP ARROW_CLICK_AX ARROW_CLICK_USE_Z
+<br>RROW_CLICK_USE_Z=~arrow_is2DXY(ax)|~arrow_planarkids(ax);
+<br> set up the WindowButtonMotion so we can see the arrow while moving around
+<br>       'WindowButtonMotionFcn','');
+<br>set(H,'Visible','on');
+<br>nd;
+<br>wasKeyPress,wasInterrupted,errstr] = arrow_wfbdown(fig);
+<br>f lockStart & ~wasInterrupted,
+<br>feval(mfilename,H,'Start',pt,'Stop',pt);
+<br>ARROW_CLICK_PROP='Stop';
+<br>% wait for the mouse button to be released
+<br>	waitfor(fig,'WindowButtonUpFcn','');
+<br>	errstr = lasterr;
+<br>end;
+<br>f ~wasInterrupted, feval(mfilename,'callback','motion'); end;
+<br>et(gcf,oldFigProps,oldFigValue);
+<br>nction arrow_callback(varargin)
+<br>f nargin==0, return; end;
+<br>f ~isstr(str), error([upper(mfilename) ' got an invalid Callback command.']); end;
+<br>f strcmp(s,'motion'),
+<br>global ARROW_CLICK_H ARROW_CLICK_PROP ARROW_CLICK_AX ARROW_CLICK_USE_Z
+<br>drawnow;
+<br>error([upper(mfilename) ' does not recognize ''' str(:).' ''' as a valid Callback option.']);
+<br><br>return the point on the given axes
+<br>f nargin<2, use_z=~arrow_is2DXY(ax)|~arrow_planarkids(ax); end;
+<br>ut = out(1,:);
+<br><br>wait for button down ignoring object ButtonDownFcn's
+<br>rrstr = '';
+<br>bjs = findobj(fig);
+<br>ask=~strcmp(buttonDownFcns,''); objs=objs(mask); buttonDownFcns=buttonDownFcns(mask);
+<br> save other figure values
+<br>igValue = get(fig,figProps);
+<br>et(fig,'KeyPressFcn','set(gcf,''KeyPressFcn'','''',''WindowButtonDownFcn'','''');', ...
+<br>asterr('');
+<br>waitfor(fig,'WindowButtonDownFcn','');
+<br>atch
+<br>nd
+<br>f wasInterrupted, errstr=lasterr; end;
+<br>et(objs,'ButtonDownFcn',buttonDownFcns);
+<br><br><br>check if axes are 2-D X-Y plots
+<br>ut = logical(zeros(size(ax))); % 2-D X-Y plots
+<br>iews = get(ax(:),{'View'});
+<br>ut(:) = abs(views(:,2))==90;
+<br><br>check if axes descendents all have empty ZData (lines,patches,surfaces)
+<br>llkids = get(ax(:),{'Children'});
+<br>kids = get([findobj(allkids{k},'flat','Type','line')
+<br>            findobj(allkids{k},'flat','Type','surface')],{'ZData'});
+<br>	if ~isempty(kids{j}), out(k)=logical(0); break; end;
+<br>nd;
+<br><br>nction arrow_fixlimits(axlimits)
+<br>f isempty(axlimits), disp([upper(mfilename) ' does not remember any axis limits to reset.']); end;
+<br>if any(get(axlimits(k,1),'XLim')~=axlimits(k,2:3)), set(axlimits(k,1),'XLim',axlimits(k,2:3)); end;
+<br>if any(get(axlimits(k,1),'ZLim')~=axlimits(k,6:7)), set(axlimits(k,1),'ZLim',axlimits(k,6:7)); end;
+<br><br><br>check if we are in "WarpToFill" mode.
+<br> 'WarpToFill' is undocumented, so may need to replace this by
+<br><br><br>create a warning message if we've changed the axis limits
+<br>witch (size(axlimits,1))
+<br>case 2, msg='on two axes ';
+<br>nd;
+<br>      'when adding the arrow'];
+<br>ut = [msg '.' sprintf('\n') '         Call ' upper(mfilename) ...
+<br><br><br>copy line properties to patches
+<br>         'MarkerEdgeColor','MarkerFaceColor','ButtonDownFcn',      ...
+<br>         'Selected','SelectionHighlight','Visible'};
+<br>atchprops = {'EdgeColor',props{:}};
+<br>mpatch = strcmp(get(fm,'Type'),'patch');
+<br>et(to( fmpatch& topatch),patch2props,get(fm( fmpatch& topatch),patch2props)); %p->p
+<br>et(to( fmpatch&~topatch),lineprops,  get(fm( fmpatch&~topatch),patchprops )); %p->l
+<br><br><br>display further help info about ARROW properties
+<br>isp([c ...
+<br>                   acceptable equivalent property names are in (parenthesis).' c c ...
+<br>                  this should be a Nx2 or Nx3 matrix.          /|\           ^' c ...
+<br>                  should be a Nx2 or Nx3 matrix.             //|||\\        L|' c ...
+<br>                  screen, points on a page). [16] (Len)    ////|||\\\\      n|' c ...
+<br>                  ADE.  For a simple stick arrow, use    ////  |||  \\\\    t|' c ...
+<br>  TipAngle        Angle (degrees) of tip angle ABC.    //<----->||      \\   |' c ...
+<br>  Width           Width of the base in pixels.  Not  E   angle ||<-------->C' c ...
+<br>  Page            If provided, non-empty, and not NaN,         |||' c ...
+<br>                  rather than onscreen proportions.             A' c ...
+<br>                  ratio and hardcopy aspect ratio are    ----CrossDir---->' c ...
+<br>  CrossDir        A vector giving the direction towards which the fletches' c ...
+<br>                  dicular to both the arrow direction and the view direction' c ...
+<br>                  that CrossDir is a vector.  Also note that if an axis is' c ...
+<br>                  of CrossDir must also be set appropriately, i.e., to 1 for' c ...
+<br>                  and <1 for negative change.)' c ...
+<br>                  computed by the vector cross product [Line]x[NormalDir]). []' c ...
+<br>                  NormalDir is used as is regardless of log-scaled axes.)' c ...
+<br>                  ''stop'', ''start'', and ''both''. [''stop''] (End)' c...
+<br>                  updated or line objects to be converted to arrows.' c ...
+<br><br><br>% demo
+<br>x,y,z] = peaks;
+<br>ut.axlim = [min(x(:)) max(x(:)) min(y(:)) max(y(:)) min(z(:)) max(z(:))];
+<br> modify it by inserting some NaN's
+<br> = floor(m/2);
+<br>(1:m,1:n) = NaN*ones(m,n);
+<br> graph it
+<br>ut.hs=surf(x,y,z);
+<br>label('x'); ylabel('y');
+<br>nction h = arrow_demo3(in)
+<br>xlim = in.axlim;
+<br>label('z');
+<br>iew(3); % view(viewmtx(-37.5,30,20));
+<br><br>1 = feval(mfilename,[axlim(1) axlim(4) 4],[-.8 1.2 4], ...
+<br><br>2 = feval(mfilename,axlim([1 4 6]),[0 2 4]);
+<br><br>3 = feval(mfilename,[3 .125 3.5],[1.375 0.125 3.5],30,50);
+<br><br>4 = feval(mfilename,axlim(1:2:5)*.5,[0 0 0],36,60,25, ...
+<br>3=text(axlim(1)*.5,axlim(3)*.5,axlim(5)*.5-.75,'origin');
+<br><br>5 = feval(mfilename,[-2.9 2.9 3],[-1.3 .4 3.2],30,120,[],6, ...
+<br><br>6 = feval(mfilename,[-2.9 2.9 1.3],[-1.3 .4 1.5],30,120,[],6, ...
+<br><br>7 = feval(mfilename,[-1.6 -1.65 -6.5],[0 -1.65 -6.5],[],16,16);
+<br>et(t4,'HorizontalAlignment','center');
+<br> Normal, black fill
+<br>5=text(-1.5,0,-7.75,'local minimum');
+<br><br>9 = feval(mfilename,[-3 2.2 -6],[-3 2.2 -.05],36,[],27,6,[],[0 -1 0], ...
+<br><br>10y=(0:4)'/3;
+<br>           [-3*ones(size(h10y)) h10y -.05*ones(size(h10y))], ...
+<br><br>11x=(1:.33:2.8)';
+<br>           [h11x -3*ones(size(h11x)) -.05*ones(size(h11x))]);
+<br> series of magenta arrows, radially oriented, crossdir specified
+<br>12t=(0:11)'/6*pi;
+<br>           [h12x+h12xr*cos(h12t)*ir h12y*ones(size(h12t))       ...
+<br>            h12y*ones(size(h12t)) h12z+h12zr*sin(h12t)*or],     ...
+<br>           [-h12xr*sin(h12t) zeros(size(h12t)) h12zr*cos(h12t)],...
+<br><br>r13=.91; h13t=(0:.5:12)'/6*pi;
+<br>13 = feval(mfilename,locs(1:end-1,:),locs(2:end,:),6);
+<br> arrow with no line ==> oriented downwards
+<br>6=text(3,3,3.6,'no line'); set(t6,'HorizontalAlignment','center');
+<br> arrow with arrowheads at both ends
+<br>           'Length',20,'Width',3,'CrossDir',[0 0 1],'TipAngle',25);
+<br>=[h1;h2;h3;h4;h5;h6;h7;h8;h9;h10;h11;h12;h13;h14;h15];
+<br>nction h = arrow_demo2(in)
+<br>olog = 1;
+<br>hading('interp');
+<br>itle(['Demo of the capabilities of the ARROW function in 2-D']);
+<br>or k=H',
+<br>if (dolog), set(k,'YData',10.^get(k,'YData')); end;
+<br>f (dolog), axis([axlim(1:2) 10.^axlim(3:4)]); set(gca,'YScale','log');
+<br><br>tart = [axlim(1) axlim(4) axlim(6)+2];
+<br>f (dolog), start(:,2)=10.^start(:,2); stop(:,2)=10.^stop(:,2); end;
+<br><br>tart = [-3   -3   10; -3   -1.5 10; -1.5 -3   10];
+<br>f (dolog), start(:,2)=10.^start(:,2); stop(:,2)=10.^stop(:,2); end;
+<br>et(h2(2),'EdgeColor',[0 .35 0],'FaceColor',[0 .85 .85]);
+<br>=[h1;h2];
+<br>nction out = trueornan(x)
+<br>ut=x;
+<br>ut = isnan(x);
+<br>d;
+<br><h3 id="rotatexyz">rotatexyz</h3><br><br>3D rotation matrix
+<br>inputs:
+<br>tetay: rotation angle around the y axis (in rads.)
+<br><br>R: The rotation matrix
+<br><br>Released under the GNU General Public License
+<br>Sharif University of Technology, Tehran, Iran -- LIS-INPG, Grenoble, France
+<br><br>under the terms of the GNU General Public License as published by the
+<br>option) any later version.
+<br>WITHOUT ANY WARRANTY; without even the implied warranty of
+<br>Public License for more details. You should have received a copy of the
+<br>Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+<br><br> = [cos(tetay) 0 -sin(tetay) ; 0 1 0 ; sin(tetay) 0 cos(tetay)];
+<br><br><br><h1 id="extraction-methods">extraction-methods</h1><br><h3 id="FECGSYN_kf_extraction">FECGSYN_kf_extraction</h3><br>MECG cancellation algorithms using the Extended Kalman Filter/Smoother.
+<br>by Dr. Reza Sameni and and also in (Andreotti 2014)
+<br>Inputs
+<br>              position of a MQRS
+<br>  varargin (in this order):
+<br>      fs:         sampling frequency (NOTE: this code is meant to work at 1kHz)
+<br>                  the offline smoothing (EKS) 
+<br>  residual:   residual containing the FECG
+<br><br>(Andreotti 2014) Andreotti, F., Riedl, M., Himmelsbach, T., Wedekind, D., 
+<br>detection from abdominal leads. Physiol. Meas., 35(8), 1551–1567. 
+<br>(OSET) Sameni, R. (2010). The Open-Source Electrophysiological Toolbox (OSET). 
+<br>
+<br><br>TODO
+<br>{% endhighlight %} <br><b>See also:</b> <br><a href="{{site.github.url}}/pages/documentation.html#FECGSYN_bss_extraction
+"><code>FECGSYN_bss_extraction
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#
+"><code>
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#fecgsyn toolbox, version 1.0, July 2014
+"><code>fecgsyn toolbox, version 1.0, July 2014
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
+"><code>Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#Challenge 2013. More code available here:
+"><code>Challenge 2013. More code available here:
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#under the terms of the GNU General Public License as published by the
+"><code>under the terms of the GNU General Public License as published by the
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#option) any later version.
+"><code>option) any later version.
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#WITHOUT ANY WARRANTY; without even the implied warranty of
+"><code>WITHOUT ANY WARRANTY; without even the implied warranty of
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#Public License for more details.
+"><code>Public License for more details.
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# == Manage inputs
+"><code> == Manage inputs
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#wVals = cellfun(@(x) ~isempty(x), varargin);
+"><code>wVals = cellfun(@(x) ~isempty(x), varargin);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#bCycles, fs,smoothFlag] = optargs{:};
+"><code>bCycles, fs,smoothFlag] = optargs{:};
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#= input test
+"><code>= input test
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  error('kf_extraction: too many input arguments \n');
+"><code>  error('kf_extraction: too many input arguments \n');
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# nbCycles>length(peaks)
+"><code> nbCycles>length(peaks)
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#d
+"><code>d
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# == Re-aligning maternal peaks to match channel's peaks
+"><code> == Re-aligning maternal peaks to match channel's peaks
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#n = round(0.1*fs);       % max window for beat alignment (ms)
+"><code>n = round(0.1*fs);       % max window for beat alignment (ms)
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#nmax = mean(abs(y(end-floor(0.1*length(y)):end)))>... % finding signal polarity
+"><code>nmax = mean(abs(y(end-floor(0.1*length(y)):end)))>... % finding signal polarity
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#terv = arrayfun(@(x) ecg(1,x-win:x+win)',peaks(2:end-1),'UniformOutput',false);       % creates a maternal beat matrix
+"><code>terv = arrayfun(@(x) ecg(1,x-win:x+win)',peaks(2:end-1),'UniformOutput',false);       % creates a maternal beat matrix
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  [~,delay]=cellfun(@(x) max(x), interv);
+"><code>  [~,delay]=cellfun(@(x) max(x), interv);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  [~,delay]=cellfun(@(x) min(x), interv);
+"><code>  [~,delay]=cellfun(@(x) min(x), interv);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#lay = round(median(delay));
+"><code>lay = round(median(delay));
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#test borders
+"><code>test borders
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# peaks(end)>length(ecg);peaks(end) = length(ecg); end;
+"><code> peaks(end)>length(ecg);peaks(end) = length(ecg); end;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# == Generate KF's mode
+"><code> == Generate KF's mode
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# == MECG estimation using KF
+"><code> == MECG estimation using KF
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#= [0.01 0.001 0.001 1 1 0.00001 10]; % calibrated parameters for cov. mat.
+"><code>= [0.01 0.001 0.001 1 1 0.00001 10]; % calibrated parameters for cov. mat.
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#covariance matrix of the process noise vector
+"><code>covariance matrix of the process noise vector
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# = diag([p(1)*OptimumParams(1:N).^2 p(2)*ones(1,N) p(3)*ones(1,N) p(4)*wsd^2 , p(5)*mean(ECGsd)^2]);
+"><code> = diag([p(1)*OptimumParams(1:N).^2 p(2)*ones(1,N) p(3)*ones(1,N) p(4)*wsd^2 , p(5)*mean(ECGsd)^2]);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# = diag([p(6)*(w/fs).^2      p(7)*mean(ECGsd).^2]);
+"><code> = diag([p(6)*(w/fs).^2      p(7)*mean(ECGsd).^2]);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# = diag([(2*pi)^2,(10*max(abs(ecg))).^2]); % error covariance matrix
+"><code> = diag([(2*pi)^2,(10*max(abs(ecg))).^2]); % error covariance matrix
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#ean = [OptimumParams w 0]';
+"><code>ean = [OptimumParams w 0]';
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#initialize state
+"><code>initialize state
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#at = FECGSYN_kf_EKFilter(y,X0,P0,Q0,R0,Wmean,Vmean,OptimumParams,w,fs,flag);
+"><code>at = FECGSYN_kf_EKFilter(y,X0,P0,Q0,R0,Wmean,Vmean,OptimumParams,w,fs,flag);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# smoothFlag
+"><code> smoothFlag
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#d
+"><code>d
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#sidual = ecg - Xhat(2,:);
+"><code>sidual = ecg - Xhat(2,:);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#== debug
+"><code>== debug
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# FONT_SIZE = 15;
+"><code> FONT_SIZE = 15;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# figure('name','MECG cancellation');
+"><code> figure('name','MECG cancellation');
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# hold on, plot(tm,ecg-residual,'--k','LineWidth',3);
+"><code> hold on, plot(tm,ecg-residual,'--k','LineWidth',3);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# hold on, plot(tm(peaks),ecg(peaks),'+r','LineWidth',2);
+"><code> hold on, plot(tm(peaks),ecg(peaks),'+r','LineWidth',2);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# legend('mixture','template','residual','MQRS');
+"><code> legend('mixture','template','residual','MQRS');
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# xlabel('Time [sec]'); ylabel('Amplitude [NU]')
+"><code> xlabel('Time [sec]'); ylabel('Amplitude [NU]')
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
+"><code> set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br> href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><h3 id="FECGSYN_adaptfilt_extraction">FECGSYN_adaptfilt_extraction</h3><br>MECG cancellation algorithms using a adaptive filtring methods.
+<br>              Least Mean Square (LMS)
+<br>              Echo State Neural Network (ESN)
+<br>  peaks:      MQRS markers in ms. Each marker corresponds to the
+<br>  ecg:        matrix of abdominal ecg channels
+<br>  method:     method to use (LMS,RLS,ESN)
+<br><br> fs:          sampling frequency (default = 250 Hz)
+<br><br>  residual:   residual containing the FECG
+<br>References:
+<br>    Comparison of Single Channel Fetal ECG Extraction Methods. Annals of
+<br><br><br>TODO
+<br>{% endhighlight %} <br><b>See also:</b> <br><a href="{{site.github.url}}/pages/documentation.html#FECGSYN_bss_extraction
+"><code>FECGSYN_bss_extraction
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#Released under the GNU General Public License
+"><code>Released under the GNU General Public License
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+"><code>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+"><code>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#Last updated : 19-01-2014
+"><code>Last updated : 19-01-2014
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#This code was initialy developed by Joachim Behar for the Physionet
+"><code>This code was initialy developed by Joachim Behar for the Physionet
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#http://physionet.org/challenge/2013/sources/joachim.behar@gmail.com/
+"><code>http://physionet.org/challenge/2013/sources/joachim.behar@gmail.com/
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#This program is free software; you can redistribute it and/or modify it
+"><code>This program is free software; you can redistribute it and/or modify it
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#Free Software Foundation; either version 2 of the License, or (at your
+"><code>Free Software Foundation; either version 2 of the License, or (at your
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#This program is distributed in the hope that it will be useful, but
+"><code>This program is distributed in the hope that it will be useful, but
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+"><code>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#== manage inputs
+"><code>== manage inputs
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#been calibrated as such
+"><code>been calibrated as such
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  case 0
+"><code>  case 0
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      default_param = 1;
+"><code>      default_param = 1;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      fs_orig = varargin{1};
+"><code>      fs_orig = varargin{1};
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  case 2
+"><code>  case 2
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      metStruct = varargin{2};
+"><code>      metStruct = varargin{2};
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      error('adaptfilt_extractio: Too many inputs given to function')
+"><code>      error('adaptfilt_extractio: Too many inputs given to function')
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#g_target = resample(ecg_target,fs_new,fs_orig);
+"><code>g_target = resample(ecg_target,fs_new,fs_orig);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#== running methods
+"><code>== running methods
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  case 'LMS'
+"><code>  case 'LMS'
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      if default_param
+"><code>      if default_param
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          metStruct.Nunits         = 20; % 20- filter length
+"><code>          metStruct.Nunits         = 20; % 20- filter length
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          metStruct.method         = 'LMS';
+"><code>          metStruct.method         = 'LMS';
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      ecg_res =FECGESN_lmsrls_canceller(ecg_ref,ecg_target,fs_new,metStruct,debug);
+"><code>      ecg_res =FECGESN_lmsrls_canceller(ecg_ref,ecg_target,fs_new,metStruct,debug);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      % - using RLS -
+"><code>      % - using RLS -
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          metStruct.mu             = 0.999; % 0.999- forgetting factor
+"><code>          metStruct.mu             = 0.999; % 0.999- forgetting factor
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          metStruct.method         = 'RLS';
+"><code>          metStruct.method         = 'RLS';
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      ecg_res = FECGESN_lmsrls_canceller(ecg_ref,ecg_target,fs_new,metStruct,debug);
+"><code>      ecg_res = FECGESN_lmsrls_canceller(ecg_ref,ecg_target,fs_new,metStruct,debug);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      % - using ESN -
+"><code>      % - using ESN -
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          metStruct.nInternalUnits = 90;
+"><code>          metStruct.nInternalUnits = 90;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          metStruct.spectralRadius = 0.4;
+"><code>          metStruct.spectralRadius = 0.4;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          metStruct.useDeriv = 0;
+"><code>          metStruct.useDeriv = 0;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          metStruct.noiseLevel = 0;
+"><code>          metStruct.noiseLevel = 0;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          % define ESN parameters (old metStruct)
+"><code>          % define ESN parameters (old metStruct)
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#              'spectralRadius',metStruct.spectralRadius,...
+"><code>              'spectralRadius',metStruct.spectralRadius,...
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#              'inputShift',zeros(nInputUnits,1), ...
+"><code>              'inputShift',zeros(nInputUnits,1), ...
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#              'feedbackScaling',0, ...
+"><code>              'feedbackScaling',0, ...
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#              'RLS_lambda',0.999,...
+"><code>              'RLS_lambda',0.999,...
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#              'noiseLevel',metStruct.noiseLevel, ...
+"><code>              'noiseLevel',metStruct.noiseLevel, ...
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#              'leakage',metStruct.leakage);  
+"><code>              'leakage',metStruct.leakage);  
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#            save('esn','esn');
+"><code>            save('esn','esn');
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      ecg_res = FECGESN_esn_canceller(ecg_ref,ecg_target,fs_new,esn,debug);
+"><code>      ecg_res = FECGESN_esn_canceller(ecg_ref,ecg_target,fs_new,esn,debug);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      error('adaptfilt_extraction: Method not implemented.')
+"><code>      error('adaptfilt_extraction: Method not implemented.')
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#g_res = resample(ecg_res,fs_orig,fs_new);
+"><code>g_res = resample(ecg_res,fs_orig,fs_new);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br> href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><h3 id="main_extract_data">main_extract_data</h3><br>Extraction script for FECG morphological analysis
+<br>This script performs NIFECG extractin on fecgsyn files in a given path using pre-defined
+<br>saved in Matlab format.
+<br><b>Input:</b><br>narrowband            Bandpass to be used [boolean]. 1 (3-100 Hz) or 0 (0.5-100 Hz)
+<br><br>More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+<br><b>Examples:</b> <br> {% highlight matlab %}<br>main_extract_data(cd,1,1)
+<br>{% endhighlight %} <br><b>See also:</b> <br><a href="{{site.github.url}}/pages/documentation.html#FECGSYN_kf_extraction
+"><code>FECGSYN_kf_extraction
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#FECGSYN_bss_extraction
+"><code>FECGSYN_bss_extraction
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#
+"><code>
+</code></a></code><br><h3 id="FECGSYN_ts_extraction">FECGSYN_ts_extraction</h3><br>Template subtraction for MECG cancellation. Five template subtraction techniques 
+<br>technique is required then an the EKF technique as in (Sameni 2007) is recommended.
+<br>inputs
+<br>              position of a MQRS
+<br>  method:     method to use ('TS','TS-CERUTTI','TS-SUZANNA','TS-LP','TS-PCA')
+<br>
+<br>              a scalar gain (Cerutti 1986)
+<br>              TS-SUZANNA - the scaling procedure was performed for the P, QRS, 
+<br>              
+<br>              order to minimize the mean square error (as opposed to the other TS 
+<br>
+<br>              next a back-propagation step takes place on a beat-to-beat basis, thus 
+<br>  varargin:
+<br>      NbPC:       number of principal components to use for PCA
+<br><br>  residual:   residual containing the FECG
+<br>References:
+<br>Variability analysis of fetal heart rate signals as obtained from abdominal 
+<br>(Kanjilal 1997) Kanjilal P P, Palit S and Saha G 1997 Fetal ECG extraction 
+<br>Trans. Biomed. Eng. 44 51–9
+<br>robust fetal ECG detection method for abdominal recordings Physiol. Meas. 28 373–88
+<br>(Vullings 2009) Vullings R, Peters C, Sluijter R, Mischi M, Oei S G and 
+<br>abdominal recordings Physiol. Meas. 30 291
+<br>More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+<br><b>Examples:</b> <br> {% highlight matlab %}<br><br>FECGSYN_kf_extraction
+<br>FECGSYN_adaptfilt_extraction
+<br><h3 id="FECGSYN_bss_extraction">FECGSYN_bss_extraction</h3><br>Uses Blind Source Separation Methods for FECG extraction given a
+<br>terms of F1-measure, is picked as best channel.
+<br>Available methods:
+<br>Principal Component Analysis (PCA)
+<br>Input
+<br>method:    String containing method name i.e. 'ICA' or 'PCA'
+<br>blen:      Divide signal into segment of blen length
+<br>refqrs:    Array containing reference QRS detections for F1 measure
+<br>blen:      Iterates method every blen (in seconds)
+<br><br>out_comps:    selected best channels on every block
+<br>W:            used mixing matrices
+<br>More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+<br><b>Examples:</b> <br> {% highlight matlab %}<br><br>FECGSYN_ts_extraction
+<br>FECGSYN_adaptfilt_extraction
+<br>fecgsyn toolbox, version 1.0, July 2014
+<br><br>Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
+<br><br><br>Challenge 2013. More code available here:
+<br><br><br>under the terms of the GNU General Public License as published by the
+<br>option) any later version.
+<br>WITHOUT ANY WARRANTY; without even the implied warranty of
+<br>Public License for more details.
+<br> == Input test
+<br>  data = data';
+<br><br>ld = [];	% old mix matrix
+<br> Main
+<br>smethod = [];
+<br>amp = 1; % starting sample to filter (offset)
+<br>op = 1; % allows iterations
+<br> size(data,2)<endsamp
+<br>  endsamp = size(data,2);
+<br><br>= cell(5,1);
+<br>t_comps = {};  % allocating
+<br>ile (loop)  % will quit as soon as complete signal is filtered
+<br>      endsamp = size(data,2);              % interval, it should filter until end
+<br>   end
+<br>  samp2filt = ssamp:endsamp;              % creating a list with samples to filter
+<br>  % = use PCA in keeping channels with 95% of eigenspectrum
+<br>   tmpdata = data(:,samp2filt);
+<br>   Nmat = diag(std(tmpdata,0,2));   % normalization matrix
+<br>   [coeff, score, latent] = pca(tmpdata');
+<br>   Ncomp = find(perc>=0.999,1,'first');   % keeping 99.9% data variance
+<br>   tmpdata = tmpdata';
+<br>  else
+<br>      tmpdata = bsxfun(@minus,tmpdata,mean(tmpdata,2)); % remove mean (JADE is sensible)
+<br>      tmpdata = bsxfun(@rdivide,tmpdata,std(tmpdata,0,2)); % divide by standard deviation
+<br>        
+<br>  % each run
+<br>  reset(stream);
+<br>      case 'FASTICA_DEF'
+<br>          [~,~,Bnew] = fastica(tmpdata,'g','tanh','verbose','on','maxNumIterations',size(tmpdata,1)*1000,'approach','defl');
+<br>      case 'FASTICA_SYM'
+<br>          [~,~,Bnew] = fastica(tmpdata,'g','tanh','verbose','on','maxNumIterations',size(tmpdata,1)*1000,'approach','symm');    
+<br>      case 'JADEICA'
+<br>          Bnew = jadeR(tmpdata,Ncomp); 
+<br>          [Bnew,~] = princomp(tmpdata');
+<br>      otherwise
+<br>  end
+<br>  outnew = Bold*Nmat*tmpdata;
+<br>  W{count} = Bold;   % saving previous mixing matrices
+<br>  
+<br>  % are corrected with zeros
+<br>  
+<br>  %Augment offsets
+<br>  endsamp = endsamp+blen;
+<br><br><br>r k = 1:length(out_comps)
+<br>d
+<br><br><br><h2 id="extraction-methods/libs">extraction-methods/libs</h2><br><h3 id="FECGSYN_tgen">FECGSYN_tgen</h3><br>function [template,qrsloc,status] = FECGSYN_tgen(ecg,qrs,fs,debug)
+<br>based on (Oster 2015). A series of peaks that match with each other are stacked to
+<br>analysis or further processing. Note that the qrs location inputed must
+<br>seems to be the best of the alternatives that were tested and leaves the
+<br>built if there are different cycle morphology such as PVC)  but it is not
+<br>The procedure for building the template is:
+<br>2. identify different modes present
+<br>inputs
+<br>  qrs:            qrs location [number of samples]
+<br><br>
+<br><br>Dependencies: FECGSYN_phase_wrap.m
+<br><br>  ecg:     ecg signal
+<br>  phase:   phase of the EGC
+<br>  fs:      sampling frequency
+<br>  debug:   debug level (1/2)
+<br>outputs
+<br>  ecgsd:   ECG standard deviation used as a proxy of signal quality
+<br>  phaseme: mean phase of the template ECG
+<br><br>Reference
+<br>Ventricular Beat Classification with Novelty Detection Based on Switching Kalman Filters. IEEE Trans. 
+<br>
+<br><br>TODO
+<br>{% endhighlight %} <br><b>See also:</b> <br><a href="{{site.github.url}}/pages/documentation.html#FECGSYN_kf_linearization
+"><code>FECGSYN_kf_linearization
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#
+"><code>
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+"><code>More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#Examples:
+"><code>Examples:
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#FECGSYN_kf_modelling
+"><code>FECGSYN_kf_modelling
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#FECGSYN_kf_linearization
+"><code>FECGSYN_kf_linearization
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#
+"><code>
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#Released under the GNU General Public License
+"><code>Released under the GNU General Public License
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+"><code>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+"><code>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#
+"><code>
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#
+"><code>
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+"><code>  An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#
+"><code>
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#Last updated : 10-03-2016
+"><code>Last updated : 10-03-2016
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#This program is free software: you can redistribute it and/or modify
+"><code>This program is free software: you can redistribute it and/or modify
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#the Free Software Foundation, either version 3 of the License, or
+"><code>the Free Software Foundation, either version 3 of the License, or
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#
+"><code>
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#but WITHOUT ANY WARRANTY; without even the implied warranty of
+"><code>but WITHOUT ANY WARRANTY; without even the implied warranty of
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#GNU General Public License for more details.
+"><code>GNU General Public License for more details.
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#You should have received a copy of the GNU General Public License
+"><code>You should have received a copy of the GNU General Public License
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#== manage inputs
+"><code>== manage inputs
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#== constants
+"><code>== constants
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#_LEADS = size(ecg,1);
+"><code>_LEADS = size(ecg,1);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#_REL = 10; % number relevance. How many cycles minimum to consider that a mode is relevant? - UPDATE ME DEPENDING ON APPLICATION
+"><code>_REL = 10; % number relevance. How many cycles minimum to consider that a mode is relevant? - UPDATE ME DEPENDING ON APPLICATION
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#RES = 0.9; % threshold at which to decide whether the cycle match or not - UPDATE ME DEPENDING ON APPLICATION
+"><code>RES = 0.9; % threshold at which to decide whether the cycle match or not - UPDATE ME DEPENDING ON APPLICATION
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#CE = 0.1;
+"><code>CE = 0.1;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#cle = zeros(NB_LEADS,NB_BINS);
+"><code>cle = zeros(NB_LEADS,NB_BINS);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#Modes = 1; % initialisation variable
+"><code>Modes = 1; % initialisation variable
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#levantMode.NbCycles = 0;
+"><code>levantMode.NbCycles = 0;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#== linear phase wrapping (shift in -pi/6)
+"><code>== linear phase wrapping (shift in -pi/6)
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#aseChangePoints = find(phase(2:end)<0&phase(1:end-1)>0);
+"><code>aseChangePoints = find(phase(2:end)<0&phase(1:end-1)>0);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#== creating the different modes
+"><code>== creating the different modes
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#r j=1:NB_LEADS
+"><code>r j=1:NB_LEADS
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#d
+"><code>d
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#de{NbModes}.cycles(:,:,1) = cycle;
+"><code>de{NbModes}.cycles(:,:,1) = cycle;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#de{NbModes}.cycleStd = zeros(3,NB_BINS);              % standard deviation from cycles
+"><code>de{NbModes}.cycleStd = zeros(3,NB_BINS);              % standard deviation from cycles
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#de{NbModes}.cycleLen = [];                            % length of cycles (in samples)
+"><code>de{NbModes}.cycleLen = [];                            % length of cycles (in samples)
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#ile relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
+"><code>ile relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  % detected or the THREShold is too low (which means no mode can be identified)
+"><code>  % detected or the THREShold is too low (which means no mode can be identified)
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      cycleIndex = (PhaseChangePoints(i)+1:PhaseChangePoints(i+1));
+"><code>      cycleIndex = (PhaseChangePoints(i)+1:PhaseChangePoints(i+1));
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          cycle(j,:) = interp1(phase(cycleIndex),ecg(j,cycleIndex),linspace(-pi,pi,NB_BINS),'spline');
+"><code>          cycle(j,:) = interp1(phase(cycleIndex),ecg(j,cycleIndex),linspace(-pi,pi,NB_BINS),'spline');
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      match = 0;
+"><code>      match = 0;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      while (~match&&indMode<=NbModes)
+"><code>      while (~match&&indMode<=NbModes)
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#            coeff = abs(r(1,2));
+"><code>            coeff = abs(r(1,2));
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          coeff = prcorr2(cycle,Mode{indMode}.cycleMean);
+"><code>          coeff = prcorr2(cycle,Mode{indMode}.cycleMean);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          indMode = indMode+1;
+"><code>          indMode = indMode+1;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      if ~match  % if the new cycle does not match with the average cycle of any mode
+"><code>      if ~match  % if the new cycle does not match with the average cycle of any mode
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          NbModes=NbModes+1;
+"><code>          NbModes=NbModes+1;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          Mode{NbModes}.cycles(:,:,1) = cycle;
+"><code>          Mode{NbModes}.cycles(:,:,1) = cycle;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          Mode{NbModes}.cycleStd = zeros(3,NB_BINS);
+"><code>          Mode{NbModes}.cycleStd = zeros(3,NB_BINS);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          Mode{NbModes}.cycleLen = length(cycleIndex);
+"><code>          Mode{NbModes}.cycleLen = length(cycleIndex);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          Mode{indMode-1}.NbCycles = Mode{indMode-1}.NbCycles+1;
+"><code>          Mode{indMode-1}.NbCycles = Mode{indMode-1}.NbCycles+1;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          Mode{indMode-1}.cycles = zeros(NB_LEADS,NB_BINS,Mode{indMode-1}.NbCycles);
+"><code>          Mode{indMode-1}.cycles = zeros(NB_LEADS,NB_BINS,Mode{indMode-1}.NbCycles);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          Mode{indMode-1}.cycles(:,:,end)= cycle;
+"><code>          Mode{indMode-1}.cycles(:,:,end)= cycle;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          Mode{indMode-1}.cycleStd = std(Mode{indMode-1}.cycles,0,3);
+"><code>          Mode{indMode-1}.cycleStd = std(Mode{indMode-1}.cycles,0,3);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      end
+"><code>      end
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  end
+"><code>  end
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  % == detecting what mode is relevant
+"><code>  % == detecting what mode is relevant
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  %                   representing how many cycles have been selected to build the stack, the
+"><code>  %                   representing how many cycles have been selected to build the stack, the
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  %                   standard deviation for each point of the template cycle as an indicator
+"><code>  %                   standard deviation for each point of the template cycle as an indicator
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  %                   for this application.*
+"><code>  %                   for this application.*
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      % minimum amount of cycles and length
+"><code>      % minimum amount of cycles and length
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#          relevantModeInd = [relevantModeInd i];
+"><code>          relevantModeInd = [relevantModeInd i];
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  end
+"><code>  end
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  
+"><code>  
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      % if we did not catch anything then output rubbish
+"><code>      % if we did not catch anything then output rubbish
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      relevantMode.cycleStd = ones(NB_BINS,1);
+"><code>      relevantMode.cycleStd = ones(NB_BINS,1);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      relevantMode.cycleLen = 0;
+"><code>      relevantMode.cycleLen = 0;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      template.avg = NaN;
+"><code>      template.avg = NaN;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      qrsloc = NaN;
+"><code>      qrsloc = NaN;
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      relevantModeStruc = [relevantMode{:}];
+"><code>      relevantModeStruc = [relevantMode{:}];
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      relevantMode = relevantMode{pos}; % only return the dominant mode for this application
+"><code>      relevantMode = relevantMode{pos}; % only return the dominant mode for this application
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      
+"><code>      
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      desl = round(NB_BINS/6);
+"><code>      desl = round(NB_BINS/6);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      template.stdev = circshift(relevantMode.cycleStd',-desl); 
+"><code>      template.stdev = circshift(relevantMode.cycleStd',-desl); 
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      template.stdev = resample(template.avg,round(mean(relevantMode.cycleLen)),NB_BINS)';
+"><code>      template.stdev = resample(template.avg,round(mean(relevantMode.cycleLen)),NB_BINS)';
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#      [~,delay]=max(abs(template.avg));
+"><code>      [~,delay]=max(abs(template.avg));
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  end
+"><code>  end
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#d
+"><code>d
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html# debug
+"><code> debug
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#  fprintf('The correlation threshold at which this happened was    %f \n',THRES+PACE);
+"><code>  fprintf('The correlation threshold at which this happened was    %f \n',THRES+PACE);
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#d
+"><code>d
+</code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><a href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br> href="{{site.github.url}}/pages/documentation.html#"><code></code></a></code><br><h3 id="jadeR">jadeR</h3><br>  B = jadeR(X, m) is an m*n matrix such that Y=B*X are separated sources
+<br>  If m is omitted,  B=jadeR(X)  is a square n*n matrix (as many sources as sensors)
+<br>Blind separation of real signals with JADE.  Version 1.9.   August 2013
+<br>Usage: 
+<br>    B=jadeR(X) is a nxn separating matrix such that S=B*X is an nxT
+<br>  * If B=jadeR(X,m), then B has size mxn so that only m sources are
+<br>    to the m first principal components. 
+<br>    are in order of decreasing norm; this has the effect that the
+<br>    rows of S=B*X.
+<br>Quick notes (more at the end of this file)
+<br> o this code is for REAL-valued signals.  An implementation of JADE
+<br>   http://perso.telecom-paristech.fr/~cardoso/guidesepsou.html
+<br> o This algorithm differs from the first released implementations of
+<br>   1) with real signals (as opposed to complex)
+<br><br>   components that can be extracted with this implementation.  Note
+<br>   reduction from n to m (which defaults to n).  In practice m
+<br>   available memory and CPU time)
+<br> o See more notes, references and revision history at the end of
+<br>   http://perso.telecom-paristech.fr/~cardoso/guidesepsou.html
+<br> o This code is supposed to do a good job!  Please report any
+<br><br>Copyright (c) 2013, Jean-Francois Cardoso
+<br><br>BSD-like license.
+<br>are permitted provided that the following conditions are met:
+<br>Redistributions of source code must retain the above copyright notice, 
+<br><br>this list of conditions and the following disclaimer in the documentation 
+<br><br>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS 
+<br>AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER 
+<br>DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+<br>IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT 
+<br><br>rbose	= 0 ;	% Set to 0 for quiet operation
+<br>Finding the number of sources
+<br> nargin==1, m=n ; end; 	% Number of sources defaults to # of sensors
+<br> verbose, fprintf('jade -> Looking for %d sources\n',m); end ;
+<br><br><br>============
+<br>= X - mean(X')' * ones(1,T);
+<br><br>  ===========================================
+<br><br>s,k]    = sort(diag(D)) ; %% Sort by increasing variance
+<br><br>        = U(:,k(PCs))'    ; % At this stage, B does the PCA on m components
+<br> --- Scaling  ------------------------------------------------------
+<br>        = diag(1./scales)*B  ; % Now, B does PCA followed by a rescaling = sphering
+<br><br>        = B*X;  %% We have done the easy part: B is a whitening matrix and X is white.
+<br>ear U D Ds k PCs scales ;
+<br>% NOTE: At this stage, X is a PCA analysis in m components of the real data, except that
+<br>% property that X is a vector of uncorrelated components.  It remains to find the
+<br>% independent as possible'.  This independence is measured by correlations of order
+<br>%   1) is a reasonable approximation of the mutual information
+<br>% This measure of independence also corresponds to the `diagonality' of a set of
+<br>% best diagonalizes a particular set of cumulant matrices.
+<br><br>  ====================================
+<br><br>= X';
+<br>msymm 	= (m*(m+1))/2;	% Dim. of the space of real symm matrices
+<br> 		= zeros(m,m*nbcm);  % Storage for cumulant matrices
+<br>j 		= zeros(m);	% Temp for a cum. matrix
+<br>jm		= zeros(m,1);	% Temp
+<br><br> I am using a symmetry trick to save storage.  I should write a short note one of these
+<br>
+<br><br>Xim = X(:,im) ;
+<br>%% Note to myself: the -R on next line can be removed: it does not affect
+<br>Qij           = ((Xijm(:,Uns).*X)' * X)/T - R - 2 * R(:,im)*R(:,im)' ;
+<br>Range         = Range  + m ; 
+<br>  Xijm        = Xim.*X(:,jm) ;
+<br>  CM(:,Range)	= Qij ;  
+<br>end ;
+<br>%% Now we have nbcm = m(m+1)/2 cumulants matrices stored in a big m x m*nbcm array.
+<br><br>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<br> It is commented out but you can check that it produces the same result.
+<br> See section 4.2 of the Neural Comp paper referenced below.  It can be found at
+<br>
+<br>  
+<br>  
+<br>    Matcum = zeros(m,m,m,m) ;
+<br>      for i2=1:m,
+<br>  	for i4=1:m,
+<br>  	      - R(i1,i2)*R(i3,i4) ...
+<br>  	      - R(i1,i4)*R(i2,i3) ;
+<br>        end
+<br>    end
+<br>    %% Step 2; We compute a basis of the space of symmetric m*m matrices
+<br>    icm = 0                 ;  %% index to the elements of the basis
+<br>    vj          = zeros(m,1);  %% the jth basis vetor of R^m
+<br>    for im=1:m,
+<br>      icm            = icm + 1 ;
+<br>      for jm=1:im-1,
+<br>        icm            = icm + 1 ;
+<br>      end
+<br>    %% Now CMM(:,:,i) is the ith element of an orthonormal basis for_ the space of m*m symmetric matrices
+<br>    %% Step 3.  We compute the image of each basis element by the cumulant tensor and store it back into CMM.
+<br>    for icm=1:nbcm
+<br>      for i1=1:m
+<br>  	CMM(i1, i2, icm) = sum(sum(squeeze(Matcum(i1,i2,:,:))  .* mat )) ;
+<br>      end
+<br>    %% This is doing something like  \sum_kl [ Cum(xi,xj,xk,xl) * mat_kl ] 
+<br>    %% Step 4.  Now, we can check that CMM and CM are equivalent
+<br>    for icm=1:nbcm,
+<br>      M2    = CM(:,Range) ; 
+<br>      norm (M1-M2, 'fro' ) , %% This should be a numerical zero.
+<br>  
+<br>  
+<br>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<br>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<br><br>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<br><br> 0, 	%% Init by diagonalizing a *single* cumulant matrix.  It seems to save
+<br>% it since Jacobi rotations are very efficient.  On the other hand, it does not
+<br><br>V,D]	= eig(CM(:,1:m)); % Selectng a particular cumulant matrix.
+<br>CM(:,u:u+m-1) = CM(:,u:u+m-1)*V ; 
+<br>M	= V'*CM;
+<br>se,	%% The dont-try-to-be-smart init
+<br>d;
+<br> Computing the initial value of the contrast 
+<br>      = 0 ;
+<br>r im = 1:nbcm,
+<br>On    = On + sum(Diag.*Diag) ;
+<br>d
+<br><br>uil	= 1.0e-6 / sqrt(T) ; % A statistically scaled threshold on `small' angles
+<br>eep	= 0; % sweep number
+<br>ds    = 0; % Number of rotations in a given seep
+<br>	= zeros(2,2);
+<br>= 0 ;
+<br>n	= 0 ;
+<br>eta	= 0 ;
+<br><br> verbose, fprintf('jade -> Contrast optimization by joint diagonalization\n'); end
+<br>ile encore, encore=0;   
+<br>if verbose, fprintf('jade -> Sweep #%3d',sweep); end
+<br>upds  = 0 ; 
+<br>
+<br>  for q=p+1:m,
+<br>    Ip = p:m:m*nbcm ;
+<br>    
+<br>    g	    = [ CM(p,Ip)-CM(q,Iq) ; CM(p,Iq)+CM(q,Ip) ];
+<br>    ton   = gg(1,1)-gg(2,2); 
+<br>    theta = 0.5*atan2( toff , ton+sqrt(ton*ton+toff*toff) );
+<br>    
+<br>    if abs(theta) > seuil,
+<br>ncore  = 1 ;
+<br>	= cos(theta); 
+<br>	= [ c -s ; s c ] ;
+<br>air 		= [p;q] ;
+<br>M(pair,:)	= G' * CM(pair,:) ;
+<br><br>n   = On  + Gain;
+<br><br>    end%%of the if
+<br>end%%of the loop on p
+<br>updates = updates + upds ;
+<br>d%%of the while loop
+<br><br>% A separating matrix
+<br>= V'*B ;
+<br><br>% Here the **signals** are normalized to unit variance.  Therefore, the sort is
+<br><br>          = pinv(B) ;
+<br>          = B(keys,:)       ;
+<br><br>Signs are fixed by forcing the first column of B to have non-negative entries.
+<br> verbose, fprintf('jade -> Fixing the signs\n',updates); end
+<br>gns	= sign(sign(b)+0.1) ; % just a trick to deal with sign=0
+<br><br><br><br>To do.
+<br>
+<br><br> - Added BSD licence
+<br> V1.8, May 2005
+<br> - Added reference to the Neural Comp. paper.
+<br>  V1.7, Nov. 16, 2002
+<br>    repmat) to keep the code octave-compatible.  Now less efficient,
+<br>    computing cost.
+<br>    was this stuff doing there???)
+<br><br>  - Mean removal is better implemented.
+<br>  - Still more comments to emphasize the relationship to PCA
+<br>  V1.5, Dec. 24 1997 
+<br><br>  - Minor clean up.
+<br>  - Added the sorting of the rows of B in order to fix in some reasonable way the
+<br><br>  - Some clean up.  Released in the public domain.
+<br>  V1.2, Oct.  5 1997 
+<br>    deterministic choice.  This is not because of a better rationale but to make the
+<br>  - Rewrote the joint diag. to take more advantage of Matlab's tricks.
+<br><br>   Made the estimation of the cumulant matrices more regular. This also corrects a
+<br><br><br>@article{CS-iee-94,
+<br> author       = "Jean-Fran\c{c}ois Cardoso and Antoine Souloumiac",
+<br> journal      = "IEE Proceedings-F",
+<br><br>article{JADE:NC,
+<br> journal = "Neural Computation",
+<br> HTML    = "http://www.tsi.enst.fr/~cardoso/Papers.PS/neuralcomp_2ppf.ps",
+<br><br><br> Notes:
+<br><br> white and exploits an underlying assumption that the model of independent components
+<br> signals.  In this context, one may i) seriously consider dealing precisely with the
+<br> eigenmatrices to efficiently summarize all the 4th-order information.  All this is done
+<br><br> model to hold exactly.  Therefore, it is pointless to try to deal precisely with the
+<br> summarized by its first n eigen-matrices.  Therefore, we consider the joint
+<br> not necessary to compute the eigenmatrices at all because one may equivalently use
+<br> the computation can be saved: it suffices to jointly diagonalize a set of cumulant
+<br> the symmetries of the cumulants to further reduce the number of matrices to be
+<br> version of JADE which is optimized (again) to deal with real mixtures and to work
+<br> set' of cumulants.
+<br><br> of the corresponding mixing matrix A=pinv(B) are in decreasing order of (Euclidian)
+<br> permutation.  It has the effect that the first rows of the recovered signals (ie the
+<br> the source signals in S=B*X have unit variance.  Therefore, when we say that the
+<br> be found as the norm of the columns of A=pinv(B) and not as the variances of the
+<br><br> Note 3) In experiments where JADE is run as B=jadeR(X,m) with m varying in range of
+<br> help in such a test, the rows of B can be sorted as described above. We have also
+<br> that the first element of each row of B is positive.
+<br><br> operate on the data themselves but on a statistic (the full set of 4th order cumulant).
+<br> the number of sources to be extracted (m could be much smaller than n).  As a
+<br> Here `large' depends mainly on the available memory and could be something like 40 or
+<br> rather than the `statistic' option.
+<br><br><br><h1 id="utils">utils</h1><br><h3 id="FECGSYN_plotmix">FECGSYN_plotmix</h3><br>Function to plot generated mixtures
+<br>This functin plots Nplots channels from fecgsyn's internal struct "out".
+<br>
+<br><h3 id="wfdb2fecgsyn">wfdb2fecgsyn</h3><br>function out = wfdb2fecgsyn(path)
+<br>
+<br> path             complete path for wfdb file, including identifying name
+<br>
+<br>
+<br> outstr              structure used by fecgsyn toolbox
+<br>More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+<br><b>Examples:</b> <br> {% highlight matlab %}<br><br>fecgsyn2wfdb
+<br>
+<br>Released under the GNU General Public License
+<br>Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+<br>joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+<br>
+<br>
+<br><br>  An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+<br>
+<br><br>
+<br>it under the terms of the GNU General Public License as published by
+<br>(at your option) any later version.
+<br>This program is distributed in the hope that it will be useful,
+<br>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<br>
+<br>along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<br><br>,folder] = strtok(path(end:-1:1),slashchar); folder = fliplr(folder);
+<br> isempty(fls); error('wfdb2fecgsyn: No file to convert');end;
+<br>read one header to figure out how many fetal and noise sources are
+<br>cordName = fls{find(~cellfun(@isempty,regexp(fls,'.hea')),1)};
+<br>d = fopen(recordName,'r');
+<br>ta = textscan(fid, formatSp, 'Delimiter', '', 'WhiteSpace', '',  'ReturnOnError', false);
+<br>lose(fid);
+<br>x = strfind(data, key);
+<br><br>x = strfind(data, key);
+<br>,fs]=wfdbdesc(recordName(1:end-4));
+<br>ear fid data recordName idx key formatSp
+<br>nfls = fls(cellfun(@isempty, regexp(fls,'\.dat'))&cellfun(@isempty, regexp(fls,'\.hea')));
+<br><br>tstr.param = param; % more information can be included, case necessary
+<br>loads .dat into outstr structure
+<br>  wfdb2mat(datfls{d}(1:end-4),ch);
+<br>  signal = signal.val';
+<br>  delete([datfls{d}(1:end-4) 'm.hea']);
+<br>  if strcmp(entry,'mecg')
+<br>      continue
+<br>  for dattype = {'fecg' 'noise'} % these contain subindexes
+<br>          outstr.(entry(1:length(dattype{:}))){str2num(entry(length(dattype{:})+1:end))} ...
+<br>      end
+<br>d
+<br><br>r a = 1:length(annfls)    
+<br>  if strcmp(ext,'mqrs')
+<br>      outstr.mqrs = qrs';        
+<br>      num = regexp(ext, 'fqrs(\d*)', 'tokens');        
+<br>      qrs = rdann(recName,ext);   
+<br>      
+<br>      
+<br>d
+<br>If debugging is needed
+<br>hold on
+<br>plot(outstr.fecg{1}(1,:))
+<br>hold off
+<br><br><h3 id="Bxb_compare">Bxb_compare</h3><br>This function is similar to the function bxb.exe from Physionet's
+<br>match the reference. The algorithm is based on the entry by Joachim Behar 
+<br>EC57 Norm 1998
+<br>Input
+<br>testqrs:       detections to be tested against 
+<br>
+<br>Output
+<br>ACC:           accuracy (by Karvounis 2007) - alternative to F1
+<br>SE:            sensitivity
+<br>FN:            number of false negatives
+<br><br>[ANSI/AAMI Norm]  American National Standard ANSI/AAMI EC57:1998, Testing and Reporting Performance 
+<br>
+<br>in MATLAB and Octave." Journal of Open Research Software 2(1):e27 [http://dx.doi.org/10.5334/jors.bi]; 
+<br>
+<br>ECG Extraction Without Maternal or Scalp Electrode Data. Physiological Measurement, 35(8), 1569–1589.
+<br>
+<br><h3 id="fecgsyn2wfdb">fecgsyn2wfdb</h3><br>function fecgsyn2wfdb(argument)
+<br><br>Physionet's WFDB format.
+<br><b>Input:</b><br>             or save path (if second argument is additionally given)
+<br> filename    if single file, destination filename is required
+<br>More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+<br><b>Examples:</b> <br> {% highlight matlab %}<br><br>wfdb2fecgsyn
+<br>

@@ -4,16 +4,18 @@ import os, string
 
 limdepth = 1 # only using 3 first levels on documentation
 path = os.path.normpath(".")
-
-print "Opening the file..."
-docs = open(path+'docsout2', 'w')
+docs = open(path+'/docsout', 'w') # open output file
+path = os.path.normpath("./subfunctions/") # scan subfunctions folder only
 
 # loops through files
 for root, dirs, files in os.walk(path):
     depth = root[len(path) + len(os.path.sep):].count(os.path.sep)
-    if depth > limdepth:
+    if depth > limdepth: # limiting depth of search
         continue
-    docs.write('<h1 id="'+root[len(path):]+'">'+root[len(path):]+'</h1>\n\n')
+    if depth == 0:
+         docs.write('<h1 id="'+root[len(path)+1:]+'">'+root[len(path)+1:]+'</h1>\n\n')
+    else:
+         docs.write('<h2 id="'+root[len(path)+1:]+'">'+root[len(path)+1:]+'</h2>\n\n')
     print 'Sub-directory '+root
     for file in files:
         if file.endswith(".m"):

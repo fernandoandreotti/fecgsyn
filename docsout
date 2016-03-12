@@ -1,0 +1,80 @@
+<h1 id=""></h1>
+
+<h1 id="benchmark-tools">benchmark-tools</h1>
+
+<h3 id="FECGSYN_exp3results">FECGSYN_exp3results</h3>
+
+<h3 id="FECGSYN_genresults">FECGSYN_genresults</h3>
+
+<h3 id="FECGSYN_benchFQRS">FECGSYN_benchFQRS</h3>
+
+<h2 id="benchmark-tools/bibs">benchmark-tools/bibs</h2>
+
+<h3 id="FECGSYN_QRSmincompare">FECGSYN_QRSmincompare</h3>
+
+<h3 id="qrs_detect">qrs_detect</h3>
+
+<h3 id="FECGSYN_manalysis">FECGSYN_manalysis</h3>
+
+<h1 id="data-generation">data-generation</h1>
+
+<h3 id="phase2qrs">phase2qrs</h3>
+
+<h3 id="plot3_volume">plot3_volume</h3>
+
+<h3 id="traject_generator">traject_generator</h3>
+
+<h3 id="generate_ecg_mixture">generate_ecg_mixture</h3>
+
+<h3 id="generate_hrv">generate_hrv</h3>
+
+<h3 id="clean_compress">clean_compress</h3>
+
+<h3 id="generate_breathing">generate_breathing</h3>
+
+<h3 id="add_cardiacdipole">add_cardiacdipole</h3>
+
+<h3 id="load_gparam">load_gparam</h3>
+
+<h3 id="run_ecg_generator">run_ecg_generator</h3>
+
+<h3 id="add_noisedipole">add_noisedipole</h3>
+
+<h2 id="data-generation/libs">data-generation/libs</h2>
+
+<h3 id="ecg_model">ecg_model</h3>
+
+<h3 id="rrprocess">rrprocess</h3>
+
+<h3 id="arrow">arrow</h3>
+
+<h3 id="rotatexyz">rotatexyz</h3>
+
+<h1 id="extraction-methods">extraction-methods</h1>
+
+<h3 id="FECGSYN_kf_extraction">FECGSYN_kf_extraction</h3>
+
+<h3 id="FECGSYN_adaptfilt_extraction">FECGSYN_adaptfilt_extraction</h3>
+
+<h3 id="main_extract_data">main_extract_data</h3>
+
+<h3 id="FECGSYN_ts_extraction">FECGSYN_ts_extraction</h3>
+
+<h3 id="FECGSYN_bss_extraction">FECGSYN_bss_extraction</h3>
+
+<h2 id="extraction-methods/libs">extraction-methods/libs</h2>
+
+<h3 id="FECGSYN_tgen">FECGSYN_tgen</h3>
+
+<h3 id="jadeR">jadeR</h3>
+
+<h1 id="utils">utils</h1>
+
+<h3 id="FECGSYN_plotmix">FECGSYN_plotmix</h3>
+
+<h3 id="wfdb2fecgsyn">wfdb2fecgsyn</h3>
+
+<h3 id="Bxb_compare">Bxb_compare</h3>
+
+<h3 id="fecgsyn2wfdb">fecgsyn2wfdb</h3>
+

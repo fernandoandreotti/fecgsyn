@@ -103,7 +103,7 @@ wfdb2fecgsyn(path)
  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> You may have a look at function <code>main_extract_data.m</code> function for a simple use of the <code>wfdb2fecgsyn.m</code>, see <a href="{{site.github.url}}/pages/examples.html#main_extract_data">this example</a>. </div></div>
 </section>
 
-<!-- -----------FECG EXTRACTION------- -->
+<!-------------FECG EXTRACTION--------->
 <section class="bs-docs-section">
 <h1 id="datext" class="page-header">FECG Extraction</h1>
 
@@ -129,9 +129,9 @@ end
 
 <h2 id="main_extract_data">Multi-method extraction</h2>
 
-<p>Aside from Template Subtraction methods (<code>FECGSYN_ts_extraction.m</code> function), the <em>FECGSYN</em> toolbox includes Blind Source Separation (<code>FECGSYN_bss_extraction.m</code> function), Kalman Filter (<code>FECGSYN_kf_extraction.m</code> function) and Adaptive Filters (<code>FECGSYN_adaptfilt_extraction.m</code> function). For more information, checkout Andreotti et al 2016 and the <a href="{{site.github.url}}/pages/documentation.html"><span class="octicon octicon-globe"></span> Documentation page</a></p>
+<p>Aside from Template Subtraction methods (<code>FECGSYN_ts_extraction.m</code> function), the <em>FECGSYN</em> toolbox includes Blind Source Separation (<code>FECGSYN_bss_extraction.m</code> function), Kalman Filter (<code>FECGSYN_kf_extraction.m</code> function) and Adaptive Filters (<code>FECGSYN_adaptfilt_extraction.m</code> function). For more information, checkout Andreotti et al 2016 and the <a href="{{site.github.url}}/pages/documentation.html"><span class="octicon octicon-globe"></span> Documentation</a>.</p>
 
-<p>In this example, extraction using every method available is performed by applying the <code>main_extract_data.m</code> script. The script accepts WFDB formatted data, as well as <code>.mat</code> files (following <em>FECGSYN</em>'s structure). In order to inform the function which format is used, the bool <code>wfdb</code> should be toggled to true or false. The function comes with to preset pre-processing bands (3-100 Hz or 0.5-100 Hz) which can be set with the argument <code>narrowband</code>. The function may be applied directly on the FECGSYNDB, as follows:</p>
+<p>In this example, extraction using every method available is performed by applying the <code>main_extract_data.m</code> script. The script accepts WFDB formatted data, as well as <code>.mat</code> files (following <em>FECGSYN</em>'s structure). In order to inform the function which format is used, the bool <code>wfdb</code> should be toggled to <em>true</em> or <em>false</em>. The function comes with to preset pre-processing bands (3-100 Hz or 0.5-100 Hz) which can be set with the argument <code>narrowband</code>. The function may be applied directly on the FECGSYNDB, as follows:</p>
 
 {% highlight matlab %}
 main_extract_data('/FECGSYNDB_PATH/',narrowband,wfdb)
@@ -140,18 +140,37 @@ main_extract_data('/FECGSYNDB_PATH/',narrowband,wfdb)
  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> For batch processing, avoid converting data to WFDB format, since it may cause slow downs. </div></div>
 </section>
 
-<!-- ----------- Benchmarking ------- -->
+<!------------- Benchmarking --------->
 <section class="bs-docs-section">
 <h1 id="datext" class="page-header">Benchmarking methods</h1>
 
 <h2 id="fqrs">FQRS detection</h2>
-Examplary TS
+
+<p>Single channel FQRS detection can be performed on extracted signals using the <code>qrs_detect.m</code> function by Behar et al 2014. The detector is a simple offline implementation of the Pan & Tompkins algorithm, adapted for FECG. The function returns the FQRS locations, given a <code>signal</code>, threshold level (<code>thr</code>), refractory period (<code>refrac</code>) and sampling frequency (<code>fs</code>):</p>
+
+{% highlight matlab %}
+fqrs = qrs_detect(signal,thr,refrac,fs)
+{% endhighlight %}
+
+<p>The function <code>Bxb_compare.m</code>, based on Physionet's <code>bxb()</code>, enables the assessment on FQRS detection accuracy, in terms of F1-measure (<code>F1</code>), mean absolute error (<code>MAE</code> - a distance measure), positive predictive value (<code>PPV</code>), sensitivity (<code>SE</code>), number of true positives (<code>TP</code>), false negatives (<code>FN</code>) and false positives (<code>FP</code>). As input the reference (<code>out.fqrs</code>) and test FQRS locations (<code>fqrs</code>) sould be provided, along with an acceptance interval (<code>acceptint</code> - in samples).</p>
+
+{% highlight matlab %}
+acceptint = 50*fs/1000; % 50 ms acceptance interval interval
+[F1,MAE,PPV,SE,TP,FN,FP] = Bxb_compare(out.fqrs, fqrs, acceptint)
+{% endhighlight %}
+
+<p> The function <code>FECGSYN_QRSmincompare.m</code> makes use of the <code>Bxb_compare.m</code> on a minute basis, as in Andreotti et al 2016. </p>
+
+<p>References:</p>
+<p>Pan, J., & Tompkins, W. J. (1985). A Real-Time QRS Detection Algorithm. IEEE.J.BME, (3), 230–236.</p>
+<p>Behar, J., Oster, J., & Clifford, G. D. (2014). Combining and Benchmarking Methods of Foetal ECG Extraction Without Maternal or Scalp Electrode Data. Physiological Measurement, 35(8), 1569–1589.</p>
+
 
 <h2 id="morpho">Morphological features</h2>
 Examplary 
 </section>
 
-<!-- -----------GUI------- -->
+<!-------------GUI--------->
 <section class="bs-docs-section">
 <h1 id="guiguide" class="page-header">Using FECGSYN's GUI</h1>
 

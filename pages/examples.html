@@ -85,7 +85,9 @@ FECGSYN_plotmix(out) % plots random channels of one of the created datasets
   fecgsyn2mat(dest_path,outstruct,recName) 
 {% endhighlight %} 
  
-  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span>Note</div><div class="panel-body"> Make sure to compress and convert the <code>outstruct</code> before exporting it to WFDB format. This can be done using the <code>clean_compress.m</code> function, see the <a href="{{site.github.url}}/pages/documentation.html#clean_compress"><span class="octicon octicon-globe"></span> Documentation</a>. </div></div>
+  <div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span>Warning</div><div class="panel-body"> Make sure to compress and convert the <code>outstruct</code> before exporting it to WFDB format. This can be done using the <code>clean_compress.m</code> function, see the <a href="{{site.github.url}}/pages/documentation.html#clean_compress"><span class="octicon octicon-globe"></span> Documentation</a>. </div></div><br>
+  
+  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span>Note</div><div class="panel-body"> You may have a look at function <code>exp_datagen1.m</code> function for a simple use of the <code>fecgsyn2wfdb.m</code>, see the <a href="{{site.github.url}}/pages/examples.html#datagen2"> example</a>. </div></div>
 
   
   <h2 id="wfdb2fecgsyn">Converting from WFDB to FECGSYN</h2>

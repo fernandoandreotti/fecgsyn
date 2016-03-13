@@ -134,8 +134,11 @@ end
 <p>In this example, extraction using every method available is performed by applying the <code>main_extract_data.m</code> script. The script accepts WFDB formatted data, as well as <code>.mat</code> files (following <em>FECGSYN</em>'s structure). In order to inform the function which format is used, the bool <code>wfdb</code> should be toggled to <em>true</em> or <em>false</em>. The function comes with to preset pre-processing bands (3-100 Hz or 0.5-100 Hz) which can be set with the argument <code>narrowband</code>. The function may be applied directly on the FECGSYNDB, as follows:</p>
 
 {% highlight matlab %}
-main_extract_data('/FECGSYNDB_PATH/',narrowband,wfdb)
+path % this is path where simulated data is allocated
+main_extract_data(path,narrowband,wfdb)
 {% endhighlight %}
+
+<p>This function saves each extracted signal in an separate <code>.mat</code> file under the directory <code>'path/ext/'</code>. In order to reduce the filenames, a coding is introduce consisting of 'rec' (for recording) and a number. An <code>index.mat</code> file is also saved on the folder to allow the backwards mapping of simulated and extracted datasets.</p>
 
  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> For batch processing, avoid converting data to WFDB format, since it may cause slow downs. </div></div>
 </section>

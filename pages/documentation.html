@@ -6,6 +6,10 @@ priority: 5
 ---
 
 <section class="bs-docs-section"> 
+<h1 id=""></h1><br> 
+</section>
+
+<section class="bs-docs-section"> 
 <h1 id="benchmark-tools">benchmark-tools</h1><br> 
 <h3 id="FECGSYN_exp3results">FECGSYN_exp3results</h3><br> 
 <b>Call: </b> <code>function FECGSYN_exp3results
@@ -13,6 +17,9 @@ priority: 5
 <br> 
 this script extracts  morphological features of NI-FECG signals and makes
 <br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
 <h3 id="FECGSYN_benchFQRS_plot">FECGSYN_benchFQRS_plot</h3><br> 
 <b>Call: </b> <code>function FECGSYN_benchFQRS_plot()
 </code> <br> 
@@ -37,11 +44,17 @@ exp3:            Boolean, if 0 runs exp2 and 1 exp3
 <br> 
 <b>Examples:</b> <br> 
 <br> 
+TODO
+<br> 
 <h3 id="FECGSYN_benchFQRS">FECGSYN_benchFQRS</h3><br> 
 <b>Call: </b> <code>function FECGSYN_benchFQRS(path_orig,fs,ch,exp3)
 </code> <br> 
 <br> 
 this script generates statistics as in Experiment 2 by Andreotti et al 2016,
+<br> 
+<b>Examples:</b> <br> 
+<br> 
+TODO
 <br> 
 </section>
 
@@ -50,20 +63,78 @@ this script generates statistics as in Experiment 2 by Andreotti et al 2016,
 <b>Call: </b> <code>function [fqrs,maxch] = FECGSYN_QRSmincompare(data,fref,fs,varargin)
 </code> <br> 
 <br> 
+detection on a minute basis or pre-defined interval.
+<br> 
+data                         Extracted signals
+<br> 
+fs                           Sampling frequency (in Hz)
+<br> 
+More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+<br> 
+<b>Examples:</b> <br> 
+<br> 
+qrs_detect
+<br> 
 <h3 id="qrs_detect">qrs_detect</h3><br> 
 QRS detector based on the P&T method. This is an offline implementation
 <br> 
+  ecg:            one ecg channel on which to run the detector (required)
+<br> 
+      THRES:      energy threshold of the detector (default: 0.6)
+<br> 
+      fs:         sampling frequency (default: 1KHz)
+<br> 
+                  optimal threshold of the P&Tthen input the indices of
+<br> 
+      SIGN_FORCE: force sign of peaks (positive value/negative value).
+<br> 
+                  unsure the sign of the peaks to be the same accross
+<br> 
+      debug:      1: plot to bebug, 0: do not plot
+<br> 
+outputs
+<br> 
+  sign:           sign of the peaks (a pos or neg number)
+<br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
 <h3 id="FECGSYN_manalysis">FECGSYN_manalysis</h3><br> 
 This function calculates morphological features form signals given two
 <br> 
 This functin makes use of the ECGPUWAVE script (Jane et al 1996) and
 <br> 
+ abdm_temp:               Template to be tested
+<br> 
+ qrs_abdm/qrs_ref:        Location of qrs in each template
+<br> 
+ filterc:                 Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
+<br> 
+ filen:                   number to be added to ecgpuwaves outputs
+<br> 
+Reference to functions:
+<br> 
+ ECGPUWAVE: Jane, R., Blasi, A., Garcia, J., & Laguna, P. (1997). Evaluation of an automatic 
+<br> 
+ Cardiology 1997 (pp. 295–298). IEEE. http://doi.org/10.1109/CIC.1997.647889
+<br> 
+ and 
+<br> 
+ PhysioNet Databases in MATLAB and Octave." Journal of Open Research Software 2(1):e27 
+<br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
 </section>
 
 <section class="bs-docs-section"> 
 <h1 id="data-generation">data-generation</h1><br> 
 <h3 id="phase2qrs">phase2qrs</h3><br> 
 this function is used for finding the qrs locations using the phase generated 
+<br> 
+  phase:  phase [sample]
+<br> 
+  qrs:    qrs position [sample]
 <br> 
 <h3 id="plot3_volume">plot3_volume</h3><br> 
 plot volume conductor together with foetuses and mother heart positions 
@@ -88,6 +159,10 @@ inputs
 <br> 
                      thetaY,thetaZ - in radian)
 <br> 
+<b>Examples:</b> <br> 
+<br> 
+TODO
+<br> 
 <h3 id="traject_generator">traject_generator</h3><br> 
 this function is used to generate trajectories within volume conductor. These
 <br> 
@@ -99,6 +174,26 @@ inputs
 <br> 
 <h3 id="generate_ecg_mixture">generate_ecg_mixture</h3><br> 
   generate_ecg_mixture(debug,SNRfm,SNRmn,mqrs,fqrs,fs,varargin)
+<br> 
+       debug:      debug [bool]
+<br> 
+       SNRmn:      SNR of maternal signal compared to background noise
+<br> 
+       fqrs:       foetal qrs locations
+<br> 
+  structure as:   <source>.VCG - VCG signal for given source
+<br> 
+                  <source>.SNR - Gain which is given to source 
+<br> 
+                  <source>.type - Maternal (1), Fetal (2) or Noise (3)
+<br> 
+       mixture: mixture of MECG, FECG and noise
+<br> 
+       fecg:    cell array containing projected fetal ECG signal(s)
+<br> 
+<b>Examples:</b> <br> 
+<br> 
+run_ecg_generator
 <br> 
 <h3 id="generate_hrv">generate_hrv</h3><br> 
 generate variable heart rate (HR). Add suddent change of HR 
@@ -125,8 +220,22 @@ HR variability (HRV).
 <br> 
   fs:                     sampling frequency    
 <br> 
+  theta:                   generated phase signal theta(t)
+<br> 
+<b>Examples:</b> <br> 
+<br> 
+run_ecg_generator
+<br> 
 <h3 id="clean_compress">clean_compress</h3><br> 
 this function eliminates some of the substructures from "out" and
+<br> 
+   internal structure "out"
+<br> 
+        same as input
+<br> 
+<b>Examples:</b> <br> 
+<br> 
+run_ecg_generator
 <br> 
 <h3 id="generate_breathing">generate_breathing</h3><br> 
 variable sawtooth shape for modelling respiration. The intention is to
@@ -144,6 +253,14 @@ sawtooth function are kept to make the bwa smooth.
   debug:  [bool]
 <br> 
 <b>Output:</b> 
+<br> 
+Reference:
+<br> 
+Fibrillation". IEEE Trans Biomed. Eng , VOL. 59, NO. 10, OCTOBER 2012.
+<br> 
+<b>Examples:</b> <br> 
+<br> 
+run_ecg_generator
 <br> 
 <h3 id="add_cardiacdipole">add_cardiacdipole</h3><br> 
   theta,w,fres,R0,epos,traj,debug)
@@ -172,10 +289,53 @@ case the foetus is moving).
 <br> 
                   modeling the x, y, and z coordinates of the cardiac dipole
 <br> 
+    theta:     phase for heart dipole model
+<br> 
+    fres:     respiration frequency (for heart dipole rotation) [Hz]
+<br> 
+    epos:     position of electrodes [normalised units]
+<br> 
+              trainslation other than respiration. If no translation is given, traj    
+<br> 
+              x,y and z direction.
+<br> 
+    dmodel   structure contaning the dipole model i.e.:
+<br> 
+                          (variant case).
+<br> 
+       dmodel.type:   maternal (1) or foetal (2) dipole
+<br> 
+       dmodel.stm: state transition matrix
+<br> 
+       dmodel.ray: max respiration angle in radian around Y
+<br> 
+       dmodel.rht: volumes height allowed for heart translation due to respiration
+<br> 
+[1] Leanderson et al. "Estimation of the respiratory frequency using spatial information in
+<br> 
+this paper gives an idea of the Rx, Ry, Rz angles variation with breathing for the VCG.
+<br> 
+[2] Sameni, Reza, et al. "Multichannel ECG and noise modeling: application to 
+<br> 
+2007 (2007).
+<br> 
+[3] Oster, Julien, and Gari D. Clifford. "An Artificial Model of the 
+<br> 
+cardiology 2013.
+<br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
 <h3 id="load_gparam">load_gparam</h3><br> 
 load Gaussian paramters for vcg modelling. The parameters are derived 
 <br> 
 20sec of the corresponding records. 
+<br> 
+  vcgmodel: ID of Gaussian parameters to load
+<br> 
+  gp: Gaussian parameters for ECG [cell]
+<br> 
+      gp{2} = alphai
 <br> 
 <h3 id="run_ecg_generator">run_ecg_generator</h3><br> 
 generate a realistic FECG-MECG mixture. The physiological phenomenon that
@@ -188,6 +348,97 @@ hearts are randomly placed around the default coordinates. Note that the
 <br> 
 the volume conductor). As a consequence, electodes location, hearts
 <br> 
+list of abbreviation used in the toolbox:
+<br> 
+  MECG:       maternal ECG
+<br> 
+  NI-FECG:    non invasive FECG
+<br> 
+  HRV:        heart rate variability
+<br> 
+  MHR:        maternal heart rate
+<br> 
+  param: structure containing all the information needed for running the
+<br> 
+      param.mheart    maternal heart origin - actual location will be
+<br> 
+                      0.4]) [normalised]
+<br> 
+                      picked randomly around it* - (default [-pi/10 0.4
+<br> 
+      param.elpos:    electrode pair locations in polar coordinate [normalised]
+<br> 
+      param.fs:       sampling frequency (default 1000) [Hz]
+<br> 
+      param.noise_fct function of modulating noise (each noise may be modulated by a
+<br> 
+      param.SNRn:     SNR (MECG+FECG)/Noise (default 6)
+<br> 
+      param.mhr:      mother reference HR (default 110) [bpm]
+<br> 
+      param.macc:     maternal acceleration in HR
+<br> 
+      param.mtypeacc: maternal acceleration type (chosen from switch inside function,
+<br> 
+      param.ftypeacc: foetus acceleration type (chosen from switch inside function,
+<br> 
+      param.ftraj:    trajectory given to fetus heart (e.g. 'none', 
+<br> 
+      param.mtraj     movement trajectory to maternal heart (e.g. case of
+<br> 
+      param.fname:    record name for saving output (default 'aecg') if
+<br> 
+      param.mres:     respiratory frequency of mother (default 0) [Hz]
+<br> 
+      param.mvcg:     mother vcg chosen (1-9)
+<br> 
+      param.evcg:     ectopic beat params (1-4)
+<br> 
+                      electrodes and hearts are slightly varied around
+<br> 
+      param.mectb:    add ectopic beats to maternal ECG (bool)
+<br> 
+      1:              Some generated AECG
+<br> 
+      3:              Projected FECG and MECG before being mixed
+<br> 
+      5:              Heart rate
+<br> 
+* This is in order to be able to produce many simulations with the heart
+<br> 
+location. Locations are specified in polar coordinate because it is
+<br> 
+1) and height 1. The cylinder is centered on zero.
+<br> 
+NOTE: in the case only one input is entered, the function considers it to
+<br> 
+simulation. The function only plots them.
+<br> 
+outputs
+<br> 
+  mixture and all the important model information that would allow
+<br> 
+      out.m_model: structure contaning dipole model for the foetus [struct]
+<br> 
+                         (variant case).
+<br> 
+              m_model.type: maternal (1) or foetal (2) dipole
+<br> 
+              ibid m_model
+<br> 
+      out.mecg:   mecg projected signal
+<br> 
+      out.vols:   contains volume conductor information (electrodes and heart
+<br> 
+      out.mqrs:   maternal reference QRS
+<br> 
+      out.param:  parameters used in the simulation [struct]
+<br> 
+      selvcgf:    selected foetal vcg [cell]
+<br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
 <h3 id="add_noisedipole">add_noisedipole</h3><br> 
 this function is used to generate realistic noise. The MA, EM and BW
 <br> 
@@ -225,6 +476,9 @@ Change log:
 <br> 
 improvements to the AR model should allow faster generation
 <br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
 </section>
 
 <section class="bs-docs-section"> 
@@ -246,6 +500,18 @@ Inputs
 <br> 
   residual:   residual containing the FECG
 <br> 
+(Andreotti 2014) Andreotti, F., Riedl, M., Himmelsbach, T., Wedekind, D., 
+<br> 
+detection from abdominal leads. Physiol. Meas., 35(8), 1551–1567. 
+<br> 
+(OSET) Sameni, R. (2010). The Open-Source Electrophysiological Toolbox (OSET). 
+<br> 
+<b>Examples:</b> <br> 
+<br> 
+FECGSYN_ts_extraction
+<br> 
+FECGSYN_adaptfilt_extraction
+<br> 
 <h3 id="FECGSYN_adaptfilt_extraction">FECGSYN_adaptfilt_extraction</h3><br> 
 MECG cancellation algorithms using a adaptive filtring methods.
 <br> 
@@ -259,9 +525,37 @@ MECG cancellation algorithms using a adaptive filtring methods.
 <br> 
   method:     method to use (LMS,RLS,ESN)
 <br> 
+ fs:          sampling frequency (default = 250 Hz)
+<br> 
+  residual:   residual containing the FECG
+<br> 
+References:
+<br> 
+    Comparison of Single Channel Fetal ECG Extraction Methods. Annals of
+<br> 
+<b>Examples:</b> <br> 
+<br> 
+FECGSYN_ts_extraction
+<br> 
+FECGSYN_kf_extraction
+<br> 
 <h3 id="main_extract_data">main_extract_data</h3><br> 
 <b>Call: </b> <code>function main_extract_data(path,narrowband,wfdb)
 </code> <br> 
+<br> 
+bandwidths (defined in Experiment 2 and 3 of Andreotti2016). Results are
+<br> 
+path                  Path where datasets are saved
+<br> 
+wfdb                  Load data in WFDB format? [boolean]
+<br> 
+exp_datagen1
+<br> 
+exp_datagen1
+<br> 
+FECGSYN_adaptfilt_extraction
+<br> 
+FECGSYN_ts_extraction
 <br> 
 <h3 id="FECGSYN_ts_extraction">FECGSYN_ts_extraction</h3><br> 
 Template subtraction for MECG cancellation. Five template subtraction techniques 
@@ -274,7 +568,41 @@ inputs
 <br> 
   method:     method to use ('TS','TS-CERUTTI','TS-SUZANNA','TS-LP','TS-PCA')
 <br> 
-<h3 id="FECGSYN_bss_extraction">FECGSYN_bss_extraction</h3><br> 
+              a scalar gain (Cerutti 1986)
+<br> 
+              TS-SUZANNA - the scaling procedure was performed for the P, QRS, 
+<br> 
+              order to minimize the mean square error (as opposed to the other TS 
+<br> 
+              next a back-propagation step takes place on a beat-to-beat basis, thus 
+<br> 
+  varargin:
+<br> 
+      NbPC:       number of principal components to use for PCA
+<br> 
+  residual:   residual containing the FECG
+<br> 
+References:
+<br> 
+Variability analysis of fetal heart rate signals as obtained from abdominal 
+<br> 
+(Kanjilal 1997) Kanjilal P P, Palit S and Saha G 1997 Fetal ECG extraction 
+<br> 
+Trans. Biomed. Eng. 44 51–9
+<br> 
+robust fetal ECG detection method for abdominal recordings Physiol. Meas. 28 373–88
+<br> 
+(Vullings 2009) Vullings R, Peters C, Sluijter R, Mischi M, Oei S G and 
+<br> 
+abdominal recordings Physiol. Meas. 30 291
+<br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
+<a href="{{site.github.url}}/pages/documentation.html#FECGSYN_bss_extraction
+"><code>FECGSYN_bss_extraction
+</code></a></code> 
+<br><h3 id="FECGSYN_bss_extraction">FECGSYN_bss_extraction</h3><br> 
 Uses Blind Source Separation Methods for FECG extraction given a
 <br> 
 terms of F1-measure, is picked as best channel.
@@ -293,7 +621,17 @@ refqrs:    Array containing reference QRS detections for F1 measure
 <br> 
 blen:      Iterates method every blen (in seconds)
 <br> 
-</section>
+out_comps:    selected best channels on every block
+<br> 
+W:            used mixing matrices
+<br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
+<a href="{{site.github.url}}/pages/documentation.html#FECGSYN_kf_extraction
+"><code>FECGSYN_kf_extraction
+</code></a></code> 
+<br></section>
 
 <section class="bs-docs-section"> 
 <h1 id="utils">utils</h1><br> 
@@ -307,6 +645,13 @@ This functin plots Nplots channels from fecgsyn's internal struct "out".
 <b>Call: </b> <code>function out = wfdb2fecgsyn(path)
 </code> <br> 
 <br> 
+ path             complete path for wfdb file, including identifying name
+<br> 
+ outstr              structure used by fecgsyn toolbox
+<br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
 <h3 id="Bxb_compare">Bxb_compare</h3><br> 
 This function is similar to the function bxb.exe from Physionet's
 <br> 
@@ -318,11 +663,39 @@ Input
 <br> 
 testqrs:       detections to be tested against 
 <br> 
+Output
+<br> 
+ACC:           accuracy (by Karvounis 2007) - alternative to F1
+<br> 
+SE:            sensitivity
+<br> 
+FN:            number of false negatives
+<br> 
+[ANSI/AAMI Norm]  American National Standard ANSI/AAMI EC57:1998, Testing and Reporting Performance 
+<br> 
+in MATLAB and Octave." Journal of Open Research Software 2(1):e27 [http://dx.doi.org/10.5334/jors.bi]; 
+<br> 
+ECG Extraction Without Maternal or Scalp Electrode Data. Physiological Measurement, 35(8), 1569–1589.
+<br> 
 <h3 id="fecgsyn2wfdb">fecgsyn2wfdb</h3><br> 
 <b>Call: </b> <code>function fecgsyn2wfdb(argument)
 </code> <br> 
 <br> 
+Physionet's WFDB format.
+<br> 
+<b>Input:</b> 
+<br> 
+             or save path (if second argument is additionally given)
+<br> 
+ filename    if single file, destination filename is required
+<br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
 </section>
+
+
+
   I might use this for input/output list:<br>
   <div class="table-responsive">
     <table class="table table-bordered table-striped">

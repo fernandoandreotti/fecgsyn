@@ -68,7 +68,7 @@ FECGSYN_plotmix(out) % plots random channels of one of the created datasets
   <p>The following subsections aim at demonstrating how to convert from <em>FECGSYN</em> Matlab/Octave format to WFDB format, and vice-versa. In order to use these functions, the WFDB App should be installed, as described in  <a href="{{site.github.url}}/pages/install.html"><span class="octicon octicon-globe"></span> Installing the <em>FECGSYN</em></a>.</p>
     
     
-<h2 id="fecgsyn2wfdb">Converting from FECGSYN to WFDB</h2>
+<h2 id="fecgsyn2wfdb">Converting FECGSYN to WFDB</h2>
 
   <p> This is done using the <code>fecgsyn2wfd.m</code> function. The function can be used to convert multiple <code>.mat</code> saved files using <em>FECGSYN</em> internal structure, such as:</p>
   
@@ -85,20 +85,23 @@ FECGSYN_plotmix(out) % plots random channels of one of the created datasets
   fecgsyn2mat(dest_path,outstruct,recName) 
 {% endhighlight %} 
  
-  <div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span>Warning</div><div class="panel-body"> Make sure to compress and convert the <code>outstruct</code> before exporting it to WFDB format. This can be done using the <code>clean_compress.m</code> function, see the <a href="{{site.github.url}}/pages/documentation.html#clean_compress"><span class="octicon octicon-globe"></span> Documentation</a>. </div></div><br>
+  <div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span>Warning</div><div class="panel-body"> Make sure to compress and convert the <code>outstruct</code> before exporting it to WFDB format. This can be done using the <code>clean_compress.m</code> function, see the <a href="{{site.github.url}}/pages/documentation.html#clean_compress"><span class="octicon octicon-globe"></span> Documentation</a>. </div></div>
   
-  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span>Note</div><div class="panel-body"> You may have a look at function <code>exp_datagen1.m</code> function for a simple use of the <code>fecgsyn2wfdb.m</code>, see the <a href="{{site.github.url}}/pages/examples.html#datagen2"> example</a>. </div></div>
+  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span>Note</div><div class="panel-body"> You may have a look at function <code>exp_datagen1.m</code> function for a simple use of the <code>fecgsyn2wfdb.m</code>, see <a href="{{site.github.url}}/pages/examples.html#datagen2">this example</a>. </div></div>
 
   
-  <h2 id="wfdb2fecgsyn">Converting from WFDB to FECGSYN</h2>
+  <h2 id="wfdb2fecgsyn">Converting WFDB to FECGSYN</h2>
 
   Similarly, the <code>wfdb2fecgsyn.m</code> function is able to convert WFDB datasets into the <code>.mat</code> internal structure used by <em>FECGSYN</em>  <code>main_extract_data</code> script, such as:
 
 {% highlight matlab %}
-main_extract_data('/FECGSYNDB_PATH/',1,1)
+% path = string containing origin folder for WFDB dataset
+wfdb2fecgsyn(path)
 {% endhighlight %}
 
+<div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span>Warning</div><div class="panel-body"> <code>path</code> must be an unique identifier for a WFDB dataset, which excludes the extension of the files. For instance, for the <em>FECGSYNDB</em> <code>'sub01_snr00dB_l1_c0'</code> represents an unique identifier for a dataset consisting of multiple files: <code>_mecg</code>,<code>_fecg1</code>,<code>_noise1</code> with <code>.dat</code>, <code>.hea</code>, <code>.mqrs</code> and <code>.fqrs</code> extensions.</div></div>
 
+ <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span>Note</div><div class="panel-body"> You may have a look at function <code>main_extract_data.m</code> function for a simple use of the <code>wfdb2fecgsyn.m</code>, see <a href="{{site.github.url}}/pages/examples.html#main_extract_data">this example</a>. </div></div>
 
 </section>
 

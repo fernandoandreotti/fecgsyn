@@ -89,10 +89,9 @@ FECGSYN_plotmix(out) % plots random channels of one of the created datasets
   
   <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> You may have a look at function <code>exp_datagen1.m</code> function for a simple use of the <code>fecgsyn2wfdb.m</code>, see <a href="{{site.github.url}}/pages/examples.html#datagen2">this example</a>. </div></div>
 
-  
-  <h2 id="wfdb2fecgsyn">Converting WFDB to FECGSYN</h2>
+<h2 id="wfdb2fecgsyn">Converting WFDB to FECGSYN</h2>
 
-  Similarly, the <code>wfdb2fecgsyn.m</code> function is able to convert WFDB datasets into the <code>.mat</code> internal structure used by <em>FECGSYN</em>  <code>main_extract_data</code> script, such as:
+<p>Similarly, the <code>wfdb2fecgsyn.m</code> function is able to convert WFDB datasets into the <code>.mat</code> internal structure used by <em>FECGSYN</em>  <code>main_extract_data</code> script, such as:</p>
 
 {% highlight matlab %}
 % path = string containing origin folder for WFDB dataset
@@ -110,7 +109,7 @@ wfdb2fecgsyn(path)
 
 <h2 id="tsc">Extraction using Template Subtraction</h2>
 
-This example makes use of the template subtraction (TS) method by Cerutti et al 1986, using the <code>FECGSYN_ts_extraction.m</code> function. As input the function expects the maternal QRS locations (<code>mref</code>), abdominal signal (<code>mixture</code> - rows represent different channels), a predetermined number of cycles to use on the average maternal template (<code>NbCycles</code>) and sampling frequency used (<code>fs</code>). See the example:
+<p>This example makes use of the template subtraction (TS) method by Cerutti et al 1986, using the <code>FECGSYN_ts_extraction.m</code> function. As input the function expects the maternal QRS locations (<code>mref</code>), abdominal signal (<code>mixture</code> - rows represent different channels), a predetermined number of cycles to use on the average maternal template (<code>NbCycles</code>) and sampling frequency used (<code>fs</code>). See the example:</p>
 
 {% highlight matlab %}
 NbCycles = 20; % number of cycles used
@@ -121,28 +120,24 @@ for j = 1:length(ch)
 end
 {% endhighlight %}
 
-As output, the function returns the <code>residual</code> variable, which has the same dimensions as <code>mixture</code>.
+<p>As output, the function returns the <code>residual</code> variable, which has the same dimensions as <code>mixture</code>.</p>
 
-Reference:
-Cerutti, S., Baselli, G., Civardi, S., Ferrazzi, E., Marconi, A. M., Pagani, M., & Pardi, G. (1986). Variability analysis of fetal heart rate signals as obtained from abdominal electrocardiographic recordings. Journal of Perinatal Medicine, 14(6), 445–452.
+<p>Reference:</p>
+<p>Cerutti, S., Baselli, G., Civardi, S., Ferrazzi, E., Marconi, A. M., Pagani, M., & Pardi, G. (1986). Variability analysis of fetal heart rate signals as obtained from abdominal electrocardiographic recordings. Journal of Perinatal Medicine, 14(6), 445–452.</p>
 
  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> The  <code>FECGSYN_ts_extraction.m</code> function has several pre-built TS methods that can be used by simply substituting <code>'TS-CERUTTI'</code> for <code>'TS'</code>, <code>'TS-SUZANNA'</code>, <code>'TS-LP'</code> or <code>'TS-PCA'</code>. Make sure to see the <a href="{{site.github.url}}/pages/documentation.html#FECGSYN_ts_extraction"><span class="octicon octicon-globe"></span> Documentation</a>. </div></div>
 
-<h2 id="multiext">Multi-method extraction</h2>
+<h2 id="main_extract_data">Multi-method extraction</h2>
 
-Aside from Template Subtraction methods (<code>FECGSYN_ts_extraction.m</code>), the <em>FECGSYN</em> toolbox includes Blind Source Separation (<code>FECGSYN_bss_extraction.m</code>), Kalman Filter (<code>FECGSYN_kf_extraction.m</code>) and Adaptive Filters (<code>FECGSYN_adaptfilt_extraction.m</code>).
+<p>Aside from Template Subtraction methods (<code>FECGSYN_ts_extraction.m</code> function), the <em>FECGSYN</em> toolbox includes Blind Source Separation (<code>FECGSYN_bss_extraction.m</code> function), Kalman Filter (<code>FECGSYN_kf_extraction.m</code> function) and Adaptive Filters (<code>FECGSYN_adaptfilt_extraction.m</code> function). For more information, checkout Andreotti et al 2016 and the <a href="{{site.github.url}}/pages/documentation.html"><span class="octicon octicon-globe"></span> Documentation page</a></p>
 
-Extraction using multiple extraction routines is performed by applying the <code>main_extract_data</code> script, such as:
+<p>In this example, extraction using every method available is performed by applying the <code>main_extract_data.m</code> script. The script accepts WFDB formatted data, as well as <code>.mat</code> files (following <em>FECGSYN</em>'s structure). In order to inform the function which format is used, the bool <code>wfdb</code> should be toggled to true or false. The function comes with to preset pre-processing bands (3-100 Hz or 0.5-100 Hz) which can be set with the argument <code>narrowband</code>. The function may be applied directly on the FECGSYNDB, as follows:</p>
 
 {% highlight matlab %}
-main_extract_data('/FECGSYNDB_PATH/',1,1)
+main_extract_data('/FECGSYNDB_PATH/',narrowband,wfdb)
 {% endhighlight %}
 
-The function accept directories with both .mat and wfdb formatted data.
-
  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> For batch processing, avoid converting data to WFDB format, since it may cause slow downs. </div></div>
-
-
 </section>
 
 <!-- ----------- Benchmarking ------- -->

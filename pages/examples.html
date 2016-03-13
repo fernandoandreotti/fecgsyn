@@ -8,6 +8,7 @@ published: true
 ---
 
 
+
 In this section exemplary use of the FECGSYN are illustrated. For more information make sure you consult the <a href="{{site.github.url}}/pages/documentation.html"><span class="octicon octicon-globe"></span> Documentation</a>.
 
 <section class="bs-docs-section">
@@ -56,6 +57,53 @@ FECGSYN_plotmix(out) % plots random channels of one of the created datasets
 
 
 </section>
+
+
+<!-- -----------WFDB FECGSYN------- -->
+<section class="bs-docs-section">
+  <h1 id="wfdb" class="page-header">Convert to/from WFDB </h1>
+  <p> WFDB is an open-source and widely used data format from Physionet (<a href="https://www.physionet.org"> www.physionet.org</a>). It is also the format adopted by the FECGSYNDB (<a href="https://www.physionet.org/physiotools/ipmcode/fecgsyn/"><span class="octicon octicon-globe"></span> available here</a>).</p>
+  
+  <p>The following subsections aim at demonstrating how to convert from FECGSYN Matlab/Octave format to WFDB format, and vice-versa. In order to use these functions, the WFDB App should be installed, as described in  <a href="{{site.github.url}}/pages/install.html"><span class="octicon octicon-globe"></span> Installing the FECGSYN</a>.</p>
+    
+    
+<h2 id="fecgsyn2wfdb">Converting from FECGSYN to WFDB</h2>
+
+  <p> This is done using the <code>fecgsyn2wfd.m</code> function. The function can be used to convert multiple <code>.mat</code> saved files using FECGSYN internal structure, such as:</p>
+  
+{% highlight matlab %}
+  fecgsyn2mat('/path_to_mats/')  
+{% endhighlight %}
+  
+  Alternatively, a single file can be converted (e.g. during generation) by using the following input arguments:
+  
+  {% highlight matlab %}
+  % outstruct = structure containing dataset (intern from FECGSYN)
+  % recName = string containing name which will be used to save WFDB dataset
+  % dest_path = string containing destination folder for WFDB dataset
+  fecgsyn2mat(dest_path,outstruct,recName) 
+{% endhighlight %}
+  
+  <p> Make sure to compress the dataset </p>
+  <div class="note info">
+  <h5>Notes are handy pieces of information</h5>
+  <p>These are for the extra tidbits sometimes necessary to understand Jekyll.</p>
+</div>
+
+  
+  <h2 id="wfdb2fecgsyn">Converting from WFDB to FECGSYN</h2>
+
+Extraction using multiple extraction routines is performed by applying the <code>main_extract_data</code> script, such as:
+
+{% highlight matlab %}
+main_extract_data('/FECGSYNDB_PATH/',1,1)
+{% endhighlight %}
+
+
+
+</section>
+
+
 <!-- -----------FECG EXTRACTION------- -->
 <section class="bs-docs-section">
 <h1 id="datext" class="page-header">FECG Extraction</h1>

@@ -12,9 +12,22 @@ published: true
  In this section exemplary use of the FECGSYN are illustrated. For more information make sure you consult the <a href="{{site.github.url}}/pages/documentation.html"><span class="octicon octicon-globe"></span> Documentation</a>.
 
 <h1 id="datagen" class="page-header">Data Generation</h1>
-
 <!-- datagen 1 -->
-  <h2 id="datagen1">Example</h2>
+  <h2 id="datagen1">Initial example</h2>
+
+  <p> An exemplary dataset can be simply generated and plotted by running the following lines:</p>
+  
+{% highlight matlab %}
+param.fs = 1000; % data generation at 1kHz
+param.n = 15*param.fs;
+debug = 5; % debug level (5 = max number of plots generated)
+out = run_ecg_generator(param,debug);
+FECGSYN_plotmix(out) % plots random channels of one of the created datasets
+{% endhighlight %}
+  
+  
+<!-- datagen 1 -->
+  <h2 id="datagen2">Ellaborate Example</h2>
 
   <p>This example make use of the <code>exp_datagen1.m</code> function to generate the dataset used in Behar et al 2014.      </p>
 
@@ -26,7 +39,7 @@ load('fecgsyn_c1.mat')
 FECGSYN_plotmix(out) % plots random channels of one of the created datasets
 {% endhighlight %}
 
- <h2 id="datagen2">Further examples</h2>
+ <h2 id="datagen3">Further examples</h2>
   
   <p>Similarly to the <code>exp_datagen1.m</code> example, the FECGSYN includes three further pre-built routines to data generation. For performance purpose, these functions DO NOT include wfdb support. Nevertheless, this can be simply expanded by using the <code>fecgsyn2wfdb.m</code> function (see this example). Below is a list of further examples included and a short description. For mor information, see  : </p>
   <ul>

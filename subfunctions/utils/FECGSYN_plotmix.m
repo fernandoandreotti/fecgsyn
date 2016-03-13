@@ -13,8 +13,6 @@ function FECGSYN_plotmix(out)
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
 % 
-% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
-% 
 % Referencing this work
 %
 %   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
@@ -22,6 +20,22 @@ function FECGSYN_plotmix(out)
 %   Physiological Measurement.35 1537-1550. 2014.
 % 
 % 
+% --
+% fecgsyn toolbox, version 1.1, March 2016
+% Released under the GNU General Public License
+%
+% Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
+% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+%
+% 
+% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
+% 
+% Referencing this work
+%
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Physiological Measurement.35 1537-1550. 2014.
 %
 % Last updated : 10-03-2016
 % 

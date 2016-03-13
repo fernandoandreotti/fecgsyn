@@ -10,8 +10,6 @@ function main_extract_data(path,narrowband,wfdb)
 % narrowband            Bandpass to be used [boolean]. 1 (3-100 Hz) or 0 (0.5-100 Hz)
 % wfdb                  Load data in WFDB format? [boolean]
 %
-% 
-% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
 %
 % Examples:
 % exp_datagen1
@@ -25,6 +23,7 @@ function main_extract_data(path,narrowband,wfdb)
 % FECGSYN_ts_extraction
 % 
 % 
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
@@ -40,8 +39,6 @@ function main_extract_data(path,narrowband,wfdb)
 %   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
 %   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
 %   Physiological Measurement.35 1537-1550. 2014.
-% 
-% 
 %
 % Last updated : 10-03-2016
 % 

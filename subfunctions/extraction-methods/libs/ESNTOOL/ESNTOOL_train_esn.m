@@ -25,10 +25,11 @@ function [trained_esn,stateCollection,ESNpredictedOutput] = ...
 % teacherCollection is the transformed(scaled, shifted etc) output see
 % compute_teacher for more documentation
 % 
-%
+% 
 % Reference
 % Jaeger, H. (2001). The “echo state” approach to analysing and training recurrent neural networks.
 % 
+% --
 % Created April 30, 2006, D. Popovici
 % Copyright: Fraunhofer IAIS 2006 / Patent pending
 % Revision 1, June 30, 2006, H. Jaeger

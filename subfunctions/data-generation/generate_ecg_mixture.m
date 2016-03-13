@@ -2,7 +2,7 @@ function [mixture,mecg,fecg,noise,f_handle] = ...
     generate_ecg_mixture(debug,SNRfm,SNRmn,mqrs,fqrs,fs,varargin)
 % generate ecg mixture (mecg, fecg and noise).
 %
-% inputs
+% Input:
 %        debug:      debug [bool]
 %        SNRfm:      SNR of fetal signal with respect to maternal signal
 %        SNRmn:      SNR of maternal signal compared to background noise
@@ -14,14 +14,20 @@ function [mixture,mecg,fecg,noise,f_handle] = ...
 %                   <source>.SNR - Gain which is given to source 
 %                   Obs: first source is taken as reference for SNR calculus
 %                   <source>.type - Maternal (1), Fetal (2) or Noise (3)
-% output
+% Output:
 %        mixture: mixture of MECG, FECG and noise
 %        mecg:    matrix containing projected maternal ECG signal
 %        fecg:    cell array containing projected fetal ECG signal(s)
 %        noise:   cell array containing projected noise sources
 %
 %
+% Examples:
+% TODO
 %
+% See also:
+% run_ecg_generator
+% 
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
@@ -29,29 +35,27 @@ function [mixture,mecg,fecg,noise,f_handle] = ...
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-%
+% 
 % For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
-%
+% 
 % Referencing this work
 %
-%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D.
-%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings.
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
 %   Physiological Measurement.35 1537-1550. 2014.
 %
-%
-%
 % Last updated : 10-03-2016
-%
+% 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-%
+% 
 % This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; withoutstr even the implied warranty of
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-%
+% 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 

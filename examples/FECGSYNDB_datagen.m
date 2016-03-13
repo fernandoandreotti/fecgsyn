@@ -22,7 +22,7 @@ function FECGSYNDB_datagen(path,debug,varargin)
 % exp_datagen2 
 % FECGSYNDB_datagen
 % 
-% 
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
@@ -61,6 +61,7 @@ optargs = {[pwd slashchar] 5};  % default values for input arguments
 newVals = cellfun(@(x) ~isempty(x), varargin);
 optargs(newVals) = varargin(newVals);
 [path,debug] = optargs{:};
+if ~strcmp(path(end),slashchar), path = [path slashchar];end
 
 % Generating simulated data with various SNR for morphological analysis
 % global parameters

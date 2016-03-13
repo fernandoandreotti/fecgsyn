@@ -8,8 +8,13 @@ function FECGSYN_benchFQRS(path_orig)
 % Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., An Open-Source Framework 
 % for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms (2016) Physiol Meas (in press). 
 % 
+%  Examples:
+% TODO
+%
+% See also:
+% TODO
 % 
-% 
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
@@ -25,8 +30,6 @@ function FECGSYN_benchFQRS(path_orig)
 %   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
 %   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
 %   Physiological Measurement.35 1537-1550. 2014.
-% 
-% 
 %
 % Last updated : 10-03-2016
 % 

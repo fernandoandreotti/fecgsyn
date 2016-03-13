@@ -2,8 +2,18 @@ function out=clean_compress(out)
 % this function eliminates some of the substructures from "out" and
 % compresses the variables to int16 for saving disk space before saving
 % 
-% Input and output are the fecgsyn internal structure "out"
+% Input:
+%    internal structure "out"
+%  Output:
+%         same as input
 %
+% Examples:
+% TODO
+%
+% See also:
+% run_ecg_generator
+% 
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
@@ -19,8 +29,6 @@ function out=clean_compress(out)
 %   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
 %   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
 %   Physiological Measurement.35 1537-1550. 2014.
-% 
-% 
 %
 % Last updated : 10-03-2016
 % 
@@ -36,6 +44,8 @@ function out=clean_compress(out)
 % 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
     gain = 3000;
     out_tmp=rmfield(out,{'f_model' 'm_model' 'vols' 'selvcgm' 'selvcgf'});
     out = struct();

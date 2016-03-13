@@ -1,4 +1,4 @@
-function exp_datagen3(path,debug,varargin)
+function exp_datagen3(varargin)
 % Yet another example of data generation
 % based on exp_datagen2.m The focus is however rather in having various SNR 
 % levels. Used for training SQI algorithms.
@@ -31,6 +31,7 @@ function exp_datagen3(path,debug,varargin)
 % exp_datagen2 
 % FECGSYNDB_datagen
 % 
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
@@ -46,8 +47,6 @@ function exp_datagen3(path,debug,varargin)
 %   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
 %   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
 %   Physiological Measurement.35 1537-1550. 2014.
-% 
-% 
 %
 % Last updated : 10-03-2016
 % 
@@ -64,8 +63,6 @@ function exp_datagen3(path,debug,varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%  Generating simulated data with various SNR for morphological analysis
-
 %% == check inputs
 if nargin >2, error('Too many inputs to data generation function'),end
 slashchar = char('/'*isunix + '\'*(~isunix));
@@ -73,6 +70,7 @@ optargs = {[pwd slashchar] 5};  % default values for input arguments
 newVals = cellfun(@(x) ~isempty(x), varargin);
 optargs(newVals) = varargin(newVals);
 [path,debug] = optargs{:};
+if ~strcmp(path(end),slashchar), path = [path slashchar];end
 
 %% Global parameters
 paramorig.fs = 1000;            % sampling frequency [Hz]

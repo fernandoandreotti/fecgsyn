@@ -17,13 +17,13 @@ function [dmodel, f_handles, misc] = add_noisedipole(N,fs,ntype,epos,noisepos,de
 % poles, of the learned AR filter, are slightly randomly shifted while
 % unsuring they stay in the unit cicle.
 %
-% inputs
+% Input:
 %   N:      size of the noise to generate at fs (sampling frequency) [datapoint number]
 %   ntype:  type of noise to generate (MA,EM or BW) [string]
 %   fs:     sampling frequency [Hz]
 %   debug:  debug mode level [integer]
 %
-% output
+% Output:
 %     dmodel   structure contaning dipole model i.e.:
 %        dmodel.H      - Dower-like matrix for dipole (assuming time invariance)
 %        dmodel.VCG    - VCG for dipole
@@ -38,6 +38,13 @@ function [dmodel, f_handles, misc] = add_noisedipole(N,fs,ntype,epos,noisepos,de
 % 
 % 
 %
+% Examples:
+% TODO
+%
+% See also:
+% run_ecg_generator
+% 
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
@@ -45,29 +52,27 @@ function [dmodel, f_handles, misc] = add_noisedipole(N,fs,ntype,epos,noisepos,de
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-%
+% 
 % For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
-%
+% 
 % Referencing this work
 %
-%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D.
-%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings.
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
 %   Physiological Measurement.35 1537-1550. 2014.
 %
-%
-%
 % Last updated : 10-03-2016
-%
+% 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-%
+% 
 % This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; withoutstr even the implied warranty of
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-%
+% 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 

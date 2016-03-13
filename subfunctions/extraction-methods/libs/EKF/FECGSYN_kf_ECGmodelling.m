@@ -21,8 +21,6 @@ function [OptimumParams,phase,ECGsd,w,wsd] = FECGSYN_kf_ECGmodelling(x,peaksidx,
 % (OSET) Sameni, R. (2010). The Open-Source Electrophysiological Toolbox (OSET). 
 % Retrieved from http://www.oset.ir
 % 
-% 
-% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
 %
 % Examples:
 % TODO
@@ -33,6 +31,9 @@ function [OptimumParams,phase,ECGsd,w,wsd] = FECGSYN_kf_ECGmodelling(x,peaksidx,
 % FECGSYN_kf_EKFilter
 %
 % 
+% --
+% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %

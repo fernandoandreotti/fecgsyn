@@ -26,6 +26,13 @@ function [qt_ref,qt_test,tqrs_ref,tqrs_test] = FECGSYN_manalysis(abdm_temp,ref_t
 %  PhysioNet Databases in MATLAB and Octave." Journal of Open Research Software 2(1):e27 
 %  [http://dx.doi.org/10.5334/jors.bi] ; 2014. 
 % 
+% Examples:
+% TODO
+%
+% See also:
+% TODO
+% 
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
@@ -41,8 +48,6 @@ function [qt_ref,qt_test,tqrs_ref,tqrs_test] = FECGSYN_manalysis(abdm_temp,ref_t
 %   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
 %   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
 %   Physiological Measurement.35 1537-1550. 2014.
-% 
-% 
 %
 % Last updated : 10-03-2016
 % 

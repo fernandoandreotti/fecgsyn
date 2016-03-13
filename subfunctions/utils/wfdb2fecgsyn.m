@@ -11,7 +11,6 @@ function outstr = wfdb2fecgsyn(path,ch)
 % Ouput:
 %  outstr              structure used by fecgsyn toolbox
 % 
-% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
 %
 % Examples:
 % TODO
@@ -19,7 +18,7 @@ function outstr = wfdb2fecgsyn(path,ch)
 % See also:
 % fecgsyn2wfdb
 % 
-% 
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
@@ -35,8 +34,6 @@ function outstr = wfdb2fecgsyn(path,ch)
 %   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
 %   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
 %   Physiological Measurement.35 1537-1550. 2014.
-% 
-% 
 %
 % Last updated : 10-03-2016
 % 
@@ -52,6 +49,7 @@ function outstr = wfdb2fecgsyn(path,ch)
 % 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 slashchar = char('/'*isunix + '\'*(~isunix));
 
 fls = dir([path '*']);

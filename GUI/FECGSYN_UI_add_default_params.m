@@ -1,3 +1,5 @@
+function [ output_param ] = FECGSYN_UI_add_default_params( param , varargin)
+% function [ output_param ] = FECGSYN_UI_add_default_params( param , varargin)
 % FECGSYN is fruit of the collaboration between the Department of Engineering 
 % Science, University of Oxford (DES-OX) and the Institute of Biomedical Engineering, 
 % TU Dresden (IBMT-TUD). The authors are Joachim Behar (DES-OX), Fernando Andreotti 
@@ -7,6 +9,25 @@
 % The present user interface was contributed by Mohsan Alvi (DES-OX) under
 % the supervision of Joachim Behar (DES-OX) and Fernando Andreotti (IBMT-TUD).
 %
+% --
+% fecgsyn toolbox, version 1.1, March 2016
+% Released under the GNU General Public License
+%
+% Copyright (C) 2014  Joachim Behar & Fernando Andreotti
+% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
+% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+%
+% 
+% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
+% 
+% Referencing this work
+%
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Physiological Measurement.35 1537-1550. 2014.
+%
+% Last updated : 10-03-2016
+% 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
@@ -16,11 +37,9 @@
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-%
+% 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-function [ output_param ] = FECGSYN_UI_add_default_params( param , varargin)
 %add_default_params Adds default parameter values
 %   
 %

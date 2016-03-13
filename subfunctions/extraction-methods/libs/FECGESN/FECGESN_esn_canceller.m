@@ -22,7 +22,7 @@ function residual = FECGESN_esn_canceller(ref_ecg,tar_ecg,fs,esn,debug)
 %   2. Practical understanding of ESN:
 %   http://www.scholarpedia.org/article/Echo_State_Network
 %
-%
+% --
 % FECG-ESN toolbox, version 1.0
 % Released under the GNU General Public License
 %

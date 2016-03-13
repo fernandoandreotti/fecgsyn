@@ -32,7 +32,7 @@ function [F1,MAE,PPV,SE,TP,FN,FP] = Bxb_compare(refqrs, testqrs, acceptint)
 % ECG Extraction Without Maternal or Scalp Electrode Data. Physiological Measurement, 35(8), 1569–1589.
 % 
 % 
-%
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
@@ -48,8 +48,6 @@ function [F1,MAE,PPV,SE,TP,FN,FP] = Bxb_compare(refqrs, testqrs, acceptint)
 %   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
 %   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
 %   Physiological Measurement.35 1537-1550. 2014.
-% 
-% 
 %
 % Last updated : 10-03-2016
 % 

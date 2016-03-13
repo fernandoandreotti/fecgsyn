@@ -28,6 +28,7 @@ for root, dirs, files in os.walk(path):
              f = open(os.path.join(root, file), 'r') # open output file
              while f.readline():
                     line = f.readline()
+                    # must escape libs directories in all levels
                     if "fecgsyn toolbox, version" in line:  # where to stop reading file
                         line = "quit"
                         break

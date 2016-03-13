@@ -38,7 +38,7 @@ function [out,P,w,e] = FECGESN_rls(state,tar,lda,P,w)
 % 2000. ICASSP'00. Proceedings. 2000 IEEE International Conference on. Vol. 1. IEEE, 2000.
 %
 %
-%
+% --
 % FECG-ESN toolbox, version 1.0
 % Released under the GNU General Public License
 %

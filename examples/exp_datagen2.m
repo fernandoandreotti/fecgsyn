@@ -1,4 +1,4 @@
-function exp_datagen2(path,debug,varargin)
+function exp_datagen2(varargin)
 % Another example of data generation
 % Focus of this work is following MECG changes of both amplitude and form.
 % Fetal and noise changes are therefore less important.
@@ -37,6 +37,7 @@ function exp_datagen2(path,debug,varargin)
 % FECGSYNDB_datagen
 % 
 % 
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
@@ -52,8 +53,6 @@ function exp_datagen2(path,debug,varargin)
 %   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
 %   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
 %   Physiological Measurement.35 1537-1550. 2014.
-% 
-% 
 %
 % Last updated : 10-03-2016
 % 
@@ -77,6 +76,7 @@ optargs = {[pwd slashchar] 5};  % default values for input arguments
 newVals = cellfun(@(x) ~isempty(x), varargin);
 optargs(newVals) = varargin(newVals);
 [path,debug] = optargs{:};
+if ~strcmp(path(end),slashchar), path = [path slashchar];end
 
 
 %% Global parameters

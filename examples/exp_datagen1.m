@@ -1,4 +1,4 @@
-function exp_datagen1(path,debug,varargin)
+function exp_datagen1(varargin)
 % function exp_datagen1(path,debug)
 % Exemplary function to generate realistic NI-FECG signals
 % this script presents the various physiological events modelled by the
@@ -10,7 +10,8 @@ function exp_datagen1(path,debug,varargin)
 % 
 % Input:
 %   path        saving path (default pwd)
-%   debug       toggle debug (default true)
+%   debug       toggle debug different levels (default 5)
+%   wfdb        toggle save output in WFDB format
 % 
 %
 % Cases/events:
@@ -37,7 +38,7 @@ function exp_datagen1(path,debug,varargin)
 % exp_datagen3 
 % FECGSYNDB_datagen
 % 
-% 
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
@@ -70,17 +71,17 @@ function exp_datagen1(path,debug,varargin)
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 %% == check inputs
-if nargin >2, error('Too many inputs to data generation function'),end
+if nargin >3, error('Too many inputs to data generation function'),end
 slashchar = char('/'*isunix + '\'*(~isunix));
-optargs = {[pwd slashchar] 5};  % default values for input arguments
+optargs = {[pwd slashchar] 5 true};  % default values for input arguments
 newVals = cellfun(@(x) ~isempty(x), varargin);
 optargs(newVals) = varargin(newVals);
-[path,debug] = optargs{:};
-    
+[path,debug,wfdb] = optargs{:};
+if ~strcmp(path(end),slashchar), path = [path slashchar];end
+
 
 %% == parameters for simulations
 close all; clc;
-wfdb = true; % save in WFDB format?
 THR = 0.2; % threshold of QRS detector
 mVCG = 5; % choose mother VCG (if empty then the simulator randomly choose one within the set of available VCGs)
 fVCG = 4; % choose foetus VCG (ibid)

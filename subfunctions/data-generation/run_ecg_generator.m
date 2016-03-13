@@ -110,6 +110,13 @@ function out = run_ecg_generator(param,debug)
 %       selvcgf:    selected foetal vcg [cell]
 %
 %
+% Examples:
+% TODO
+%
+% See also:
+% TODO
+% 
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %

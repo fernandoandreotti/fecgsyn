@@ -45,7 +45,6 @@ function residual = FECGSYN_ts_extraction(peaks,ecg,method,debug,varargin)
 % Bergmans J W M 2009 Dynamic segmentation linear prediction for maternal ECG removal in antenatal 
 % abdominal recordings Physiol. Meas. 30 291
 % 
-% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
 %
 % Examples:
 % TODO
@@ -55,6 +54,7 @@ function residual = FECGSYN_ts_extraction(peaks,ecg,method,debug,varargin)
 % FECGSYN_bss_extraction
 % FECGSYN_adaptfilt_extraction
 % 
+% --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
 %
@@ -70,8 +70,6 @@ function residual = FECGSYN_ts_extraction(peaks,ecg,method,debug,varargin)
 %   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
 %   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
 %   Physiological Measurement.35 1537-1550. 2014.
-% 
-% 
 %
 % Last updated : 10-03-2016
 % 

@@ -1,10 +1,12 @@
 ---
 layout: default
 title: Examples
-description: "Examples on how to use the FECGSYN"
-author:  "Fernando Andreotti"
+description: Examples on how to use the FECGSYN
+author: Fernando Andreotti
 priority: 2
+published: true
 ---
+
 
 <section class="bs-docs-section">
  
@@ -13,17 +15,16 @@ priority: 2
 <!-- datagen 1 -->
   <h2 id="datagen1">Example 1</h2>
 
-  <p> <code>exp_datagen1.m</code> can be used as:     </p>
+  <p>The example in <code>exp_datagen1.m</code> can be used to generate the dataset used in Behar et al 2014.     </p>
 
 For more information, see <a href="{{site.github.url}}/pages/documentation.html">Documentation</a>.
 
 {% highlight matlab %}
----
-layout: default
-title: Home
-description: Simple documentation template for Github pages
----
-
+cd 'directory_to_save'
+path = pwd;
+exp_datagen1(path,5,false) % generate dataset (may take a few minutes)
+load('fecgsyn_c1.mat')
+FECGSYN_plotmix(out) % plots random channels of one of the created datasets
 {% endhighlight %}
 
 <!-- datagen 2 -->
@@ -73,8 +74,3 @@ Examplary
 
 
 </section>
-
-
-
-
-

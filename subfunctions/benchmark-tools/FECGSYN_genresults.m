@@ -1,4 +1,6 @@
 function FECGSYN_genresults(path_orig,fs,ch,exp3,debug)
+% function FECGSYN_genresults(path_orig,fs,ch,exp3,debug)
+% 
 % this script generates a series of abdominal mixtures, containing i) a
 % stationary case and ii) non-stationary case (when adding breathing
 % effects, foetal movement etc).

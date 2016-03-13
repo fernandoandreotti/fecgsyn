@@ -12,6 +12,8 @@ path = os.path.normpath("./subfunctions/") # scan subfunctions folder only
 # loops through files
 for root, dirs, files in os.walk(path):
     depth = root[len(path) + len(os.path.sep):].count(os.path.sep)
+    if "/libs" in root: # must escape libs directories in all levels
+         continue 
     if depth > limdepth: # limiting depth of search
         continue
     if depth == 0:
@@ -25,21 +27,21 @@ for root, dirs, files in os.walk(path):
              # here we have the directory for each
              docs.write('<h3 id="'+file[:-2]+'">'+file[:-2]+'</h3><br>')
              # now have to open each file, exclude first line and copy every line until 
-             f = open(os.path.join(root, file), 'r') # open output file
-             while f.readline():
-                    line = f.readline()
-                    # must escape libs directories in all levels
-                    if "fecgsyn toolbox, version" in line:  # where to stop reading file
+             f = open(os.path.join(root, file), 'r') # open output file            
+             while  f.readline(): # skip first line
+                     line = f.readline()
+                     if ("% --" in line) | ( "fecgsyn toolbox, version" in line) :  # where to stop reading file
                         line = "quit"
                         break
-                    if "input:" in line.lower():
+                     if "input:" in line.lower():
                         line = "% <b>Input:</b>"
-                    elif "output:" in line.lower():
+                     elif "output:" in line.lower():
                         line = "% <b>Output:</b>"
-                    elif "examples" in line.lower():
-                        line = "% <b>Examples:</b> <br> {% highlight matlab %}"
-                    elif "see also:" in line.lower():
-                        docs.write("{% endhighlight %} <br>")                        
+                     elif "examples" in line.lower():
+                        line = "% <b>Examples:</b> <br>"
+                     elif "% function" in line.lower():
+                        line = "% <b>Call: </b> <code>" + line[2:] + "</code> <br>"
+                     elif "see also:" in line.lower():
                         docs.write("<b>See also:</b> <br>")
                         while f.readline():                            
                             line = f.readline()
@@ -48,9 +50,9 @@ for root, dirs, files in os.walk(path):
                                 break
                             line = '<a href="{{site.github.url}}/pages/documentation.html#'+line[2:]+'"><code>'+line[2:]+'</code></a></code>'
                             docs.write(line+'<br>')                          
-                    if line == "quit":
+                     if line == "quit":
                         break
-                    else:
+                     else:
                         docs.write(line[2:]+'<br>')
              f.close()
 

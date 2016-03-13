@@ -1,6 +1,8 @@
-
-
-
+function FECGSYN_benchFQRS_plot()
+% function FECGSYN_benchFQRS_plot()
+% 
+% This function produces plots for Experiment 2 of Andreotti et al 2016. 
+% 
 % --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License

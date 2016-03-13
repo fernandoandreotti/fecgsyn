@@ -1,4 +1,5 @@
 function main_extract_data(path,narrowband,wfdb)
+% function main_extract_data(path,narrowband,wfdb)
 % Extraction script for FECG morphological analysis
 %
 % This script performs NIFECG extractin on fecgsyn files in a given path using pre-defined
@@ -56,14 +57,16 @@ function main_extract_data(path,narrowband,wfdb)
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-slashchar = char('/'*isunix + '\'*(~isunix));
 %% Parameters
 % Channels to be used
 debug = 0;
 ch = [1 8 11 14 19 22 25 32];   % ADAPT TO YOUR ELECTRODE CONFIG (abdominal leads)
 refchs = 33:34;               % ADAPT TO YOUR ELECTRODE CONFIG (reference channels)
 fs_new = 250;           % extraction occurs at 250 Hz, data will be resampled, if necessary
-spath = [path slashchar 'ext' slashchar]; % saving folder
+
+%% Preprocessing
+slashchar = char('/'*isunix + '\'*(~isunix));
+spath = [path 'ext' slashchar]; % saving folder
 if ~exist(spath,'dir'), mkdir(spath);end
 if ~strcmp(path(end),slashchar), path = [path slashchar];end
 
@@ -113,9 +116,11 @@ else
     fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
 end
 % cd(path)
+index = cell(length(fls),2); index(:,1) = fls;
 for i = 1:length(fls)
     disp(['Extracting file ' fls{i} '..'])
     filename = [spath 'rec' num2str(i)];
+    index(i,2) = {['rec' num2str(i)]};
     disp(num2str(i))
     % = loading data (wfdb or mat)
     if wfdb
@@ -276,3 +281,4 @@ for i = 1:length(fls)
     save([filename '_aesn'],'residual','maxch','fqrs','fref');
     clear maxch residual fqrs ESNparam
 end
+save([spath 'index'],'index')

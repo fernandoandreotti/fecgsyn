@@ -55,6 +55,7 @@ slashchar = char('/'*isunix + '\'*(~isunix));
 switch nargin
     case 1
         outstrpath = [lpath slashchar 'wfdb' slashchar];
+        if ~exist(outstrpath,'dir'), mkdir(outstrpath);end
         fls = dir([lpath  '*.mat']);   % looking for .mat (creating index)
         fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);
     case 3

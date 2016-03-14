@@ -32,6 +32,7 @@ function ecg_res = FECGSYN_adaptfilt_extraction(ecg_target,ecg_ref,method,debug,
 % FECGSYN_ts_extraction
 % FECGSYN_bss_extraction
 % FECGSYN_kf_extraction
+% FEGSYN_main_extract
 %
 % --
 % fecgsyn toolbox, version 1.1, March 2016

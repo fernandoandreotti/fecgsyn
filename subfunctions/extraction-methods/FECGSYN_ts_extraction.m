@@ -53,6 +53,7 @@ function residual = FECGSYN_ts_extraction(peaks,ecg,method,debug,varargin)
 % FECGSYN_kf_extraction
 % FECGSYN_bss_extraction
 % FECGSYN_adaptfilt_extraction
+% FEGSYN_main_extract
 % 
 % --
 % fecgsyn toolbox, version 1.1, March 2016

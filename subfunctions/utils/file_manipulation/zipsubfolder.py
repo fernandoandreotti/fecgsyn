@@ -13,9 +13,9 @@ for root, subdir, files in os.walk(path):
     #in bash tar -czf zipfile.zip *
     zipname = root.replace("/", "_") # substitute '/' for '_'
     zipname = zipname[-13:] + "_new.zip"
-    zf = zipfile.ZipFile(os.path.join(spath, zipname), "w")
+    zf = zipfile.ZipFile(os.path.join(spath, zipname), "w", compression = zipfile.ZIP_DEFLATED)
     zf.write(root)
     for filename in files:
-        zf.write(os.path.join(root,filename))
+        zf.write(os.path.join(root,filename), arcname = filename)
     zf.close()
     

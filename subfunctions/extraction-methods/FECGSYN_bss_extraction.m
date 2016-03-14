@@ -31,6 +31,7 @@ function [out_comps,qrsmethod,W] = FECGSYN_bss_extraction(data,method,fs,blen,de
 % FECGSYN_ts_extraction
 % FECGSYN_kf_extraction
 % FECGSYN_adaptfilt_extraction
+% FEGSYN_main_extract
 %
 % --
 % fecgsyn toolbox, version 1.1, March 2016

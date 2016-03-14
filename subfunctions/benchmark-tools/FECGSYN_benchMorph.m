@@ -1,37 +1,38 @@
-function stats=FECGSYN_benchFQRS(path,ch,debug)
+function stats=FECGSYN_benchMorph(path,ch,debug)
 % function FECGSYN_benchFQRS(path,debug)
 %
-% this script generates statistics as in Experiment 2 by Andreotti et al 2016,
-% namely F1,MAE,PPV and SE of fetal QRS detections. Methods available are
+% this script generates statistics as in Experiment 3 by Andreotti et al 2016,
+% namely fetal QT and T/QRS morphological features. Methods available are
 % hardcoded in the function, make sure to alter it in case you include your
 % own method.
-% 
+%
 % Input:
 %  path             Root directory where original data is saved. It is
 %                   expected that the path contains a subfolder "ext" with
 %                   extracted data AND and /ext/index.mat file containing
 %                   the mapping between original and extracted data.
-% 
+%
 %  ch              Channels used (WFDB only)
-% 
+%
 % debug             If debug is active (=true) will save additional plots
 %                   into a 'path/ext/plots' folder
 %
 % Output:
 %  stats          Structure containing benchmark results for all files
 %                 contained in path.
-% 
-% 
+%
+%
 % Examples:
 % TODO
 %
 % See also:
+% FECGSYN_benchMorph_plot
+% FECGSYN_benchFQRS
 % FEGSYN_main_extract
-% FECGSYN_benchFQRS_plot
 % FEGSYN_main_extract
 %
-% 
-% 
+%
+%
 % --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
@@ -40,27 +41,27 @@ function stats=FECGSYN_benchFQRS(path,ch,debug)
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% 
+%
 % For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
-% 
+%
 % Referencing this work
 %
-%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
-%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D.
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings.
 %   Physiological Measurement.35 1537-1550. 2014.
 %
 % Last updated : 10-03-2016
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -95,11 +96,11 @@ if isempty(fls)
 else
     wfdb = 0;   % working with math files
 end
-        
-    
+
+
 % Reading extracted information
 path_ext = [path 'ext' slashchar];
-try 
+try
     load([path_ext 'index.mat']);
 catch
     error('/ext/index.mat not found!')
@@ -108,6 +109,31 @@ fls_ext = dir([path_ext '*.mat']); % looking for .mat (creating index) NOT INCLU
 fls_ext = arrayfun(@(x)x.name,fls_ext,'UniformOutput',false);
 idx = cellfun(@(x) strcmp(x(1:3),'rec'),fls_ext); % ignoring files not begining with 'rec'
 fls_ext(~idx) = [];
+
+disp('Designing filters ... may take a little while..')
+% Preprocessing Filter coefficiens
+% high-pass filter
+Fstop = 0.5;  % Stopband Frequency
+Fpass = 1;    % Passband Frequency
+Astop = 20;   % Stopband Attenuation (dB)
+Apass = 0.1;  % Passband Ripple (dB)
+h = fdesign.highpass('fst,fp,ast,ap', Fstop, Fpass, Astop, Apass, fs_new);
+Hhp = design(h, 'butter', ...
+    'MatchExactly', 'stopband', ...
+    'SOSScaleNorm', 'Linf', ...
+    'SystemObject', true);
+[b_hp,a_hp] = tf(Hhp);
+% low-pass filter
+Fpass = 90;   % Passband Frequency
+Fstop = 100;  % Stopband Frequency
+Astop = 20;   % Stopband Attenuation (dB)
+Apass = 0.1;    % Passband Ripple (dB)
+h = fdesign.lowpass('fp,fst,ap,ast', Fpass, Fstop, Apass, Astop, fs_new);
+Hlp = design(h, 'butter', ...
+    'MatchExactly', 'stopband', ...
+    'SOSScaleNorm', 'Linf');
+[b_lp,a_lp] = tf(Hlp);
+clear Fstop Fpass Astop Apass h Hhp Hlp
 
 % pre-allocation
 stats.JADEICA = zeros(length(fls),4);
@@ -128,7 +154,7 @@ for i = 1:length(fls_ext)
     %= loading extracted file
     [rec,met] = strtok(fls_ext(i),'_');
     method = met{:}(2:end-4);     % Figuring out which extraction method was used, possibilities are:
-                                  % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
+    % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
     load([path_ext fls_ext{i}])
     %= loading original signal
     file = index(cellfun(@(x) strcmp(rec,x),index(:,2)),1);
@@ -142,7 +168,7 @@ for i = 1:length(fls_ext)
         cas = {'bas'};
     else
         cas = cas(2:end);
-    end   
+    end
     clear file
     
     %= re-mixing original signal (necessary after compression)
@@ -157,13 +183,15 @@ for i = 1:length(fls_ext)
             fecgref(k,:) = resample(fecg(k,:),fs_new,out.param.fs);
         end
     else
+        fecgref = fecg;
         fref = out.fqrs{1};
     end
-    %= Getting statistics (exp 2)
-    [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
-    MAE = MAE*1000/fs_new;
-    stats.(method)(str2double(rec{1}(4:end)),:) = [F1,MAE,PPV,SE]; % dynamic naming
+    %= Getting statistics (exp 3)
+    fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
+    fname = strcat(fname{:});
+    [outputs{1:7}]= FECGSYN_morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
     
+    morph.(method)(origrec,:) = outputs;
     clear fecg residual fqrs F1 MAE PPV SE  fecg outdata rec  k
     
 end

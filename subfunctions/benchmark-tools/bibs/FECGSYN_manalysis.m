@@ -15,24 +15,29 @@ function [qt_ref,qt_test,tqrs_ref,tqrs_test] = FECGSYN_manalysis(abdm_temp,ref_t
 %  filen:                   number to be added to ecgpuwaves outputs
 %
 %
-% 
+%
 % Reference to functions:
-% 
-%  ECGPUWAVE: Jane, R., Blasi, A., Garcia, J., & Laguna, P. (1997). Evaluation of an automatic 
-%  threshold based detector of waveform limits in Holter ECG with the QT database. In Computers in 
+%
+%  ECGPUWAVE: Jane, R., Blasi, A., Garcia, J., & Laguna, P. (1997). Evaluation of an automatic
+%  threshold based detector of waveform limits in Holter ECG with the QT database. In Computers in
 %  Cardiology 1997 (pp. 295–298). IEEE. http://doi.org/10.1109/CIC.1997.647889
 %  This script is available at http://www.physionet.org/physiotools/ecgpuwave/
-%  and 
-%  in the WFDB-App Toolbox: Silva, I, Moody, G. "An Open-source Toolbox for Analysing and Processing 
-%  PhysioNet Databases in MATLAB and Octave." Journal of Open Research Software 2(1):e27 
-%  [http://dx.doi.org/10.5334/jors.bi] ; 2014. 
-% 
+%  and
+%  in the WFDB-App Toolbox: Silva, I, Moody, G. "An Open-source Toolbox for Analysing and Processing
+%  PhysioNet Databases in MATLAB and Octave." Journal of Open Research Software 2(1):e27
+%  [http://dx.doi.org/10.5334/jors.bi] ; 2014.
+%
+% Examples:
+% TODO
+%
 % Examples:
 % TODO
 %
 % See also:
-% TODO
-% 
+% FECGSYN_benchMorph
+% FECGSYN_morpho_loop
+% FECGSYN_QTcalc
+%
 % --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
@@ -41,27 +46,27 @@ function [qt_ref,qt_test,tqrs_ref,tqrs_test] = FECGSYN_manalysis(abdm_temp,ref_t
 % Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
 % joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
 %
-% 
+%
 % For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
-% 
+%
 % Referencing this work
 %
-%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
-%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
+%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D.
+%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings.
 %   Physiological Measurement.35 1537-1550. 2014.
 %
 % Last updated : 10-03-2016
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -123,12 +128,12 @@ filen = filen(regexp(filen,'rec'):end);
 
 %% Segmentation using ECGPUWAVE
 % ref signal
-    counter = 1; % avoind rewriting file
-    while exist(['refsig_' filen '_' num2str(counter) '.hea'],'file')
-        counter = counter + 1;
-    end
-    filen = [filen '_' num2str(counter)];
-    recordName = ['refsig_' filen];
+counter = 1; % avoind rewriting file
+while exist(['refsig_' filen '_' num2str(counter) '.hea'],'file')
+    counter = counter + 1;
+end
+filen = [filen '_' num2str(counter)];
+recordName = ['refsig_' filen];
 
 
 wrsamp(tm2,ref_sig',recordName,FS_ECGPU,gain,'')
@@ -142,8 +147,8 @@ wrann(recordName,'qrs',qrsref',repmat('N',20,1));
 %     tmp = str2double(tmp);
 %     tmp = round(tmp * fs)+1; % convert 0-1 indexing
 % else
-   
-    ecgpuwave(recordName,'ecgpu',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
+
+ecgpuwave(recordName,'ecgpu',[],[],'qrsref'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
 % end
 [allref,alltypes_r] = rdann(recordName,'ecgpu');
 % if debug
@@ -182,13 +187,13 @@ end
 
 %% QT-intervals from ref
 
-[qt_ref,th_ref,qs,tends,tpeak,qrs_ref] = QTcalc(alltypes_r,allref,ref_sig,fs);
+[qt_ref,th_ref,qs,tends,tpeak,qrs_ref] = FECGSYN_QTcalc(alltypes_r,allref,ref_sig,fs);
 % test if QT analysis feasible
 if isnan(qt_ref)||isnan(th_ref)
     qt_test = NaN;
     qt_ref = NaN;
     tqrs_test = NaN;
-    tqrs_ref = NaN;    
+    tqrs_ref = NaN;
     tqrs_test = NaN;
     tqrs_ref = NaN;
     disp('manalysis: Could not encounter QT wave for REFERENCE.')
@@ -205,15 +210,14 @@ if debug
     figure(1)
     clf,cla
     set(gcf,'units','normalized','outerposition',[0 0 1 1])
-    ax(1)=subplot(2,1,1);       
+    ax(1)=subplot(2,1,1);
     ref_temp = ref_sig(1:length(ref_temp));
     plot(ref_temp./gain,'k','LineWidth',2)
     hold on
     rpeak = qrsref(1)-T_LENr;
     plot(rpeak+qs,ref_temp(rpeak+qs)./gain,'rv','MarkerSize',10,'MarkerFaceColor','r')
     plot(rpeak+tends,ref_temp(rpeak+tends)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
-    plot(rpeak+tpeak,ref_temp(rpeak+tpeak)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
-    
+    plot(rpeak+tpeak,ref_temp(rpeak+tpeak)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')   
     title('Reference Signal')
     clear qs tends twave offset rpeak
 end
@@ -225,7 +229,7 @@ if ident
 end
 
 %% QT-intervals from test
-[qt_test,th_test,qs,tends,tpeak,qrs_test] = QTcalc(alltypes_t,alltest,abdm_sig,fs);
+[qt_test,th_test,qs,tends,tpeak,qrs_test] = FECGSYN_QTcalc(alltypes_t,alltest,abdm_sig,fs);
 % test if QT analysis feasible
 if isnan(qt_test)||isnan(th_test)
     qt_test = NaN;
@@ -256,7 +260,7 @@ if debug&&~ident
         plot(rpeak+tends,abdm_temp(rpeak+tends)./gain,'ms','MarkerSize',10,'MarkerFaceColor','m')
         plot(rpeak+tpeak,abdm_temp(rpeak+tpeak)./gain,'go','MarkerSize',10,'MarkerFaceColor','g')
     catch
-        disp('Failed to plot, results do not make sense!!!')
+        warning('Failed to plot, results do not make sense!!!')
     end
     clear qs tend twave offset rpeak
 end
@@ -265,158 +269,6 @@ end
 qt_err = qt_test - qt_ref;        % absolute error in ms
 %== T-height estimation
 th_err = abs(th_test/th_ref);     % only considering abs value
-
-
-if ~isnan(qt_err)&&isnan(th_err)
-    disp('Hold your horses!')
-end
-
 end
 
 
-function [qtint,th,qs,tends,tpeak,qrs] = QTcalc(ann_types,ann_stamp,signal,fs)
-%% Function that contains heuristics behind QT interval calculation
-% Based on assumption that ECGPUWAVE only outputs a wave (p,N,t) if it can
-% detect its begin and end. Only highest peak of T-waves marked as biphasic
-% are considered for further analysis.
-%
-%
-% Inputs
-% ann_types:          Type of ALL annotations obtained from ECGPUWAVE
-% ann_stamp:          Samplestamp of ALL annotations obtained from ECGPUWAVE
-% fs:                 Sampling frequency
-%
-% Outputs
-% qtint:              Length of QT (samples)
-% th:                 Height T-wave (no unit)
-% qs:                 Q onset locations
-% tends:              Locations of T-wave (end)
-% twave:              Locations of T-waves (peak)
-%
-% fecgsyn toolbox, version 1.1, March 2016
-% Released under the GNU General Public License
-%
-% Copyright (C) 2014  Joachim Behar & Fernando Andreotti
-% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
-% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
-%
-% 
-% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
-% 
-% Referencing this work
-%
-%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
-%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
-%   Physiological Measurement.35 1537-1550. 2014.
-%
-% Last updated : 10-03-2016
-% 
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-% 
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-% 
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-QT_MAX = 0.5; % Maximal QT length (in s)  MAY VARY DEPENDING ON APPLICATION!
-QT_MIN = 0.1; % Minimal QT length (in s)  MAY VARY DEPENDING ON APPLICATION!
-temp_types = ann_types;     % allows exclusion of unsuitable annotations
-temp_stamp = ann_stamp;
-
-%== Treat biphasic T-waves
-annstr = strcat({temp_types'});
-idxbi=cell2mat(regexp(annstr,'tt')); % biphasic
-nonbi1=cell2mat(regexp(annstr,'\(t\)')) +1; % regular
-nonbi2= cell2mat(regexp(annstr,'\)t\(')) +1; % weird t
-nonbi3= cell2mat(regexp(annstr,'\)t\)')) +1; % weird t2
-if ~isempty(nonbi2)||~isempty(nonbi3)
-    disp('ecpuwave: might be returning weird waves.')
-end
-nonbi = sort([nonbi1 nonbi2 nonbi3]);
-temp_types(idxbi) = [];    % temporarilly clearing first T in biphasic cases
-temp_stamp(idxbi) = [];
-clear biphasic tees
-
-%== Disregard R-peaks not followed by T-waves
-obrackts = arrayfun(@(x) strcmp(x,'('),temp_types);      % '('
-cbrackts = arrayfun(@(x) strcmp(x,')'),temp_types);      % ')'
-pees = arrayfun(@(x) strcmp(x,'p'),temp_types);      % 'p'
-temp_types2 = temp_types; temp_stamp2 = temp_stamp;
-temp_types2(obrackts|cbrackts|pees) = [];
-temp_stamp2(obrackts|cbrackts|pees) = [];
-annstr = strcat({temp_types2'});
-idxR = cell2mat(regexp(annstr,'Nt'));  % looking for 'N's followed by 't's
-validR = temp_stamp2(idxR);           % valid R-peak sample-stamps
-validT = temp_stamp2(idxR+1);           % valid first T-peak sample-stamps
-clear idxR annstr pees obrackts cbrackts temp_stamp2 temp_types2
-% == Q wave (start)
-rees = arrayfun(@(x) strcmp(x,'N'),temp_types);          % 'R'
-goodR = ismember(temp_stamp(rees),validR);
-Rpeaks = find(rees);   % annotation number
-Rpeaks(~goodR) = [];   % eliminating R's without T
-qs = round(mean(temp_stamp(Rpeaks-1)-temp_stamp(Rpeaks)));  % Q locations
-ss = round(mean(temp_stamp(Rpeaks+1)-temp_stamp(Rpeaks)));  % S locations
-
-
-clear goodR rees
-
-% == T-wave (end)
-% Defined as closing parenthesis after T-wave peak
-tees = arrayfun(@(x) strcmp(x,'t'),temp_types);
-goodT = ismember(temp_stamp(tees),validT);
-Tpeaks = find(tees);   % annotation number
-Tpeaks(~goodT) = [];   % eliminating R's without T
-
-if any(Tpeaks >= length(temp_stamp)) % avoid bugs
-    Tpeaks(Tpeaks >= length(temp_stamp)) = [];
-    Rpeaks = Rpeaks(1:length(Tpeaks));
-end
-tends = round(mean(temp_stamp(Tpeaks+1) - temp_stamp(Rpeaks)));
-
-qtint = tends-qs; % qt interval in samples
-
-% == T-peak
-if sum(idxbi) > 0   % case biphasic waves occured
-    posmax = [idxbi' idxbi'+1];
-    [valbi,bindx]=max(abs(signal(ann_stamp(posmax)))'); % max abs value between tt
-    valnonbi = abs(signal(ann_stamp(nonbi))');
-    th = mean([valbi valnonbi']); % theight with gain
-    for i = 1:length(bindx); tpeak(i)=ann_stamp(posmax(i,bindx(i)));end
-    tpeak = sort([tpeak ann_stamp(nonbi)'])';
-    tpeak = round(mean(tpeak-temp_stamp(Rpeaks)));
-else
-    Tpeaks(ann_stamp(Tpeaks)>length(signal)) = [];
-    th = mean(abs(signal(ann_stamp(Tpeaks))));
-    tpeak = ann_stamp(Tpeaks);
-    temp = temp_stamp(Rpeaks);
-    try
-    tpeak = round(mean(tpeak-temp(1:length(tpeak))));
-    catch
-        disp
-    end
-end
-
-if numel(Rpeaks) >= 1
-    qrs = [qs ss]+temp_stamp(Rpeaks(1));
-    qrs = max(signal(qrs(1):qrs(2)))-min(signal(qrs(1):qrs(2)));
-else
-    qrs = NaN;
-end
-if isempty(tends), tends = NaN; end
-if qtint>QT_MAX*fs, qtint = NaN; end
-if qtint<QT_MIN*fs, qtint = NaN; end
-
-if isempty(qs), qs = NaN; end
-if isempty(tpeak), tpeak = NaN; end
-
-% == isoeletric line
-% % waves = find(ann_stamp<twave+length(ref_temp));
-% % tbeg = ann_stamp(waves(end)) -length(ref_temp);
-% % speak = ann_stamp(waves(end-1))-length(ref_temp);
-end

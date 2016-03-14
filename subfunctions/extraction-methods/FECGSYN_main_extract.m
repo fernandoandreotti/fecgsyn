@@ -1,5 +1,5 @@
-function main_extract_data(path,narrowband,wfdb)
-% function main_extract_data(path,narrowband,wfdb)
+function FECGSYN_main_extract(path,narrowband,wfdb)
+% function FECGSYN_main_extract(path,narrowband,wfdb)
 % Extraction script for FECG morphological analysis
 %
 % This script performs NIFECG extractin on fecgsyn files in a given path using pre-defined

@@ -32,6 +32,7 @@ function residual = FECGSYN_kf_extraction(peaks,ecg,debug,varargin)
 % FECGSYN_ts_extraction
 % FECGSYN_bss_extraction
 % FECGSYN_adaptfilt_extraction
+% FEGSYN_main_extract
 % 
 %
 % --

@@ -26,7 +26,8 @@ function stats=FECGSYN_benchFQRS(path,ch,debug)
 % TODO
 %
 % See also:
-% TODO
+% main_extract_data
+% FECGSYN_benchFQRS_plot
 %
 % 
 % 

@@ -1,11 +1,28 @@
-function FECGSYN_benchFQRS(path_orig)
-% function FECGSYN_benchFQRS(path_orig,fs,ch,exp3)
+function stats=FECGSYN_benchFQRS(path,ch,debug)
+% function FECGSYN_benchFQRS(path,debug)
 %
 % this script generates statistics as in Experiment 2 by Andreotti et al 2016,
-% namely F1,MAE,PPV and SE of fetal QRS detections
+% namely F1,MAE,PPV and SE of fetal QRS detections. Methods available are
+% hardcoded in the function, make sure to alter it in case you include your
+% own method.
+% 
+% Input:
+%  path             Root directory where original data is saved. It is
+%                   expected that the path contains a subfolder "ext" with
+%                   extracted data AND and /ext/index.mat file containing
+%                   the mapping between original and extracted data.
+% 
+%  ch              Channels used (WFDB only)
+% 
+% debug             If debug is active (=true) will save additional plots
+%                   into a 'path/ext/plots' folder
 %
-%
-%  Examples:
+% Output:
+%  stats          Structure containing benchmark results for all files
+%                 contained in path.
+% 
+% 
+% Examples:
 % TODO
 %
 % See also:
@@ -47,96 +64,112 @@ function FECGSYN_benchFQRS(path_orig)
 
 
 slashchar = char('/'*isunix + '\'*(~isunix));
-if debug,  mkdir([path_orig 'plots' slashchar]), end
+if ~strcmp(path(end),slashchar), path = [path slashchar];end
+
+if debug,  mkdir([path 'ext' slashchar 'plots' slashchar]), end
 
 
 % == Parameters
-fs = 1000;
-INTERV = round(0.05*fs); % BxB acceptance interval
-TEMP_SAMPS = round(60*fs); % samples used for building templates
-fs_new = 250;
+fs_new = 250;              % function works at 250 Hz
+INTERV = round(0.05*fs_new); % BxB acceptance interval
+TEMP_SAMPS = round(60*fs_new); % samples used for building templates
 
 
-% Run through extracted datasets
-cd(path_orig)
-load('exp2.mat')
-
-
-% abdominal mixtures
-fls_orig = dir([path_orig '*.mat']); % looking for .mat (creating index)
-fls_orig = arrayfun(@(x)x.name,fls_orig,'UniformOutput',false);
-% extracted files
-if ~exp3
-    path_ext = [path_orig 'exp2' slashchar];
-    fls_ext = dir([path_ext '*.mat']); % looking for .mat (creating index)
+% Find out if *mat or wfdb
+cd(path)
+fls = dir([path '*.mat']); % looking for .mat (creating index)
+fls = arrayfun(@(x)x.name,fls,'UniformOutput',false);
+if isempty(fls)
+    fls = dir([path '*.hea']);
+    fls =  arrayfun(@(x) x.name,fls,'UniformOutput',false);
+    remfls = cellfun(@(x) length(strtok(x(end:-1:1),'_')),fls);
+    for i = 1:length(fls), fls{i} = fls{i}(1:end-remfls(i)-1);end
+    fls = unique(fls); % had to remove duplicates
+    if isempty(fls)
+        error('No file found')
+    else
+        wfdb = 1;
+    end
 else
-    path_ext = [path_orig 'exp3' slashchar];
-    fls_ext = dir([path_ext '*.mat']); % looking for .mat (creating index)
-    % Preprocessing Filter coefficiens
-    % high-pass filter
-    Fstop = 0.5;  % Stopband Frequency
-    Fpass = 1;    % Passband Frequency
-    Astop = 20;   % Stopband Attenuation (dB)
-    Apass = 0.1;  % Passband Ripple (dB)
-    h = fdesign.highpass('fst,fp,ast,ap', Fstop, Fpass, Astop, Apass, fs_new);
-    Hhp = design(h, 'butter', ...
-        'MatchExactly', 'stopband', ...
-        'SOSScaleNorm', 'Linf', ...
-        'SystemObject', true);
-    [b_hp,a_hp] = tf(Hhp);
-    % low-pass filter
-    Fpass = 90;   % Passband Frequency
-    Fstop = 100;  % Stopband Frequency
-    Astop = 20;   % Stopband Attenuation (dB)
-    Apass = 0.1;    % Passband Ripple (dB)
-    h = fdesign.lowpass('fp,fst,ap,ast', Fpass, Fstop, Apass, Astop, fs_new);
-    Hlp = design(h, 'butter', ...
-        'MatchExactly', 'stopband', ...
-        'SOSScaleNorm', 'Linf');
-    [b_lp,a_lp] = tf(Hlp);
-    clear Fstop Fpass Astop Apass h Hhp Hlp
-    
+    wfdb = 0;   % working with math files
 end
+        
+    
+% Reading extracted information
+path_ext = [path 'ext' slashchar];
+try 
+    load([path_ext 'index.mat']);
+catch
+    error('/ext/index.mat not found!')
+end
+fls_ext = dir([path_ext '*.mat']); % looking for .mat (creating index) NOT INCLUDING WFDB SUPPPORT AT THIS POINT
 fls_ext = arrayfun(@(x)x.name,fls_ext,'UniformOutput',false);
 idx = cellfun(@(x) strcmp(x(1:3),'rec'),fls_ext); % ignoring files not begining with 'rec'
 fls_ext(~idx) = [];
 
+disp('Designing filters ... may take a little while..')
+% Preprocessing Filter coefficiens
+% high-pass filter
+Fstop = 0.5;  % Stopband Frequency
+Fpass = 1;    % Passband Frequency
+Astop = 20;   % Stopband Attenuation (dB)
+Apass = 0.1;  % Passband Ripple (dB)
+h = fdesign.highpass('fst,fp,ast,ap', Fstop, Fpass, Astop, Apass, fs_new);
+Hhp = design(h, 'butter', ...
+    'MatchExactly', 'stopband', ...
+    'SOSScaleNorm', 'Linf', ...
+    'SystemObject', true);
+[b_hp,a_hp] = tf(Hhp);
+% low-pass filter
+Fpass = 90;   % Passband Frequency
+Fstop = 100;  % Stopband Frequency
+Astop = 20;   % Stopband Attenuation (dB)
+Apass = 0.1;    % Passband Ripple (dB)
+h = fdesign.lowpass('fp,fst,ap,ast', Fpass, Fstop, Apass, Astop, fs_new);
+Hlp = design(h, 'butter', ...
+    'MatchExactly', 'stopband', ...
+    'SOSScaleNorm', 'Linf');
+[b_lp,a_lp] = tf(Hlp);
+clear Fstop Fpass Astop Apass h Hhp Hlp
+
 % pre-allocation
-stats.JADEICA = zeros(length(fls_orig),4);
-stats.PCA = zeros(length(fls_orig),4);
-stats.tsc = zeros(length(fls_orig),4);
-stats.tspca = zeros(length(fls_orig),4);
-stats.tsekf = zeros(length(fls_orig),4);
-stats.alms = zeros(length(fls_orig),4);
-stats.arls = zeros(length(fls_orig),4);
-stats.aesn = zeros(length(fls_orig),4);
+stats.JADEICA = zeros(length(fls),4);
+stats.PCA = zeros(length(fls),4);
+stats.tsc = zeros(length(fls),4);
+stats.tspca = zeros(length(fls),4);
+stats.tsekf = zeros(length(fls),4);
+stats.alms = zeros(length(fls),4);
+stats.arls = zeros(length(fls),4);
+stats.aesn = zeros(length(fls),4);
 
 % = Runs through list of extracted files
-for i = length(fls_ext)
+for i = 1:length(fls_ext)
     % for i = randperm(length(fls_ext))
     disp(fls_ext{i})
     fprintf('Data %d out of %d \n',i,length(fls_ext));
     
     %= loading extracted file
     [rec,met] = strtok(fls_ext(i),'_');
-    % Figuring out which extraction method was used, possibilities are:
-    % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
-    method = met{:}(2:end-4);
-    if ~strcmp(method,'JADEICA')
-        continue
+    method = met{:}(2:end-4);     % Figuring out which extraction method was used, possibilities are:
+                                  % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
+    load([path_ext fls_ext{i}])
+    %= loading original signal
+    file = index(cellfun(@(x) strcmp(rec,x),index(:,2)),1);
+    if wfdb
+        out = wfdb2fecgsyn([path file{:}],ch);
+    else
+        load([path file{:}])     %= loading original file
     end
-    file = strcat(path_ext,fls_ext(i));
-    load(file{:})
-    %= loading original file
-    origrec = str2double(rec{:}(4:end));
-    file = strcat(path_orig,fls_orig(origrec));
-    cas = regexp(file{:},'_c[0-7]','match'); % find out which case it depicts
+    cas = regexp(file{:},'_c[0-7]','match'); % find out which case is depicted
     if isempty(cas)
         cas = {'bas'};
-    end
+    else
+        cas = cas(2:end);
+    end   
+    clear file
     
-    load(file{:});
-    fecg = double(out.fecg{1}(ch,:)); % selecting channels
+    %= re-mixing original signal (necessary after compression)
+    fecg = double(out.fecg{1}); % selecting channels
     %= Resampling original data to match extracted (fs - if necessary)
     if size(out.mecg,2) ~= size(residual,2)
         % fref:          fetal QRS reference
@@ -144,40 +177,37 @@ for i = length(fls_ext)
         fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
         fecgref = zeros(length(ch),size(residual,2));
         for k = 1:size(fecgref,1)
-            fecgref(k,:) = resample(fecg(k,:),fs,out.param.fs);
+            fecgref(k,:) = resample(fecg(k,:),fs_new,out.param.fs);
         end
     else
         fecgref = fecg;
         fref = out.fqrs{1};
     end
-    [elif,~]=strtok(file{:}(end:-1:1),slashchar);
-    disp(elif(end:-1:1))
-    clear fecg outdata rec file elif k
-    
     %= Getting statistics (exp 2)
-    if ~exp3
-        [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
-        MAE = MAE*1000/fs_new;
-        stats.(method)(origrec,:) = [F1,MAE,PPV,SE]; % dynamic naming
-    else %= Getting statistics (exp 3)
-        if ~exist([path_orig 'wfdb'],'dir')
-            mkdir([path_orig 'wfdb'])
-        end
-        cd([path_orig 'wfdb'])
-        mkdir(num2str(i))
-        cd(num2str(i))
-        fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
-        fname = strcat(fname{:});
-        [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
-        
-        %         end
-        morph.(method)(origrec,:) = outputs;
-    end
-    clear fecg residual fqrs F1 MAE PPV SE qt_err theight_err outputs
-    cd ..
+    [F1,MAE,PPV,SE] = Bxb_compare(fref,fqrs,INTERV);
+    MAE = MAE*1000/fs_new;
+    stats.(method)(str2double(rec{1}(4:end)),:) = [F1,MAE,PPV,SE]; % dynamic naming
+    
+    
+    
+%     else %= Getting statistics (exp 3)
+%         if ~exist([path_orig 'wfdb'],'dir')
+%             mkdir([path_orig 'wfdb'])
+%         end
+%         cd([path_orig 'wfdb'])
+%         mkdir(num2str(i))
+%         cd(num2str(i))
+%         fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
+%         fname = strcat(fname{:});
+%         [outputs{1:7}]= morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+%         
+%         %         end
+%         morph.(method)(origrec,:) = outputs;
+%     cd ..
+    clear fecg residual fqrs F1 MAE PPV SE  fecg outdata rec  k
+    
 end
 
-save([path_orig 'wksp_exp2'])
 
 
 %

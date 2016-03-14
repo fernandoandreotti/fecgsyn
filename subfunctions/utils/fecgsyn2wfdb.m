@@ -51,10 +51,11 @@ function fecgsyn2wfdb(lpath,outstr,filename,varargin)
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 slashchar = char('/'*isunix + '\'*(~isunix));
+if ~strcmp(lpath(end),slashchar), lpath = [lpath slashchar];end
 
 switch nargin
     case 1
-        outstrpath = [lpath slashchar 'wfdb' slashchar];
+        outstrpath = [lpath 'wfdb' slashchar];
         if ~exist(outstrpath,'dir'), mkdir(outstrpath);end
         fls = dir([lpath  '*.mat']);   % looking for .mat (creating index)
         fls =  arrayfun(@(x)x.name,fls,'UniformOutput',false);

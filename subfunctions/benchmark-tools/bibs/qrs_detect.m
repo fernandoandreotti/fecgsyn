@@ -1,4 +1,5 @@
 function [qrs_pos,sign,en_thres, f_handle] = qrs_detect(ecg,varargin)
+% function [qrs_pos,sign,en_thres, f_handle] = qrs_detect(ecg,varargin)
 % QRS detector based on the P&T method. This is an offline implementation
 % of the detector.
 %

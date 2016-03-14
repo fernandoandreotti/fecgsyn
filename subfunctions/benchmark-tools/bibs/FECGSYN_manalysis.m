@@ -1,4 +1,5 @@
 function [qt_ref,qt_test,tqrs_ref,tqrs_test] = FECGSYN_manalysis(abdm_temp,ref_temp,qrsabdm,qrsref,fs,filterc,filen,debug)
+% function [qt_ref,qt_test,tqrs_ref,tqrs_test] = FECGSYN_manalysis(abdm_temp,ref_temp,qrsabdm,qrsref,fs,filterc,filen,debug)
 % This function calculates morphological features form signals given two
 % templates (reference and abdominal). Statistics are given in percentage.
 % This functin makes use of the ECGPUWAVE script (Jane et al 1996) and

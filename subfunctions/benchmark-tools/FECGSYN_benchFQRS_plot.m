@@ -1,5 +1,5 @@
 function FECGSYN_benchFQRS_plot(stats,fls_orig)
-% function FECGSYN_benchFQRS_plot(stats)
+% function FECGSYN_benchFQRS_plot(stats,fls_orig)
 % This function produces plots for Experiment 2 of Andreotti et al 2016. 
 % 
 % Input:
@@ -196,8 +196,11 @@ end
 statsf1(:,1,:) = []; statsmae(:,1,:) = []; % removing baseline since it does not make sense on significance analysis
 count1 = 1;
 for var = {'statsf1' 'statsmae'}
-    stastuse = eval(var{:});
+    stastuse = eval(var{:});    
     figure
+    if any(any(any(isnan(stastuse))))
+        continue; % loop if there are NaNs
+    end
     for snr = 1:size(stastuse,1)
         tempstat = reshape(stastuse(snr,:,:),[],8);
         p(snr,1) = friedman(tempstat,1,'off');
@@ -222,7 +225,7 @@ for var = {'statsf1' 'statsmae'}
         grid on
     end
 end
-disp(psig)
+if exist('psig','var'), disp(psig),end
 clear p statuse gridp statsf1 statsmae psig hsig
 
 
@@ -266,7 +269,7 @@ for var = {'statsf1' 'statsmae'}
         pcolor([gridp NaN(Nmet,1);NaN(1,9)])%,[0 2])
         colormap(flipud(gray))
         %xlim([0 Nmet]),ylim([0 Nmet])
-        set(gca,'xtick', linspace(0.5,Nmet.5,Nmet), 'ytick', linspace(0.5,Nmet.5,Nmet));
+        set(gca,'xtick', linspace(0.5,Nmet + 0.5,Nmet), 'ytick', linspace(0.5,Nmet + 0.5,Nmet));
         set(gca,'xticklabel', {[1:Nmet]}, 'yticklabel', {[1:Nmet]});
         axis square
         %     set(gca,'xgrid', 'on', 'ygrid', 'on', 'gridlinestyle', '-', 'xcolor', 'k', 'ycolor', 'k');

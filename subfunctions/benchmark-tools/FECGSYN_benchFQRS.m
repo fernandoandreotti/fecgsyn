@@ -209,6 +209,9 @@ for i = 1:length(fls_ext)
     
 end
 
+if debug
+    FECGSYN_benchFQRS_plot(stats,fls) % CHECKOUT this function for some more information!
+end
 
 
 %

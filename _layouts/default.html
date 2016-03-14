@@ -24,13 +24,29 @@
     }
   </style>
   
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script src="http://jquery-imagefit-plugin.googlecode.com/svn/trunk/jquery.imagefit-0.2.js"></script>
+  <script src='//code.jquery.com/jquery-1.10.2.min.js'></script>
+  <script src='jquery.imagefit.js'></script>
 
   <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
   <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.3.0/bootbox.min.js"></script>
   <script src="{{site.github.url}}/assets/js/docs.min.js"></script>
+  
+  <script type="text/javascript">
+		$(function(){
+			$('li').imagefit();
+			$(window).resize(function(){
+				$('li').imagefit({
+					mode : 'outside',
+					valign : 'middle',
+					halign : 'center'
+				});
+			});
+		});
+		$(window).load(function(){
+			$('div.im').imagefit();
+		});
+	</script>
 </head>
 
 <body>

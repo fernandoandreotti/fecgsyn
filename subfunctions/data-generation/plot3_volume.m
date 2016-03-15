@@ -1,4 +1,5 @@
 function plot3_volume(vols)
+% function plot3_volume(vols)
 % plot volume conductor together with foetuses and mother heart positions 
 % as well as electrodes positions. This allows for visual representation 
 % of simulation configuration. The volume conductor is represented by a
@@ -7,7 +8,7 @@ function plot3_volume(vols)
 % in space is determined by vols.fheart and vols.mheart with a certain
 % orientation specified by the rotation matrices (vols.Rf and vols.Rm).
 %
-% inputs
+% inputs:
 %   vols: volume structure containing the different objects to position.
 %       vols.fheart:   foetal heart position in polar coordinates, 
 %                      (cell of 3x1 vectors, one cell per foetus thus 

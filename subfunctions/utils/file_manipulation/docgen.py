@@ -5,7 +5,7 @@
 import os, string
 
 limdepth = 1 # only using 3 first levels on documentation
-path = os.path.normpath(".")
+path = os.path.normpath("/media/andreotti/Data/git/fecgsyn/")
 docs = open(path+'/docsout', 'w') # open output file
 path = os.path.normpath("./subfunctions/") # scan subfunctions folder only
 
@@ -36,9 +36,9 @@ for root, dirs, files in os.walk(path):
                      if ("% --" in line) |( "fecgsyn toolbox, version" in line) :  # where to stop reading file
                         line = "quit"
                         break
-                     if "input:" in line.lower():
+                     if ("input:" in line.lower())|"inputs:" in line.lower():
                         line = "% <b>Input:</b> \n"
-                     elif "output:" in line.lower():
+                     elif ("output:" in line.lower())|("outputs:" in line.lower()):
                         line = "% <b>Output:</b> \n"
                      elif "examples" in line.lower():
                         line = "% <b>Examples:</b> <br> \n"

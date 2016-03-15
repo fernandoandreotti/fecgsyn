@@ -1,13 +1,14 @@
 function qrs = phase2qrs(phase,debug)
+% function qrs = phase2qrs(phase,debug)
 % this function is used for finding the qrs locations using the phase generated 
 % with the ecg model. A qrs is defined as a zero crossing.
 %
-% inputs
-%   phase:  phase [sample]
-%   debug:  enter debug? (default: 0) [bool]
+% inputs:
+%   phase  phase [sample]
+%   debug  enter debug? (default: 0) [bool]
 %
-% output
-%   qrs:    qrs position [sample]
+% output:
+%   qrs   qrs position [sample]
 %
 % 
 % --

@@ -1,4 +1,5 @@
 function out = run_ecg_generator(param,debug)
+% function out = run_ecg_generator(param,debug)
 % generate a realistic FECG-MECG mixture. The physiological phenomenon that
 % are modelled include: heart rate variability and sudden change in hr,
 % rotation of the heart axis with respect to breathing rate, translation
@@ -9,8 +10,6 @@ function out = run_ecg_generator(param,debug)
 % coordinate system is normalised and centred on the cylinder (which is modeling
 % the volume conductor). As a consequence, electodes location, hearts
 % location are defined relative to each other (relative coordinate system).
-%
-%
 %
 %
 % list of abbreviation used in the toolbox:
@@ -24,7 +23,7 @@ function out = run_ecg_generator(param,debug)
 %   MHR:        maternal heart rate
 %   RSA:        respiratory sinus arrhythmia
 %
-% inputs
+% inputs:
 %   param: structure containing all the information needed for running the
 %   simulation.
 %       param.mheart    maternal heart origin - actual location will be
@@ -65,14 +64,13 @@ function out = run_ecg_generator(param,debug)
 %                       their specified or default positions. 0: no variation.
 %       param.mectb:    add ectopic beats to maternal ECG (bool)
 %       param.fectb:    add ectopic beats to foetal ECG (bool)
-%
 %   debug:          debug level (1-5), (default: 1)
 %       1:              Some generated AECG
 %       2:              VCG plots
 %       3:              Projected FECG and MECG before being mixed
 %       4:              Volume conductor
 %       5:              Heart rate
-%
+% 
 % * This is in order to be able to produce many simulations with the heart
 % position changing at every iteration without having to respecify a
 % location. Locations are specified in polar coordinate because it is
@@ -85,11 +83,10 @@ function out = run_ecg_generator(param,debug)
 % be an 'out' structure containing all the saved parameters from a previous
 % simulation. The function only plots them.
 %
-% outputs
+% outputs:
 %   out: outputs of the run_ecg_generator function containing the ecg
 %   mixture and all the important model information that would allow
-%   reproducing the results.
-%
+%   reproducing the results. 
 %       out.mixture: generated ecg mixture [NB_EL x param.n matrix]
 %       out.m_model: structure contaning dipole model for the foetus [struct]
 %               m_model.H: Dower-like matrix for dipole either 2D (time invariant) or 3D
@@ -114,7 +111,10 @@ function out = run_ecg_generator(param,debug)
 % TODO
 %
 % See also:
-% TODO
+% exp_datagen1
+% exp_datagen2
+% exp_datagen3
+% FECGSYNDB_datagen
 % 
 % --
 % fecgsyn toolbox, version 1.1, March 2016

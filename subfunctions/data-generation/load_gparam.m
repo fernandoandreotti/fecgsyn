@@ -4,11 +4,11 @@ function [gp,selvcg] = load_gparam(vcgmodel,type)
 % 20sec of the corresponding records. 
 % PTBDB: http://www.physionet.org/physiobank/database/ptbdb/
 %
-% input
+% input:
 %   vcgmodel: ID of Gaussian parameters to load
 %   type:     type of ECG ('normal','ectopic')
 %
-% outputs
+% outputs:
 %   gp: Gaussian parameters for ECG [cell]
 %       gp{1} = tetai
 %       gp{2} = alphai

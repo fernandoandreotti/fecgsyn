@@ -1,5 +1,6 @@
 function [mixture,mecg,fecg,noise,f_handle] = ...
     generate_ecg_mixture(debug,SNRfm,SNRmn,mqrs,fqrs,fs,varargin)
+% function [mixture,mecg,fecg,noise,f_handle] = generate_ecg_mixture(debug,SNRfm,SNRmn,mqrs,fqrs,fs,varargin)
 % generate ecg mixture (mecg, fecg and noise).
 %
 % Input:

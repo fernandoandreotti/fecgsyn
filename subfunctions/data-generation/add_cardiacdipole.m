@@ -1,5 +1,6 @@
 function dmodel = add_cardiacdipole(N,fs,gp_all,L,...
     theta,w,fres,R0,epos,traj,debug)
+% function dmodel = add_cardiacdipole(N,fs,gp_all,L,theta,w,fres,R0,epos,traj,debug)
 % synthetic cardiac dipole generator using the 'direct form' of the cardiac
 % dipole equation. This function generates the vectocardiogram (VCG) of 
 % the mother or foetus as well as the Dower-like matrix that allows the 
@@ -12,7 +13,7 @@ function dmodel = add_cardiacdipole(N,fs,gp_all,L,...
 % the FECG signal. The function returns the VCG signal, the projection
 % matrix H (which is 2D in the case there is foetal movement and 3D in the
 % case the foetus is moving).
-% inputs
+% Input:
 %        N:     signal length [number of points]
 %       fs:     sampling rate [Hz]
 %       gp_all: Gaussian parameters [cell of cells]
@@ -38,7 +39,7 @@ function dmodel = add_cardiacdipole(N,fs,gp_all,L,...
 %               x,y and z direction.
 %    debug:     debug [bool]
 %
-% Output
+% Output:
 %     dmodel   structure contaning the dipole model i.e.:
 %        dmodel.H:      Dower-like matrix for dipole either 2D (time invariant) or 3D 
 %                           (variant case).
@@ -71,6 +72,7 @@ function dmodel = add_cardiacdipole(N,fs,gp_all,L,...
 %
 % See also:
 % run_ecg_generator
+% add_noisedipole
 % 
 % --
 % fecgsyn toolbox, version 1.1, March 2016

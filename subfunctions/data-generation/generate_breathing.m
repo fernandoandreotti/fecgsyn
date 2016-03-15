@@ -1,4 +1,5 @@
 function bwa = generate_breathing(fs,N,fres,debug)
+% function bwa = generate_breathing(fs,N,fres,debug)
 % variable sawtooth shape for modelling respiration. The intention is to
 % model the respiration pattern in order to modulate the orientation 
 % of the cardiac dipole with breathing.

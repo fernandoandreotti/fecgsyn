@@ -1,9 +1,11 @@
 function out=clean_compress(out)
+% function out=clean_compress(out)
 % this function eliminates some of the substructures from "out" and
 % compresses the variables to int16 for saving disk space before saving
 % 
 % Input:
 %    internal structure "out"
+% 
 %  Output:
 %         same as input
 %

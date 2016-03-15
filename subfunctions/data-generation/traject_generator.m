@@ -1,47 +1,17 @@
 function traj =  traject_generator(N,pos_i,pos_f,type)
+% function traj =  traject_generator(N,pos_i,pos_f,type)
 % this function is used to generate trajectories within volume conductor. These
 % trajectories may be applied to heart dipole in order to generate a more realistic
 % modelling, e.g. respiration or fetal movements.
 %
-% inputs
-%   N:      size of the noise to generate at fs (sampling frequency) [datapoint number]
-%   pos_i:  initial position for trajectory [1x3 number array]
-%   pos_f:  final position for trajectory [1x3 number array]
-%   type:   type of trajectory to be build, e.g. 'none','linear', 'spline' or 'helix' [string]% fecgsyn toolbox, version 1.1, March 2016
-% Released under the GNU General Public License
+% inputs:
+%   N      size of the noise to generate at fs (sampling frequency) [datapoint number]
+%   pos_i  initial position for trajectory [1x3 number array]
+%   pos_f  final position for trajectory [1x3 number array]
+%   type   type of trajectory to be build, e.g. 'none','linear', 'spline' or 'helix' [string]% fecgsyn toolbox, version 1.1, March 2016
 %
-% Copyright (C) 2014  Joachim Behar & Fernando Andreotti
-% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
-% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
-%
-%
-% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
-%
-% Referencing this work
-%
-%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D.
-%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings.
-%   Physiological Measurement.35 1537-1550. 2014.
-%
-%
-%
-% Last updated : 10-03-2016
-%
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
-%
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; withoutstr even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
-%
-% You should have received a copy of the GNU General Public License
-% along with this program.  If not, see <http://www.gnu.org/licenses/>.
-%
-% output
-%   traj:   generated trajectory (Nx3 number matrix)
+% output:
+%   traj   generated trajectory (Nx3 number matrix)
 %
 %
 %

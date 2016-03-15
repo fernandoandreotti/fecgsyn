@@ -1,4 +1,4 @@
-function FECGSYN_benchMorph_plot(morph)
+function FECGSYN_benchMorph_plot(morph,fls_orig)
 % function FECGSYN_exp3results
 %
 % this script generates the plots for Experiment 3 as in Andreotti et al
@@ -8,7 +8,7 @@ function FECGSYN_benchMorph_plot(morph)
 % TODO
 %
 % See also:
-% FECGSYN_benchMorph_plot
+% FECGSYN_benchMorph
 %
 % By default it makes use of gold-standard references of FQRS locations.
 %

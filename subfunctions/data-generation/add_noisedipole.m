@@ -1,4 +1,5 @@
 function [dmodel, f_handles, misc] = add_noisedipole(N,fs,ntype,epos,noisepos,debug)
+% function [dmodel, f_handles, misc] = add_noisedipole(N,fs,ntype,epos,noisepos,debug)
 % this function is used to generate realistic noise. The MA, EM and BW
 % files from the Physionet NSTDB can be used for that purpose. However there are
 % three main limitations when using these records; 1. their length is
@@ -43,6 +44,7 @@ function [dmodel, f_handles, misc] = add_noisedipole(N,fs,ntype,epos,noisepos,de
 %
 % See also:
 % run_ecg_generator
+% add_cardiacdipole
 % 
 % --
 % fecgsyn toolbox, version 1.1, March 2016

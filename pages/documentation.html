@@ -11,6 +11,15 @@ priority: 5
 
 <section class="bs-docs-section"> 
 <h1 id="benchmark-tools">benchmark-tools</h1><br> 
+<h3 id="FECGSYN_benchMorph_plot">FECGSYN_benchMorph_plot</h3><br> 
+<b>Call: </b> <code>function FECGSYN_exp3results
+</code> <br> 
+<br> 
+this script generates the plots for Experiment 3 as in Andreotti et al
+<br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
 <h3 id="FECGSYN_exp3results">FECGSYN_exp3results</h3><br> 
 <b>Call: </b> <code>function FECGSYN_exp3results
 </code> <br> 
@@ -21,10 +30,49 @@ TODO
 <br> 
 <b>See also:</b> <br> 
 <h3 id="FECGSYN_benchFQRS_plot">FECGSYN_benchFQRS_plot</h3><br> 
-<b>Call: </b> <code>function FECGSYN_benchFQRS_plot()
+<b>Call: </b> <code>function FECGSYN_benchFQRS_plot(stats,fls_orig)
 </code> <br> 
 <br> 
-This function produces plots for Experiment 2 of Andreotti et al 2016. 
+ stats            Structure containing statistic results for FQRS
+<br> 
+ fls_orig         Files containing original data (prior to extraction).
+<br> 
+FECGSYN_benchFQRS
+<br> 
+<h3 id="FECGSYN_benchMorph">FECGSYN_benchMorph</h3><br> 
+<b>Call: </b> <code>function FECGSYN_benchFQRS(path,debug)
+</code> <br> 
+<br> 
+this script generates statistics as in Experiment 3 by Andreotti et al 2016,
+<br> 
+hardcoded in the function, make sure to alter it in case you include your
+<br> 
+ path             Root directory where original data is saved. It is
+<br> 
+                  extracted data AND and /ext/index.mat file containing
+<br> 
+                  into a 'path/ext/plots' folder
+<br> 
+<b>Output:</b> 
+<br> 
+                contained in path.
+<br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
+<a href="{{site.github.url}}/pages/documentation.html#FECGSYN_benchFQRS
+"><code>FECGSYN_benchFQRS
+</code></a></code> 
+<br><a href="{{site.github.url}}/pages/documentation.html#FEGSYN_main_extract
+"><code>FEGSYN_main_extract
+</code></a></code> 
+<br><h3 id="FECGSYN_bss_compare">FECGSYN_bss_compare</h3><br> 
+<b>Call: </b> <code>function FECGSYN_bss_compare
+</code> <br> 
+<br> 
+This script used in Andreotti et al 2016, experiment 1. The experiment compares
+<br> 
+mportant for evaluating the model order problem.
 <br> 
 <h3 id="FECGSYN_genresults">FECGSYN_genresults</h3><br> 
 <b>Call: </b> <code>function FECGSYN_genresults(path_orig,fs,ch,exp3,debug)
@@ -47,19 +95,59 @@ exp3:            Boolean, if 0 runs exp2 and 1 exp3
 TODO
 <br> 
 <h3 id="FECGSYN_benchFQRS">FECGSYN_benchFQRS</h3><br> 
-<b>Call: </b> <code>function FECGSYN_benchFQRS(path_orig,fs,ch,exp3)
+<b>Call: </b> <code>function FECGSYN_benchFQRS(path,debug)
 </code> <br> 
 <br> 
 this script generates statistics as in Experiment 2 by Andreotti et al 2016,
 <br> 
-<b>Examples:</b> <br> 
+hardcoded in the function, make sure to alter it in case you include your
+<br> 
+ path             Root directory where original data is saved. It is
+<br> 
+                  extracted data AND and /ext/index.mat file containing
+<br> 
+                  into a 'path/ext/plots' folder
+<br> 
+<b>Output:</b> 
+<br> 
+                contained in path.
 <br> 
 TODO
 <br> 
-</section>
+<b>See also:</b> <br> 
+<a href="{{site.github.url}}/pages/documentation.html#FECGSYN_benchFQRS_plot
+"><code>FECGSYN_benchFQRS_plot
+</code></a></code> 
+<br></section>
 
 <h2 id="benchmark-tools/bibs">benchmark-tools/bibs</h2><br> 
-<h3 id="FECGSYN_QRSmincompare">FECGSYN_QRSmincompare</h3><br> 
+<h3 id="FECGSYN_morpho_loop">FECGSYN_morpho_loop</h3><br> 
+  FECGSYN_morpho_loop(fecg,residual,fqrs,fs,SAMPS,fname,filterc,debug)
+<br> 
+<b>Call: </b> <code>Function to perform morphological analysis for TS/BSS extracted data
+</code> <br> 
+<br> 
+signals and generates morphological features (if possible) using the
+<br> 
+fecg         Propagated fetal signal before mixture with noise sources
+<br> 
+fqrs         Reference fetal QRS samplestamps
+<br> 
+fname        Filename to be used in saving plots
+<br> 
+              highpass (hp) and lowpass (lp)
+<br> 
+qt_err        Array containing QT error for each template
+<br> 
+Jane, R et al. 1997 Evaluation of An Automatic Threshold Based Detector of Waveform Limits in Holter ECG
+<br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
+<a href="{{site.github.url}}/pages/documentation.html#FECGSYN_manalysis
+"><code>FECGSYN_manalysis
+</code></a></code> 
+<br><h3 id="FECGSYN_QRSmincompare">FECGSYN_QRSmincompare</h3><br> 
 <b>Call: </b> <code>function [fqrs,maxch] = FECGSYN_QRSmincompare(data,fref,fs,varargin)
 </code> <br> 
 <br> 
@@ -75,161 +163,213 @@ More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsy
 <br> 
 qrs_detect
 <br> 
-<h3 id="qrs_detect">qrs_detect</h3><br> 
-QRS detector based on the P&T method. This is an offline implementation
+<h3 id="FECGSYN_QTcalc">FECGSYN_QTcalc</h3><br> 
+<b>Call: </b> <code>function [qtint,th,qs,tends,tpeak,qrs] = FECGSYN_QTcalc(ann_types,ann_stamp,signal,fs)
+</code> <br> 
 <br> 
-  ecg:            one ecg channel on which to run the detector (required)
+Based on assumption that ECGPUWAVE only outputs a wave (p,N,t) if it can
 <br> 
-      THRES:      energy threshold of the detector (default: 0.6)
+are considered for further analysis.
 <br> 
-      fs:         sampling frequency (default: 1KHz)
+ann_types:          Type of ALL annotations obtained from ECGPUWAVE
 <br> 
-                  optimal threshold of the P&Tthen input the indices of
+fs:                 Sampling frequency
 <br> 
-      SIGN_FORCE: force sign of peaks (positive value/negative value).
+<b>Output:</b> 
 <br> 
-                  unsure the sign of the peaks to be the same accross
+th:                 Height T-wave (no unit)
 <br> 
-      debug:      1: plot to bebug, 0: do not plot
-<br> 
-outputs
-<br> 
-  sign:           sign of the peaks (a pos or neg number)
+tends:              Locations of T-wave (end)
 <br> 
 TODO
 <br> 
 <b>See also:</b> <br> 
+<a href="{{site.github.url}}/pages/documentation.html#FECGSYN_manalysis
+"><code>FECGSYN_manalysis
+</code></a></code> 
+<br><h3 id="qrs_detect">qrs_detect</h3><br> 
+<b>Call: </b> <code>function [qrs_pos,sign,en_thres, f_handle] = qrs_detect(ecg,varargin)
+</code> <br> 
+<br> 
+of the detector.
+<br> 
+inputs
+<br> 
+  varargin
+<br> 
+      REF_PERIOD: refractory period in sec between two R-peaks (default: 0.250)
+<br> 
+      fid_vec:    if some subsegments should not be used for finding the
+<br> 
+                  the corresponding points here
+<br> 
+                  Particularly usefull if we do window by window detection and want to
+<br> 
+                  windows (which is necessary to build an FECG template)
+<br> 
+  qrs_pos:        indexes of detected peak (in samples)
+<br> 
+  en_thres:       energy threshold used
+<br> 
+<b>Examples:</b> <br> 
+<br> 
+TODO
+<br> 
 <h3 id="FECGSYN_manalysis">FECGSYN_manalysis</h3><br> 
-This function calculates morphological features form signals given two
+<b>Call: </b> <code>function [qt_ref,qt_test,tqrs_ref,tqrs_test] = FECGSYN_manalysis(abdm_temp,ref_temp,qrsabdm,qrsref,fs,filterc,filen,debug)
+</code> <br> 
 <br> 
-This functin makes use of the ECGPUWAVE script (Jane et al 1996) and
+templates (reference and abdominal). Statistics are given in percentage.
 <br> 
- abdm_temp:               Template to be tested
+required that the WFDB-App is installed and in Matlab's path.
 <br> 
- qrs_abdm/qrs_ref:        Location of qrs in each template
+<b>Input:</b> 
 <br> 
- filterc:                 Filter coefficients [b_hp,a_hp,b_lp,a_lp] being
+ ref_temp:                Reference template
 <br> 
- filen:                   number to be added to ecgpuwaves outputs
+ fs:                      Sampling frequency
 <br> 
-Reference to functions:
+                          highpass (hp) and lowpass (lp)
 <br> 
- ECGPUWAVE: Jane, R., Blasi, A., Garcia, J., & Laguna, P. (1997). Evaluation of an automatic 
+ threshold based detector of waveform limits in Holter ECG with the QT database. In Computers in
 <br> 
- Cardiology 1997 (pp. 295–298). IEEE. http://doi.org/10.1109/CIC.1997.647889
+ This script is available at http://www.physionet.org/physiotools/ecgpuwave/
 <br> 
- and 
+ in the WFDB-App Toolbox: Silva, I, Moody, G. "An Open-source Toolbox for Analysing and Processing
 <br> 
- PhysioNet Databases in MATLAB and Octave." Journal of Open Research Software 2(1):e27 
+ [http://dx.doi.org/10.5334/jors.bi] ; 2014.
+<br> 
+<b>Examples:</b> <br> 
 <br> 
 TODO
 <br> 
 <b>See also:</b> <br> 
-</section>
+<a href="{{site.github.url}}/pages/documentation.html#FECGSYN_morpho_loop
+"><code>FECGSYN_morpho_loop
+</code></a></code> 
+<br></section>
 
 <section class="bs-docs-section"> 
 <h1 id="data-generation">data-generation</h1><br> 
 <h3 id="phase2qrs">phase2qrs</h3><br> 
-this function is used for finding the qrs locations using the phase generated 
+<b>Call: </b> <code>function qrs = phase2qrs(phase,debug)
+</code> <br> 
 <br> 
-  phase:  phase [sample]
+with the ecg model. A qrs is defined as a zero crossing.
 <br> 
-  qrs:    qrs position [sample]
+<b>Input:</b> 
+<br> 
+  debug  enter debug? (default: 0) [bool]
+<br> 
+<b>Output:</b> 
 <br> 
 <h3 id="plot3_volume">plot3_volume</h3><br> 
-plot volume conductor together with foetuses and mother heart positions 
+<b>Call: </b> <code>function plot3_volume(vols)
+</code> <br> 
 <br> 
-of simulation configuration. The volume conductor is represented by a
+as well as electrodes positions. This allows for visual representation 
 <br> 
-0.5]). Remember that the hearts are represented as dipoles which position 
+cylinder centred on zero and normalised alond each direction (in [-0.5
 <br> 
-orientation specified by the rotation matrices (vols.Rf and vols.Rm).
+in space is determined by vols.fheart and vols.mheart with a certain
 <br> 
-inputs
+  vols: volume structure containing the different objects to position.
 <br> 
-      vols.fheart:   foetal heart position in polar coordinates, 
+                     (cell of 3x1 vectors, one cell per foetus thus 
 <br> 
-                     supporting multiple pregnancies representation)
+      vols.mheart:   mother heart position in polar coordinates, 
 <br> 
-                     (one cell of 3x1 vector)
+      vols.elpos:    electrodes position in polar coordinates
 <br> 
-                     (3 x NB_ELECTRODES vector)
+      vols.Rf:       rotation parameters for the foetus heart (thetaX,
 <br> 
-                     thetaY,thetaZ - in radian)
-<br> 
-                     thetaY,thetaZ - in radian)
-<br> 
-<b>Examples:</b> <br> 
+      vols.Rm:       rotation parameters for the mother heart (thetaX,
 <br> 
 TODO
 <br> 
+<b>See also:</b> <br> 
 <h3 id="traject_generator">traject_generator</h3><br> 
-this function is used to generate trajectories within volume conductor. These
+<b>Call: </b> <code>function traj =  traject_generator(N,pos_i,pos_f,type)
+</code> <br> 
 <br> 
-modelling, e.g. respiration or fetal movements.
+trajectories may be applied to heart dipole in order to generate a more realistic
 <br> 
-inputs
+  N      size of the noise to generate at fs (sampling frequency) [datapoint number]
 <br> 
-  pos_i:  initial position for trajectory [1x3 number array]
+  pos_f  final position for trajectory [1x3 number array]
+<br> 
+  traj   generated trajectory (Nx3 number matrix)
+<br> 
+<b>Examples:</b> <br> 
+<br> 
+run_ecg_generator
 <br> 
 <h3 id="generate_ecg_mixture">generate_ecg_mixture</h3><br> 
   generate_ecg_mixture(debug,SNRfm,SNRmn,mqrs,fqrs,fs,varargin)
 <br> 
-       debug:      debug [bool]
-<br> 
-       SNRmn:      SNR of maternal signal compared to background noise
-<br> 
-       fqrs:       foetal qrs locations
-<br> 
-  structure as:   <source>.VCG - VCG signal for given source
-<br> 
-                  <source>.SNR - Gain which is given to source 
-<br> 
-                  <source>.type - Maternal (1), Fetal (2) or Noise (3)
-<br> 
-       mixture: mixture of MECG, FECG and noise
-<br> 
-       fecg:    cell array containing projected fetal ECG signal(s)
-<br> 
-<b>Examples:</b> <br> 
-<br> 
-run_ecg_generator
-<br> 
-<h3 id="generate_hrv">generate_hrv</h3><br> 
-generate variable heart rate (HR). Add suddent change of HR 
-<br> 
-to model high HR variation to test the robustness of a NI-FECG 
-<br> 
-HR variability (HRV).
+generate ecg mixture (mecg, fecg and noise).
 <br> 
 <b>Input:</b> 
 <br> 
-      - strhrv.hr:        mean heart rate [bpm]
+       SNRfm:      SNR of fetal signal with respect to maternal signal
 <br> 
-                          hf->simulates respiratory sinus arrythmia
+       mqrs:       maternal qrs locations
 <br> 
-      - strhrv.hrstd:     standard deviation of heart rate [bpm]
+  <optional>
 <br> 
-      - strhrv.flhi:      center freqency of high frequency Gaussian (RSA) [Hz]
+                  <source>.H   - Dower-like matrix H (for propagation of dipole) 
 <br> 
-                          (negative) [bpm]
+                  Obs: first source is taken as reference for SNR calculus
 <br> 
-                          'mexhat'
+<b>Output:</b> 
 <br> 
-      - strhrv.accstd     standard deviation (case necessary) 
+       mecg:    matrix containing projected maternal ECG signal
 <br> 
-  fs:                     sampling frequency    
+       noise:   cell array containing projected noise sources
 <br> 
-  theta:                   generated phase signal theta(t)
+TODO
 <br> 
-<b>Examples:</b> <br> 
+<b>See also:</b> <br> 
+<h3 id="generate_hrv">generate_hrv</h3><br> 
+<b>Call: </b> <code>function [theta,w] = generate_hrv(strhrv,n,fs,theta0)
+</code> <br> 
 <br> 
-run_ecg_generator
+in the middle of a time interval. This is meant, as an example, 
 <br> 
+extraction method to adapt to change of ECG morphology due to 
+<br> 
+  strhrv:  
+<br> 
+      - strhrv.lfhfr:     low to high frequency ratio of the two Gaussians
+<br> 
+                          lf->simulates Mayer
+<br> 
+      - strhrv.flo:       center freqency of low frequency Gaussian (Mayer) [Hz]
+<br> 
+      - strhrv.acc:       amplitude of acceleration(positive) or deceleration
+<br> 
+      - strhrv.typeacc:   type of curve used, e.g. 'none', 'tanh', 'gauss', 
+<br> 
+      - strhrv.accmean    point of inflexion point or mean in percent [-1,1]
+<br> 
+  n:                      number of samples   
+<br> 
+  theta0:                  initial phase of the synthetic dipole
+<br> 
+<b>Output:</b> 
+<br> 
+  w:                      angular frequency
+<br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
 <h3 id="clean_compress">clean_compress</h3><br> 
-this function eliminates some of the substructures from "out" and
+<b>Call: </b> <code>function out=clean_compress(out)
+</code> <br> 
 <br> 
-   internal structure "out"
+compresses the variables to int16 for saving disk space before saving
+<br> 
+<b>Input:</b> 
 <br> 
         same as input
 <br> 
@@ -238,94 +378,91 @@ this function eliminates some of the substructures from "out" and
 run_ecg_generator
 <br> 
 <h3 id="generate_breathing">generate_breathing</h3><br> 
-variable sawtooth shape for modelling respiration. The intention is to
+<b>Call: </b> <code>function bwa = generate_breathing(fs,N,fres,debug)
+</code> <br> 
 <br> 
-of the cardiac dipole with breathing.
+model the respiration pattern in order to modulate the orientation 
 <br> 
-reference: http://mathworld.wolfram.com/FourierSeriesSawtoothWave.html
+Only the first three coefficients of the Fourier Transform of the
 <br> 
-sawtooth function are kept to make the bwa smooth.
+  fs:     sampling frequency [Hz]
+<br> 
+  fres:   respiratory frequency [Hz]
+<br> 
+  bwa:    normalised breathing waveform (range [-0.5: 0.5])
+<br> 
+[1] Petrenas et al. "An Echo State Neural Network for QRST Cancellation During Atrial
+<br> 
+[description for generating the breathing waveform for rotation matrix modulation]
+<br> 
+TODO
+<br> 
+<b>See also:</b> <br> 
+<h3 id="add_cardiacdipole">add_cardiacdipole</h3><br> 
+  theta,w,fres,R0,epos,traj,debug)
+<br> 
+synthetic cardiac dipole generator using the 'direct form' of the cardiac
+<br> 
+the mother or foetus as well as the Dower-like matrix that allows the 
+<br> 
+In this function the rotation of the heart axis and movement of the heart 
+<br> 
+the rotation matrix R with respect to breathing. Movement of the foetus 
+<br> 
+components of the model intend to reflect the non-stationary aspect of 
+<br> 
+matrix H (which is 2D in the case there is foetal movement and 3D in the
 <br> 
 <b>Input:</b> 
 <br> 
-  N:      number of datapoints
+      fs:     sampling rate [Hz]
 <br> 
-  debug:  [bool]
+          gp{1}{:}: Gaussian parameters of mother/foetus ecg - normal beats
+<br> 
+                  modeling the x, y, and z coordinates of the cardiac
+<br> 
+              gp{i}{2}:  structure contaning the amplitudes of Gaussian functions used for
+<br> 
+              gp{i}{3}:  structure contaning the widths of Gaussian functions used for
+<br> 
+          gp{2}{:}: Gaussian parameters of moether/foetus ecg - ectopic beat
+<br> 
+      L:      scaling of dipole in each direction [3x3 matrix]
+<br> 
+       w:     angular frequency
+<br> 
+      R0:     initial rotation angles
+<br> 
+    traj:     [Nx3 matrix] representing trajectory taken by the dipole, if it has some 
+<br> 
+              is the initial position of dipole [1x3 matrix]. Columns are trajectory in
+<br> 
+   debug:     debug [bool]
 <br> 
 <b>Output:</b> 
 <br> 
-Reference:
+       dmodel.H:      Dower-like matrix for dipole either 2D (time invariant) or 3D 
 <br> 
-Fibrillation". IEEE Trans Biomed. Eng , VOL. 59, NO. 10, OCTOBER 2012.
+       dmodel.VCG:    VCG for dipole
+<br> 
+       dmodel.traj:   trajectory taken by dipole
+<br> 
+       dmodel.rax: max respiration angle in radian around X 
+<br> 
+       dmodel.raz: max respiration angle in radian around Z
+<br> 
+References
+<br> 
+the VCG". Medical Engineering & Physics 25 (2003) 501-507. 
+<br> 
+maternal and foetal ECG signals." EURASIP Journal on Advances in Signal Processing 
+<br> 
+Electrocardiogram during Paroxysmal Atrial Fibrillation." Computing in
 <br> 
 <b>Examples:</b> <br> 
 <br> 
 run_ecg_generator
 <br> 
-<h3 id="add_cardiacdipole">add_cardiacdipole</h3><br> 
-  theta,w,fres,R0,epos,traj,debug)
-<br> 
-dipole equation. This function generates the vectocardiogram (VCG) of 
-<br> 
-projection of the VCG onto the electrode locations as specified by (elec.ep). 
-<br> 
-are modelled. Rotation of the heart is modelled by dynamically updating 
-<br> 
-heart is modelled by updating the dower-like projection matrix H. These
-<br> 
-the FECG signal. The function returns the VCG signal, the projection
-<br> 
-case the foetus is moving).
-<br> 
-       N:     signal length [number of points]
-<br> 
-      gp_all: Gaussian parameters [cell of cells]
-<br> 
-              gp{i}{1}:  structure contaning the phase of Gaussian functions used for
-<br> 
-                  dipole
-<br> 
-                  modeling the x, y, and z coordinates of the cardiac dipole
-<br> 
-                  modeling the x, y, and z coordinates of the cardiac dipole
-<br> 
-    theta:     phase for heart dipole model
-<br> 
-    fres:     respiration frequency (for heart dipole rotation) [Hz]
-<br> 
-    epos:     position of electrodes [normalised units]
-<br> 
-              trainslation other than respiration. If no translation is given, traj    
-<br> 
-              x,y and z direction.
-<br> 
-    dmodel   structure contaning the dipole model i.e.:
-<br> 
-                          (variant case).
-<br> 
-       dmodel.type:   maternal (1) or foetal (2) dipole
-<br> 
-       dmodel.stm: state transition matrix
-<br> 
-       dmodel.ray: max respiration angle in radian around Y
-<br> 
-       dmodel.rht: volumes height allowed for heart translation due to respiration
-<br> 
-[1] Leanderson et al. "Estimation of the respiratory frequency using spatial information in
-<br> 
-this paper gives an idea of the Rx, Ry, Rz angles variation with breathing for the VCG.
-<br> 
-[2] Sameni, Reza, et al. "Multichannel ECG and noise modeling: application to 
-<br> 
-2007 (2007).
-<br> 
-[3] Oster, Julien, and Gari D. Clifford. "An Artificial Model of the 
-<br> 
-cardiology 2013.
-<br> 
-TODO
-<br> 
-<b>See also:</b> <br> 
 <h3 id="load_gparam">load_gparam</h3><br> 
 load Gaussian paramters for vcg modelling. The parameters are derived 
 <br> 
@@ -338,65 +475,70 @@ load Gaussian paramters for vcg modelling. The parameters are derived
       gp{2} = alphai
 <br> 
 <h3 id="run_ecg_generator">run_ecg_generator</h3><br> 
-generate a realistic FECG-MECG mixture. The physiological phenomenon that
+<b>Call: </b> <code>function out = run_ecg_generator(param,debug)
+</code> <br> 
 <br> 
-rotation of the heart axis with respect to breathing rate, translation
+are modelled include: heart rate variability and sudden change in hr,
 <br> 
-Note that in order to make repeated simulation more variable (and so more
+of the foetal heart modelling foetal movement and realistic noise.
 <br> 
-hearts are randomly placed around the default coordinates. Note that the
+representative of the reality) the positions of the maternal and foetal
 <br> 
-the volume conductor). As a consequence, electodes location, hearts
+coordinate system is normalised and centred on the cylinder (which is modeling
 <br> 
-list of abbreviation used in the toolbox:
+location are defined relative to each other (relative coordinate system).
 <br> 
-  MECG:       maternal ECG
+  ECG:        electrocardiogram
 <br> 
-  NI-FECG:    non invasive FECG
+  FECG:       foetal ECG
 <br> 
-  HRV:        heart rate variability
+  HR:         heart rate
 <br> 
-  MHR:        maternal heart rate
+  FHR:        foetal heart rate
 <br> 
-  param: structure containing all the information needed for running the
+  RSA:        respiratory sinus arrhythmia
 <br> 
-      param.mheart    maternal heart origin - actual location will be
+<b>Input:</b> 
 <br> 
-                      0.4]) [normalised]
+  simulation.
 <br> 
-                      picked randomly around it* - (default [-pi/10 0.4
+                      picked randomly around it* -(default [2*pi/3 0.4
 <br> 
-      param.elpos:    electrode pair locations in polar coordinate [normalised]
+      param.fheart    foetus heart origin - actual location will be
 <br> 
-      param.fs:       sampling frequency (default 1000) [Hz]
+                      -0.3]) [normalised]
 <br> 
-      param.noise_fct function of modulating noise (each noise may be modulated by a
+      param.n:        number of datapoint to generate (default 15000)
 <br> 
-      param.SNRn:     SNR (MECG+FECG)/Noise (default 6)
+      param.ntype:    noise type (default MA) [string]
 <br> 
-      param.mhr:      mother reference HR (default 110) [bpm]
+                      function, e.g param.noise_fct=sin(linspace(-2*pi,2*pi,param.n)))
 <br> 
-      param.macc:     maternal acceleration in HR
+      param.SNRm:     SNR FECG/MECG (default -10)
 <br> 
-      param.mtypeacc: maternal acceleration type (chosen from switch inside function,
+      param.fhr:      foetus reference HR (default 150) [bpm]
 <br> 
-      param.ftypeacc: foetus acceleration type (chosen from switch inside function,
+      param.facc:     foetus acceleration in HR
 <br> 
-      param.ftraj:    trajectory given to fetus heart (e.g. 'none', 
+                      e.g. 'none', 'mexhat', 'gauss' or 'flattop')
 <br> 
-      param.mtraj     movement trajectory to maternal heart (e.g. case of
+                      e.g. 'none', 'mexhat', 'gauss' or 'flattop')
 <br> 
-      param.fname:    record name for saving output (default 'aecg') if
+                      'step','linear', 'spline' or 'spiral')
 <br> 
-      param.mres:     respiratory frequency of mother (default 0) [Hz]
+                      maternal movement). Analogous to fetal trajectory
 <br> 
-      param.mvcg:     mother vcg chosen (1-9)
+                      empty then no file is saved
 <br> 
-      param.evcg:     ectopic beat params (1-4)
+      param.fres:     respiratory frequency of foetus (default 0) [Hz]
 <br> 
-                      electrodes and hearts are slightly varied around
+      param.fvcg:     foetus vcg chosen (1-9)
 <br> 
-      param.mectb:    add ectopic beats to maternal ECG (bool)
+      param.posdev:   position deviation (bool). 1: the position of the
+<br> 
+                      their specified or default positions. 0: no variation.
+<br> 
+      param.fectb:    add ectopic beats to foetal ECG (bool)
 <br> 
       1:              Some generated AECG
 <br> 
@@ -414,71 +556,68 @@ NOTE: in the case only one input is entered, the function considers it to
 <br> 
 simulation. The function only plots them.
 <br> 
-outputs
+<b>Output:</b> 
 <br> 
   mixture and all the important model information that would allow
 <br> 
-      out.m_model: structure contaning dipole model for the foetus [struct]
+      out.mixture: generated ecg mixture [NB_EL x param.n matrix]
 <br> 
-                         (variant case).
+              m_model.H: Dower-like matrix for dipole either 2D (time invariant) or 3D
 <br> 
-              m_model.type: maternal (1) or foetal (2) dipole
+              m_model.VCG: VCG for dipole
 <br> 
-              ibid m_model
+      out.f_model: structure contaning dipole model for the foetus [struct]
 <br> 
-      out.mecg:   mecg projected signal
+      out.fecg:   fecg projected signal
 <br> 
-      out.vols:   contains volume conductor information (electrodes and heart
+                  position)
 <br> 
-      out.mqrs:   maternal reference QRS
+      out.fqrs:   foetal reference QRS
 <br> 
-      out.param:  parameters used in the simulation [struct]
+      selvcgm:    selected maternal vcg [cell]
 <br> 
-      selvcgf:    selected foetal vcg [cell]
+<b>Examples:</b> <br> 
 <br> 
-TODO
+exp_datagen1
 <br> 
-<b>See also:</b> <br> 
+exp_datagen3
+<br> 
 <h3 id="add_noisedipole">add_noisedipole</h3><br> 
-this function is used to generate realistic noise. The MA, EM and BW
+<b>Call: </b> <code>function [dmodel, f_handles, misc] = add_noisedipole(N,fs,ntype,epos,noisepos,debug)
+</code> <br> 
 <br> 
-three main limitations when using these records; 1. their length is
+files from the Physionet NSTDB can be used for that purpose. However there are
 <br> 
-of them when generating multiple noise segments), 
+limited (thus if we only use these records then we will re-use them or part 
 <br> 
-noise on the VCG then we need three) and 3. this is noise from one
+2. there are only two channels available (if we want to model 
 <br> 
-In order to tackle these problems we propose to use an AR model
+individual only.
 <br> 
-as the output of an all-pole infinite impulse response filter with input 
+to describes the noisy time-varying processe. An AR model can be viewed 
 <br> 
-of one of the NSTDB signals. This defines filter coefficients with 
+white noise. We learn these coefficients on a randomly selected segment 
 <br> 
-of the records available in the NSTDB and integrate some variability, the 
+associated frequency response. In order to account for the uniqueness 
 <br> 
-unsuring they stay in the unit cicle.
+poles, of the learned AR filter, are slightly randomly shifted while
 <br> 
-<b>Input:</b> 
+  N:      size of the noise to generate at fs (sampling frequency) [datapoint number]
 <br> 
-  ntype:  type of noise to generate (MA,EM or BW) [string]
+  fs:     sampling frequency [Hz]
 <br> 
-  debug:  debug mode level [integer]
+    dmodel   structure contaning dipole model i.e.:
 <br> 
-<b>Output:</b> 
+       dmodel.VCG    - VCG for dipole
 <br> 
-       dmodel.H      - Dower-like matrix for dipole (assuming time invariance)
+       dmodel.SNRfct - function which modulates SNR of noise. E.g. 
 <br> 
-       dmodel.type   - always 3 (noise dipole)
+2015.11.03 - Changes made by Julien Oster have been incorporated, several
 <br> 
-                            sin(linspace(-pi,pi,N)
+<b>Examples:</b> <br> 
 <br> 
-Change log:
+run_ecg_generator
 <br> 
-improvements to the AR model should allow faster generation
-<br> 
-TODO
-<br> 
-<b>See also:</b> <br> 
 </section>
 
 <section class="bs-docs-section"> 
@@ -539,8 +678,8 @@ FECGSYN_ts_extraction
 <br> 
 FECGSYN_kf_extraction
 <br> 
-<h3 id="main_extract_data">main_extract_data</h3><br> 
-<b>Call: </b> <code>function main_extract_data(path,narrowband,wfdb)
+<h3 id="FECGSYN_main_extract">FECGSYN_main_extract</h3><br> 
+<b>Call: </b> <code>function FECGSYN_main_extract(path,narrowband,wfdb)
 </code> <br> 
 <br> 
 bandwidths (defined in Experiment 2 and 3 of Andreotti2016). Results are
@@ -602,6 +741,9 @@ TODO
 <a href="{{site.github.url}}/pages/documentation.html#FECGSYN_bss_extraction
 "><code>FECGSYN_bss_extraction
 </code></a></code> 
+<br><a href="{{site.github.url}}/pages/documentation.html#FEGSYN_main_extract
+"><code>FEGSYN_main_extract
+</code></a></code> 
 <br><h3 id="FECGSYN_bss_extraction">FECGSYN_bss_extraction</h3><br> 
 Uses Blind Source Separation Methods for FECG extraction given a
 <br> 
@@ -630,6 +772,9 @@ TODO
 <b>See also:</b> <br> 
 <a href="{{site.github.url}}/pages/documentation.html#FECGSYN_kf_extraction
 "><code>FECGSYN_kf_extraction
+</code></a></code> 
+<br><a href="{{site.github.url}}/pages/documentation.html#FEGSYN_main_extract
+"><code>FEGSYN_main_extract
 </code></a></code> 
 <br></section>
 
@@ -694,8 +839,11 @@ TODO
 <b>See also:</b> <br> 
 </section>
 
+<h2 id="utils/file_manipulation">utils/file_manipulation</h2><br> 
+</section>
 
 
+<!--
   I might use this for input/output list:<br>
   <div class="table-responsive">
     <table class="table table-bordered table-striped">
@@ -737,3 +885,4 @@ TODO
       </tbody>
     </table>
   </div>
+-->

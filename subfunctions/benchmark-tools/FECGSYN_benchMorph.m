@@ -1,4 +1,4 @@
-function stats=FECGSYN_benchMorph(path,ch,debug)
+function morph=FECGSYN_benchMorph(path,ch,debug)
 % function FECGSYN_benchFQRS(path,debug)
 %
 % this script generates statistics as in Experiment 3 by Andreotti et al 2016,
@@ -18,7 +18,7 @@ function stats=FECGSYN_benchMorph(path,ch,debug)
 %                   into a 'path/ext/plots' folder
 %
 % Output:
-%  stats          Structure containing benchmark results for all files
+%  morph          Structure containing benchmark results for all files
 %                 contained in path.
 %
 %
@@ -74,7 +74,6 @@ if debug,  mkdir([path 'ext' slashchar 'plots' slashchar]), end
 
 % == Parameters
 fs_new = 250;              % function works at 250 Hz
-INTERV = round(0.05*fs_new); % BxB acceptance interval
 TEMP_SAMPS = round(60*fs_new); % samples used for building templates
 
 
@@ -186,18 +185,18 @@ for i = 1:length(fls_ext)
         fecgref = fecg;
         fref = out.fqrs{1};
     end
-    %= Getting statistics (exp 3)
-    fname = [path_orig 'plots' slashchar fls_ext{i}(1:end-4) cas];
+    %= Getting statistics (exp 3)_orig
+    fname = [path 'plots' slashchar fls_ext{i}(1:end-4) cas];
     fname = strcat(fname{:});
-    [outputs{1:7}]= FECGSYN_morpho_loop(fecgref,residual,fref,fs,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp]);
+    [outputs{1:7}]= FECGSYN_morpho_loop(fecgref,residual,fref,fs_new,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp],debug);
     
-    morph.(method)(origrec,:) = outputs;
+    morph.(method)(str2double(rec{1}(4:end)),:) = outputs;
     clear fecg residual fqrs F1 MAE PPV SE  fecg outdata rec  k
     
 end
 
 if debug
-    FECGSYN_benchFQRS_plot(stats,fls) % CHECKOUT this function for some more information!
+    FECGSYN_benchMorph_plot(stats,fls) % CHECKOUT this function for some more information!
 end
 
 

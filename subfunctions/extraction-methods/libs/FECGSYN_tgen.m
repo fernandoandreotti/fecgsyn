@@ -124,7 +124,7 @@ relevantModeInd = []; % - UPDATE ME DEPENDING ON APPLICATION
 relevantMode.NbCycles = 0;
 
 % == linear phase wrapping (shift in -pi/6)
-phase = FECGx_kf_PhaseCalc(qrs,NB_SAMPLES);
+phase = FECGSYN_kf_phasecalc(qrs,NB_SAMPLES);
 PhaseChangePoints = find(phase(2:end)<0&phase(1:end-1)>0);
 NB_CYCLES = length(PhaseChangePoints);
 

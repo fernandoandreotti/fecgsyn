@@ -74,7 +74,6 @@ if debug,  mkdir([path 'ext' slashchar 'plots' slashchar]), end
 % == Parameters
 fs_new = 250;              % function works at 250 Hz
 INTERV = round(0.05*fs_new); % BxB acceptance interval
-TEMP_SAMPS = round(60*fs_new); % samples used for building templates
 
 
 % Find out if *mat or wfdb

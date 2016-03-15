@@ -31,7 +31,7 @@ function [qt_test,qt_ref,tqrs_test,tqrs_ref,qt_err,theight_err,numNaN]=...
 % FECGSYN_benchMorph
 % FECGSYN_manalysis
 % FECGSYN_QTcalc
-% 
+%
 % --
 % fecgsyn toolbox, version 1.1, March 2016
 % Released under the GNU General Public License
@@ -86,10 +86,10 @@ for j = 1:SAMPS:length(residual)
         qrstmp = fqrs(fqrs>j&fqrs<endsamp)-j;
         %% Template Generation
         % reference template
-        [temp_ref,qrs_ref,status2] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs);
+        [temp_ref,qrs_ref,status2] = FECGSYN_tgen(fecg(ch,j:endsamp),qrstmp,fs,debug);
         % abdominal signal template
         if ch <= size(residual,1)
-            [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs);
+            [temp_abdm,qrs_abdm,status1] = FECGSYN_tgen(residual(ch,j:endsamp),qrstmp,fs,debug);
         else % usually relevant for ICA cases, where number of components is smaller than the number of input channels
             temp_abdm = temp_ref;
             qrs_abdm = qrs_ref;
@@ -131,8 +131,9 @@ for j = 1:SAMPS:length(residual)
             [qt_ref{ch,block},qt_test{ch,block},tqrs_ref{ch,block},tqrs_test{ch,block}] = FECGSYN_manalysis(temp_abdm,temp_ref,qrs_abdm,qrs_ref,fs,filterc,fname,debug);
         end
         % Saves generated plots
-        if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})
-            try
+        try
+            if debug && ~isnan(qt_test{ch,block}) && ~isnan(qt_ref{ch,block})
+                
                 drawnow
                 subplot(2,1,1)
                 hold on
@@ -142,10 +143,9 @@ for j = 1:SAMPS:length(residual)
                 hold on
                 text(0,0,['QT = ' strcat(num2str(qt_test{ch,block}))])
                 print('-dpng','-r72',[fname '_ch' num2str(ch) '_s' num2str(block) '.png'])
-            catch
-                warning('Failed to save plot')
             end
-            
+        catch
+            warning('Failed to save plot')
         end
     end
     block = block+1;

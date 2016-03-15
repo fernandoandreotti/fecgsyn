@@ -20,33 +20,9 @@ git clone https://github.com/fernandoandreotti/fecgsyn.git
  </section>
 
 <section class="bs-docs-section">
-
   <h1 id="installation" class="page-header">Installing</h1>
- <h2 id="install-wfdb">Dependencies</h2>
- 
-  <p>If you are working with WFDB format, the WFDB Toolbox for Matlab/OCtave (<a href="https://physionet.org/physiotools/matlab/wfdb-app-matlab/"><span class="octicon octicon-globe"></span> available here</a>) should be installed.</p>
   
-  <p>As mentioned on WFDB's Toolbox website, to install or update a previous installation of this toolbox: </p>
-  
- <ul>
- <li>Open MATLAB or Octave</li>
- <li>Go into the directory where you wish to install the toolbox: <br>
- {% highlight matlab %}
- cd directoryname
- {% endhighlight %}</li>
- {% highlight matlab %}
- <li>Type (or copy and paste) the following commands into the MATLAB or Octave window:<br>
- [old_path]=which('rdsamp');if(~isempty(old_path)) rmpath(old_path(1:end-8)); end
- wfdb_url='http://physionet.org/physiotools/matlab/wfdb-app-matlab/wfdb-app-toolbox-0-9-9.zip';
- [filestr,status] = urlwrite(wfdb_url,'wfdb-app-toolbox-0-9-9.zip');%Octave users may have to download manually
- unzip('wfdb-app-toolbox-0-9-9.zip');
- cd wfdb-app-toolbox-0-9-9;cd mcode
- addpath(pwd);savepath
-{% endhighlight %}</li>
-</ul>
-
-
-  <h2 id="install-mat">Install on Matlab</h2>
+   <h2 id="install-mat">Install on Matlab</h2>
   <p>Simply extract the compressed package or include your git folder to Matlab/Octave's path. Matlab users can download and install the toolbox using the following lines of code:</p>
 
 {% highlight matlab %}
@@ -59,6 +35,29 @@ addpath(pwd);savepath
 {% endhighlight %}
 
 After installing  <em>FECGSYN</em> you may verify your installation by running one of the available  <a href="{{site.github.url}}/pages/examples.html"><span class="octicon octicon-globe"></span> Examples</a>.
+   
+ <h3 id="install-wfdb">Dependencies</h3>
+ 
+  <p>If you are working with WFDB format, the WFDB Toolbox for Matlab/OCtave (<a href="https://physionet.org/physiotools/matlab/wfdb-app-matlab/"><span class="octicon octicon-globe"></span> available here</a>) should be installed.</p>
+  
+  <p>As mentioned on WFDB's Toolbox website, to install or update a previous installation of this toolbox: </p>
+  
+ <ul>
+ <li>Open MATLAB or Octave</li>
+ <li>Go into the directory where you wish to install the toolbox: <br><br>
+ {% highlight matlab %}
+ cd directoryname
+ {% endhighlight %}</li>
+ <li>Type (or copy and paste) the following commands into the MATLAB or Octave window:<br><br>
+  {% highlight matlab %}
+ [old_path]=which('rdsamp');if(~isempty(old_path)) rmpath(old_path(1:end-8)); end
+ wfdb_url='http://physionet.org/physiotools/matlab/wfdb-app-matlab/wfdb-app-toolbox-0-9-9.zip';
+ [filestr,status] = urlwrite(wfdb_url,'wfdb-app-toolbox-0-9-9.zip'); %Octave users may have to download manually unzip('wfdb-app-toolbox-0-9-9.zip');
+ cd wfdb-app-toolbox-0-9-9;cd mcode
+ addpath(pwd);savepath
+{% endhighlight %}</li>
+</ul>
 
 
+ 
 </section>

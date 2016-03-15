@@ -177,10 +177,29 @@ stats=FECGSYN_benchFQRS(path,ch,debug)
 
 
 <h2 id="morpho">Morphological features</h2>
-Examplary
+
+<p>Analogous to the FQRS detection benchmark, morphological features can be evaluated using the <code>FECGSYN_benchMorph.m</code> function. The function can be summarized into the following steps:</p>
+
+<ul>
+  <li>Template generation for reference and test signals</li>
+  <li>Segmentation of templates using ECGPUWAVE (Jane et al 1997)</li>
+  <li>Plausibility verification for segmented templates</li>
+  <li>Fetal QT and T/QRS calculation</li>
+</ul>
+
+<p>The function may be called by using the following code:</p>
+{% highlight matlab %}
+% path = path for original and extracted data
+% ch = optional input, case data in WFDB format
+% debug = enable plotting
+morph=FECGSYN_benchMorph(path,ch,debug)
+{% endhighlight %}
 
 
-<div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span> Warning</div><div class="panel-body"> Morphological analysis should consider a <code>path</code> where extracted signals have a broader band than by the one used in <code>FECGSYN_benchFQRS.m</code>. This because a greater high-pass cut frequency will inevitably distort the FECG T-wave.</div></div>
+ <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> Morphological analysis should consider a <code>path</code> where extracted signals have a broader band than by the one used in <code>FECGSYN_benchFQRS.m</code>. This because a greater high-pass cut frequency will inevitably distort the FECG T-wave.</div></div>
+
+<div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span> Warning</div><div class="panel-body"> <p>The script may take a while to run since it makes use of the ECGPUWAVE function, where several WFDB - Matlab transformations take place.</p>
+.</div></div>
 
 <p><b>References:</b></p>
 <p>Jane, R et al. 1997 Evaluation of An Automatic Threshold Based Detector of Waveform Limits in Holter ECG with the QT Database. Computers in Cardiology. Moody, G B, Mark, R G, Zoccola, A and Mantero, S.</p>

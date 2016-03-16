@@ -91,7 +91,7 @@ FECGSYN_plotmix(out) % plots random channels of one of the created datasets
 
 <h2 id="wfdb2fecgsyn">Converting WFDB to FECGSYN</h2>
 
-<p>Similarly, the <code>wfdb2fecgsyn.m</code> function is able to convert WFDB datasets into the <code>.mat</code> internal structure used by <em>FECGSYN</em>  <code>main_extract_data</code> script, such as:</p>
+<p>Similarly, the <code>wfdb2fecgsyn.m</code> function is able to convert WFDB datasets into the <code>.mat</code> internal structure used by <em>FECGSYN</em>  <code>FECGSYN_main_extract.m</code> script, such as:</p>
 
 {% highlight matlab %}
 % path = string containing origin folder for WFDB dataset
@@ -122,7 +122,7 @@ end
 
 <p>As output, the function returns the <code>residual</code> variable, which has the same dimensions as <code>mixture</code>.</p>
 
-<p>Reference:</p>
+<p><b>Reference:</b></p>
 <p>Cerutti, S., Baselli, G., Civardi, S., Ferrazzi, E., Marconi, A. M., Pagani, M., & Pardi, G. (1986). Variability analysis of fetal heart rate signals as obtained from abdominal electrocardiographic recordings. Journal of Perinatal Medicine, 14(6), 445–452.</p>
 
  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> The  <code>FECGSYN_ts_extraction.m</code> function has several pre-built TS methods that can be used by simply substituting <code>'TS-CERUTTI'</code> for <code>'TS'</code>, <code>'TS-SUZANNA'</code>, <code>'TS-LP'</code> or <code>'TS-PCA'</code>. Make sure to see the <a href="{{site.github.url}}/pages/documentation.html#FECGSYN_ts_extraction"><span class="octicon octicon-globe"></span> Documentation</a>. </div></div>
@@ -131,14 +131,14 @@ end
 
 <p>Aside from Template Subtraction methods (<code>FECGSYN_ts_extraction.m</code> function), the <em>FECGSYN</em> toolbox includes Blind Source Separation (<code>FECGSYN_bss_extraction.m</code> function), Kalman Filter (<code>FECGSYN_kf_extraction.m</code> function) and Adaptive Filters (<code>FECGSYN_adaptfilt_extraction.m</code> function). For more information, checkout Andreotti et al 2016 and the <a href="{{site.github.url}}/pages/documentation.html"><span class="octicon octicon-globe"></span> Documentation</a>.</p>
 
-<p>In this example, extraction using every method available is performed by applying the <code>main_extract_data.m</code> script. The script accepts WFDB formatted data, as well as <code>.mat</code> files (following <em>FECGSYN</em>'s structure). In order to inform the function which format is used, the bool <code>wfdb</code> should be toggled to <em>true</em> or <em>false</em>. The function comes with to preset pre-processing bands (3-100 Hz or 0.5-100 Hz) which can be set with the argument <code>narrowband</code>. The function may be applied directly on the FECGSYNDB, as follows:</p>
+<p>In this example, extraction using every method available is performed by applying the <code>FECGSYN_main_extract.m</code> script. The script accepts WFDB formatted data, as well as <code>.mat</code> files (following <em>FECGSYN</em>'s structure). In order to inform the function which format is used, the bool <code>wfdb</code> should be toggled to <em>true</em> or <em>false</em>. The function comes with to preset pre-processing bands (3-100 Hz or 0.5-100 Hz) which can be set with the argument <code>narrowband</code>. The function may be applied directly on the FECGSYNDB, as follows:</p>
 
 {% highlight matlab %}
 path % this is path where simulated data is allocated
-main_extract_data(path,narrowband,wfdb)
+FECGSYN_main_extract(path,narrowband,wfdb)
 {% endhighlight %}
 
-<p>This function saves each extracted signal in an separate <code>.mat</code> file under the directory <code>'path/ext/'</code>. In order to reduce the filenames, a coding is introduce consisting of 'rec' (for recording) and a number. An <code>index.mat</code> file is also saved on the folder to allow the backwards mapping of simulated and extracted datasets.</p>
+<p>This function saves each extracted signal in an separate <code>.mat</code> file under the directory <code>'path/ext/'</code>. In order to reduce the filenames, a coding is introduce consisting of 'rec' (for recording) and a number, followed by the extraction method used, for example <code>rec1_tsc.mat</code> or <code>rec5_PCA.mat</code>. An <code>index.mat</code> file is also saved on the folder to allow the backwards mapping of simulated and extracted datasets.</p>
 
  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> For batch processing, avoid converting data to WFDB format, since it may cause slow downs. </div></div>
 </section>
@@ -162,15 +162,47 @@ acceptint = 50*fs/1000; % 50 ms acceptance interval interval
 [F1,MAE,PPV,SE,TP,FN,FP] = Bxb_compare(out.fqrs, fqrs, acceptint)
 {% endhighlight %}
 
-<p> The function <code>FECGSYN_QRSmincompare.m</code> makes use of the <code>Bxb_compare.m</code> on a minute basis, as in Andreotti et al 2016. </p>
+<p> The function <code>FECGSYN_QRSmincompare.m</code> makes use of the <code>Bxb_compare.m</code> on a minute basis, as in Andreotti et al 2016. A broad benchmark across different methods (extracted using the <code>FECGSYN_main_extract.m</code>) is exemplified in function <code>FECGSYN_benchFQRS.m</code>, which returns a series of FQRS detection measures:</p>
 
-<p>References:</p>
+{% highlight matlab %}
+% path = path for original and extracted data
+% ch = optional input, case data in WFDB format
+% debug = enable plotting
+stats=FECGSYN_benchFQRS(path,ch,debug)
+{% endhighlight %}
+
+<p><b>References:</b></p>
 <p>Pan, J., & Tompkins, W. J. (1985). A Real-Time QRS Detection Algorithm. IEEE.J.BME, (3), 230–236.</p>
 <p>Behar, J., Oster, J., & Clifford, G. D. (2014). Combining and Benchmarking Methods of Foetal ECG Extraction Without Maternal or Scalp Electrode Data. Physiological Measurement, 35(8), 1569–1589.</p>
 
 
 <h2 id="morpho">Morphological features</h2>
-Examplary 
+
+<p>Analogous to the FQRS detection benchmark, morphological features can be evaluated using the <code>FECGSYN_benchMorph.m</code> function. The function can be summarized into the following steps:</p>
+
+<ul>
+  <li>Template generation for reference and test signals</li>
+  <li>Segmentation of templates using ECGPUWAVE (Jane et al 1997)</li>
+  <li>Plausibility verification for segmented templates</li>
+  <li>Fetal QT and T/QRS calculation</li>
+</ul>
+
+<p>The function may be called by using the following code:</p>
+{% highlight matlab %}
+% path = path for original and extracted data
+% ch = optional input, case data in WFDB format
+% debug = enable plotting
+morph=FECGSYN_benchMorph(path,ch,debug)
+{% endhighlight %}
+
+
+ <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> Morphological analysis should consider a <code>path</code> where extracted signals have a broader band than by the one used in <code>FECGSYN_benchFQRS.m</code>. This because a greater high-pass cut frequency will inevitably distort the FECG T-wave.</div></div>
+
+<div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span> Warning</div><div class="panel-body"> The script may take a while to run since it makes use of the ECGPUWAVE function, where several WFDB - Matlab transformations take place.</div></div>
+
+<p><b>References:</b></p>
+<p>Jane, R et al. 1997 Evaluation of An Automatic Threshold Based Detector of Waveform Limits in Holter ECG with the QT Database. Computers in Cardiology. Moody, G B, Mark, R G, Zoccola, A and Mantero, S.</p>
+
 </section>
 
 <!-------------GUI--------->

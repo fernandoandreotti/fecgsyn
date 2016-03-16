@@ -44,6 +44,22 @@ Check out the <a href="{{site.github.url}}/pages/documentation.html"><span class
 <h3 id="ss">Screenshots</h3>
 
 
+<<<<<<< HEAD
+div {
+    background: url(pages/images/volume_conductor.png);
+    background-size: 80px 60px;
+    background-repeat: no-repeat;
+}
+
+div {
+    background: url(pages/images/interface.png);
+    background-size: 80px 60px;
+    background-repeat: no-repeat;
+} 
+ <small><b>Fig.</b> Volume conductor (left) and Graphical User Interface (right).</small> <br>
+ <img src="pages/images/template_subtraction_eg.png" alt="[]" height="220" width="520"><br>
+ <small><b>Fig.</b> Extracted NI-FECG signal.</small> <br>
+=======
 
 
  <div>
@@ -58,6 +74,7 @@ Check out the <a href="{{site.github.url}}/pages/documentation.html"><span class
   <img class="img-responsive" src="pages/images/template_subtraction_eg.png" alt="Signal example">
   <center><p> <small><b>Fig.</b>Extracted NI-FECG signal.</small></p></center>  
  </div>
+>>>>>>> 0c4fa4a73a3b1c81b55fa44947f2668a6bd63c69
 
 </section>
 

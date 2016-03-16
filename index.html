@@ -18,33 +18,29 @@ author:  "Fernando Andreotti"
 
 <p><em>FECGSYN</em> is a realistic non-invasive foetal ECG (NI-FECG) generator that uses the Gaussian ECG model originally introduced by McSharry et al (2003). The toolbox generates synthetic  NI-FECG mixtures considering various user-defined settings, e.g. noise sources, heart rate and heart rate variability, rotation of the maternal and foetal heart axes due to respiration, foetus movement, contractions, ectopic beats and multiple pregnancy. Any number of electrodes can be freely placed on the maternal abdomen. The synthetic ECG simulator is a good tool for modelling realistic feto-maternal mixtures and specific events such as abrupt heart rate increase, in order to benchmark signal processing algorithms on realistic  data and for scenarios that resemble important clinical events. </p>
 
-The toolbox originates from the collaboration between the Department of Engineering Science, University of Oxford (DES-OX) and the Institute of Biomedical Engineering, TU Dresden (IBMT-TUD). The authors are <a href="mailto:joachim.behar@eng.ox.ac.uk?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Joachim Behar</a> (DES-OX), <a href="mailto:fernando.andreotti@mailbox.tu-dresden.de?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Fernando Andreotti</a> (IBMT-TUD), <a href="mailto:julien.oster@eng.ox.ac.uk?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Julien Oster</a> (DES-OX), <a href="mailto:sebastian.zaunseder@tu-dresden.de?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Sebastian Zaunseder</a> (IBMT-TUD) and <a href="mailto:gari@alum.mit.edu?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Gari D. Clifford (DES-OX) </a>. </p>
+The FECGSYN toolbox is a reference open platform for NI-FECG research, product of a collaboration between the Department of Engineering Science, University of Oxford (DES-OX) and the Institute of Biomedical Engineering, TU Dresden (IBMT-TUD). The authors are <a href="mailto:joachim.behar@eng.ox.ac.uk?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Joachim Behar</a> (DES-OX), <a href="mailto:fernando.andreotti@mailbox.tu-dresden.de?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Fernando Andreotti</a> (IBMT-TUD), <a href="mailto:julien.oster@eng.ox.ac.uk?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Julien Oster</a> (DES-OX), <a href="mailto:sebastian.zaunseder@tu-dresden.de?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Sebastian Zaunseder</a> (IBMT-TUD) and <a href="mailto:gari@alum.mit.edu?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Gari D. Clifford (DES-OX)</a>.</p>
 
 <p>Physionet's FECG Synthetic Database <a href="https://www.physionet.org/physiotools/ipmcode/fecgsyn/"><span class="octicon octicon-globe"></span> <em>FECGSYN-DB</em></a> was build by using the <em>FECGSYN</em> toolbox.</p>
 
 <br>
 <div align="center">
 <b>We invite researchers contribute new algorithms or databases to this toolbox.</b> <br>
-Check out the <a href="{{site.github.url}}/pages/documentation.html"><span class="octicon octicon-globe"></span> Documentation</a> and how to <a href="{{site.github.url}}/pages/contribute.html"><span class="octicon octicon-globe"></span> Contribute</a>!
+Check out the <a href="{{site.github.url}}/pages/documentation.html"><span class="octicon octicon-globe"></span> Documentation</a> and see how to <a href="{{site.github.url}}/pages/contribute.html"><span class="octicon octicon-globe"></span> Contribute</a>!
 </div>
 
 <br>  <br>
 <h3 id="feat">Features</h3>
   <ul>
-    <li>Realistic modelling of adult and foetal ECGs, including realistic heart rate and noise signals (see <a href="{{site.github.url}}/pages/documentation.html#Simulator"><span class="octicon octicon-globe"></span> FECGSYN simulator</a>)</li>
-    <li>Several source separation methods available including Template Subtraction (e.g. Kalman Filtering),  Blind Source Separation (e.g. ICA, PCA) and Adaptive Methods (e.g. Recursive Least Squares, Echo State Neural Networks) - see  <a href="{{site.github.url}}/pages/documentation.html#Extraction"><span class="octicon octicon-globe"></span> Extraction methods</a></li>
-    <li>Benchmarking and stress-testing algorithms for foetal QRS detection and extraction of morphological features</li>
-    <li>Large database of simulated noninvasive foetal ECG (NI-FECG) signals - see <a href="http://www.physionet.org/physiotools/ecgsyn/"><span class="octicon octicon-globe"></span> FECGSYN-DB</a></a></li>
+    <li>Realistic modelling of adult and foetal ECGs - see <a href="{{site.github.url}}/pages/documentation.html#Simulator"><span class="octicon octicon-globe"></span> FECGSYN simulator</a></li>
+    <li>Several NI-FECG <a href="{{site.github.url}}/pages/documentation.html#Extraction">extraction methods</a> available</li>
+    <li><a href="{{site.github.url}}/pages/documentation.html#Benchmark"> Benchmarking algorithms </a> for NI-FECG QRS detection and extraction of morphological features</li>
+    <li>Large freely available database of simulated NI-FECG signals- see <a href="http://www.physionet.org/physiotools/ecgsyn/"><span class="octicon octicon-globe"></span> FECGSYN-DB</a></a></li>
     <li>Numerous <a href="{{site.github.url}}/pages/examples.html"><span class="octicon octicon-globe"></span> examples</a> on using the toolbox </li>
-    <li>Code is open-source, <b>feel free to <a href="{{site.github.url}}/pages/examples.html"><span class="octicon octicon-globe"></span> contribute</a> with your method! </b></li>
-    
   </ul>
-
+  
+FECGSYN is open-source toolbox, feel free to <a href="{{site.github.url}}/pages/examples.html">contribute</a> with your methods!</li>
 
 <h3 id="ss">Screenshots</h3>
-
-
-
 
  <div>
     <center>
@@ -58,24 +54,6 @@ Check out the <a href="{{site.github.url}}/pages/documentation.html"><span class
   <img class="img-responsive" src="pages/images/template_subtraction_eg.png" alt="Signal example">
   <center><p> <small><b>Fig.</b>Extracted NI-FECG signal.</small></p></center>  
  </div>
-
-</section>
-
-<section class="bs-docs-section">
-
-<h1 id="back">Background</h1>
-  
-<p><em>FECGSYN</em> is built upon the work from <a href="http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1186732">McSharry et al.</a> 
-and <a href="http://asp.eurasipjournals.com/content/pdf/1687-6180-2007-043407.pdf">Sameni et al.</a>. The original code from McSharry et al. is 
-available in MATLAB and in C on PhysioNet (<a href="http://www.physionet.org/physiotools/ecgsyn/"><span class="octicon octicon-globe"></span> ECGSYN</a>). The code developed
-by Sameni et al. is part of the OSET toolbox, also available online in MATLAB (<a href="http://oset.ir/"><span class="octicon octicon-globe"></span> OSET</a>).</p>
-
-<p>A summary of the latest modifications is available on the <a href="{{site.github.url}}/pages/changelog">Changelog section</a>. For a detailed list of changes please see the <a href="{{site.github.url}}"><span class="octicon octicon-mark-github"></span>GitHub repository</a>:</p>
-
-<ul>
-  <li>McSharry, P. E., & Clifford, G. D. (2003). <a href="http://arxiv.org/pdf/physics/0406017.pdf">Open-Source Software for Generating Electrocardiogram Signals</a>, <em>IEEE Trans. Biomed. Eng.</em>, <b>50(3)</b>:289-294; March 2003. </li>
-  <li>Sameni, R., Clifford, G. D., Jutten, C., & Shamsollahi, M. B. (2007). <a href="http://doi.org/10.1155/2007/43407">Multichannel ECG and Noise Modeling: Application to Maternal and Fetal ECG Signals</a>. <em>EURASIP J Adv Signal Process</em>, <b>2007(1)</b>, 043407. </li> 
-</ul>
 
 </section>
 
@@ -104,4 +82,22 @@ Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D.,
 <h1 id="gpl">License</h1>
 
 All the code is freely available under the <a href="http://www.gnu.org/licenses/gpl.txt">GNU General Public License 3.0 (GPL)</a>. 
+</section>
+
+<section class="bs-docs-section">
+
+<h1 id="back">History</h1>
+  
+<p><em>FECGSYN</em> is built upon the work from <a href="http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1186732">McSharry et al.</a> 
+and <a href="http://asp.eurasipjournals.com/content/pdf/1687-6180-2007-043407.pdf">Sameni et al.</a>. The original code from McSharry et al. is 
+available in MATLAB and in C on PhysioNet (<a href="http://www.physionet.org/physiotools/ecgsyn/"><span class="octicon octicon-globe"></span> ECGSYN</a>). The code developed
+by Sameni et al. is part of the OSET toolbox, also available online in MATLAB (<a href="http://oset.ir/"><span class="octicon octicon-globe"></span> OSET</a>).</p>
+
+<p>A summary of the latest modifications is available on the <a href="{{site.github.url}}/pages/changelog">Changelog section</a>. For a detailed list of changes please see the <a href="{{site.github.url}}"><span class="octicon octicon-mark-github"></span>GitHub repository</a>:</p>
+
+<ul>
+  <li>McSharry, P. E., & Clifford, G. D. (2003). <a href="http://arxiv.org/pdf/physics/0406017.pdf">Open-Source Software for Generating Electrocardiogram Signals</a>, <em>IEEE Trans. Biomed. Eng.</em>, <b>50(3)</b>:289-294; March 2003. </li>
+  <li>Sameni, R., Clifford, G. D., Jutten, C., & Shamsollahi, M. B. (2007). <a href="http://doi.org/10.1155/2007/43407">Multichannel ECG and Noise Modeling: Application to Maternal and Fetal ECG Signals</a>. <em>EURASIP J Adv Signal Process</em>, <b>2007(1)</b>, 043407. </li> 
+</ul>
+
 </section>

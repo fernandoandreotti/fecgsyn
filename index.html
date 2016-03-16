@@ -20,7 +20,7 @@ author:  "Fernando Andreotti"
 
 The toolbox originates from the collaboration between the Department of Engineering Science, University of Oxford (DES-OX) and the Institute of Biomedical Engineering, TU Dresden (IBMT-TUD). The authors are <a href="mailto:joachim.behar@eng.ox.ac.uk?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Joachim Behar</a> (DES-OX), <a href="mailto:fernando.andreotti@mailbox.tu-dresden.de?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Fernando Andreotti</a> (IBMT-TUD), <a href="mailto:julien.oster@eng.ox.ac.uk?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Julien Oster</a> (DES-OX), <a href="mailto:sebastian.zaunseder@tu-dresden.de?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Sebastian Zaunseder</a> (IBMT-TUD) and <a href="mailto:gari@alum.mit.edu?subject=[GitHub - FECGSYN toolbox]"><span class="octicon octicon-mail"></span> Gari D. Clifford (DES-OX) </a>. </p>
 
-<p>Physionet's FECG Synthetic Database <a href="https://www.physionet.org/physiotools/ipmcode/fecgsyn/"><span class="octicon octicon-globe"></span> <em>FECGSYNDB</em></a> was build by using the <em>FECGSYN</em> toolbox.</p>
+<p>Physionet's FECG Synthetic Database <a href="https://www.physionet.org/physiotools/ipmcode/fecgsyn/"><span class="octicon octicon-globe"></span> <em>FECGSYN-DB</em></a> was build by using the <em>FECGSYN</em> toolbox.</p>
 
 <br>
 <div align="center">
@@ -31,10 +31,10 @@ Check out the <a href="{{site.github.url}}/pages/documentation.html"><span class
 <br>  <br>
 <h3 id="feat">Features</h3>
   <ul>
-    <li>Realistic modelling of maternal and foetal ECGs</li>
-    <li>Physiological heart rate and noise signals</li>
-    <li>Several extraction methods available Template Subtraction, Blind Source Separation and Adaptive Methods (see  <a href="{{site.github.url}}/pages/documentation.html"><span class="octicon octicon-globe"></span> Documentation</a>)</li>
-    <li>Benchmarking algorithms for foetal QRS detection and extraction of morphological features</li>
+    <li>Realistic modelling of adult and foetal ECGs, including realistic heart rate and noise signals (see <a href="{{site.github.url}}/pages/documentation.html#Simulator"><span class="octicon octicon-globe"></span> FECGSYN simulator</a>)</li>
+    <li>Several source separation methods available including Template Subtraction (e.g. Kalman Filtering),  Blind Source Separation (e.g. ICA, PCA) and Adaptive Methods (e.g. Recursive Least Squares, Echo State Neural Networks) - see  <a href="{{site.github.url}}/pages/documentation.html#Extraction"><span class="octicon octicon-globe"></span> Extraction methods</a></li>
+    <li>Benchmarking and stress-testing algorithms for foetal QRS detection and extraction of morphological features</li>
+    <li>Large database of simulated noninvasive foetal ECG (NI-FECG) signals - see <a href="http://www.physionet.org/physiotools/ecgsyn/"><span class="octicon octicon-globe"></span> FECGSYN-DB</a></a></li>
     <li>Numerous <a href="{{site.github.url}}/pages/examples.html"><span class="octicon octicon-globe"></span> examples</a> on using the toolbox </li>
     <li>Code is open-source, <b>feel free to <a href="{{site.github.url}}/pages/examples.html"><span class="octicon octicon-globe"></span> contribute</a> with your method! </b></li>
     
@@ -76,8 +76,8 @@ by Sameni et al. is part of the OSET toolbox, also available online in MATLAB (<
   <li>McSharry, P. E., & Clifford, G. D. (2003). <a href="http://arxiv.org/pdf/physics/0406017.pdf">Open-Source Software for Generating Electrocardiogram Signals</a>, <em>IEEE Trans. Biomed. Eng.</em>, <b>50(3)</b>:289-294; March 2003. </li>
   <li>Sameni, R., Clifford, G. D., Jutten, C., & Shamsollahi, M. B. (2007). <a href="http://doi.org/10.1155/2007/43407">Multichannel ECG and Noise Modeling: Application to Maternal and Fetal ECG Signals</a>. <em>EURASIP J Adv Signal Process</em>, <b>2007(1)</b>, 043407. </li> 
 </ul>
-</section>
 
+</section>
 
 <section class="bs-docs-section">
 <h1 id="ref">How to cite this tooolbox</h1>
@@ -104,3 +104,4 @@ Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D.,
 <h1 id="gpl">License</h1>
 
 All the code is freely available under the <a href="http://www.gnu.org/licenses/gpl.txt">GNU General Public License 3.0 (GPL)</a>. 
+</section>

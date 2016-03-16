@@ -36,7 +36,7 @@ for root, dirs, files in os.walk(path):
                      if ("% --" in line) |( "fecgsyn toolbox, version" in line) :  # where to stop reading file
                         line = "quit"
                         break
-                     if ("input:" in line.lower())|"inputs:" in line.lower():
+                     if ("input:" in line.lower())|("inputs:" in line.lower()):
                         line = "% <b>Input:</b> \n"
                      elif ("output:" in line.lower())|("outputs:" in line.lower()):
                         line = "% <b>Output:</b> \n"

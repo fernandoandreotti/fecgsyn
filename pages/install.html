@@ -44,10 +44,7 @@ After installing  <em>FECGSYN</em> you may verify your installation by running o
   
  <ul>
  <li>Open MATLAB or Octave</li>
- <li>Go into the directory where you wish to install the toolbox: <br><br>
- {% highlight matlab %}
- cd directoryname
- {% endhighlight %}</li>
+ <li>Go into the directory where you wish to install the toolbox with <kbd>cd directoryname</kbd> </li>
  <li>Type (or copy and paste) the following commands into the MATLAB or Octave window:<br><br>
   {% highlight matlab %}
  [old_path]=which('rdsamp');if(~isempty(old_path)) rmpath(old_path(1:end-8)); end
@@ -57,7 +54,5 @@ After installing  <em>FECGSYN</em> you may verify your installation by running o
  addpath(pwd);savepath
 {% endhighlight %}</li>
 </ul>
-
-
  
 </section>

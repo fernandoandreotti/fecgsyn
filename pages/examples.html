@@ -36,10 +36,9 @@ FECGSYN_plotmix(out) % plots random channels of one of the created datasets
 <!-- datagen 2 -->
   <h2 id="datagen2">Ellaborate Example</h2>
 
-  <p>This example make use of the <code>exp_datagen1.m</code> function to generate the dataset used in Behar et al 2014.      </p>
+  <p>This example make use of the <code>exp_datagen1.m</code> function to generate the dataset used in Behar et al 2014. The code will produce simulation files, so be sure to <kbd>cd dirname</kbd> the desired destination path. </p>
 
 {% highlight matlab %}
-cd 'directory_to_save'
 path = pwd;
 exp_datagen1(path,5,false) % generate dataset (may take a few minutes)
 load('fecgsyn_c1.mat')

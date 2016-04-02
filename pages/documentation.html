@@ -5,32 +5,178 @@ author:  "Fernando Andreotti"
 priority: 5
 ---
 
+<p>Several routines are available with the <em>FECGSYN</em>. In this page you can find a general overview on the algorithms included in this framework. For detailed information on each function, please refer to the <a href="{{site.github.url}}/pages/headers.html">header's page</a>.</p>
+
+<p><em>FECGSYN</em> is an open-source toolbox. If you wish to include your methods on this toolbox,<a href="{{site.github.url}}/pages/contribute.html" data-toggle="tooltip" title="Hooray!"> see how to contribute</a>.</p>
+
 <section class="bs-docs-section"> 
 <h1 id="Simulator">Simulating cardiac signals</h1><br>
+
+<p>The <em>FECGSYN</em> is capable of simulating adult and non-invasive fetal ECG realistic simulations. Some of the features present are listed below:</p>
+    
+<ul>
+<li>Realistic noise sources included (i.e. muscular artifact, baseline wander and electrode motion)</li>
+<li>
+Different VCG models from different individuals are availabe, including ectopic cases.    
+</li>    
+<li>Each source, i.e. either cardiac (e.g. mother, fetus) or noise, is regarded as an individual punctual dipoles with different magnitudes and spatial positions, allowing multiple fetuses and any number of noise sources distributed through the volume conductor;</li>    
+<li>
+Translatory and rotatory motion of dipole sources is implemented. This improvement allow the modelling of fetal/maternal respiratory movements and fetal/noise movements inside the volume conductor; 
+</li>    
+<li>
+Different SNRs were assigned to each source, meaning each fetus/noise could have distinct strengths;    
+</li>    
+<li>
+Both heart rate signals and SNR strengths can be modulated, e.g. by a hyperbolic tangent to increase/decrease \ac{HR} or noises SNR;
+</li>
+</ul><br>
     
     
-      <div class="panel panel-primary">
-        <div class="panel-heading"><span class="octicon octicon-book"></span> Reference</div>
-        <div class="panel-body">      
-          <span class="octicon octicon-globe"></span> Andreotti, Fernando, et al. " An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms.</a>).</p>
+<p>When using <em>FECGSYN</em>, please reference the following article:</p>
+
+
+ <div class="panel panel-primary">
+    <div class="panel-heading"><span class="octicon octicon-book"></span> Reference</div>
+    <div class="panel-body">      
+    Behar J., Andreotti F., Zaunseder S., Li Q., Oster J. and Clifford G D., 
+        <a href="http://iopscience.iop.org/0967-3334/35/8/1537/article">An ECG model for 
+            simulating maternal-foetal activity mixtures on abdominal ECG recordings.</a>
+        <i>Physiol Meas</i> <b>35</b>, pp.1537-50, 2014.
             <button class="btn btn-primary btn-xs" data-bootbox="my-content">bibtex</button>
-            <div id="my-content" class="hidden" title="Pop-in title">
-                Have not found a use for this button. I looks pretty though, doesnt it?
-            </div>
-      </div> </div>
+        <div id="my-content" class="hidden" title="Behar et al 2014">
+            @article{Behar2014model,<br>            
+            author = {Behar, Joachim and Andreotti, Fernando and Zaunseder, Sebastian and Li, Qiao and Oster, Julien and Clifford, Gari D}, <br>
+            journal = {Physiol. Meas.}, <br>
+            number = {8}, <br>
+            pages = {1537--1550},<br>
+            title = {{An ECG Model for Simulating Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings}}, <br>
+            url = {http://iopscience.iop.org/article/10.1088/0967-3334/35/8/1537/meta http://stacks.iop.org/0967-3334/35/i=8/a=1537}, <br>
+            volume = {35}, <br>
+            year = {2014} <br>
+            }<br>
+        </div>
+  </div> </div>
 
-
-
-
-
-<blockquote>Behar, Joachim, et al. "A comparison of single channel fetal ECG extraction methods." Annals of biomedical engineering 42.6 (2014): 1340-1353. [Clickable link]</blockquote>
-<blockquote>Behar, Joachim, Julien Oster, and Gari D. Clifford. "Combining and benchmarking methods of foetal ECG extraction without maternal or scalp electrode data." Physiological measurement 35.8 (2014): 1569. [Clickable link]</blockquote>
-<blockquote>Sameni, Reza, Christian Jutten, and Mohammad B. Shamsollahi. "Multichannel electrocardiogram decomposition using periodic component analysis." Biomedical Engineering, IEEE Transactions on 55.8 (2008): 1935-1940. [Clickable link]</blockquote>
-<h2 id="simfecg">Simulate NI-FECG signals</h2><br> 
 
 </section>
 
+<section class="bs-docs-section"> 
+<h1 id="Extraction">Extracting NI-FECG signals</h1><br>
+    
+<p>The <em>FECGSYN</em> toolbox includes several NI-FECG extraction algorithms. The following methods are currently implemented in the toolbox:</p>
+    
+<div class="row">
+  <div class="col-sm-4"><b>Blind Source Separation</b></div>
+  <div class="col-sm-4"><b>Template Subtraction</b></div>
+  <div class="col-sm-4"><b>Adaptive Methods</b></div>
+</div>
+<div class="row">
+  <div class="col-sm-4">Independent Component Analysis (ICA)</div>
+  <div class="col-sm-4">Single adaptive gain (TSc)</div>
+  <div class="col-sm-4">Least Mean Square (LMS)</div>
+</div>    
+<div class="row">
+  <div class="col-sm-4">Principal Component Analysis (PCA)</div>
+  <div class="col-sm-4">Adaptive gains for P-QRS-T (TSm)</div>
+  <div class="col-sm-4">Root Mean Square (RMS)</div>
+</div>        
+<div class="row">
+  <div class="col-sm-4"></div>
+  <div class="col-sm-4">Linear prediction (TSlp) </div>
+  <div class="col-sm-4">Echo State Neural Networks (ESN)</div>
+</div>        
+<div class="row">
+  <div class="col-sm-4"></div>
+  <div class="col-sm-4">TS-PCA (TSpca) </div>
+  <div class="col-sm-4"></div>
+</div>        
+<div class="row">
+  <div class="col-sm-4"></div>
+  <div class="col-sm-4">Kalman filtering (TSekf) </div>
+  <div class="col-sm-4"></div>
+</div>         <br>
+    
+<p></p>    
 
+    
+<p>While using FECGSYN toolbox for extracting NI-FECG, please refer to the following publication: </p>   
+    
+<div class="panel panel-primary">
+<div class="panel-heading"><span class="octicon octicon-book"></span> Reference</div>
+<div class="panel-body">      
+    Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., 
+<a href="http://iopscience.iop.org/....">An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms.</a> <i>Physiol Meas</i> <b>4</b>, pp. ++pages++, 2016.
+            <button class="btn btn-primary btn-xs" data-bootbox="my-content">bibtex</button>
+        <div id="my-content" class="hidden" title="Andreotti et al 2016">
+            @article{Andreotti2016,<br>
+            author = {Andreotti, Fernando and Behar, Joachim and Zaunseder, Sebastian and Oster, Julien and Clifford, Gari D. and Oster, Julien and    Clifford, Gari D.}, <br>
+            number = {4}, <br>
+            pages = {???--???},<br>
+            journal = {Physiol. Meas. (in press}, <br>
+            title = {{An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms}},<br>
+            year = {2016}<br>
+            }<br>
+        </div>
+  </div> </div>
+
+
+    
+<p>The following works were essential for the development of the toolbox:</p>
+    
+<blockquote>Behar, J., Johnson, A.E.W., Clifford, G.D., Oster. J. (2014) <a href="http://www.ncbi.nlm.nih.gov/pubmed/24604619" data-toggle="tooltip" title="go to article">A comparison of single channel fetal ECG extraction methods.</a> <i>Annals of Biomed Eng</i>  <b>42(6)</b>, pp. 1340-1353.</blockquote>
+    <blockquote>Behar, J., Oster, J., & Clifford, G. D. (2014). <a href="http://iopscience.iop.org/article/10.1088/0967-3334/35/8/1569" data-toggle="tooltip" title="go to article">Combining and Benchmarking Methods of Foetal ECG Extraction Without Maternal or Scalp Electrode Data.</a> <i>Physiol Meas</i>, <b>35(8)</b>, 1569–1589.</blockquote>
+    <blockquote>Andreotti, F., Riedl, M., Himmelsbach, T., Wedekind, D., Wessel, N., Stepan, H., … Zaunseder, S. (2014). <a href="http://iopscience.iop.org/article/10.1088/0967-3334/35/8/1551" data-toggle="tooltip" title="go to article">Robust fetal ECG extraction and detection from abdominal leads.</a> <i>Physiol. Meas.</i>, <b>35(8)</b>, 1551–1567. 
+    </blockquote>
+    <blockquote>Sameni, R. (2010). The Open-Source Electrophysiological Toolbox (OSET) v2.1. Retrieved from <a href="http://www.oset.ir" data-toggle="tooltip" title="go to article">http://www.oset.ir</a></blockquote>
+</section>
+
+<section class="bs-docs-section"> 
+<h1 id="Benchmark">Benchmarking algorithms</h1><br>
+
+<p>Along with extraction methods, the toolbox provides tools you can use to benchmark your method's FQRS detection or the morphological feature's accuracy. Benchmarking these methods involve several routines which are briefly listed below: </p>
+
+<div class="row">
+  <div class="col-sm-4"><b>FQRS Detection</b></div>
+  <div class="col-sm-4"><b>Template Generation</b></div>
+  <div class="col-sm-4"><b>FECG Segmentation</b></div>
+</div>
+<div class="row">
+  <div class="col-sm-4">Pan-Tompkins adaptation</div>
+  <div class="col-sm-4">Clustering method</div>
+  <div class="col-sm-4">ECGPUWAVE</div>
+</div>        <br>
+
+    
+    
+    
+<p>While using FECGSYN toolbox for benchmarking purposes, please refer to the following publication: </p>   
+    
+<div class="panel panel-primary">
+<div class="panel-heading"><span class="octicon octicon-book"></span> Reference</div>
+<div class="panel-body">      
+    Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., 
+<a href="http://iopscience.iop.org/....">An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms.</a> <i>Physiol Meas</i> <b>4</b>, pp. ++pages++, 2016.
+            <button class="btn btn-primary btn-xs" data-bootbox="my-content">bibtex</button>
+        <div id="my-content" class="hidden" title="Andreotti et al 2016">
+            @article{Andreotti2016,<br>
+            author = {Andreotti, Fernando and Behar, Joachim and Zaunseder, Sebastian and Oster, Julien and Clifford, Gari D. and Oster, Julien and    Clifford, Gari D.}, <br>
+            number = {4}, <br>
+            pages = {???--???},<br>
+            journal = {Physiol. Meas. (in press}, <br>
+            title = {{An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms}},<br>
+            year = {2016}<br>
+            }<br>
+        </div>
+  </div> </div> <br>
+    
+    
+<p>Routines were obtained from the following references:</p>
+    
+<blockquote>Behar, J., Oster, J., & Clifford, G. D. (2014). <a href="http://iopscience.iop.org/article/10.1088/0967-3334/35/8/1569" data-toggle="tooltip" title="go to article">Combining and Benchmarking Methods of Foetal ECG Extraction Without Maternal or Scalp Electrode Data.</a> <i>Physiol Meas</i>, <b>35(8)</b>, 1569–1589.</blockquote>
+    
+<blockquote>Oster, J., Behar, J., Sayadi, O., Nemati, S., Johnson, A., & Clifford, G. (2015).<a href="http://doi.org/10.1109/TBME.2015.2402236" data-toggle="tooltip" title="go to article">Semi-supervised ECG Ventricular Beat Classification with Novelty Detection Based on Switching Kalman Filters.</a> <i>IEEE Trans. Biomed. Eng.,</i> <b>62(9)</b>, 2125–2134.</blockquote>
+    
+<blockquote>Jane, R., Blasi, A., Garcia, J., & Laguna, P. (1997). <a href="http://doi.org/10.1109/CIC.1997.647889" data-toggle="tooltip" title="go to article">Evaluation of an automatic threshold based detector of waveform limits in Holter ECG with the QT database.</a> In Computers in Cardiology, pp. 295–298.</blockquote>
 <!--
   I might use this for input/output list:<br>
   <div class="table-responsive">
@@ -74,3 +220,4 @@ priority: 5
     </table>
   </div>
 -->
+</section>

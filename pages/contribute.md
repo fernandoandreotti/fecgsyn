@@ -7,6 +7,10 @@ priority: 3
 
 _FECGSYN_ is being constantly updated. Fellow researchers and collaborators are more than welcome to contribute with their own code.
 
+<div>
+    <center><img class="img-responsive" src="images/French_fecgsyn.png" alt="VCGs"  width="283" height="235"></center>
+</div>
+
 ### How to contribute
 There are many ways to contribute to the _FECGSYN_:
 
@@ -25,9 +29,14 @@ There are many ways to contribute to the _FECGSYN_:
 
 The current version of the _FECGSYN_ was developed thanks to the following contributors:
 
-- Fernando Andreotti
-- Joachim Behar
-- Julien Oster
-- Mohsan Alvi
-- Gari D. Clifford
-- Sebastian Zaunseder
+ <div class="row">
+  <div class="col-sm-4">Fernando Andreotti</div>
+  <div class="col-sm-4">Joachim Behar</div>
+  <div class="col-sm-4">Julien Oster</div>
+</div>
+ <div class="row">
+  <div class="col-sm-4">Mohsan Alvi</div>
+  <div class="col-sm-4">Gari D. Clifford</div>
+  <div class="col-sm-4">Sebastian Zaunseder</div>
+</div>
+

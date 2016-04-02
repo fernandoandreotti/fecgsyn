@@ -24,7 +24,7 @@ git clone https://github.com/fernandoandreotti/fecgsyn.git
   
    <h2 id="install-mat">Install on Matlab</h2>
   <p>Simply extract the compressed package (above) to a local folder and include your git folder to Matlab/Octave's path. </p>
-  <p>Alternatively, Matlab users can download and install the toolbox using straight from Matlab by accessing the desired installation path with <kbd>cd directoryname</kbd> and using the following lines of code:</p>
+  <p>Alternatively, Matlab users can download and install the toolbox using straight from Matlab by accessing the desired installation path with <kbd>cd dirname</kbd> and using the following lines of code:</p>
 
 {% highlight matlab %}
 fecgsyn_url='https://git.io/v2Nym';
@@ -44,7 +44,7 @@ After installing  <em>FECGSYN</em> you may verify your installation by running o
   
  <ol>
  <li>Open MATLAB or Octave</li>
- <li>Go into the directory where you wish to install the toolbox with <kbd>cd directoryname</kbd> </li>
+ <li>Go into the directory where you wish to install the toolbox with <kbd>cd dirname</kbd> </li>
  <li>Type (or copy and paste) the following commands into the MATLAB or Octave window:<br><br>
   {% highlight matlab %}
  [old_path]=which('rdsamp');if(~isempty(old_path)) rmpath(old_path(1:end-8)); end

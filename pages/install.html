@@ -23,10 +23,9 @@ git clone https://github.com/fernandoandreotti/fecgsyn.git
   <h1 id="installation" class="page-header">Installing</h1>
   
    <h2 id="install-mat">Install on Matlab</h2>
-  <p>Simply extract the compressed package (above) to a local folder and include your git folder to Matlab/Octave's path. Alternatively, Matlab users can download and install the toolbox using the following lines of code:</p>
+  <p>Simply extract the compressed package (above) to a local folder and include your git folder to Matlab/Octave's path. Alternatively, Matlab users can download and install the toolbox using straight from Matlab by accessing the desired installation path with <kbd>cd directoryname</kbd> and using the following lines of code:</p>
 
 {% highlight matlab %}
-cd('<desired_folder>')
 fecgsyn_url='https://git.io/v2Nym';
 urlwrite(fecgsyn_url,'fecgsyn_toolbox.zip');
 unzip('fecgsyn_toolbox.zip');
@@ -42,7 +41,7 @@ After installing  <em>FECGSYN</em> you may verify your installation by running o
   
   <p>As mentioned on WFDB's Toolbox website, to install or update a previous installation of this toolbox: </p>
   
- <ul>
+ <ol>
  <li>Open MATLAB or Octave</li>
  <li>Go into the directory where you wish to install the toolbox with <kbd>cd directoryname</kbd> </li>
  <li>Type (or copy and paste) the following commands into the MATLAB or Octave window:<br><br>
@@ -53,6 +52,6 @@ After installing  <em>FECGSYN</em> you may verify your installation by running o
  cd wfdb-app-toolbox-0-9-9;cd mcode
  addpath(pwd);savepath
 {% endhighlight %}</li>
-</ul>
+</ol>
  
 </section>

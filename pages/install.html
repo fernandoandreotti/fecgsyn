@@ -10,7 +10,7 @@ published: true
 <section class="bs-docs-section">
 <h1 id="download" class="page-header">Downloading</h1>
   
-<p>The latest stable version of the source code for MATLAB/Octave is available in <a href="https://git.io/v2Nym"><span class="octicon octicon-file-zip"></span>  compressed format</a>.
+<p>The latest stable version of the source code for MATLAB/Octave is available in <a href="https://github.com/fernandoandreotti/fecgsyn/archive/master.zip"><span class="octicon octicon-file-zip"></span>  compressed format</a>.
 
 <p>If you have git installed and would rather have the latest stable <em>FECGSYN</em>, you may consider cloning branch master from GitHub:</p>
 
@@ -27,10 +27,10 @@ git clone https://github.com/fernandoandreotti/fecgsyn.git
   <p><em>Alternatively</em>, Matlab users can download and install the toolbox using straight from Matlab by accessing the desired installation path with <kbd>cd dirname</kbd> and using the following lines of code:</p>
 
 {% highlight matlab %}
-fecgsyn_url='https://git.io/v2Nym';
+fecgsyn_url='https://github.com/fernandoandreotti/fecgsyn/archive/master.zip';
 urlwrite(fecgsyn_url,'fecgsyn_toolbox.zip');
 unzip('fecgsyn_toolbox.zip');
-cd fecgsyn_toolbox
+cd fecgsyn-master
 addpath(pwd);savepath
 {% endhighlight %}
 

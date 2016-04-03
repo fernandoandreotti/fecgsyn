@@ -29,9 +29,9 @@ There are many ways to contribute to the _FECGSYN_:
 
 The current version of the _FECGSYN_ was developed thanks to the following contributors:
 
+Fernando Andreotti ([homepage](http://fernando.planetarium.com.br/))<br>
+Joachim Behar ([homepage](http://joachimbehar.comuv.com/))<br>
 Mohsan Alvi<br>
-Fernando Andreotti<br>
-Joachim Behar<br>
 Gari D. Clifford<br>
 Julien Oster<br>
 Sebastian Zaunseder<br>

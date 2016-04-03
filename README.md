@@ -1,32 +1,19 @@
-NI-FECG simulator toolbox, version 1.1, August 2014
+_FECGSYN_ toolbox, version 1.1, April 2016
 ====
-Documentation: [http://fernandoandreotti.github.io/fecgsyn](http://fernandoandreotti.github.io/fecgsyn)
+Documentation available at: [http://fernandoandreotti.github.io/fecgsyn](http://fernandoandreotti.github.io/fecgsyn)
 
-Released under the GNU General Public License
+Checkout a large dataset of simulated signals (FECGSYNDB) [available at Physionet](https://www.physionet.org/physiotools/ipmcode/fecgsyn/)
+
+See latest release under [https://github.com/fernandoandreotti/fecgsyn/releases/](https://github.com/fernandoandreotti/fecgsyn/releases/)
 
 
-Copyright (C) 2014 
-Intelligent Patient Monitoring Group - Oxford 2014
+The FECGSYN toolbox is a reference open-source platform for NI-FECG research, product of a collaboration between the Department of Engineering Science, University of Oxford (DES-OX), the Institute of Biomedical Engineering, TU Dresden (IBMT-TUD) and the Biomedical Engineering Faculty at the Technion Israel Institute of Technology (BME-IIT). The authors are Joachim Behar (DES-OX,BME-IIT), Fernando Andreotti (IBMT-TUD), Julien Oster (DES-OX), Sebastian Zaunseder (IBMT-TUD) and Gari D. Clifford (DES-OX).
+
+
+Copyright (C) 2016
+Intelligent Patient Monitoring Group - Oxford 2016
 Contacts: joachim.behar@eng.ox.ac.uk & fernando.andreotti@mailbox.tu-dresden.de
 
-Description
-FECGSYN is a realistic non-invasive foetal ECG (NI-FECG) generator that 
-uses the Gaussian ECG model originally introduced by McSharry et al. 
-The toolbox generates synthetic NI-FECG mixtures considering various 
-user-defined settings, e.g. noise sources, heart rate and heart rate 
-variability, rotation of the maternal and foetal heart axes due to 
-respiration, foetus movement, contractions, ectopic beats and multiple 
-pregnancy. Any number of electrodes can be freely placed on the maternal 
-abdomen. The synthetic ECG simulator is a good tool for modelling realistic 
-FECG-MECG mixtures and specific events such as abrupt heart rate increase, 
-in order to benchmark signal processing algorithms on realistic data and 
-for scenarios that resemble important clinical events.
-
-FECGSYN is fruit of the collaboration between the Department of Engineering 
-Science, University of Oxford (DES-OX) and the Institute of Biomedical Engineering, 
-TU Dresden (IBMT-TUD). The authors are Joachim Behar (DES-OX), Fernando Andreotti 
-(IBMT-TUD), Julien Oster (DES-OX), Sebastian Zaunseder (IBMT-TUD) and 
-Gari Clifford (DES-OX). 
 
 History
 FECGSYN is built upon the work from McSharry et al. [1] and Sameni et al. [2] 
@@ -46,7 +33,7 @@ maternal and foetal ECG signals. EURASIP Journal on Advances in Signal Processin
 
 
 
-
+Released under the GNU General Public License
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -67,11 +54,4 @@ Behar, Joachim, Fernando Andreotti, Sebastian Zaunseder, Qiao Li, Julien Oster, 
 "An ECG Model for Simulating Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings." 
 Physiol Meas (Accepted for publication - Focus issue: Noninvasive Fetal ECG).
 
-Bibtex
-
-@article{Behar_Andreotti_Zaunseder_Li_Oster_Clifford_2014, 
-title={An ECG Model for Simulating Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings}, 
-author={Behar, Joachim and Andreotti, Fernando and Zaunseder, Sebastian and Li, Qiao and Oster, Julien and Clifford, Gari D}, 
-number={Focus issue: Noninvasive Fetal ECG}, 
-journal={Physiol Meas (Accepted for publication)}, 
-year={2014}}
+Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms. Physiol Meas 4, pp. ++pages++, 2016.

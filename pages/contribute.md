@@ -29,14 +29,12 @@ There are many ways to contribute to the _FECGSYN_:
 
 The current version of the _FECGSYN_ was developed thanks to the following contributors:
 
- <div class="row">
-  <div class="col-sm-4">Fernando Andreotti</div>
-  <div class="col-sm-4">Joachim Behar</div>
-  <div class="col-sm-4">Julien Oster</div>
-</div>
- <div class="row">
-  <div class="col-sm-4">Mohsan Alvi</div>
-  <div class="col-sm-4">Gari D. Clifford</div>
-  <div class="col-sm-4">Sebastian Zaunseder</div>
-</div>
+Mohsan Alvi<br>
+Fernando Andreotti<br>
+Joachim Behar<br>
+Gari D. Clifford<br>
+Julien Oster<br>
+Sebastian Zaunseder<br>
+
+<p><em>FECGSYN</em> is an open-source toolbox, feel free to <a href="{{site.github.url}}/pages/contribute.html" data-toggle="tooltip" title="Hooray!">contribute</a></p>
 

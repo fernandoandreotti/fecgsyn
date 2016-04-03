@@ -32,8 +32,8 @@ The current version of the _FECGSYN_ was developed thanks to the following contr
 Fernando Andreotti ([homepage](http://fernando.planetarium.com.br/))<br>
 Joachim Behar ([homepage](http://joachimbehar.comuv.com/))<br>
 Mohsan Alvi<br>
-Gari D. Clifford<br>
-Julien Oster<br>
+Gari D. Clifford ([homepage](http://gdclifford.info/))<br>
+Julien Oster ([homepage](http://julienoster.tk/))<br>
 Sebastian Zaunseder<br>
 
 <p><em>FECGSYN</em> is an open-source toolbox, feel free to <a href="{{site.github.url}}/pages/contribute.html" data-toggle="tooltip" title="Hooray!">contribute</a></p>

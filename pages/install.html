@@ -31,7 +31,9 @@ fecgsyn_url='https://github.com/fernandoandreotti/fecgsyn/archive/master.zip';
 urlwrite(fecgsyn_url,'fecgsyn_toolbox.zip');
 unzip('fecgsyn_toolbox.zip');
 cd fecgsyn-master
-addpath(pwd);savepath
+addpath(pwd);
+addpath(genpath('.'));
+savepath
 {% endhighlight %}
 
 After installing  <em>FECGSYN</em> you may verify your installation by running one of the available  <a href="{{site.github.url}}/pages/examples.html"><span class="octicon octicon-globe"></span> Examples</a>.

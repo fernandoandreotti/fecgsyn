@@ -160,7 +160,7 @@ FECGSYN_main_extract(path,narrowband,wfdb)
 
 <h2 id="fqrs">FQRS detection</h2>
 
-<p>Single channel FQRS detection can be performed on extracted signals using the <code>qrs_detect.m</code> function by Behar et al 2014. The detector is a simple offline implementation of the Pan & Tompkins algorithm, adapted for FECG (i.e. the refractory period is shorter than for adult ECG). The function returns the FQRS locations, given a <code>signal</code>, threshold level (<code>thr</code>, same unit as signal amplitude), refractory period (<code>refrac</code>, in s) and sampling frequency (<code>fs</code>, in Hz). It is called as <code>fqrs = qrs_detect(signal,thr,refrac,fs)</code>. The following example can be used subsequently to the <a href="{{site.github.url}}/pages/examples.html#tsc"></a>Simple TSc Extraction Example</a> See the following example:</p>
+<p>Single channel FQRS detection can be performed on extracted signals using the <code>qrs_detect.m</code> function by Behar et al 2014. The detector is a simple offline implementation of the Pan & Tompkins algorithm, adapted for FECG (i.e. the refractory period is shorter than for adult ECG). The function returns the FQRS locations, given a <code>signal</code>, threshold level (<code>thr</code>, same unit as signal amplitude), refractory period (<code>refrac</code>, in s) and sampling frequency (<code>fs</code>, in Hz). It is called as <code>fqrs = qrs_detect(signal,thr,refrac,fs)</code>. The following example can be used subsequently to the <a href="{{site.github.url}}/pages/examples.html#tsc">Simple TSc Extraction Example</a> See the following example:</p>
 
 {% highlight matlab %}
 fqrs = qrs_detect(residual,0.25,0.100,250) % performs single channel FQRS detection

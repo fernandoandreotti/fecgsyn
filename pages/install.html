@@ -27,6 +27,7 @@ git clone https://github.com/fernandoandreotti/fecgsyn.git
   <p><em>Alternatively</em>, Matlab users can download and install the toolbox using straight from Matlab by accessing the desired installation path with <kbd>cd dirname</kbd> and using the following lines of code:</p>
 
 {% highlight matlab %}
+[old_path]=which('FECGSYN_UI');if(~isempty(old_path)) rmpath(old_path(1:end-12)); end
 fecgsyn_url='https://github.com/fernandoandreotti/fecgsyn/archive/master.zip';
 urlwrite(fecgsyn_url,'fecgsyn_toolbox.zip');
 unzip('fecgsyn_toolbox.zip');
@@ -36,7 +37,14 @@ addpath(genpath('.'));
 savepath
 {% endhighlight %}
 
-After installing  <em>FECGSYN</em> you may verify your installation by running one of the available  <a href="{{site.github.url}}/pages/examples.html"><span class="octicon octicon-globe"></span> Examples</a>.
+After installing  <em>FECGSYN</em> you may verify your installation by loading the following dummy dataset:
+{% highlight matlab %}
+slashchar = char('/'*isunix + '\'*(~isunix));
+load([pwd slashchar 'examples' slashchar 'test.mat'])
+FECGSYN_plotmix(out)
+{% endhighlight %}
+
+Further examples are available  <a href="{{site.github.url}}/pages/examples.html"><span class="octicon octicon-globe"></span> here</a>.
    
  <h3 id="install-wfdb">Dependencies</h3>
  

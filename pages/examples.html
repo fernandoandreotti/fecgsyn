@@ -109,15 +109,24 @@ wfdb2fecgsyn(path)
 
 <h2 id="tsc">Extraction using Template Subtraction</h2>
 
-<p>This example makes use of the template subtraction (TS) method by Cerutti et al 1986, using the <code>FECGSYN_ts_extraction.m</code> function. As input the function expects the maternal QRS locations (<code>mref</code>), abdominal signal (<code>mixture</code> - rows represent different channels), a predetermined number of cycles to use on the average maternal template (<code>NbCycles</code>) and sampling frequency used (<code>fs</code>). See the example:</p>
+<p>This minimalistic example makes use of the template subtraction (TS) method by Cerutti et al 1986, using the <code>FECGSYN_ts_extraction.m</code> function, using the <kbd>test.mat</kbd> examplary set. As input the function expects the maternal QRS locations (<code>mref</code>), abdominal signal (<code>mixture</code> - rows represent different channels), a predetermined number of cycles to use on the average maternal template (<code>NbCycles</code>) and sampling frequency used (<code>fs</code>). See the example:</p>
 
 {% highlight matlab %}
+old_path=which('FECGSYN_UI') % find path to FECGSYN
+slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
+load([old_path(1:end-12) slashchar 'examples' slashchar 'test.mat']) % load set
 NbCycles = 20; % number of cycles used
-residual = zeros(size(mixture));
-for j = 1:length(ch)
-  residual(j,:) = FECGSYN_ts_extraction(mref,mixture(j,:),'TS-CERUTTI',0,...
-  NbCycles,'',fs);
-end
+ch = 20;
+residual = FECGSYN_ts_extraction(out.mqrs,out.mixture(ch,:),'TS-CERUTTI',0,...
+  NbCycles,'',out.param.fs);
+% Plotting results
+plot(out.mixture(ch,:),'Color',[0.8 0.8 0.8])
+hold on
+plot(residual)
+plot(out.mqrs,2.*ones(1,length(out.mqrs)),'gd')
+plot(out.fqrs{1},1,'xb')
+legend('abdm mixture','extracted signal','MQRS','FQRS')
+hold off
 {% endhighlight %}
 
 <p>As output, the function returns the <code>residual</code> variable, which has the same dimensions as <code>mixture</code>.</p>
@@ -136,6 +145,7 @@ end
 
 {% highlight matlab %}
 path % this is path where simulated data is allocated
+wfdb % true/false, data format in WFDB?
 FECGSYN_main_extract(path,narrowband,wfdb)
 {% endhighlight %}
 
@@ -150,10 +160,10 @@ FECGSYN_main_extract(path,narrowband,wfdb)
 
 <h2 id="fqrs">FQRS detection</h2>
 
-<p>Single channel FQRS detection can be performed on extracted signals using the <code>qrs_detect.m</code> function by Behar et al 2014. The detector is a simple offline implementation of the Pan & Tompkins algorithm, adapted for FECG (i.e. the refractory period is shorter than for adult ECG). The function returns the FQRS locations, given a <code>signal</code>, threshold level (<code>thr</code>, same unit as signal amplitude), refractory period (<code>refrac</code>, in s) and sampling frequency (<code>fs</code>, in Hz). It is called as <code>fqrs = qrs_detect(signal,thr,refrac,fs)</code>. See the following example:</p>
+<p>Single channel FQRS detection can be performed on extracted signals using the <code>qrs_detect.m</code> function by Behar et al 2014. The detector is a simple offline implementation of the Pan & Tompkins algorithm, adapted for FECG (i.e. the refractory period is shorter than for adult ECG). The function returns the FQRS locations, given a <code>signal</code>, threshold level (<code>thr</code>, same unit as signal amplitude), refractory period (<code>refrac</code>, in s) and sampling frequency (<code>fs</code>, in Hz). It is called as <code>fqrs = qrs_detect(signal,thr,refrac,fs)</code>. The following example can be used subsequently to the <a href="{{site.github.url}}/pages/examples.html#tsc"></a>Simple TSc Extraction Example</a> See the following example:</p>
 
 {% highlight matlab %}
-fqrs = qrs_detect(signal,0.25,0.100,250)
+fqrs = qrs_detect(residual,0.25,0.100,250) % performs single channel FQRS detection
 {% endhighlight %}
 
 <p>The function <code>Bxb_compare.m</code>, based on Physionet's <code>bxb()</code>, enables the assessment on FQRS detection accuracy, in terms of F1-measure (<code>F1</code>), mean absolute error (<code>MAE</code> - a distance measure), positive predictive value (<code>PPV</code>), sensitivity (<code>SE</code>), number of true positives (<code>TP</code>), false negatives (<code>FN</code>) and false positives (<code>FP</code>). As input the reference (<code>out.fqrs</code>) and test FQRS locations (<code>fqrs</code>) sould be provided, along with an acceptance interval (<code>acceptint</code> - in samples).</p>

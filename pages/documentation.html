@@ -52,27 +52,27 @@ Both heart rate signals and SNR strengths can be modulated, e.g. by a hyperbolic
 </div>
 <div class="row">
   <div class="col-sm-4">Independent Component Analysis (ICA)</div>
-  <div class="col-sm-4">Single adaptive gain (TSc)</div>
-  <div class="col-sm-4">Least Mean Square (LMS)</div>
+  <div class="col-sm-4">Single adaptive gain (TSc) (<a href="#Behar2014cinc">Behar2014cinc</a>)</div>
+  <div class="col-sm-4">Least Mean Square (LMS) (<a href="#Behar2014abme">Behar2014abme</a>)</div>
 </div>    
 <div class="row">
   <div class="col-sm-4">Principal Component Analysis (PCA)</div>
-  <div class="col-sm-4">Adaptive gains for P-QRS-T (TSm)</div>
-  <div class="col-sm-4">Root Mean Square (RMS)</div>
+  <div class="col-sm-4">Adaptive gains for P-QRS-T (TSm) (<a href="#Behar2014cinc">Behar2014cinc</a>)</div>
+  <div class="col-sm-4">Root Mean Square (RMS) (<a href="#Behar2014abme">Behar2014abme</a>)</div>
 </div>        
 <div class="row">
   <div class="col-sm-4"></div>
-  <div class="col-sm-4">Linear prediction (TSlp) </div>
+  <div class="col-sm-4">Linear prediction (TSlp) (<a href="#Behar2014cinc">Behar2014cinc</a>)</div>
   <div class="col-sm-4">Echo State Neural Networks (ESN) (<a href="#Behar2014abme">Behar2014abme</a>)</div>
 </div>        
 <div class="row">
   <div class="col-sm-4"></div>
-  <div class="col-sm-4">TS-PCA (TSpca) </div>
+  <div class="col-sm-4">TS-PCA (TSpca) (<a href="#Behar2014cinc">Behar2014cinc</a>)</div>
   <div class="col-sm-4"></div>
 </div>        
 <div class="row">
   <div class="col-sm-4"></div>
-  <div class="col-sm-4">Kalman filtering (TSekf) </div>
+  <div class="col-sm-4">Kalman filtering (TSekf) (<a href="#Andreotti2014">Andreotti2014</a>)</div>
   <div class="col-sm-4"></div>
 </div>         <br>
     
@@ -84,11 +84,50 @@ Both heart rate signals and SNR strengths can be modulated, e.g. by a hyperbolic
 
 <p>The following works were essential for the development of the toolbox:</p>
 
+
+
+</section>
+
+<section class="bs-docs-section"> 
+<h1 id="Benchmark">Benchmarking algorithms</h1><br>
+
+<p>Along with extraction methods, the toolbox provides tools you can use to benchmark your method's FQRS detection or the morphological feature's accuracy. Benchmarking these methods involve several routines which are briefly listed below: </p>
+
+<div class="row">
+  <div class="col-sm-4"><b>FQRS Detection</b></div>
+  <div class="col-sm-4"><b>Template Generation</b></div>
+  <div class="col-sm-4"><b>FECG Segmentation</b></div>
+</div>
+<div class="row">
+  <div class="col-sm-4">Pan-Tompkins adaptation <a href="#Behar2014cinc">Behar20014cinc</a></div>
+  <div class="col-sm-4">Clustering method <a href="#Oster2015">Oster2015</a></div>
+  <div class="col-sm-4">ECGPUWAVE <a href="#Jane1997">Jane1997</a></div>
+</div>        <br>
+
+    
+    
+    
+<p>While using FECGSYN toolbox for benchmarking purposes, please refer to the following publication: </p>   
+    
+<div class="panel panel-primary">
+<div class="panel-heading"><span class="octicon octicon-book"></span> Reference</div>
+<div class="panel-body">      
+    Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., 
+<a href="http://iopscience.iop.org/article/10.1088/0967-3334/37/5/627" target="_blank">An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms.</a> <i>Physiol Meas</i> <b>4</b>, pp. 627-648, 2016.
+  </div> </div> <br>
+    
+    
+</section>
+<section class="bs-docs-section"> 
+<h1 id="Refs">References</h1><br>
+
+The following table refers to algorithms and toolboxes used during the development of the <em>FECGSYN</em>.
+
 <div class="table-responsive">
     <table class="table table-bordered table-striped">
         <thead class="thead-inverse">
         <tr>
-          <th style="width: 130px;">Ref.</th>
+          <th style="width: 130px;">Key</th>
           <th>Reference</th>
         </tr>
       </thead>
@@ -120,47 +159,17 @@ Both heart rate signals and SNR strengths can be modulated, e.g. by a hyperbolic
           <td><a id="Sameni2010oset">Sameni2010oset</a></td>
           <td>Sameni, R. (2010). The Open-Source Electrophysiological Toolbox (OSET) v2.1. Retrieved from <a href="http://www.oset.ir" data-toggle="tooltip" title="go to article" target="_blank">http://www.oset.ir</a></td>
         </tr>
+       <tr>
+          <td><a id="Jane1997">Jane1997</a></td>
+          <td>Jane, R., Blasi, A., Garcia, J., & Laguna, P. (1997). <a href="http://doi.org/10.1109/CIC.1997.647889" data-toggle="tooltip" title="go to article" target="_blank">Evaluation of an automatic threshold based detector of waveform limits in Holter ECG with the QT database.</a> In Computers in Cardiology, pp. 295–298.</td>
+        </tr>
+        <tr>
+          <td><a id="Oster2015">Oster2015</a></td>
+          <td>Oster, J., Behar, J., Sayadi, O., Nemati, S., Johnson, A., & Clifford, G. (2015).<a href="http://doi.org/10.1109/TBME.2015.2402236" target="_blank" data-toggle="tooltip" title="go to article">Semi-supervised ECG Ventricular Beat Classification with Novelty Detection Based on Switching Kalman Filters.</a> <i>IEEE Trans. Biomed. Eng.,</i> <b>62(9)</b>, 2125–2134.</td>
+        </tr>
+
+
       </tbody>
     </table>
   </div>
-
-</section>
-
-<section class="bs-docs-section"> 
-<h1 id="Benchmark">Benchmarking algorithms</h1><br>
-
-<p>Along with extraction methods, the toolbox provides tools you can use to benchmark your method's FQRS detection or the morphological feature's accuracy. Benchmarking these methods involve several routines which are briefly listed below: </p>
-
-<div class="row">
-  <div class="col-sm-4"><b>FQRS Detection</b></div>
-  <div class="col-sm-4"><b>Template Generation</b></div>
-  <div class="col-sm-4"><b>FECG Segmentation</b></div>
-</div>
-<div class="row">
-  <div class="col-sm-4">Pan-Tompkins adaptation</div>
-  <div class="col-sm-4">Clustering method</div>
-  <div class="col-sm-4">ECGPUWAVE</div>
-</div>        <br>
-
-    
-    
-    
-<p>While using FECGSYN toolbox for benchmarking purposes, please refer to the following publication: </p>   
-    
-<div class="panel panel-primary">
-<div class="panel-heading"><span class="octicon octicon-book"></span> Reference</div>
-<div class="panel-body">      
-    Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., 
-<a href="http://iopscience.iop.org/article/10.1088/0967-3334/37/5/627" target="_blank">An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms.</a> <i>Physiol Meas</i> <b>4</b>, pp. 627-648, 2016.
-  </div> </div> <br>
-    
-    
-<p>Routines were obtained from the following references:</p>
-    
-<blockquote>Behar, J., Oster, J., & Clifford, G. D. (2014). <a href="http://iopscience.iop.org/article/10.1088/0967-3334/35/8/1569" target="_blank" data-toggle="tooltip" title="go to article">Combining and Benchmarking Methods of Foetal ECG Extraction Without Maternal or Scalp Electrode Data.</a> <i>Physiol Meas</i>, <b>35(8)</b>, 1569–1589.</blockquote>
-    
-<blockquote>Oster, J., Behar, J., Sayadi, O., Nemati, S., Johnson, A., & Clifford, G. (2015).<a href="http://doi.org/10.1109/TBME.2015.2402236" target="_blank" data-toggle="tooltip" title="go to article">Semi-supervised ECG Ventricular Beat Classification with Novelty Detection Based on Switching Kalman Filters.</a> <i>IEEE Trans. Biomed. Eng.,</i> <b>62(9)</b>, 2125–2134.</blockquote>
-    
-<blockquote>Jane, R., Blasi, A., Garcia, J., & Laguna, P. (1997). <a href="http://doi.org/10.1109/CIC.1997.647889" data-toggle="tooltip" title="go to article" target="_blank">Evaluation of an automatic threshold based detector of waveform limits in Holter ECG with the QT database.</a> In Computers in Cardiology, pp. 295–298.</blockquote>
-
 </section>

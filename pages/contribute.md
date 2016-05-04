@@ -24,6 +24,14 @@ There are many ways to contribute to the _FECGSYN_:
 
 -> If you have any doubts, do not hesitate to [<span class="octicon octicon-mail"></span> contact us](mailto:fernando.andreotti@mailbox.tu-dresden.de;joachim.behar@eng.ox.ac.uk)
 
+### Benefits of Contributing
+
+ - enable other researchers to contribute, debug and build on your work
+ 
+ - advertise your research, published algorithms are linked in the [Documentation]({{site.github.url}}/pages/documentation.html))
+ 
+ - ensure reproducibility of your results
+
 
 ### Acknowledgments
 

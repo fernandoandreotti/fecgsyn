@@ -7,7 +7,7 @@ priority: 2
 published: true
 ---
 
-In this section exemplary use of the <em>FECGSYN</em> are illustrated. For more information make sure you consult the <a href="{{site.github.url}}/pages/documentation.html"><span class="octicon octicon-globe"></span> Documentation</a>.
+In this section exemplary use of the <em>FECGSYN</em> are illustrated. Before running any of the examples you will need to <a href="{{site.github.url}}/pages/install.html"><span class="octicon octicon-globe"></span> install the <em>FECGSYN</em> toolbox</a>.  For more information make sure you consult the <a href="{{site.github.url}}/pages/documentation.html"><span class="octicon octicon-globe"></span> Documentation</a>.
 
 <section class="bs-docs-section">
  
@@ -54,8 +54,8 @@ FECGSYN_plotmix(out) % plots random channels of one of the created datasets
   </ul>
 
 <p><b>Reference:</b></p>
-<blockquote> Behar J., Andreotti F., Zaunseder S., Li Q., Oster J. and Clifford G D., An ECG model for simulating maternal-foetal activity mixtures on abdominal ECG recordings. Physiol Meas 35, pp.1537-50, 2014. </blockquote>
-<blockquote> Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms. Physiol Meas 4, pp. ++pages++, 2016. </blockquote>
+<blockquote style="font-size:12px"> Behar J., Andreotti F., Zaunseder S., Li Q., Oster J. and Clifford G D., An ECG model for simulating maternal-foetal activity mixtures on abdominal ECG recordings. Physiol Meas 35, pp.1537-50, 2014. </blockquote>
+<blockquote style="font-size:12px"> Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms. Physiol Meas 4, pp. ++pages++, 2016. </blockquote>
 
 </section>
 
@@ -133,7 +133,7 @@ hold off
 
 <p><b>Reference:</b></p>
 
-<blockquote>Cerutti, S., Baselli, G., Civardi, S., Ferrazzi, E., Marconi, A. M., Pagani, M., & Pardi, G. (1986). Variability analysis of fetal heart rate signals as obtained from abdominal electrocardiographic recordings. Journal of Perinatal Medicine, 14(6), 445–452.</blockquote>
+<blockquote style="font-size:12px">Cerutti, S., Baselli, G., Civardi, S., Ferrazzi, E., Marconi, A. M., Pagani, M., & Pardi, G. (1986). Variability analysis of fetal heart rate signals as obtained from abdominal electrocardiographic recordings. Journal of Perinatal Medicine, 14(6), 445–452.</blockquote>
 
  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> The  <code>FECGSYN_ts_extraction.m</code> function has several pre-built TS methods that can be used by simply substituting <code>'TS-CERUTTI'</code> for <code>'TS'</code>, <code>'TS-SUZANNA'</code>, <code>'TS-LP'</code> or <code>'TS-PCA'</code>. Make sure to see the <a href="{{site.github.url}}/pages/documentation.html#FECGSYN_ts_extraction"><span class="octicon octicon-globe"></span> Documentation</a>. </div></div>
 
@@ -183,8 +183,8 @@ stats=FECGSYN_benchFQRS(path,ch,debug)
 {% endhighlight %}
 
 <p><b>References:</b></p>
-<blockquote>Pan, J., & Tompkins, W. J. (1985). A Real-Time QRS Detection Algorithm. IEEE.J.BME, (3), 230–236.</blockquote>
-<blockquote>Behar, J., Oster, J., & Clifford, G. D. (2014). Combining and Benchmarking Methods of Foetal ECG Extraction Without Maternal or Scalp Electrode Data. Physiological Measurement, 35(8), 1569–1589.</blockquote>
+<blockquote style="font-size:12px">Pan, J., & Tompkins, W. J. (1985). A Real-Time QRS Detection Algorithm. IEEE.J.BME, (3), 230–236.</blockquote>
+<blockquote style="font-size:12px">Behar, J., Oster, J., & Clifford, G. D. (2014). Combining and Benchmarking Methods of Foetal ECG Extraction Without Maternal or Scalp Electrode Data. Physiological Measurement, 35(8), 1569–1589.</blockquote>
 
 
 <h2 id="morpho">Morphological features</h2>
@@ -212,7 +212,7 @@ morph=FECGSYN_benchMorph(path,ch,debug)
 <div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span> Warning</div><div class="panel-body"> The script may take a while to run since it makes use of the ECGPUWAVE function, where several WFDB - Matlab transformations take place.</div></div>
 
 <p><b>Reference:</b></p>
-<blockquote>Jane, R et al. 1997 Evaluation of An Automatic Threshold Based Detector of Waveform Limits in Holter ECG with the QT Database. Computers in Cardiology. </blockquote>
+<blockquote style="font-size:12px">Jane, R et al. 1997 Evaluation of An Automatic Threshold Based Detector of Waveform Limits in Holter ECG with the QT Database. Computers in Cardiology. </blockquote>
 
 </section>
 

@@ -26,6 +26,8 @@ There are many ways to contribute to the _FECGSYN_:
 
 ### Benefits of Contributing
 
+Collaborative research has various benefits, here are some of those:
+
  - enable other researchers to contribute, debug and build on your work
  
  - advertise your research, published algorithms are linked in the [Documentation]({{site.github.url}}/pages/documentation.html))

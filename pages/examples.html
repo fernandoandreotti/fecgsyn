@@ -114,7 +114,7 @@ wfdb2fecgsyn(path)
 {% highlight matlab %}
 old_path=which('FECGSYN_UI') % find path to FECGSYN
 slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
-load([old_path(1:end-12) slashchar 'examples' slashchar 'test.mat']) % load set
+load([old_path(1:end-12) slashchar 'data' slashchar 'test.mat']) % load set
 NbCycles = 20; % number of cycles used
 ch = 20;
 residual = FECGSYN_ts_extraction(out.mqrs,out.mixture(ch,:),'TS-CERUTTI',0,...

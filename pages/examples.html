@@ -57,7 +57,7 @@ FECGSYN_plotmix(out) % plots random channels of one of the created datasets
 <blockquote style="font-size:12px"> Behar J., Andreotti F., Zaunseder S., Li Q., Oster J. and Clifford G D., An ECG model for simulating maternal-foetal activity mixtures on abdominal ECG recordings. Physiol Meas 35, pp.1537-50, 2014. </blockquote>
 <blockquote style="font-size:12px"> Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms. Physiol Meas 4, pp. ++pages++, 2016. </blockquote>
 
-</section>
+</section> <hr>
 
 <!-------------FECG EXTRACTION--------->
 <section class="bs-docs-section">
@@ -108,7 +108,7 @@ FECGSYN_main_extract(path,narrowband,wfdb)
 <p>This function saves each extracted signal in an separate <code>.mat</code> file under the directory <code>'path/ext/'</code>. In order to reduce the filenames, a coding is introduce consisting of 'rec' (for recording) and a number, followed by the extraction method used, for example <code>rec1_tsc.mat</code> or <code>rec5_PCA.mat</code>. An <code>index.mat</code> file is also saved on the folder to allow the backwards mapping of simulated and extracted datasets.</p>
 
  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> For batch processing, avoid converting data to WFDB format, since it may cause slow downs. </div></div>
-</section>
+</section> <hr>
 
 <!------------- Benchmarking --------->
 <section class="bs-docs-section">
@@ -170,7 +170,7 @@ morph=FECGSYN_benchMorph(path,ch,debug)
 <p><b>Reference:</b></p>
 <blockquote style="font-size:12px">Jane, R et al. 1997 Evaluation of An Automatic Threshold Based Detector of Waveform Limits in Holter ECG with the QT Database. Computers in Cardiology. </blockquote>
 
-</section>
+</section> <hr>
 
 <!-- -----------WFDB FECGSYN------- -->
 <section class="bs-docs-section">
@@ -213,8 +213,7 @@ wfdb2fecgsyn(path)
 <div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span> Warning</div><div class="panel-body"> <code>path</code> must be an unique identifier for a WFDB dataset, which excludes the extension of the files. For instance, for the <em>FECGSYN-DB</em> <code>'sub01_snr00dB_l1_c0'</code> represents an unique identifier for a dataset consisting of multiple files: <code>_mecg</code>,<code>_fecg1</code>,<code>_noise1</code> with <code>.dat</code>, <code>.hea</code>, <code>.mqrs</code> and <code>.fqrs</code> extensions.</div></div>
 
  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> You may have a look at function <code>main_extract_data.m</code> function for a simple use of the <code>wfdb2fecgsyn.m</code>, see <a href="{{site.github.url}}/pages/examples.html#main_extract_data">this example</a>. </div></div>
-</section>
-
+</section> <hr>
 
 <!-------------GUI--------->
 <section class="bs-docs-section">

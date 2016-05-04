@@ -55,7 +55,7 @@ function FECGSYN_plotmix(out)
 FONT_SIZE = 15;
 LINE_WIDTH = 1.2;
 MARKER_SIZE = 5;
-Nplots = 5;      % number of plots
+Nplots = 4;      % number of plots
 
 if ~exist('out.mixture','var')
     if ~isempty(out.noise)
@@ -82,6 +82,7 @@ for i = 1:Nplots
     valm = 1.2*median(out.mixture(chan(i),out.mqrs))*ones(1,length(out.mqrs));
     plot(out.mqrs,valm,'dk','MarkerSize',MARKER_SIZE,'MarkerFaceColor','k')
     ylabel(['ch' num2str(chan(i))],'FontSize',FONT_SIZE)
+    if i<Nplots; set(gca,'xticklabel',{[]});else legend('abdm signal','FQRS','MQRS'); end
     hold off
 end
 linkaxes(h)

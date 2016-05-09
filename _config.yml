@@ -38,14 +38,14 @@ githubButton:
 
 # twitter buttons
 twitter:
-  enabled: true
+  enabled: false
   via:
   hash:
   account:
 
 # facebook buttons
 facebook:
-  enabled: true
+  enabled: false
   profileUrl:
 
 # Conversion

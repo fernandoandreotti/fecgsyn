@@ -123,7 +123,7 @@ The following examples assume that the user already extracted FECG from your dat
 old_path=which('FECGSYN_UI') % find path to FECGSYN
 slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
 path = [old_path(1:end-12) slashchar 'data' slashchar];
-load('test.mat')% load test set
+load([path 'test.mat'])% load test set
 NbCycles = 20; % number of cycles used
 ch = 3;
 residual = FECGSYN_ts_extraction(out.mqrs,out.mixture(ch,:),'TS-CERUTTI',0,...
@@ -234,9 +234,8 @@ wfdb2fecgsyn(path)
 <section class="bs-docs-section">
 <h1 id="guiguide" class="page-header">Using FECGSYN's GUI</h1>
 
-<h2 id="guisub1">How to use it</h2>
+The FECGSYN GUI is compatible with the v.1.0 of the FECGSYN and should not work properly with the current version. Updates on the interface should soon take place.
 
-TODO. Add some screeshots as a simple guide.
 
 
 

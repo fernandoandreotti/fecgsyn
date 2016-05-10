@@ -1,4 +1,4 @@
-function FECGSYN_main_extract(path,narrowband,wfdb)
+function FECGSYN_main_extract(path,narrowband,wfdb,ch,refchs,debug)
 % function FECGSYN_main_extract(path,narrowband,wfdb)
 % Extraction script for FECG morphological analysis
 %
@@ -10,7 +10,10 @@ function FECGSYN_main_extract(path,narrowband,wfdb)
 % path                  Path where datasets are saved
 % narrowband            Bandpass to be used [boolean]. 1 (3-100 Hz) or 0 (0.5-100 Hz)
 % wfdb                  Load data in WFDB format? [boolean]
-%
+% ch                    Channels to extract. In Andreotti et al 2016 ch =  [1 8 11 14 19 22 25 32]
+% refchs                Reference maternal channels for adaptive methods. 
+%                       In Andreotti et al 2016 refchs = 33:34; 
+% debug                 Boolean to define if plots are shown
 %
 % Examples:
 % exp_datagen1
@@ -59,10 +62,8 @@ function FECGSYN_main_extract(path,narrowband,wfdb)
 
 %% Parameters
 % Channels to be used
-debug = 0;
-ch = [1 8 11 14 19 22 25 32];   % ADAPT TO YOUR ELECTRODE CONFIG (abdominal leads)
-refchs = 33:34;               % ADAPT TO YOUR ELECTRODE CONFIG (reference channels)
-fs_new = 250;           % extraction occurs at 250 Hz, data will be resampled, if necessary
+fs_new = 250;           % extraction occurs at 250 Hz, data will be resampled, if necessary. 
+                        % Only relevant for ECG segmantation using ECGPUWAVE
 
 %% Preprocessing
 slashchar = char('/'*isunix + '\'*(~isunix));

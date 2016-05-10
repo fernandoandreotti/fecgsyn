@@ -49,7 +49,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 For further reference:
 
 Behar, Joachim, Fernando Andreotti, Sebastian Zaunseder, Qiao Li, Julien Oster, and Gari D Clifford. 2014. 
-"An ECG Model for Simulating Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings." 
-Physiol Meas (Accepted for publication - Focus issue: Noninvasive Fetal ECG).
+"An ECG Model for Simulating Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings." _Physiol Meas_ **35(8)**, pp.1537-50, 2014.
 
-Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms. Physiol Meas 4, pp. ++pages++, 2016.
+Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms. _Physiol Meas_ **37(5)**, pp. 627-648, 2016.

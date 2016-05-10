@@ -105,7 +105,10 @@ old_path=which('FECGSYN_UI') % find path to FECGSYN
 path = [old_path(1:end-12) slashchar 'data' slashchar]; % path to test.mat
 wfdb = false; % true/false, data format in WFDB?
 narrowband = false;  % preprocessing filtering band
-FECGSYN_main_extract(path,narrowband,wfdb)
+ch = 3; % extract channel 3 of test data
+refchs = 1; %  use channel 1 as reference
+debug = 1;  % plot results
+FECGSYN_main_extract(path,narrowband,wfdb,ch,refchs,debug)
 {% endhighlight %}
 
 <p>This function saves each extracted signal in an separate <code>.mat</code> file under the directory <code>'path/ext/'</code>. In order to reduce the filenames, a coding is introduce consisting of 'rec' (for recording) and a number, followed by the extraction method used, for example <code>rec1_tsc.mat</code> or <code>rec5_PCA.mat</code>. An <code>index.mat</code> file is also saved on the folder to allow the backwards mapping of simulated and extracted datasets.</p>

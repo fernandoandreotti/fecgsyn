@@ -117,7 +117,7 @@ FECGSYN_main_extract(path,narrowband,wfdb)
 <section class="bs-docs-section">
 <h1 id="datext" class="page-header">Fetal QRS detection and FECG segmentation methods</h1>
 
-The following examples assume that the user already extracted FECG from your dataset, or using the privous examples. In any case, <kbd>path</kbd> should contain the path to the directory containing original and extracted data. Here is a minimal working example to prepare your workspace for the following examples:
+The following examples assume that the user already extracted FECG from your dataset, or using the previous examples. In any case, <kbd>path</kbd> should contain the path to the directory containing original and extracted data. Here is a minimal working example to prepare your workspace for the following examples:
 
 {% highlight matlab %}
 old_path=which('FECGSYN_UI') % find path to FECGSYN
@@ -172,7 +172,7 @@ stats=FECGSYN_benchFQRS(path,ch,debug)
   <li>Fetal QT and T/QRS calculation</li>
 </ul>
 
-<p>The function may be called by using the following code:</p>
+<p>The function may be called by using the following code (after obtaining the variables <code>path</code>, <code>ch</code> and <code>debug</code> as previously shown):</p>
 {% highlight matlab %}
 morph=FECGSYN_benchMorph(path,ch,debug)
 {% endhighlight %}

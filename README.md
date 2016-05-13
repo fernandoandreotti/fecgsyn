@@ -1,7 +1,7 @@
 _FECGSYN_ toolbox, version 1.1, April 2016
 ====
 * Documentation available at: [http://fernandoandreotti.github.io/fecgsyn](http://fernandoandreotti.github.io/fecgsyn)
-* Checkout a large dataset of simulated signals (FECGSYNDB) [available at Physionet](https://www.physionet.org/physiotools/ipmcode/fecgsyn/)
+* Checkout a large dataset of simulated signals (FECGSYNDB) [available at Physionet](physionet.org/physiobank/database/fecgsyndb/)
 * See latest release under [https://github.com/fernandoandreotti/fecgsyn/releases/](https://github.com/fernandoandreotti/fecgsyn/releases/)
 
 

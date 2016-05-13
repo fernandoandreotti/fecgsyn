@@ -217,69 +217,69 @@ for i = 1:length(fls)
     save([filename '_tspca'],'residual','maxch','fqrs','fref');
     
     clear maxch residual fqrs NbCycles NbPC
-%     
-%     % ----------------------------
-%     % EKF Extended Kalman Filter
-%     % ----------------------------
-%     disp('EKF extraction ..')
-%     NbCycles = 30; % first 30 cycles will be used for template generation
-%     residual = zeros(size(mixture));
-%     for j = 1:length(ch)
-%         residual(j,:) = FECGSYN_kf_extraction(mref,mixture(j,:),debug,NbCycles,fs_new);
-%     end
-%     [fqrs,maxch] = FECGSYN_QRSmincompare(residual,fref,fs_new);    % detect QRS and channel with highest F1
-%     save([filename '_tsekf'],'residual','maxch','fqrs','fref');
-%     % == saving results
-%     clear maxch residual fqrs NbCyclesmat
-%     % ----------------------
-%     % LMS Least Mean Square
-%     % ----------------------
-%     disp('LMS extraction ..')
-%     %parameters
-%     refch = 1;      % pick reference channel
-%     mirrow = 30*fs_new;    % mirrow 30 seconds of signal to train method
-%     % channel loop
-%     residual = zeros(size(mixture));
-%     for j = 1:length(ch)
-%         res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)], ...
-%             [refs(refch,mirrow:-1:1) refs(refch,:)],'LMS',debug,fs_new);
-%         residual(j,:) = res(mirrow+1:end);
-%     end
-%     [fqrs,maxch] = FECGSYN_QRSmincompare(residual,fref,fs_new);    % detect QRS and channel with highest F1
-%     % == saving results
-%     save([filename '_alms'],'residual','maxch','fqrs','fref');
-%     clear maxch residual fqrs lmsStruct
-%     
-%     % ----------------------
-%     % RLS Recursive Least Square
-%     % ----------------------
-%     disp('RLS extraction ..')
-%     % channel loop
-%     residual = zeros(size(mixture));
-%     for j = 1:length(ch)
-%         res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)],...
-%             [refs(refch,mirrow:-1:1) refs(refch,:)],'RLS',debug,fs_new);
-%         residual(j,:) = res(mirrow+1:end);
-%     end
-%     [fqrs,maxch] = FECGSYN_QRSmincompare(residual,fref,fs_new);    % detect QRS and channel with highest F1
-%     % == saving results
-%     save([filename '_arls'],'residual','maxch','fqrs','fref');
-%     clear maxch residual fqrs rlsStruct
-%     
-%     % ----------------------
-%     % ESN Echo State Neural Network
-%     % ----------------------
-%     disp('ESN extraction ..')
-%     % channel loop
-%     residual = zeros(size(mixture));
-%     for j = 1:length(ch)
-%         res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)]...
-%             ,[refs(refch,mirrow:-1:1) refs(refch,:)],'ESN',debug,fs_new);
-%         residual(j,:) = res(mirrow+1:end);
-%     end
-%     [fqrs,maxch] = FECGSYN_QRSmincompare(residual,fref,fs_new);    % detect QRS and channel with highest F1
-%     % == saving results
-%     save([filename '_aesn'],'residual','maxch','fqrs','fref');
-%     clear maxch residual fqrs ESNparam
+     
+     % ----------------------------
+     % EKF Extended Kalman Filter
+     % ----------------------------
+     disp('EKF extraction ..')
+     NbCycles = 30; % first 30 cycles will be used for template generation
+     residual = zeros(size(mixture));
+     for j = 1:length(ch)
+       residual(j,:) = FECGSYN_kf_extraction(mref,mixture(j,:),debug,NbCycles,fs_new);
+     end
+     [fqrs,maxch] = FECGSYN_QRSmincompare(residual,fref,fs_new);    % detect QRS and channel with highest F1
+     save([filename '_tsekf'],'residual','maxch','fqrs','fref');
+     % == saving results
+     clear maxch residual fqrs NbCyclesmat
+     % ----------------------
+     % LMS Least Mean Square
+     % ----------------------
+     disp('LMS extraction ..')
+     %parameters
+     refch = 1;      % pick reference channel
+     mirrow = 30*fs_new;    % mirrow 30 seconds of signal to train method
+     % channel loop
+     residual = zeros(size(mixture));
+     for j = 1:length(ch)
+         res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)], ...
+             [refs(refch,mirrow:-1:1) refs(refch,:)],'LMS',debug,fs_new);
+         residual(j,:) = res(mirrow+1:end);
+     end
+     [fqrs,maxch] = FECGSYN_QRSmincompare(residual,fref,fs_new);    % detect QRS and channel with highest F1
+     % == saving results
+     save([filename '_alms'],'residual','maxch','fqrs','fref');
+     clear maxch residual fqrs lmsStruct
+   
+     % ----------------------
+     % RLS Recursive Least Square
+     % ----------------------
+     disp('RLS extraction ..')
+     % channel loop
+     residual = zeros(size(mixture));
+     for j = 1:length(ch)
+         res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)],...
+             [refs(refch,mirrow:-1:1) refs(refch,:)],'RLS',debug,fs_new);
+         residual(j,:) = res(mirrow+1:end);
+     end
+     [fqrs,maxch] = FECGSYN_QRSmincompare(residual,fref,fs_new);    % detect QRS and channel with highest F1
+     % == saving results
+     save([filename '_arls'],'residual','maxch','fqrs','fref');
+     clear maxch residual fqrs rlsStruct
+     
+     % ----------------------
+     % ESN Echo State Neural Network
+     % ----------------------
+     disp('ESN extraction ..')
+     % channel loop
+     residual = zeros(size(mixture));
+     for j = 1:length(ch)
+         res = FECGSYN_adaptfilt_extraction([mixture(j,mirrow:-1:1) mixture(j,:)]...
+             ,[refs(refch,mirrow:-1:1) refs(refch,:)],'ESN',debug,fs_new);
+         residual(j,:) = res(mirrow+1:end);
+     end
+     [fqrs,maxch] = FECGSYN_QRSmincompare(residual,fref,fs_new);    % detect QRS and channel with highest F1
+     % == saving results
+     save([filename '_aesn'],'residual','maxch','fqrs','fref');
+     clear maxch residual fqrs ESNparam
 end
 save([spath 'index'],'index')

@@ -110,7 +110,7 @@ debug = 1;  % plot results
 FECGSYN_main_extract(path,narrowband,wfdb,ch,refchs,debug)
 {% endhighlight %}
 
-<p>This function saves each extracted signal in an separate <code>.mat</code> file under the directory <code>'path/ext/'</code>. In order to reduce the filenames, a coding is introduce consisting of 'rec' (for recording) and a number, followed by the extraction method used, for example <code>rec1_tsc.mat</code> or <code>rec5_PCA.mat</code>. An <code>index.mat</code> file is also saved on the folder to allow the backwards mapping of simulated and extracted datasets.</p>
+<p>This function saves each extracted signal in an separate <code>.mat</code> file under the directory <code>'path/data/ext/'</code>. In order to reduce the filenames, a coding is introduce consisting of 'rec' (for recording) and a number, followed by the extraction method used, for example <code>rec1_tsc.mat</code> or <code>rec5_PCA.mat</code>. An <code>index.mat</code> file is also saved on the folder to allow the backwards mapping of simulated and extracted datasets.</p>
 
  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> For batch processing, avoid converting data to WFDB format, since it may cause slow downs. </div></div>
 </section> <hr>

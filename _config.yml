@@ -3,7 +3,7 @@ name: FECGSYN
 # current version of the software
 version: 1.1
 # url of the download button
-downloadUrl: https://github.com/fernandoandreotti/fecgsyn
+downloadUrl: http://github.com/fernandoandreotti/fecgsyn
 # licence of the software
 license: GNU General Public License v3.0
 licenseUrl: http://www.gnu.org/licenses/gpl-3.0.en.html
@@ -11,14 +11,14 @@ licenseUrl: http://www.gnu.org/licenses/gpl-3.0.en.html
 # list of additional links on the right of the top menu
 headerLinks:
   - title: GitHub
-    url: https://github.com/fernandoandreotti/fecgsyn
+    url: http://github.com/fernandoandreotti/fecgsyn
 
 # list if additional links on the footer
 footerLinks:
   - title: GitHub
-    url: https://github.com/fernandoandreotti/fecgsyn
+    url: http://github.com/fernandoandreotti/fecgsyn
   - title: Issues
-    url: https://github.com/fernandoandreotti/fecgsyn/issues?state=open
+    url: http://github.com/fernandoandreotti/fecgsyn/issues?state=open
 
 # header
 header:

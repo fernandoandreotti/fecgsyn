@@ -9,8 +9,7 @@ The FECGSYN toolbox is a reference open-source platform for NI-FECG research, pr
 
 
 Copyright (C) 2016
-Intelligent Patient Monitoring Group - Oxford 2016
-Contacts: joachim.behar@eng.ox.ac.uk & fernando.andreotti@mailbox.tu-dresden.de
+Contacts: joachim.behar@oxfordalumni.org & fernando.andreotti@mailbox.tu-dresden.de
 
 
 History

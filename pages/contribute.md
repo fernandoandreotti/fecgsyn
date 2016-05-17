@@ -40,11 +40,11 @@ Collaborative research has various benefits, here are some of those:
 
 The current version of the _FECGSYN_ was developed thanks to the following contributors:
 
-Fernando Andreotti ([<span class="octicon octicon-globe"></span> homepage](http://fernando.planetarium.com.br/)){:target="_blank"}<br>
-Joachim Behar ([<span class="octicon octicon-globe"></span> homepage](http://joachimbehar.comuv.com/)){:target="_blank"}<br>
+Fernando Andreotti ([<span class="octicon octicon-globe"></span> homepage](http://fernando.planetarium.com.br/))<br>
+Joachim Behar ([<span class="octicon octicon-globe"></span> homepage](http://joachimbehar.comuv.com/))<br>
 Mohsan Alvi<br>
-Gari D. Clifford ([<span class="octicon octicon-globe"></span> homepage](http://gdclifford.info/)){:target="_blank"}<br>
-Julien Oster ([<span class="octicon octicon-globe"></span> homepage](http://julienoster.tk/)){:target="_blank"}<br>
+Gari D. Clifford ([<span class="octicon octicon-globe"></span> homepage](http://gdclifford.info/))<br>
+Julien Oster ([<span class="octicon octicon-globe"></span> homepage](http://julienoster.tk/))<br>
 Sebastian Zaunseder<br>
 
 <p><em>FECGSYN</em> is an open-source toolbox, feel free to <a href="{{site.github.url}}/pages/contribute.html" data-toggle="tooltip" title="Hooray!">contribute</a></p>

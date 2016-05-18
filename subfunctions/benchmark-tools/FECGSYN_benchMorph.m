@@ -71,7 +71,7 @@ if ~strcmp(pathdir(end),slashchar), pathdir = [pathdir slashchar];end
 
 if debug,  mkdir([pathdir 'ext' slashchar 'plots' slashchar]), end
 % == Parameters
-fs_new = 250;              % function works at 250 Hz
+fs_new = 250;              % ECGPUWAVE function works at 250 Hz
     
 % Find out if *mat or wfdb
 cd(pathdir)

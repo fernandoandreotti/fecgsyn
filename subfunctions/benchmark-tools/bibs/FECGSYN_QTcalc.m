@@ -96,7 +96,15 @@ Rpeaks = find(rees);   % annotation number
 Rpeaks(~goodR) = [];   % eliminating R's without T
 qs = round(mean(temp_stamp(Rpeaks-1)-temp_stamp(Rpeaks)));  % Q locations
 ss = round(mean(temp_stamp(Rpeaks+1)-temp_stamp(Rpeaks)));  % S locations
-if isempty(Rpeaks), qs = NaN; tpeak = NaN; return; end
+if isempty(Rpeaks) % case signal is really bad
+    qs = NaN; 
+    tpeak = NaN; 
+    qtint = NaN;
+    th = NaN;
+    tends=NaN;
+    qrs = NaN;
+    return; 
+end
 clear goodR rees
 
 % == T-wave (end)

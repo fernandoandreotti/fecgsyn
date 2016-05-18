@@ -75,7 +75,7 @@ if isequal(abdm_temp,ref_temp); ident = 1; else ident = 0; end
 
 % resampling and repeating templates
 FS_ECGPU = 250;     % default sampling frequency for ECGPUWAVE
-gain = 1000;        % saving gain for WFDB format
+gain = 3000;        % saving gain for WFDB format
 
 %% Preprocessing
 b_hp = filterc(1); a_hp = filterc(2); b_lp = filterc(3);a_lp= filterc(4);
@@ -169,6 +169,16 @@ if ~ident
     wrann(['absig_' filen],'qrs',qrsabdm',repmat('N',20,1));
     ecgpuwave(['absig_' filen],'ecgpu',[],[],'qrsabdm'); % important to specify the QRS because it seems that ecgpuwave is crashing sometimes otherwise
     [alltest,alltypes_t] = rdann(['absig_' filen],'ecgpu');
+    if isempty(alltest)
+        qt_test = NaN;
+        qt_ref = NaN;
+        tqrs_test = NaN;
+        tqrs_ref = NaN;
+        tqrs_test = NaN;
+        tqrs_ref = NaN;
+        disp('manalysis: Could not encounter QT wave for TEST signal.')
+        return
+    end
 end
 % if debug
 %     figure(2)
@@ -196,7 +206,7 @@ if isnan(qt_ref)||isnan(th_ref)
     tqrs_ref = NaN;
     tqrs_test = NaN;
     tqrs_ref = NaN;
-    disp('manalysis: Could not encounter QT wave for REFERENCE.')
+    disp('manalysis: Could not encounter QT wave for REFERENCE signal.')
     return % does not extract from test
 end
 

@@ -56,7 +56,7 @@
                       {% if p.isHome != true and p.hide != true and p.title !=  %}
                       <li {% if page.title == p.title %}class="active"{% endif %}>
                         {% if p.title == "Contribute" %}
-                        <a href="{{site.github.url}}{{p.url}}"><span class="octicon octicon-organization"></span>{{p.title}}</a>
+                        <a href="{{site.github.url}}{{p.url}}"><span class="octicon octicon-organization"></span> {{p.title}}</a>
                         {%else%}
                         <a href="{{site.github.url}}{{p.url}}"> {{p.title}}</a>
                         {% endif %}

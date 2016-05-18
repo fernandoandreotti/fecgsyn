@@ -40,12 +40,12 @@ Collaborative research has various benefits, here are some of those:
 
 The current version of the _FECGSYN_ was developed thanks to the following contributors:
 
-Fernando Andreotti ([<span class="octicon octicon-globe"></span> homepage](http://fernando.planetarium.com.br/))<br>
-Joachim Behar ([<span class="octicon octicon-globe"></span> homepage](http://joachimbehar.comuv.com/))<br>
+Fernando Andreotti (<a href="http://fernando.planetarium.com.br/" target="_blank"><span class="octicon octicon-globe"></span> homepage</a>) <br>
+Joachim Behar (<a href="http://joachimbehar.comuv.com/" target="_blank"><span class="octicon octicon-globe"></span> homepage</a>) <br>
 Mohsan Alvi<br>
-Gari D. Clifford ([<span class="octicon octicon-globe"></span> homepage](http://gdclifford.info/))<br>
-Julien Oster ([<span class="octicon octicon-globe"></span> homepage](http://julienoster.tk/))<br>
-Sebastian Zaunseder([<span class="octicon octicon-globe"></span> homepage](https://tu-dresden.de/Members/sebastian.zaunseder))<br> 
+Gari D. Clifford (<a href="http://gdclifford.info/" target="_blank"><span class="octicon octicon-globe"></span> homepage</a>) <br>
+Julien Oster (<a href="http://julienoster.tk/" target="_blank"><span class="octicon octicon-globe"></span> homepage</a>) <br>
+Sebastian Zaunseder (<a href="https://tu-dresden.de/Members/sebastian.zaunseder" target="_blank"><span class="octicon octicon-globe"></span> homepage</a>) <br>
 
 <p><em>FECGSYN</em> is an open-source toolbox, feel free to contribute!</p>
 

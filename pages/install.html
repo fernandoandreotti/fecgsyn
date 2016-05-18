@@ -31,8 +31,7 @@ fecgsyn_url='https://github.com/fernandoandreotti/fecgsyn/archive/master.zip';
 urlwrite(fecgsyn_url,'fecgsyn_toolbox.zip');
 unzip('fecgsyn_toolbox.zip');
 cd fecgsyn-master
-addpath(pwd);
-addpath(genpath('.'));
+addpath(genpath(pwd))
 savepath
 {% endhighlight %}
 

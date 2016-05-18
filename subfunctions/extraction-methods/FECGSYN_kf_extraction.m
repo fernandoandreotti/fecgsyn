@@ -80,7 +80,7 @@ end
 
 % check that number of peaks is higher than nbCycles
 if nbCycles>length(peaks)
-    error('KF Error: more peaks than number of cycles for average ecg');
+    nbCycles = length(peaks)-1;
 end
 
 %% == Re-aligning maternal peaks to match channel's peaks

@@ -59,13 +59,21 @@ c3 = cellfun(@(x) ~isempty(regexp(x,'.c3','ONCE')),fls_orig);
 c4 = cellfun(@(x) ~isempty(regexp(x,'.c4','ONCE')),fls_orig);
 c5 = cellfun(@(x) ~isempty(regexp(x,'.c5','ONCE')),fls_orig);
 base = ~(c0|c1|c2|c3|c4|c5);
-Ncases = 7; % number of cases
+casename = {'base','c0','c1','c2','c3','c4','c5'};
+casename(sum([base c0 c1 c2 c3 c4 c5]) == 0) = [];
+Ncases = length(casename); % number of cases
 snr00 = cellfun(@(x) ~isempty(regexp(x,'.snr00dB','ONCE')),fls_orig);
 snr03 = cellfun(@(x) ~isempty(regexp(x,'.snr03dB','ONCE')),fls_orig);
 snr06 = cellfun(@(x) ~isempty(regexp(x,'.snr06dB','ONCE')),fls_orig);
 snr09 = cellfun(@(x) ~isempty(regexp(x,'.snr09dB','ONCE')),fls_orig);
 snr12 = cellfun(@(x) ~isempty(regexp(x,'.snr12dB','ONCE')),fls_orig);
-Nsnr = 5; % number of SNRs
+snrname =  {'snr00' 'snr03' 'snr06' 'snr09' 'snr12'};
+snrname(sum([snr00 snr03 snr06 snr09 snr12]) == 0) = [];
+Nsnr = length(snrname); % number of SNRs
+
+if (Nsnr==0)||(Ncases==0)
+    error('File name not following the standard FECGSYN nomenclature. Please fix dataset.')    
+end
 
 
 %% Generating Tables
@@ -100,18 +108,20 @@ for k = 1:Nmet
     statscasesnr = NaN(size(stattmp,1)/Ncases,Ncases*Nsnr); 
 
     count1 = 1;
-    for cases = {'base','c0','c1','c2','c3','c4','c5'}
-        for snr = {'snr00' 'snr03' 'snr06' 'snr09' 'snr12'}
+    for cs = 1:length(casename)
+        cases = casename(cs);
+        for snrs = 1:length(snrname)
+            snr = snrname(snrs);
             try
                 statscasesnr(:,count1) = 100*stattmp(eval(cases{:})&eval(snr{:}),1);
             catch
-                warning('Missing data?')
+                disp(['No available case ' cases{:} ' or SNR ' snr{:} '. Skipping'])
             end
             count1 = count1 + 1;
         end
     end
     labelssnr = repmat(1:Nsnr,1,Ncases);
-    labelscase = reshape(repmat({'base','c0','c1','c2','c3','c4','c5'},Nsnr,1),1,Ncases*Nsnr);
+    labelscase = reshape(repmat(casename,Nsnr,1),1,Ncases*Nsnr);
     subplot(2,4,count2)
     boxplot(statscasesnr,{labelscase labelssnr},'factorgap',3,'color',colors,...
         'medianstyle','target','plotstyle','compact','boxstyle','filled') 
@@ -179,7 +189,8 @@ count1 = 1;
 for k = 1:Nmet
     eval(['stat = stats.' met{k} ';']);
     count2 = 1;
-     for snr = {'snr00' 'snr03' 'snr06' 'snr09' 'snr12'}
+     for snrs = 1:length(snrname)
+         snr = snrname(snrs);
          snrloop = eval(snr{:});
          statsf1(count2,1:Ncases,count1) = median(100*[stat(base&snrloop,1) stat(c0&snrloop,1)...
              stat(c1&snrloop,1) stat(c2&snrloop,1) stat(c3&snrloop,1) ...
@@ -235,7 +246,8 @@ count1 = 1;
 for k=1:Nmet
     eval(['stat = stats.' met{k} ';']);
     count2 = 1;
-     for cases = {'c0' 'c1' 'c2' 'c3' 'c4' 'c5'}
+     for cs = 1:length(casename)
+         cases = casename(cs);
          caseloop = eval(cases{:});
          statsf1(count2,1:Nsnr,count1) = median(100*[stat(snr00&caseloop,1)...
              stat(snr03&caseloop,1) stat(snr06&caseloop,1) stat(snr09&caseloop,1) ...

@@ -122,7 +122,7 @@ stats.aesn = zeros(length(fls),4);
 for i = 1:length(fls_ext)
     % for i = randperm(length(fls_ext))
     disp(fls_ext{i})
-    fprintf('Data %d out of %d \n',i,length(fls_ext));
+    fprintf('Evaluating data %d out of %d .. \n',i,length(fls_ext));
     
     %= loading extracted file
     [rec,met] = strtok(fls_ext(i),'_');
@@ -130,20 +130,13 @@ for i = 1:length(fls_ext)
                                   % (JADEICA,PCA,tsc,tspca,tsekf,alms,arls,aesn)
     load([path_ext fls_ext{i}])
     %= loading original signal
-    file = index(cellfun(@(x) strcmp(rec,x),index(:,2)),1);
+    file = index(cellfun(@(x) strcmp(rec,x),index(:,2)),1); %#ok<NODEF>
     if wfdb
         out = wfdb2fecgsyn([path file{:}],ch);
     else
         load([path file{:}])     %= loading original file
     end
-    cas = regexp(file{:},'_c[0-7]','match'); % find out which case is depicted
-    if isempty(cas)
-        cas = {'bas'};
-    else
-        cas = cas(2:end);
-    end   
-    clear file
-    
+   
     %= re-mixing original signal (necessary after compression)
     fecg = double(out.fecg{1}); % selecting channels
     %= Resampling original data to match extracted (fs - if necessary)

@@ -237,7 +237,7 @@ for i = 1:length(fls)
      disp('LMS extraction ..')
      %parameters
      refch = 1;      % pick reference channel
-     mirrow = 30*fs_new;    % mirrow 30 seconds of signal to train method
+     mirrow = min(30*fs_new,size(mixture,2));    % mirrow 30 seconds or whole signal (depending on size)
      % channel loop
      residual = zeros(size(mixture));
      for j = 1:length(ch)

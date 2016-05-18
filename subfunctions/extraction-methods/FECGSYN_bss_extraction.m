@@ -82,7 +82,7 @@ endsamp = ssamp + blen - 1;      % ending sample to filter
 loop = 1; % allows iterations
 
 if size(data,2)<endsamp
-    blen = Data.length;
+    blen = size(data,2);
     endsamp = size(data,2);
 end
 

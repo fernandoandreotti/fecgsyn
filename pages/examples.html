@@ -122,7 +122,7 @@ FECGSYN_main_extract(path,narrowband,wfdb,ch,refchs,debug)
 The following examples assume that the user already extracted FECG from your dataset, or using the previous examples. In any case, <kbd>path</kbd> should contain the path to the directory containing original and extracted data. Here is a minimal working example to prepare your workspace for the following examples:
 
 {% highlight matlab %}
-old_path=which('FECGSYN_UI') % find path to FECGSYN
+old_path=which('FECGSYN_UI'); % find path to FECGSYN
 slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
 path = [old_path(1:end-12) slashchar 'data' slashchar];
 load([path 'test.mat'])% load test set
@@ -149,7 +149,7 @@ acceptint = 50*out.param.fs/1000; % 50 ms acceptance interval interval
 [F1,MAE,PPV,SE,TP,FN,FP] = Bxb_compare(out.fqrs{1}, fqrs, acceptint)
 {% endhighlight %}
 
-<p> The function <code>FECGSYN_QRSmincompare.m</code> makes use of the <code>Bxb_compare.m</code> on a minute basis, as in Andreotti et al 2016. A broad benchmark across different methods (extracted using the <code>FECGSYN_main_extract.m</code>) is exemplified in function <code>FECGSYN_benchFQRS.m</code>, which returns a series of FQRS detection measures:</p>
+<p> The function <code>FECGSYN_QRSmincompare.m</code> makes use of the <code>Bxb_compare.m</code> on a minute basis, as in Andreotti et al 2016. A broad benchmark across different methods (extracted using the <code>FECGSYN_main_extract.m</code>) is exemplified in function <code>FECGSYN_benchFQRS.m</code>, which returns a series of FQRS detection measures. Before running the function, make sure to perform the <a href="{{site.github.url}}/pages/examples.html#main_extract_data"><span class="octicon octicon-arrow-small-up"></span> multi-method extraction</a>.</p>
 
 {% highlight matlab %}
 % path = path for original and extracted data

@@ -1,5 +1,5 @@
-function morph=FECGSYN_benchMorph(path,ch,debug)
-% function FECGSYN_benchFQRS(path,debug)
+function morph=FECGSYN_benchMorph(pathdir,ch,debug)
+% function FECGSYN_benchFQRS(pathdir,debug)
 %
 % this script generates statistics as in Experiment 3 by Andreotti et al 2016,
 % namely fetal QT and T/QRS morphological features. Methods available are
@@ -7,19 +7,19 @@ function morph=FECGSYN_benchMorph(path,ch,debug)
 % own method.
 %
 % Input:
-%  path             Root directory where original data is saved. It is
-%                   expected that the path contains a subfolder "ext" with
+%  pathdir             Root directory where original data is saved. It is
+%                   expected that the pathdir contains a subfolder "ext" with
 %                   extracted data AND and /ext/index.mat file containing
 %                   the mapping between original and extracted data.
 %
 %  ch              Channels used (WFDB only)
 %
 % debug             If debug is active (=true) will save additional plots
-%                   into a 'path/ext/plots' folder
+%                   into a 'pathdir/ext/plots' folder
 %
 % Output:
 %  morph          Structure containing benchmark results for all files
-%                 contained in path.
+%                 contained in pathdir.
 %
 %
 % Examples:
@@ -67,22 +67,18 @@ function morph=FECGSYN_benchMorph(path,ch,debug)
 
 
 slashchar = char('/'*isunix + '\'*(~isunix));
-if ~strcmp(path(end),slashchar), path = [path slashchar];end
+if ~strcmp(pathdir(end),slashchar), pathdir = [pathdir slashchar];end
 
-if debug,  mkdir([path 'ext' slashchar 'plots' slashchar]), end
-
-
+if debug,  mkdir([pathdir 'ext' slashchar 'plots' slashchar]), end
 % == Parameters
 fs_new = 250;              % function works at 250 Hz
-TEMP_SAMPS = round(60*fs_new); % samples used for building templates
-
-
+    
 % Find out if *mat or wfdb
-cd(path)
-fls = dir([path '*.mat']); % looking for .mat (creating index)
+cd(pathdir)
+fls = dir([pathdir '*.mat']); % looking for .mat (creating index)
 fls = arrayfun(@(x)x.name,fls,'UniformOutput',false);
 if isempty(fls)
-    fls = dir([path '*.hea']);
+    fls = dir([pathdir '*.hea']);
     fls =  arrayfun(@(x) x.name,fls,'UniformOutput',false);
     remfls = cellfun(@(x) length(strtok(x(end:-1:1),'_')),fls);
     for i = 1:length(fls), fls{i} = fls{i}(1:end-remfls(i)-1);end
@@ -98,7 +94,7 @@ end
 
 
 % Reading extracted information
-path_ext = [path 'ext' slashchar];
+path_ext = [pathdir 'ext' slashchar];
 try
     load([path_ext 'index.mat']);
 catch
@@ -158,9 +154,9 @@ for i = 1:length(fls_ext)
     %= loading original signal
     file = index(cellfun(@(x) strcmp(rec,x),index(:,2)),1);
     if wfdb
-        out = wfdb2fecgsyn([path file{:}],ch);
+        out = wfdb2fecgsyn([pathdir file{:}],ch);
     else
-        load([path file{:}])     %= loading original file
+        load([pathdir file{:}])     %= loading original file
     end
     cas = regexp(file{:},'_c[0-7]','match'); % find out which case is depicted
     if isempty(cas)
@@ -186,7 +182,11 @@ for i = 1:length(fls_ext)
         fref = out.fqrs{1};
     end
     %= Getting statistics (exp 3)_orig
-    fname = [path 'plots' slashchar fls_ext{i}(1:end-4) cas];
+    TEMP_SAMPS = min(round(60*fs_new),length(residual)/5); % samples used for building templates
+                                                           % either 60sec or the whole dataset's length 
+                                                           
+        
+    fname = [pathdir 'plots' slashchar fls_ext{i}(1:end-4) cas];
     fname = strcat(fname{:});
     [outputs{1:7}]= FECGSYN_morpho_loop(fecgref,residual,fref,fs_new,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp],debug);
     

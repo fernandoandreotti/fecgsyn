@@ -116,7 +116,7 @@ for j = 1:SAMPS:length(residual)
             end
             clear idx med1 med2 per 80
         catch
-            disp('templategen: problems in template?')
+            disp('Template could not be generated for segment. Skipping..')
         end
         
         if (~status1||~status2)

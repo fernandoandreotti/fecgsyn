@@ -55,7 +55,7 @@ function [fqrs,maxch] = FECGSYN_QRSmincompare(data,fref,fs,varargin)
 % Input check
 switch length(varargin)
     case 0
-        window = 60; % default minute window
+        window = min(60,round(length(data)/fs)); % default minute window (60 sec or whole set)
     case 1
         window = varargin{1};
     otherwise
@@ -76,7 +76,7 @@ for j = 1:size(data,1)
 end
 
 % creating statistics in 1-min blocks
-min = 1;
+minim = 1;
 numblock = length(data)/fs/window;
 if rem(numblock,1) ~= 0
     warning('FECGSYN_QRSmincompare: non-integer division of data length and block window. Dataset will be only partially evaluated!')
@@ -84,19 +84,19 @@ if rem(numblock,1) ~= 0
 end
 maxch = zeros(1,numblock);
 fqrs_temp = cell(1,numblock);
-while min <= length(data)/fs/window;
+while minim <= length(data)/fs/window;
     F1max = 0;
-    idxref = (fref>=(min-1)*fs*window+1)&(fref<=min*fs*window);
+    idxref = (fref>=(minim-1)*fs*window+1)&(fref<=minim*fs*window);
     for j = 1:size(data,1)
-        idx = (fqrs{j}>=(min-1)*fs*window+1)&(fqrs{j}<=min*fs*window);
+        idx = (fqrs{j}>=(minim-1)*fs*window+1)&(fqrs{j}<=minim*fs*window);
         [F1,~,~,~] = Bxb_compare(fref(idxref),fqrs{j}(idx),INTERV);
         if F1 > F1max    % compare and see if this channel provides max F1
-            maxch(min) = j;
+            maxch(minim) = j;
             F1max = F1;
-            fqrs_temp{min} = fqrs{j}(idx);%+ (min-1)*fs*60;    % adding fqrs detections to temporary cell
+            fqrs_temp{minim} = fqrs{j}(idx);%+ (minim-1)*fs*60;    % adding fqrs detections to temporary cell
         end
     end
-    min = min+1;
+    minim = minim+1;
 end
 fqrs = cell2mat(fqrs_temp);
 end

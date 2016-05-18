@@ -96,6 +96,7 @@ Rpeaks = find(rees);   % annotation number
 Rpeaks(~goodR) = [];   % eliminating R's without T
 qs = round(mean(temp_stamp(Rpeaks-1)-temp_stamp(Rpeaks)));  % Q locations
 ss = round(mean(temp_stamp(Rpeaks+1)-temp_stamp(Rpeaks)));  % S locations
+if isempty(Rpeaks), qs = NaN; tpeak = NaN; return; end
 clear goodR rees
 
 % == T-wave (end)
@@ -130,7 +131,7 @@ else
     try
     tpeak = round(mean(tpeak-temp(1:length(tpeak))));
     catch
-        disp
+        warning('No peaks found')
     end
 end
 

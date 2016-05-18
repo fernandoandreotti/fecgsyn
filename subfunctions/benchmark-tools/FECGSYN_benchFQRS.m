@@ -138,16 +138,11 @@ for i = 1:length(fls_ext)
     end
    
     %= re-mixing original signal (necessary after compression)
-    fecg = double(out.fecg{1}); % selecting channels
     %= Resampling original data to match extracted (fs - if necessary)
     if size(out.mecg,2) ~= size(residual,2)
         % fref:          fetal QRS reference
         % fecgref:       fetal ECG signals (before mixture)
-        fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));
-        fecgref = zeros(length(ch),size(residual,2));
-        for k = 1:size(fecgref,1)
-            fecgref(k,:) = resample(fecg(k,:),fs_new,out.param.fs);
-        end
+        fref = floor(out.fqrs{1}.*(size(residual,2)/size(out.mecg,2)));       
     else
         fref = out.fqrs{1};
     end

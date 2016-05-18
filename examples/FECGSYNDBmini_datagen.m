@@ -95,7 +95,7 @@ cd(path)
     clear out
     %% adding some noise
     i = 1;
-    for SNRmn = [3 9] % five noise levels
+    for SNRmn = [6 12] % five noise levels
         for loop = 1:3 % repeat same setup
             % just recalculating noise five times
             % reseting config    outst = out;

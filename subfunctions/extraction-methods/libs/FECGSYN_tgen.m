@@ -225,11 +225,11 @@ while relevantMode.NbCycles<MIN_NB_CYC && THRES>MIN_THRES
     THRES = THRES-PACE;
 end
 
-if debug
-    fprintf('The number of cycles constituting the dominant mode was %f \n',relevantMode.NbCycles);
-    fprintf('The correlation threshold at which this happened was    %f \n',THRES+PACE);
-    fprintf('========================================================== \n');
-end
+% if debug
+%     fprintf('The number of cycles constituting the dominant mode was %f \n',relevantMode.NbCycles);
+%     fprintf('The correlation threshold at which this happened was    %f \n',THRES+PACE);
+%     fprintf('========================================================== \n');
+% end
 
 
 end

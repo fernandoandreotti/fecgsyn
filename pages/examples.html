@@ -149,11 +149,28 @@ acceptint = 50*out.param.fs/1000; % 50 ms acceptance interval interval
 [F1,MAE,PPV,SE,TP,FN,FP] = Bxb_compare(out.fqrs{1}, fqrs, acceptint)
 {% endhighlight %}
 
-<p> The function <code>FECGSYN_QRSmincompare.m</code> makes use of the <code>Bxb_compare.m</code> on a minute basis, as in Andreotti et al 2016. A broad benchmark across different methods (extracted using the <code>FECGSYN_main_extract.m</code>) is exemplified in function <code>FECGSYN_benchFQRS.m</code>, which returns a series of FQRS detection measures. Before running the function, make sure to perform the <a href="{{site.github.url}}/pages/examples.html#main_extract_data"><span class="octicon octicon-arrow-small-up"></span> multi-method extraction</a>.</p>
+<p> The function <code>FECGSYN_QRSmincompare.m</code> makes use of the <code>Bxb_compare.m</code> on a minute basis, as in Andreotti et al 2016. A broad benchmark across different methods is also available, however a slightly more complex test set is required. This dataset is generated and extracted using the following functions:</p>
 
 {% highlight matlab %}
-% path = path for original and extracted data
-% ch = optional input, case data in WFDB format
+slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
+narrowband = false;  % preprocessing filtering band
+ch = 3; % extract channel 3 of test data
+refchs = 1; %  use channel 1 as reference
+wfdb = false; % true/false, data format in WFDB?
+debug = 0;  % plot results
+mkdir testset
+cd testset
+FECGSYNDBmini_datagen(pwd,0) % generates a miniture version of the FECGSYNDB set
+FECGSYN_main_extract([pwd slashchar],narrowband,wfdb,ch,refchs,debug)
+{% endhighlight %}
+
+<div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span> Warning</div><div class="panel-body"> This example may take a couple minutes to execute.</div></div>
+
+The function <code>FECGSYN_benchFQRS.m</code> is then used to benchmark the different methods applied on FQRS detection as follows:
+
+{% highlight matlab %}
+path = pwd;% for original and extracted data
+ch = [];  % ch = optional input, case data in WFDB format
 debug = 5; % enable plotting
 stats=FECGSYN_benchFQRS(path,ch,debug)
 {% endhighlight %}

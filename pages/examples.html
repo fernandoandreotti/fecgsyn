@@ -36,8 +36,8 @@ FECGSYN_plotmix(out) % plots random channels of one of the created datasets
   <p>This example make use of the <code>exp_datagen1.m</code> function to generate the dataset used in (Behar et al 2014). The code will produce simulation files, so be sure to <kbd>cd dirname</kbd> the desired destination path. </p>
 
 {% highlight matlab %}
-path = pwd;
-exp_datagen1(path,5,false) % generate dataset (may take a few minutes)
+pathf = pwd;
+exp_datagen1(pathf,5,false) % generate dataset (may take a few minutes)
 load('fecgsyn_c1.mat')
 FECGSYN_plotmix(out) % plots random channels of one of the created datasets
 {% endhighlight %}
@@ -101,13 +101,13 @@ hold off
 {% highlight matlab %}
 slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
 old_path=which('FECGSYN_UI') % find path to FECGSYN
-path = [old_path(1:end-12) slashchar 'data' slashchar]; % path to test.mat
+pathf = [old_path(1:end-12) slashchar 'data' slashchar]; % path to test.mat
 wfdb = false; % true/false, data format in WFDB?
 narrowband = false;  % preprocessing filtering band
 ch = 3; % extract channel 3 of test data
 refchs = 1; %  use channel 1 as reference
 debug = 1;  % plot results
-FECGSYN_main_extract(path,narrowband,wfdb,ch,refchs,debug)
+FECGSYN_main_extract(pathf,narrowband,wfdb,ch,refchs,debug)
 {% endhighlight %}
 
 <p>This function saves each extracted signal in an separate <code>.mat</code> file under the directory <code>'path/data/ext/'</code>. In order to reduce the filenames, a coding is introduce consisting of 'rec' (for recording) and a number, followed by the extraction method used, for example <code>rec1_tsc.mat</code> or <code>rec5_PCA.mat</code>. An <code>index.mat</code> file is also saved on the folder to allow the backwards mapping of simulated and extracted datasets.</p>
@@ -119,7 +119,7 @@ FECGSYN_main_extract(path,narrowband,wfdb,ch,refchs,debug)
 <section class="bs-docs-section">
 <h1 id="datext" class="page-header">Fetal QRS detection and FECG segmentation methods</h1>
 
-The following examples assume that the user already extracted FECG from your dataset, or using the previous examples. In any case, <kbd>path</kbd> should contain the path to the directory containing original and extracted data. Here is a minimal working example to prepare your workspace for the following examples:
+The following examples assume that the user already extracted FECG from your dataset, or using the previous examples. In any case, <kbd>pathf</kbd> should contain the path to the directory containing original and extracted data. Here is a minimal working example to prepare your workspace for the following examples:
 
 {% highlight matlab %}
 old_path=which('FECGSYN_UI'); % find path to FECGSYN
@@ -169,10 +169,10 @@ FECGSYN_main_extract([pwd slashchar],narrowband,wfdb,ch,refchs,debug)
 The function <code>FECGSYN_benchFQRS.m</code> is then used to benchmark the different methods applied on FQRS detection as follows:
 
 {% highlight matlab %}
-path = pwd;% for original and extracted data
+pathf = pwd;% for original and extracted data
 ch = [];  % ch = optional input, case data in WFDB format
 debug = 5; % enable plotting
-stats=FECGSYN_benchFQRS(path,ch,debug)
+stats=FECGSYN_benchFQRS(pathf,ch,debug)
 {% endhighlight %}
 
 <p><b>References:</b></p>
@@ -191,13 +191,13 @@ stats=FECGSYN_benchFQRS(path,ch,debug)
   <li>Fetal QT and T/QRS calculation</li>
 </ul>
 
-<p>The function may be called by using the following code (after obtaining the variables <code>path</code>, <code>ch</code> and <code>debug</code> as previously shown):</p>
+<p>The function may be called by using the following code (after obtaining the variables <code>pathf</code>, <code>ch</code> and <code>debug</code> as previously shown):</p>
 {% highlight matlab %}
-morph=FECGSYN_benchMorph(path,ch,debug)
+ch = [1 8 11 14 19 22 25 32]; % selecting channels as in Andreoti et al 2016
+morph=FECGSYN_benchMorph(pathf,ch,debug)
 {% endhighlight %}
 
-
- <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> Morphological analysis should consider a <code>path</code> where extracted signals have a broader band than by the one used in <code>FECGSYN_benchFQRS.m</code>. This because a greater high-pass cut frequency will inevitably distort the FECG T-wave.</div></div>
+<div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> Morphological analysis should consider a <code>pathf</code> where extracted signals have a broader band than by the one used in <code>FECGSYN_benchFQRS.m</code>. This because a greater high-pass cut frequency will inevitably distort the FECG T-wave.</div></div>
 
 <div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span> Warning</div><div class="panel-body"> The script may take a while to run since it makes use of the ECGPUWAVE function, where several WFDB - Matlab transformations take place.</div></div>
 
@@ -240,11 +240,11 @@ morph=FECGSYN_benchMorph(path,ch,debug)
 <p>Similarly, the <code>wfdb2fecgsyn.m</code> function is able to convert WFDB datasets into the <code>.mat</code> internal structure used by <em>FECGSYN</em>  <code>FECGSYN_main_extract.m</code> script. This function is particularly useful when converting the recordings from the <em>FECGSYNDB</em> to Matlab/Octave. An examplary code follows:</p>
 
 {% highlight matlab %}
-% path = string containing origin folder for WFDB dataset
-wfdb2fecgsyn(path)
+% pathf = string containing origin folder for WFDB dataset
+wfdb2fecgsyn(pathf)
 {% endhighlight %}
 
-<div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span> Warning</div><div class="panel-body"> <code>path</code> must be an unique identifier for a WFDB dataset, which excludes the extension of the files. For instance, for the <em>FECGSYNDB</em> <code>'sub01_snr00dB_l1_c0'</code> represents an unique identifier for a dataset consisting of multiple files: <code>_mecg</code>,<code>_fecg1</code>,<code>_noise1</code> with <code>.dat</code>, <code>.hea</code>, <code>.mqrs</code> and <code>.fqrs</code> extensions.</div></div>
+<div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span> Warning</div><div class="panel-body"> <code>pathf</code> must be an unique identifier for a WFDB dataset, which excludes the extension of the files. For instance, for the <em>FECGSYNDB</em> <code>'sub01_snr00dB_l1_c0'</code> represents an unique identifier for a dataset consisting of multiple files: <code>_mecg</code>,<code>_fecg1</code>,<code>_noise1</code> with <code>.dat</code>, <code>.hea</code>, <code>.mqrs</code> and <code>.fqrs</code> extensions.</div></div>
 
  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> You may have a look at function <code>main_extract_data.m</code> function for a simple use of the <code>wfdb2fecgsyn.m</code>, see <a href="{{site.github.url}}/pages/examples.html#main_extract_data"><span class="octicon octicon-globe"></span> this example</a>. </div></div>
 </section> <hr>

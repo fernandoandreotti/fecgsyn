@@ -197,6 +197,8 @@ ch = [1 8 11 14 19 22 25 32]; % selecting channels as in Andreoti et al 2016
 morph=FECGSYN_benchMorph(pathdir,ch,debug)
 {% endhighlight %}
 
+<p>If you are experiencing errors while running this function or no segmentation has taken place, chances are that your installation of the <a href="http://physionet.org/physiotools/matlab/wfdb-app-matlab/" target="_blank"><span class="octicon octicon-globe"></span> WFDB App for Matlab</a> is not working properly. In nominal function, some figures demonstrating successful segmentations should appear and  files with the extension <code>*.ecgpu</code> should be created on the current directory, which indicate that segmenation has taken place. In case of errors check the existence of these files and recheck your WFDB App installation.</p>
+
 <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> Morphological analysis should consider a <code>pathdir</code> where extracted signals have a broader band than by the one used in <code>FECGSYN_benchFQRS.m</code>. This because a greater high-pass cut frequency will inevitably distort the FECG T-wave.</div></div>
 
 <div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span> Warning</div><div class="panel-body"> The script may take a while to run since it makes use of the ECGPUWAVE function, where several WFDB - Matlab transformations take place.</div></div>

@@ -28,8 +28,9 @@ header:
 
 # google analytics
 analytics: 
-  account: 
-  domain:
+  provider : google
+  google : 
+      tracking_id : 'UA-75000008-1'
 
 # github buttons
 githubButton:

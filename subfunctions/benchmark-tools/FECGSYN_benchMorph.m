@@ -196,6 +196,7 @@ for i = 1:length(fls_ext)
 end
 
 if debug
+    save('stats_log','stats','fls')
     FECGSYN_benchMorph_plot(stats,fls) % CHECKOUT this function for some more information!
 end
 

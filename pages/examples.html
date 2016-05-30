@@ -193,7 +193,7 @@ stats=FECGSYN_benchFQRS(pathdir,ch,debug)
 
 <p>The function may be called by using the following code (after obtaining the variables <code>pathdir</code>, <code>ch</code> and <code>debug</code> as previously shown):</p>
 {% highlight matlab %}
-ch = [1 8 11 14 19 22 25 32]; % selecting channels as in Andreoti et al 2016
+ch = 1:8; % using channels from testset
 morph=FECGSYN_benchMorph(pathdir,ch,debug)
 {% endhighlight %}
 

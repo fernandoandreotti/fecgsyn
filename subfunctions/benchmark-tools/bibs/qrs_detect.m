@@ -102,7 +102,7 @@ end
 
 [a b] = size(ecg);
 if(a>b); NB_SAMP=a; elseif(b>a); NB_SAMP=b; ecg=ecg'; end;
-tm = 1/fs:1/fs:ceil(NB_SAMP/fs);
+tm = 1/fs:1/fs:NB_SAMP/fs;
 
 % == constants
 MED_SMOOTH_NB_COEFF = round(fs/100);

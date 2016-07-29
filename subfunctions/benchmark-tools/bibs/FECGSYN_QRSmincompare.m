@@ -72,7 +72,7 @@ REFRAC = .15;               % detector refractory period (in s)
 % Detect QRS complexes
 fqrs = cell(1,size(data,1));
 for j = 1:size(data,1)
-    fqrs{j} = qrs_detect(data(j,:),TH,REFRAC,fs);
+    fqrs{j} = qrs_detect(data(j,:),REFRAC,TH,fs);
 end
 
 % creating statistics in 1-min blocks

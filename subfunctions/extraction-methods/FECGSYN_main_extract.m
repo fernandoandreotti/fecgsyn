@@ -64,6 +64,7 @@ function FECGSYN_main_extract(path,narrowband,wfdb,ch,refchs,debug)
 % Channels to be used
 fs_new = 250;           % extraction occurs at 250 Hz, data will be resampled, if necessary. 
                         % Only relevant for ECG segmantation using ECGPUWAVE
+gain = 3000;            % gain apploed saving files
 
 %% Preprocessing
 slashchar = char('/'*isunix + '\'*(~isunix));
@@ -130,7 +131,7 @@ for i = 1:length(fls)
         refchs = length(ch)+[1:length(refchs)];
         warning('For batch processing, avoid converting data to WFDB format, since it may cause slow downs.')
     else    
-        load(fls{i}) % out structure
+        load([path fls{i}]) % out structure
     end
     %% Mixing separate sources
     if isempty(out.noise)
@@ -142,12 +143,12 @@ for i = 1:length(fls)
     
     mixture = double(out.mecg) + sum(cat(3,out.fecg{:}),3) ...
         + noise;     % re-creating abdominal mixture
-    mixture = mixture./3000;    % removing gain given during int conversion
     refs = zeros(length(refchs),length(mixture)/(fs/fs_new));
     for j = 1:length(refchs)
         refs(j,:) = resample(mixture(refchs(j),:),fs_new,fs);   % reference maternal channels
     end
-    mixture = mixture(ch,:);
+    mixture = mixture(ch,:)./gain;
+    out.fecg{1} = out.fecg{1}(ch,:)./gain;
     fref = round(out.fqrs{1}/(fs/fs_new));
     mref = round(out.mqrs/(fs/fs_new));
     
@@ -156,7 +157,7 @@ for i = 1:length(fls)
     fecg = ppmixture;
     for j=1:length(ch)
         ppmixture(j,:) = resample(mixture(j,:),fs_new,fs);    % reducing number of channels
-        fecg(j,:) = resample(double(out.fecg{1}(j,:))./3000,fs_new,fs);    % propagated FECG signal (unmixed)
+        fecg(j,:) = resample(double(out.fecg{1}(j,:)),fs_new,fs);    % propagated FECG signal (unmixed)
         lpmix = filtfilt(b_lp,a_lp,ppmixture(j,:));
         ppmixture(j,:) = filtfilt(b_hp,a_hp,lpmix);
     end

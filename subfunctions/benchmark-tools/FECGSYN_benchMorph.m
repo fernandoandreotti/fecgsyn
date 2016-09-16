@@ -162,7 +162,7 @@ for i = 1:length(fls_ext)
     if isempty(cas)
         cas = {'bas'};
     else
-        cas = cas(2:end);
+        cas = cas{1}(2:end);
     end
     clear file
     

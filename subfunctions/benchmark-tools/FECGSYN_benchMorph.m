@@ -186,7 +186,7 @@ for i = 1:length(fls_ext)
                                                            % either 60sec or the whole dataset's length 
                                                            
         
-    fname = [pathdir 'plots' slashchar fls_ext{i}(1:end-4) cas];
+    fname = [pathdir 'plots' slashchar fls_ext{i}(1:end-4) cellstr(cas)];
     fname = strcat(fname{:});
     [outputs{1:7}]= FECGSYN_morpho_loop(fecgref,residual,fref,fs_new,TEMP_SAMPS,fname,[b_hp,a_hp,b_lp,a_lp],debug);
     

@@ -35,7 +35,7 @@
 %
 % Modifications by Fernando Andreotti (October 2013)
 %         - Made selection of maxima/minima automatic and more robust
-function peaksmat = OSET_MaxSearch(x_ini,ff,varargin)
+function peaks = OSET_MaxSearch(x_ini,ff,varargin)
 
 if size(x_ini,1) > size(x_ini,2)
     x_ini = x_ini';
@@ -99,6 +99,5 @@ for i=1:loopch
     d = diff(I);
     % z = find(d<rng);
     peaks(I(d<rng))=0;
-    
-    peaksmat(i,:) = peaks;
+    peaks = find(peaks);
 end

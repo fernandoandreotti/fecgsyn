@@ -47,7 +47,7 @@ while k < LEN-win
         sqi_table.channel(tline,1) = ch;
         sqi_table.segment(tline,1) = seg;
         sqi_table.tstamp(tline,1) = k+win/2-1; % window center
-        if all(res(ch,k:k+win-1)==0) % check if all zeros
+        if all(res==0) % check if all zeros
             tline = tline+1;
             continue; % skip == 0
         end

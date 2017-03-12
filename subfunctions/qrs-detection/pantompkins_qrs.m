@@ -79,7 +79,7 @@ function[qrs_pos,varargout] = pantompkins_qrs(data,fs,varargin)
 
 
 % Input test
-optargs = {true,'DEFAULT',round(0.2*fs),round(.36*fs),round(.15*fs)};     % default values
+optargs = {false,'DEFAULT',round(0.2*fs),round(.36*fs),round(.15*fs)};     % default values
 newVals = cellfun(@(x) ~isempty(x), varargin);
 optargs(newVals) = varargin(newVals);
 [verbose,str_ident,refrac,refracT,QRSmaxwidth] = optargs{:};
@@ -119,7 +119,7 @@ data = data./std(data);
 checkSign = sort(data,'descend');
 signFLAG = mean(abs(checkSign(length(data)-round(0.1*length(checkSign)):length(data))))>mean(abs(checkSign(1:round(0.1*length(checkSign)))));
 if (signFLAG) && verbose        
-     disp('input channel inverted due to possible negative QRS manifestation');
+%      disp('input channel inverted due to possible negative QRS manifestation');
      data = -data;
 end
 

@@ -89,7 +89,7 @@ switch nargin
         SIGN_FORCE=varargin{5};          
         debug=varargin{6};
     otherwise
-        error('qrs_detect: wrong number of input arguments \n');
+        error('jqrs: wrong number of input arguments \n');
 end
 
 

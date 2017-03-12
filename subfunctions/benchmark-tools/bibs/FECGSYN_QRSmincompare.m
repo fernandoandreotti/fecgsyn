@@ -17,7 +17,7 @@ function [fqrs,maxch] = FECGSYN_QRSmincompare(data,fref,fs,varargin)
 % TODO
 %
 % See also:
-% qrs_detect
+% jqrs_mod
 % 
 % --
 % fecgsyn toolbox, version 1.1, March 2016
@@ -74,7 +74,7 @@ fqrs = cell(1,size(data,1));
 for j = 1:size(data,1) 
     fqrstmp = cell(1,ceil(size(data,2)/(60*fs)));
     for l = 1:5
-        fqrstmp{l} = qrs_detect(data(j,60*fs*(l-1)+1:60*fs*(l)),REFRAC,TH,fs) + 60*fs*(l-1);   
+        fqrstmp{l} = jqrs_mod(data(j,60*fs*(l-1)+1:60*fs*(l)),REFRAC,TH,fs) + 60*fs*(l-1);   
     end
     fqrs{j} = cell2mat(fqrstmp);
 end

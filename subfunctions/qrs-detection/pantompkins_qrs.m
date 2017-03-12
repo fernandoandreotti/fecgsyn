@@ -1,5 +1,6 @@
-%function [qrs_pos] = pantompkins_qrs(data,fs,varargin)
 function[qrs_pos,varargout] = pantompkins_qrs(data,fs,varargin)
+%function [qrs_pos] = pantompkins_qrs(data,fs,varargin)
+%
 % QRS Detection with Pan-Tompkins algorithm. 
 % Pan et al. 1985: A Real-Time QRS Detection Algorithm.
 % IEEE Trans Bio Eng. Vol. 32, No. 3, S.230-236
@@ -285,9 +286,7 @@ if (learned ~= 0)
 end
 
 if (learned == 0)
-    disp(['QRS-detection learning phase of dataset ' str_ident ' was not successful.']);
-%     disp('Using  Joachims P&T instead..')
-%     qrs_pos = qrs_detect(data);
+    warning(['QRS-detection learning phase of dataset ' str_ident ' was not successful.']);
     return
 end
 

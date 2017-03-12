@@ -33,9 +33,8 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
 % Public License for more details.
 %
-% (minor modifications by Fernando Andreotti, October 2013)
-% log:     - Allowed multi-channel detection by looping through channels
-%          - Made selection of maxima/minima more robust
+% Modifications by Fernando Andreotti (October 2013)
+%         - Made selection of maxima/minima automatic and more robust
 function peaksmat = OSET_MaxSearch(x_ini,ff,varargin)
 
 if size(x_ini,1) > size(x_ini,2)

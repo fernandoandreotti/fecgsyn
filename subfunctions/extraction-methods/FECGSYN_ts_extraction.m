@@ -88,23 +88,15 @@ function residual = FECGSYN_ts_extraction(peaks,ecg,method,debug,varargin)
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 % == manage inputs
-nbCycles = 20;
-NbPC = 2;
-fs = 1000;
+% set defaults for optional inputs
+optargs = {20 2 1000};
+newVals = cellfun(@(x) ~isempty(x), varargin);
+optargs(newVals) = varargin(newVals);
+[nbCycles, NbPC, fs] = optargs{:};
 
-switch nargin
-    case 4
-    case 5
-        nbCycles = varargin{1};
-    case 6
-        nbCycles = varargin{1};
-        NbPC = varargin{2};
-    case 7
-        nbCycles = varargin{1};
-        NbPC = varargin{2};
-        fs = varargin{3};
-    otherwise
-        error('mecg_cancellation: wrong number of input arguments \n');
+
+if nargin > 7
+        error('ts_extraction: wrong number of input arguments \n');
 end
 
 % check that we have more peaks than nbCycles

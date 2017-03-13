@@ -1,5 +1,5 @@
-_FECGSYN_ toolbox, version 1.2, March 2017
-====
+## _FECGSYN_ toolbox, version 1.2, March 2017
+
 Open-source platform for reproducible NI-FECG research
 
 * Documentation available at: [www.fecgsyn.com](http://www.fecgsyn.com)
@@ -8,7 +8,7 @@ Open-source platform for reproducible NI-FECG research
 
 
 ## Authors
-====
+
 _FECGSYN_ is the product of a collaboration between the Department of Engineering Science, University of Oxford (DES-OX), the Institute of Biomedical Engineering, TU Dresden (IBMT-TUD) and the Biomedical Engineering Faculty at the Technion Israel Institute of Technology (BME-IIT). The authors are:
 - Joachim Behar (DES-OX,BME-IIT)
 - Fernando Andreotti (DES-OX,IBMT-TUD)
@@ -21,7 +21,7 @@ Contacts: joachim.behar@oxfordalumni.org & fernando.andreotti@eng.ox.ac.uk
 
 
 ## History
-====
+
 FECGSYN is built upon the work from McSharry et al. [1] and Sameni et al. [2] 
 The original code from McSharry et al. is available in MATLAB and in 
 C on PhysioNet. The code developed by Sameni et al. 
@@ -39,7 +39,7 @@ maternal and foetal ECG signals. EURASIP Journal on Advances in Signal Processin
 
 
 ## References
-====
+
 
 When using the _FECGSYN_ please refer to:
 
@@ -51,7 +51,7 @@ Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., An Open-Source 
 
 
 ## License
-====
+
 
 Released under the GNU General Public License
 

@@ -1,4 +1,4 @@
-## _FECGSYN_ toolbox, version 1.2, March 2017
+# _FECGSYN_ toolbox, version 1.2, March 2017
 
 Open-source platform for reproducible NI-FECG research
 

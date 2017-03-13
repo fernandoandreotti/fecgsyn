@@ -8,6 +8,13 @@ priority: 4
 
 Here is a list of changes made on each version of the <em>FECGSYN</em> simulator.
 
+- **v1.2 : 2017.03.13** <br>
+  Update to include novel fetal signal quality metrics
+  - **Features**
+    - Novel signal quality indices (SQI) added as presented in Andreotti _et al_ 2017
+    - Naive Bayes classifier summarizes different SQI metrics into a consensus metric.
+    - Minor restructuring of folders
+
 - **v1.1 : 2016.03.15** <br>
   Major update and inclusion of several extraction methods and  benchmarking tools.
   - **Features**

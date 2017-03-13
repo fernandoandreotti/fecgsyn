@@ -154,5 +154,6 @@ end
 
 % saving detected FQRS to data
 sqi_table = sqi_table(:,[1:19 45:end 20:44]);
+sqi_table = sqi_table(:,[1:6 9 7:8 10:42 48:51 43:47]); % order according to Andreotti 2017
 sqi = sortrows(sqi_table,'channel','ascend');
 

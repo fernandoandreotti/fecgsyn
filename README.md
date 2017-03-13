@@ -1,15 +1,20 @@
-_FECGSYN_ toolbox, version 1.1, April 2016
+_FECGSYN_ toolbox, version 1.3, March 2017
 ====
-* Documentation available at: [http://fernandoandreotti.github.io/fecgsyn](http://fernandoandreotti.github.io/fecgsyn)
-* Checkout a large dataset of simulated signals (FECGSYNDB) [available at Physionet](http://physionet.org/physiobank/database/fecgsyndb/)
+* Documentation available at: [www.fecgsyn.com](http://www.fecgsyn.com)
+* Large dataset of simulated signals (FECGSYNDB) [available at Physionet](http://physionet.org/physiobank/database/fecgsyndb/)
 * See latest release under [https://github.com/fernandoandreotti/fecgsyn/releases/](https://github.com/fernandoandreotti/fecgsyn/releases/)
 
 
-The FECGSYN toolbox is a reference open-source platform for NI-FECG research, product of a collaboration between the Department of Engineering Science, University of Oxford (DES-OX), the Institute of Biomedical Engineering, TU Dresden (IBMT-TUD) and the Biomedical Engineering Faculty at the Technion Israel Institute of Technology (BME-IIT). The authors are Joachim Behar (DES-OX,BME-IIT), Fernando Andreotti (IBMT-TUD), Julien Oster (DES-OX), Sebastian Zaunseder (IBMT-TUD) and Gari D. Clifford (DES-OX).
+The FECGSYN toolbox is a reference open-source platform for NI-FECG research, product of a collaboration between the Department of Engineering Science, University of Oxford (DES-OX), the Institute of Biomedical Engineering, TU Dresden (IBMT-TUD) and the Biomedical Engineering Faculty at the Technion Israel Institute of Technology (BME-IIT). The authors are:
+- Joachim Behar (DES-OX,BME-IIT)
+- Fernando Andreotti (DES-OX,IBMT-TUD)
+- Julien Oster (DES-OX)
+- Sebastian Zaunseder (IBMT-TUD) 
+- Gari D. Clifford (DES-OX)
 
 
-Copyright (C) 2016
-Contacts: joachim.behar@oxfordalumni.org & fernando.andreotti@mailbox.tu-dresden.de
+Copyright (C) 2017
+Contacts: joachim.behar@oxfordalumni.org & fernando.andreotti@eng.ox.ac.uk
 
 
 History

@@ -1,4 +1,4 @@
-_FECGSYN_ toolbox, version 1.3, March 2017
+_FECGSYN_ toolbox, version 1.2, March 2017
 ====
 * Documentation available at: [www.fecgsyn.com](http://www.fecgsyn.com)
 * Large dataset of simulated signals (FECGSYNDB) [available at Physionet](http://physionet.org/physiobank/database/fecgsyndb/)

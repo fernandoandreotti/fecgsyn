@@ -1,7 +1,7 @@
-function sqi = mcsqi2(raw,fecg,mecg,fs)
-%mcSQI Spectral Coherence metric
+function sqi = mcsqi2(raw,fecg,fs)
+%mcSQIb Spectral Coherence metric
 % 
-% Returns the coherence SQI.
+% Returns the coherence SQI between raw and extracted FECG signals.
 % 
 % 
 % Input:
@@ -11,6 +11,7 @@ function sqi = mcsqi2(raw,fecg,mecg,fs)
 % 
 % Output:
 %   sqi:            resulting sSQI for segment
+% 
 % 
 % --
 % fecgsyn toolbox, version 1.2, March 2017

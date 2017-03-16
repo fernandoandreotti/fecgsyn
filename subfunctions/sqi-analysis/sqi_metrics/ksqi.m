@@ -15,6 +15,13 @@ function sqi = ksqi(signal)
 % Output:
 %   sqi:            resulting kSQI for segment
 % 
+% % References
+%
+% [1] Li, Qiao, Roger G. Mark, and Gari D. Clifford. "Robust heart rate estimation from multiple asynchronous noisy
+% sources using signal quality indices and a Kalman filter." Physiological measurement 29.1 (2008): 15.
+% 
+% 
+% 
 % --
 % fecgsyn toolbox, version 1.2, March 2017
 % Released under the GNU General Public License

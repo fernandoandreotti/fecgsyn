@@ -1,7 +1,7 @@
 function sqi = mpsqi1(signal,qrs,fs)
-%mpSQI Spectral Power around MQRS complexes on extracted FECG
+%mpSQIa Spectral Power around MQRS complexes on extracted FECG
 % 
-% Returns spectral power around MQRS and its harmonics in frequency domain
+% Returns spectral power around MQRS and its first 5 harmonics in frequency domain
 % 
 % 
 % Input:

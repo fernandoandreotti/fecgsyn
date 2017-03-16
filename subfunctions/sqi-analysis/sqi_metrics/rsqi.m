@@ -1,23 +1,22 @@
-function sqi = rsqi(qrs,fs,CI,debug)
-% compute smoothness of hrv or of hr time series given a confidence interval (CI).
+function sqi = rsqi(qrs,fs,CI)
+% rSQI Function
+% 
+% Compute smoothness of HRV or of HR time series given a confidence interval (CI).
 % The underlying assumption for using this function is that the more smooth
-% the qrs time series is the most likely it is to be a meaningful qrs time series.
+% the QRS time series is the most likely it is to be a meaningful qrs time series.
 %
-% inputs
+% Inputs
 %   qrs:    qrs fiducials (required, in data points number)
-%   secDer: use second derivative? (i.e. HRV instead of HR to
-%           compute SMI, default: 1)
 %   fs:     sampling frequency (default: 1kHz)
 %   CI:     confidence interval (default: 0.96)
-%   segL:   length of the ecg segment in seconds (default: 60sec)
 %
-% outputs
+% Outputs
 %   sqi     percentage of intervals inside CI
 %
 % References:
-% [1] Johnson, A. E. W., Behar, J., Andreotti, F., Clifford, G. D. and Oster, J. (2015).
-% Multimodal heart beat detection using signal quality indices, Physiological Measurement
-% 36 (2015): 1665-1677.
+% [1] Behar, J., Oster, J., & Clifford, G. D. (2014). Combining and Benchmarking 
+% Methods of Foetal ECG Extraction Without Maternal or Scalp Electrode Data. 
+% Physiol. Meas., 35(8), 1569–1589.
 %
 %
 % --
@@ -115,10 +114,8 @@ if sqi <0
 end
 
 % == plots
-if debug
-    hist(hrv_CI,40); xlabel('hr or hrv histogram');
-    title(['assess regularity in term of hr or hrv, REGULARITY:' SMI]);
-    set(findall(gcf,'type','text'),'fontSize',14,'fontWeight','bold');
-end
+%     hist(hrv_CI,40); xlabel('hr or hrv histogram');
+%     title(['assess regularity in term of hr or hrv, REGULARITY:' SMI]);
+%     set(findall(gcf,'type','text'),'fontSize',14,'fontWeight','bold');
 
 end

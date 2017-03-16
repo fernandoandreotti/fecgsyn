@@ -3,17 +3,18 @@ function sqi = ssqi(signal)
 % 
 % Returns the skewness of a signal
 % 
-% Reference:
-% Li, Q., Mark, R. G., Clifford, G. D., & Li. (2008). Robust heart rate 
-% estimation from multiple asynchronous noisy sources using signal quality 
-% indices and a Kalman filter. Physiol. Meas., 29(1), 15–32. 
-% http://doi.org/10.1088/0967-3334/29/1/002
 % 
 % Input:
 %   signal:         single channel (F)ECG [1xN double]
 % 
 % Output:
 %   sqi:            resulting sSQI for segment
+% 
+% Reference:
+% [1] Li, Q., Mark, R. G., Clifford, G. D., & Li. (2008). Robust heart rate 
+% estimation from multiple asynchronous noisy sources using signal quality 
+% indices and a Kalman filter. Physiol. Meas., 29(1), 15–32. 
+% http://doi.org/10.1088/0967-3334/29/1/002
 % 
 % --
 % fecgsyn toolbox, version 1.2, March 2017

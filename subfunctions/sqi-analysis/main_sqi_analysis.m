@@ -159,7 +159,7 @@ while k < LEN-win
         combs = nchoosek(1:NDET,2);
         for c = 1:size(combs); eval(['sqi_table.bsqi' strcat(num2str(combs(c,:)'))' '(tline,1) = bsqi(fqrs_ann{ch,' ... % Calculate bSQI
                 num2str(combs(c,1)) '},fqrs_ann{ch,' num2str(combs(c,2)) '},0.05,fs);']); end
-        for c = 1:NDET;eval(['sqi_table.rsqi' num2str(c) '(tline,1) = rsqi(fqrs_ann{ch,' num2str(c) '},fs,0.96,0);']);end % rSQI metric
+        for c = 1:NDET;eval(['sqi_table.rsqi' num2str(c) '(tline,1) = rsqi(fqrs_ann{ch,' num2str(c) '},fs,0.96);']);end % rSQI metric
         for c = 1:NDET;eval(['sqi_table.csqi' num2str(c) '(tline,1) = csqi(res,fqrs_ann{ch,' num2str(c) '},fs,win_alg);']);end % cSQI
         for c = 1:NDET; eval(['sqi_table.xsqi' num2str(c) '(tline,1) = xsqi(res,fqrs_ann{ch,' num2str(c) '},fs,win_alg);']); end % xSQI
         % Maternal SQIs
@@ -167,8 +167,8 @@ while k < LEN-win
         for c = 1:NDET; eval(['sqi_table.misqi' num2str(c) '(tline,1) = 1 - bsqi(mref,fqrs_ann{ch,' num2str(c) '},0.05,fs);']); end; % miSQI metric
         sqi_table.mpsqi(tline,1) = mpsqi1(res,mref,fs);
         sqi_table.mpsqi2(tline,1) = mpsqi2(res,mref,fs);
-        sqi_table.mcsqi(tline,1) = mcsqi1(rawsignal,res,mecg(k:k+win-1),fs);          % Spectral Coherence
-        sqi_table.mcsqi2(tline,1) = mcsqi2(rawsignal,res,mecg(k:k+win-1),fs);          % Spectral Coherence
+        sqi_table.mcsqi(tline,1) = mcsqi1(res,mecg(k:k+win-1),fs);          % Spectral Coherence
+        sqi_table.mcsqi2(tline,1) = mcsqi2(rawsignal,res,fs);          % Spectral Coherence
         
         tline = tline+1;
         try
@@ -191,7 +191,7 @@ while k < LEN-win
 end
 
 % saving detected FQRS to data
-sqi_table = sqi_table(:,[1:19 45:end 20:44]);
-sqi_table = sqi_table(:,[1:6 9 7:8 10:42 48:51 43:47]); % order according to Andreotti 2017
-sqi = sortrows(sqi_table,'channel','ascend');
+sqi = sqi_table(:,[1:4 7 5:6 8:19 45:49 20:35 41:44 36:40]); % order according to Andreotti 2017 (Fig. 5)
+                                %  This step is important for using the Naive Bayes classfifier correctly
+sqi = sortrows(sqi,'channel','ascend');
 

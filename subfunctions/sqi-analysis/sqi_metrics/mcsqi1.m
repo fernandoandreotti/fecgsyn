@@ -1,11 +1,11 @@
-function sqi = mcsqi1(raw,fecg,mecg,fs)
-%mcSQI Spectral Coherence metric
+function sqi = mcsqi1(fecg,mecg,fs)
+%mcSQIa Spectral Coherence metric
 % 
-% Returns the coherence SQI.
+% Returns the coherence SQI between extracted FECG and MECG reference
+% leads.
 % 
 % 
 % Input:
-%   raw:         Raw data segment
 %   fecg:        Residual data segment
 %   mecg:        Chest lead segment
 % 

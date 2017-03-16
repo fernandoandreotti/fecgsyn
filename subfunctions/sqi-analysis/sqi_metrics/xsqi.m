@@ -3,7 +3,7 @@ function sqi = xsqi(signal,qrs,fs,win)
 % 
 % Despite the fancy name, this function does some pretty boring
 % calculations, while attempting to describe how different a QRS complex is
-% from the rest of the signal. This is particularly important for FECG
+% from its surrounding signal. This is particularly important for FECG
 % signals, which are often buried into noise.
 % 
 % Input:
@@ -15,6 +15,14 @@ function sqi = xsqi(signal,qrs,fs,win)
 % 
 % Output:
 %   sqi:            resulting xSQI for segment
+%
+%
+% References:
+% [1] Andreotti, F., Riedl, M., Himmelsbach, T., Wedekind, D., Wessel, N., 
+% Stepan, H., … Zaunseder, S. (2014). Robust fetal ECG extraction and detection
+% from abdominal leads. Physiol. Meas., 35(8), 1551–1567. 
+% https://doi.org/10.1088/0967-3334/35/8/1551
+% 
 % 
 % --
 % fecgsyn toolbox, version 1.2, March 2017

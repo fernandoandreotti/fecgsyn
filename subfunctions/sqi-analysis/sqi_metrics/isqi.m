@@ -1,5 +1,7 @@
 function sqi = isqi(qrs,win,fs)
-%BSQI_MATLAB Calculate iSQI of all channels
+% iSQI Function
+% Calculate iSQI of all channels, i.e. for each detection in which
+% percentage of channels it was detected e.g. on a multichannel ECG.
 %
 % Input:
 %  qrs:          Cell containing annotations for all channels
@@ -11,21 +13,8 @@ function sqi = isqi(qrs,win,fs)
 %                of detections on each channel, present in all channels)
 % References
 %
-% [1] Johnson, A. E. W., Behar, J., Andreotti, F., Clifford, G. D. and Oster, J. (2015).
-% Multimodal heart beat detection using signal quality indices, Physiological Measurement
-% 36 (2015): 1665-1677.
-% [2] Johnson, A. E. W., Behar, J., Andreotti, F., Clifford, G. D. and Oster, J. (2014).
-% R-peak estimation using multimodal lead switching, Computing in Cardiology Conference
-% (CinC), 2014, Vol. 41, pp. 281-284.
-%
-% [3] Behar, Joachim, et al. "ECG signal quality during arrhythmia and its
-% application to false alarm reduction." Biomedical Engineering, IEEE Transactions on 60.6 (2013): 1660-1666.
-%
-% [4] Li, Qiao, Roger G. Mark, and Gari D. Clifford. "Robust heart rate estimation from multiple asynchronous noisy
+% [1] Li, Qiao, Roger G. Mark, and Gari D. Clifford. "Robust heart rate estimation from multiple asynchronous noisy
 % sources using signal quality indices and a Kalman filter." Physiological measurement 29.1 (2008): 15.
-%
-% Multimodal peak detection using ECG, ABP, PPG or SV
-% Johnson, A. E. W., Behar, J., Andreotti, F., Clifford, G. D. and Oster, J.
 %
 %
 % --

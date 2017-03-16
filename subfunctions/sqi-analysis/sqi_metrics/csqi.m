@@ -14,6 +14,13 @@ function sqi = csqi(signal,qrs,fs,win)
 % Output:
 %   sqi:            resulting xSQI for segment
 % 
+% References:
+%  [1] Andreotti, F., Riedl, M., Himmelsbach, T., Wedekind, D., Wessel, N., 
+% Stepan, H., … Zaunseder, S. (2014). Robust fetal ECG extraction and detection
+% from abdominal leads. Physiol. Meas., 35(8), 1551–1567. 
+% https://doi.org/10.1088/0967-3334/35/8/1551
+% 
+% 
 % --
 % fecgsyn toolbox, version 1.2, March 2017
 % Released under the GNU General Public License

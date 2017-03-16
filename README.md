@@ -73,16 +73,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 This toolbox makes use of several other pre-existing open source algorithms listed below:
 
-- _ECGSYN: A realistic ECG waveform generator_, by Dr. Patrick McSharry and Gari D. Clifford,  [https://www.physionet.org/physiotools/ecgsyn/](available here) (licensed under GNU GPL 2.0)
-- _Open Source ECG Toolbox (OSET)_, v1.0, by Dr. Reza Sameni, [http://oset.ir/](available here) (licensed under GNU GPL 2.0)
-- _FastICA for Matlab_, v2.5, by  Hugo Gävert, Jarmo Hurri, Jaakko Särelä, and Aapo Hyvärinen [http://research.ics.aalto.fi/ica/fastica/](available here) (licensed under GNU GPL 2.0)
-- _JadeR_, by Jean-Francois Cardoso, [http://perso.telecom-paristech.fr/~cardoso](available here) (BSD license)
-- _FECG-ESN toolbox_, v1.0, Dr. Joachim Behar, [http://joachimbehar.comuv.com](available here)  (licensed under GNU GPL 2.0)
-- _ESN learning toolbox_, v1.0, by H. Jaeger (Fraunhofer IAIS), [http://reservoir-computing.org/software](available here) (unlicensed)
-- _QRS Detection with Pan-Tompkins algorithm_, by Daniel Wedekind, [https://github.com/danielwedekind/qrsdetector](available here)  (licensed under GNU GPL 2.0)
-- _arrow.m_, by Dr. Erik A. Johnson, [https://uk.mathworks.com/matlabcentral/fileexchange/278-arrow](available here), (BSD license)
-- _fwhm.m_, v1.2, by Patrick Egan, [http://uk.mathworks.com/matlabcentral/fileexchange/10590-fwhm](available here), (BSD license)
-- _pcorr2.m_, by Peter Rydesäter, [https://uk.mathworks.com/matlabcentral/fileexchange/4012-prcorr2-10-times-faster-correlation-coef](available here) (BSD license)
+- _ECGSYN: A realistic ECG waveform generator_, by Dr. Patrick McSharry and Gari D. Clifford,  [available here](https://www.physionet.org/physiotools/ecgsyn/) (licensed under GNU GPL 2.0)
+- _Open Source ECG Toolbox (OSET)_, v1.0, by Dr. Reza Sameni, [available here](http://oset.ir/) (licensed under GNU GPL 2.0)
+- _FastICA for Matlab_, v2.5, by  Hugo Gävert, Jarmo Hurri, Jaakko Särelä, and Aapo Hyvärinen [available here](http://research.ics.aalto.fi/ica/fastica/) (licensed under GNU GPL 2.0)
+- _JadeR_, by Jean-Francois Cardoso, [available here](http://perso.telecom-paristech.fr/~cardoso) (BSD license)
+- _FECG-ESN toolbox_, v1.0, Dr. Joachim Behar, [available here](http://joachimbehar.comuv.com)  (licensed under GNU GPL 2.0)
+- _ESN learning toolbox_, v1.0, by H. Jaeger (Fraunhofer IAIS), [available here](http://reservoir-computing.org/software) (unlicensed)
+- _QRS Detection with Pan-Tompkins algorithm_, by Daniel Wedekind, [available here](https://github.com/danielwedekind/qrsdetector)  (licensed under GNU GPL 2.0)
+- _arrow.m_, by Dr. Erik A. Johnson, [available here](https://uk.mathworks.com/matlabcentral/fileexchange/278-arrow), (BSD license)
+- _fwhm.m_, v1.2, by Patrick Egan, [available here](http://uk.mathworks.com/matlabcentral/fileexchange/10590-fwhm), (BSD license)
+- _pcorr2.m_, by Peter Rydesäter, [available here](https://uk.mathworks.com/matlabcentral/fileexchange/4012-prcorr2-10-times-faster-correlation-coef) (BSD license)
 
-Not provided with package, ocasionally required, see [http://fernandoandreotti.github.io/fecgsyn/pages/install.html](install instructions):
-- **WFDB Toolbox for MATLAB and Octave**, v.0.9.9, by Dr. Ikaro Silva, [https://www.physionet.org/physiotools/matlab/wfdb-app-matlab/](available here) (licensed under GNU GPL 2.0)
+Not provided with package, ocasionally required, see [install instructions](http://fernandoandreotti.github.io/fecgsyn/pages/install.html):
+- **WFDB Toolbox for MATLAB and Octave**, v.0.9.9, by Dr. Ikaro Silva, [available here](https://www.physionet.org/physiotools/matlab/wfdb-app-matlab/) (licensed under GNU GPL 2.0)

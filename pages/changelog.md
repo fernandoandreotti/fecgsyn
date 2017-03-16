@@ -12,6 +12,7 @@ Here is a list of changes made on each version of the <em>FECGSYN</em> simulator
   Update to include novel fetal signal quality metrics
   - **Features**
     - Novel signal quality indices (SQI) added as presented in Andreotti _et al_ 2017
+    - FHR correction using SQI and Kalman filtering added as presented in Andreotti _et al_ 2017
     - Naive Bayes classifier summarizes different SQI metrics into a consensus metric.
     - 4 additional QRS detectors modified for FECG use
     - Minor restructuring of folders

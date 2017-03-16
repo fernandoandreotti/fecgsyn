@@ -276,7 +276,28 @@ end
     end
     {% endhighlight %}
     
-    <p>Where the columns of <code>final_sqi</code> represent the window-based SQI values for each of the available channels.</p>
+    <p>Where the columns of <code>final_sqi</code> represent the window-based SQI values for each of the available channels. The results for one of the channels (e.g. channel 2) can be plotted as:</p>
+ 
+{% highlight matlab %}
+ch = 2;
+ax(1)=subplot(3,1,1);
+plot(mixture(ch,:),'Color',[0.8 0.8 0.8])
+hold on
+plot(residual(ch,:),'b')
+plot(qrs1,residual(ch,qrs1),'xr')
+legend('abdmECG','FECG','FQRS')
+
+ax(2)=subplot(3,1,2);
+sqiidx = [10 30 35 40]; % see variable "sqi" for more info
+plot(table2array(sqi(sqi.channel==ch,4)),table2array(sqi(sqi.channel==ch,sqiidx)))
+legend(sqi.Properties.VariableNames(sqiidx))
+
+ax(3)=subplot(3,1,3);
+plot(table2array(sqi(sqi.channel==ch,4)),final_sqi(:,ch))
+legend('Final SQI')
+linkaxes(ax,'x');
+ {% endhighlight %}
+
 </section>  <hr>
 
 <div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span> Warning</div><div class="panel-body"> Make sure WFDB Toolbox is installed, as it is required for the <code>gqrs()</code> and <code>wqrs()</code> detectors. For more information see <a href="{{site.github.url}}/pages/install.html#install-wfdb"><span class="octicon octicon-globe"></span> FECGSYN dependencies</a>. </div></div>

@@ -251,7 +251,7 @@ end
     qrs1 = OSET_MaxSearch(residual(1,:),1.3/out.param.fs); % 2.3 Hz is the expected FHR parameter
     qrs2 = jqrs_mod(residual(1,:),0.25,0.3,out.param.fs,''); % refractory period and threshold as parameters
     sqi = bsqi(qrs1,qrs2,0.05,out.param.fs);
-    sprintf('SQI for segment was equal %d',sqi)
+    sprintf('SQI for segment was equal %2.2f',sqi)
     {% endhighlight %}
 
     
@@ -279,6 +279,7 @@ end
     <p>Where the columns of <code>final_sqi</code> represent the window-based SQI values for each of the available channels.</p>
 </section>  <hr>
 
+<div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span> Warning</div><div class="panel-body"> Make sure WFDB Toolbox is installed, as it is required for the <code>gqrs()</code> and <code>wqrs()</code> detectors. For more information see <a href="{{site.github.url}}/pages/install.html#install-wfdb"><span class="octicon octicon-globe"></span> FECGSYN dependencies</a>. </div></div>
 
 <!-- -----------WFDB FECGSYN------- -->
 <section class="bs-docs-section">

@@ -29,14 +29,30 @@ is part of the OSET toolbox, also available online in MATLAB.
 Links to these work are available at: 
 http://physionet.incor.usp.br/physiotools/ipmcode/
 
-[1] McSharry, Patrick E and Clifford, Gari D and Tarassenko, Lionel and Smith, Leonard A.
+1. McSharry, Patrick E and Clifford, Gari D and Tarassenko, Lionel and Smith, Leonard A.
 A dynamical model for generating synthetic electrocardiogram signals. IEEE Transactions
 on Biomedical Engineering,  50(3) 2003.
 
-[2] Sameni, Reza, et al. Multichannel ECG and noise modeling: application to
+2. Sameni, Reza, et al. Multichannel ECG and noise modeling: application to
 maternal and foetal ECG signals. EURASIP Journal on Advances in Signal Processing
 2007 (2007).
 
+## Depedenencies
+
+This toolbox makes use of several other pre-existing open source algorithms listed below:
+
+- **ECGSYN: A realistic ECG waveform generator**, by Dr. Patrick McSharry and Gari D. Clifford,  [https://www.physionet.org/physiotools/ecgsyn/](available here) (licensed under GNU GPL 2.0)
+- **Open Source ECG Toolbox (OSET)**, v1.0, by Dr. Reza Sameni, [http://oset.ir/](available here) (licensed under GNU GPL 2.0)
+- FastICA
+- JadeR
+- **FECG-ESN toolbox**, v1.0, Dr. Joachim Behar, [http://joachimbehar.comuv.com](available here)  (licensed under GNU GPL 2.0)
+- **ESN learning toolbox**, v1.0, by H. Jaeger (Fraunhofer IAIS), [http://reservoir-computing.org/software](available here) (unlicensed)
+- **QRS Detection with Pan-Tompkins algorithm**, by Daniel Wedekind, [https://github.com/danielwedekind/qrsdetector](available here)  (licensed under GNU GPL 2.0)
+- **arrow.m**
+
+
+Not provided with package, ocasionally required, see [http://fernandoandreotti.github.io/fecgsyn/pages/install.html](install instructions):
+- **WFDB Toolbox for MATLAB and Octave**, v.0.9.9, by Dr. Ikaro Silva, [https://www.physionet.org/physiotools/matlab/wfdb-app-matlab/](available here) (licensed under GNU GPL 2.0)
 
 ## References
 

@@ -192,6 +192,6 @@ end
 
 % saving detected FQRS to data
 sqi = sqi_table(:,[1:4 7 5:6 8:19 45:49 20:35 41:44 36:40]); % order according to Andreotti 2017 (Fig. 5)
-                                %  This step is important for using the Naive Bayes classfifier correctly
+%  This step is important for using the Naive Bayes classfifier correctly
 sqi = sortrows(sqi,'channel','ascend');
 

@@ -31,27 +31,25 @@ function [OptimumParams,phase,ECGsd,w,wsd] = FECGSYN_kf_ECGmodelling(x,peaksidx,
 % FECGSYN_kf_EKFilter
 %
 % 
+% 
 % --
-% More detailed help is in the <a href="https://fernandoandreotti.github.io/fecgsyn/">FECGSYN website</a>.
-% --
-% fecgsyn toolbox, version 1.1, March 2016
+% fecgsyn toolbox, version 1.2, March 2017
 % Released under the GNU General Public License
 %
-% Copyright (C) 2014  Joachim Behar & Fernando Andreotti
-% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
-% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+% Copyright (C) 2017  Joachim Behar & Fernando Andreotti
+% Department of Engineering Science, University of Oxford
+% joachim.behar@oxfordalumni.org, fernando.andreotti@eng.ox.ac.uk
 %
 % 
-% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
+% For more information visit: http://www.fecgsyn.com
 % 
 % Referencing this work
 %
-%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
-%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
-%   Physiological Measurement.35 1537-1550. 2014.
+% Behar, J., Andreotti, F., Zaunseder, S., Li, Q., Oster, J., & Clifford, G. D. (2014). An ECG Model for Simulating 
+% Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings. Physiol. Meas., 35(8), 1537–1550.
 % 
-% 
-% Last updated : 10-03-2016
+%
+% Last updated : 15-03-2017
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -65,7 +63,6 @@ function [OptimumParams,phase,ECGsd,w,wsd] = FECGSYN_kf_ECGmodelling(x,peaksidx,
 % 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
-%
 %
 
 %% Parameters

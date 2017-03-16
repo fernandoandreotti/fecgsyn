@@ -15,24 +15,25 @@ function [gp,selvcg] = load_gparam(vcgmodel,type)
 %       gp{3} = bi 
 %
 %
+% 
 % --
-% fecgsyn toolbox, version 1.1, March 2016
+% fecgsyn toolbox, version 1.2, March 2017
 % Released under the GNU General Public License
 %
-% Copyright (C) 2014  Joachim Behar & Fernando Andreotti
-% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
-% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+% Copyright (C) 2017  Joachim Behar & Fernando Andreotti
+% Department of Engineering Science, University of Oxford
+% joachim.behar@oxfordalumni.org, fernando.andreotti@eng.ox.ac.uk
 %
 % 
-% For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/
+% For more information visit: http://www.fecgsyn.com
 % 
 % Referencing this work
 %
-%   Behar Joachim, Andreotti Fernando, Zaunseder Sebastian, Li Qiao, Oster Julien, Clifford Gari D. 
-%   An ECG simulator for generating maternal-foetal activity mixtures on abdominal ECG recordings. 
-%   Physiological Measurement.35 1537-1550. 2014.
+% Behar, J., Andreotti, F., Zaunseder, S., Li, Q., Oster, J., & Clifford, G. D. (2014). An ECG Model for Simulating 
+% Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings. Physiol. Meas., 35(8), 1537–1550.
+% 
 %
-% Last updated : 10-03-2016
+% Last updated : 15-03-2017
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -46,6 +47,7 @@ function [gp,selvcg] = load_gparam(vcgmodel,type)
 % 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
 
 vcgList = {'old1', 'old2', 's0273', 's0291', 's0302', 's0303', 's0306', 's0491', 's0533'};
 selvcg = vcgList(vcgmodel);

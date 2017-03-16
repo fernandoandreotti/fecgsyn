@@ -2,6 +2,8 @@
 
 Open-source platform for reproducible NI-FECG research
 
+![alt text](http://fernandoandreotti.github.io/fecgsyn/pages/images/French_fecgsyn.png "FECGSYN Logo")
+
 * Documentation available at: [www.fecgsyn.com](http://www.fecgsyn.com)
 * Large dataset of simulated signals (FECGSYNDB) [available at Physionet](http://physionet.org/physiobank/database/fecgsyndb/)
 * See latest release under [https://github.com/fernandoandreotti/fecgsyn/releases/](https://github.com/fernandoandreotti/fecgsyn/releases/)

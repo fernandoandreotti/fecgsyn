@@ -27,12 +27,11 @@ hdr_kfsingle =  1-sum(abs(repmat(fhr_ref,1,length(chans))-fhr_estim)>TOL)./lengt
 hdr_weighted = 1-sum(abs(fhr_ref-fhr_weight)>TOL)/length(fhr_ref);
 hdr_multikf = 1-sum(abs(fhr_ref-fhr_final)>TOL)/length(fhr_ref);
 
-sprintf('Mean HDR multilead Kalman filter %2.2f',hdr_multikf)
-
-sprintf('Mean HDR single lead (%2.2f) and teoretical best result possible (%2.2f)\n',mean(hdr_pre),max(hdr_pre))
-sprintf('Mean HDR KF single lead (%2.2f) and teoretical best result possible(%2.2f)\n',mean(hdr_kfsingle),max(hdr_kfsingle))
-sprintf('Mean HDR multilead weighted average (%2.2f)\n',hdr_weighted)
-sprintf('Mean HDR multilead Kalman filter (%2.2f)\n',hdr_multikf)
+fprintf('Mean HDR multilead Kalman filter %2.2f\n',hdr_multikf)
+fprintf('Mean HDR single lead (%2.2f) and teoretical best result possible (%2.2f)\n',mean(hdr_pre),max(hdr_pre))
+fprintf('Mean HDR KF single lead (%2.2f) and teoretical best result possible(%2.2f)\n',mean(hdr_kfsingle),max(hdr_kfsingle))
+fprintf('Mean HDR multilead weighted average (%2.2f)\n',hdr_weighted)
+fprintf('Mean HDR multilead Kalman filter (%2.2f)\n',hdr_multikf)
 
 % RMSE results
 
@@ -40,10 +39,10 @@ rmse_pre =  sqrt(sum((repmat(fhr_ref,1,length(chans))-fhr(:,chans)).^2)/length(f
 rmse_kfsingle =  sqrt(sum((repmat(fhr_ref,1,length(chans))-fhr_estim).^2)/length(fhr_ref));
 rmse_weighted = sqrt(sum((fhr_ref-fhr_weight).^2)/length(fhr_ref));
 rmse_multikf = sqrt(sum((fhr_ref-fhr_final).^2)/length(fhr_ref));
-sprintf('Mean RMSE single lead (%2.2f) and teoretical best result possible (%2.2f)\n',mean(rmse_pre),min(rmse_pre))
-sprintf('Mean RMSE KF single lead (%2.2f) and teoretical best result possible (%2.2f)\n',mean(rmse_kfsingle),min(rmse_kfsingle))
-sprintf('Mean RMSE multilead weighted average (%2.2f)\n',rmse_weighted)
-sprintf('Mean RMSE multilead Kalman filter (%2.2f)\n',rmse_multikf)
+fprintf('Mean RMSE single lead (%2.2f) and teoretical best result possible (%2.2f)\n',mean(rmse_pre),min(rmse_pre))
+fprintf('Mean RMSE KF single lead (%2.2f) and teoretical best result possible (%2.2f)\n',mean(rmse_kfsingle),min(rmse_kfsingle))
+fprintf('Mean RMSE multilead weighted average (%2.2f)\n',rmse_weighted)
+fprintf('Mean RMSE multilead Kalman filter (%2.2f)\n',rmse_multikf)
 
 
 % Plots
@@ -53,9 +52,10 @@ plot(fhr(:,chans),'*')
 hold on
 set(gca,'ColorOrderIndex',1)
 plot(fhr_estim)
-plot(fhr_ref,'m','LineWidth',2)
-plot(fhr_final,'--k','LineWidth',2)
+plot(fhr_ref,'k','LineWidth',2)
+plot(fhr_final,'--g','LineWidth',2)
 ylim([100 200])
+legend('Rough FHR_1','Rough FHR_2','Rough FHR_3','KF FHR_1','KF FHR_2','KF FHR_3','FHR_{ref}','FHR_{final}')
 ylabel('FHR (in bpm)')
 ax(2)=subplot(3,1,2);
 set(gca,'ColorOrderIndex',1)

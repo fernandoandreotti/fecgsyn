@@ -15,7 +15,7 @@ If you have any questions, suggestions or want to know more about _FECGSYN_, do 
 
 <form action="https://getsimpleform.com/messages?form_api_token=b39c93969c3ad640727d962e590c033d" method="post" enctype="multipart/form-data">
 
-  <input type='hidden' name='redirect_to' value='https://getsimpleform.com/demo#thank-you' />
+  <input type='hidden' name='redirect_to' value='{{site.github.url}}/pages/thank-you.html' />
   <input type='hidden' name='_folder' value='contact' />
   <input type='hidden' name='_spam' value='message' />
 
@@ -26,39 +26,11 @@ If you have any questions, suggestions or want to know more about _FECGSYN_, do 
   </div>
 
 
-  <div class="form-group">
-    <label>Avatar</label>
-    <input type="file" name='avatar' class="form-control">
-  </div>
-
-
-  <div class="form-group">
-    <label>Address</label>
-    <textarea name='address' rows=8 class="form-control"></textarea>
-  </div>
-
-
-  <div class="form-group">
+   <div class="form-group">
     <label>Message</label>
     <textarea type="text" name='message' class="form-control"></textarea>
   </div>
 
-
-  <div class="form-group">
-    <label>Gender</label>
-    <select name='gender' class="form-control">
-      <option value="M">Male</option>
-      <option value="F">Female</option>
-    </select>
-  </div>
-
-  <div class="checkbox">
-    <label>
-      <input type="checkbox" name='contact' value='Yes'> Do you want us to contact you?
-      <input type='hidden' name='contact' value='No'>
-    </label>
-  </div>
-
-  <button type='submit' class="btn btn-primary">Submit</button>
+  <button type='submit' class="btn btn-lg btn-success">Submit</button>
 </form>
 

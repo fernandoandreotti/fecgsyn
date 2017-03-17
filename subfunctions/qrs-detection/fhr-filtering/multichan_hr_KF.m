@@ -106,7 +106,7 @@ for k = 1:NSAMP % samples
         num = prod(num); % multiplication
         
         % denominator
-        combs = VChooseK(1:NCHAN,NCHAN-1);
+        combs = nchoosek(1:NCHAN,NCHAN-1);
         cden = zeros(size(combs,1),1);
         for r = 1:size(combs,1); 
             cden(r) = prod(m(k,combs(r,:))); 

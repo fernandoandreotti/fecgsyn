@@ -203,11 +203,13 @@ linkaxes(ax,'x');
  
 <h2 id="sqi3">Kalman filter FHR estimation</h2>    
  
- <p>In this section, the multichannel Kalman filter (KF) fetal heart rate (FHR) estimation is presented.</p>
- 
- 
- 
- 
+ <p>In this section, the multichannel Kalman filter (KF) fetal heart rate (FHR) estimation is presented. Following the previous steps shown in the previous section ( <a href="{{site.github.url}}/pages/examples.html#sqi2"><span class="octicon octicon-arrow-small-up"></span> Multichannel SQI estimatione</a>), the FHR can be estimated by applying the function <code>runKFHR</code> as:</p>
+
+ {% highlight matlab %}
+ runKFHR(residual,final_sqi,out.fqrs{1},out.param.fs)
+  {% endhighlight %}
+
+ <p>The algorithm should plot the results for window-based FHR estimation using the method proposed by Li <em>et al</em> 2008.</p>
  
 <p><b>References:</b></p>
     <blockquote style="font-size:12px">Andreotti et al. 2017 Non-Invasive Fetal ECG Signal Quality Assessment for Multichannel Heart Rate Estimation. IEEE Trans. Biomed. Eng. (in press). <br>

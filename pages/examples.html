@@ -117,9 +117,104 @@ FECGSYN_main_extract(pathdir,narrowband,wfdb,ch,refchs,debug)
  <div class="panel panel-info"><div class="panel-heading"><span class="octicon octicon-info"></span> Tip</div><div class="panel-body"> For batch processing, avoid converting data to WFDB format, since it may cause slow downs. </div></div>
 </section> <hr>
 
+<!-------------Fetal SQI--------->
+<section class="bs-docs-section">
+<h1 id="fecgsqi" class="page-header">FECG Signal Quality Estimation</h1>
+
+<p>This example demonstrates the signal quality estimation proposed in Andreotti et al 2017. This can be used to select/merge multichannel extracted FECG information or e.g. in BSS techniques component selection.  </p>
+    
+<p>First, we modify the <a href="{{site.github.url}}/pages/examples.html#datagen1"><span class="octicon octicon-arrow-small-up"></span> initial example</a> by simulating a minute of data and modulating noise functions to a sinusoidal function and a constant function by setting the variable, as follows: </p>
+
+{% highlight matlab %}
+param.fs = 1000; % data generation at 1kHz
+param.n = 60*param.fs;
+param.SNRfm = -3; % fetal maternal SNR
+param.SNRmn = 8; % maternal to noise SNR
+param.ntype = {'MA'}; % adding muscular artifact type noise
+param.noise_fct = {arrayfun(@(x) 1+sin(5*pi*x),linspace(0,1,param.n)) 0.5}; % variable noise
+debug = 0; % debug level (skip it)
+out = run_ecg_generator(param,debug);
+{% endhighlight %}
+
+<p>Then extract a few channels of the produced simulation using for example the TSpca algorithm (Kanjilal <i>et al</i> 1997) using: </p>
+    
+{% highlight matlab %}
+NbCycles = 20;
+mixture = out.mixture([1 15 30],:);
+for j = 1:size(mixture,1)
+    residual(j,:) = FECGSYN_ts_extraction(out.mqrs,mixture(j,:),'TS-PCA',0,...
+    NbCycles,'',out.param.fs);
+end
+{% endhighlight %}
+    
+<h2 id="sqi1">Single channel, single SQI example</h2>
+    
+    <p>This example illustrates how to produce a single signal quality estimate for a single channel segment using the <i>bsqi</i> algorithm (Li <i>et al</i> 2008), which compares how similar the result of two different QRS detectors are.</p>
+    
+    {% highlight matlab %}
+    qrs1 = OSET_MaxSearch(residual(1,:),1.3/out.param.fs); % 2.3 Hz is the expected FHR parameter
+    qrs2 = jqrs_mod(residual(1,:),0.25,0.3,out.param.fs,''); % refractory period and threshold as parameters
+    sqi = bsqi(qrs1,qrs2,0.05,out.param.fs);
+    sprintf('SQI for segment was equal %2.2f',sqi)
+    {% endhighlight %}
+
+    
+  
+    
+<h2 id="sqi2">Multichannel SQI estimation</h2>    
+    
+    <p>Obviously, the previous example is suboptimal since we are estimating SQI for a complete 1 minute segment, during which we simulated a varying noise modulation. In the following example, the several SQI metrics used in Andreotti <i>et al</i> 2017 are applied. The example makes use of 5sec windows in calculating the different fetal SQI metrics for each channel. The results are saved in a table <code>sqi</code>. Further, the different metrics are then merged using the pre-trained Naive Bayes Classifier into one metric as follows:</p>
+    
+    {% highlight matlab %}
+    sqi = main_sqi_analysis(out.mqrs,out.mecg,mixture,residual,out.param.fs,'testrec');    
+    load('nbmodel.mat') % loading classifier
+    for ch = 1:max(sqi.channel)
+        idx = sqi.channel == ch;
+        features = sqi{idx,5:end}; % obtaining features
+        % estimate = nbmodel.predict(features);
+        scores = nbmodel.posterior(features);           
+        final_sqi(:,ch) =scores*[0 0.47 0.80 0.97 1]'; % coded values from Andreotti 2017
+    end
+    {% endhighlight %}
+    
+    <p>Where the columns of <code>final_sqi</code> represent the window-based SQI values for each of the available channels. The results for one of the channels (e.g. channel 2) can be plotted as:</p>
+ 
+{% highlight matlab %}
+ch = 2;
+ax(1)=subplot(3,1,1);
+plot(mixture(ch,:),'Color',[0.8 0.8 0.8])
+hold on
+plot(residual(ch,:),'b')
+plot(qrs1,residual(ch,qrs1),'xr')
+legend('abdmECG','FECG','FQRS')
+
+ax(2)=subplot(3,1,2);
+sqiidx = [10 30 35 40]; % see variable "sqi" for more info
+plot(table2array(sqi(sqi.channel==ch,4)),table2array(sqi(sqi.channel==ch,sqiidx)))
+legend(sqi.Properties.VariableNames(sqiidx))
+
+ax(3)=subplot(3,1,3);
+plot(table2array(sqi(sqi.channel==ch,4)),final_sqi(:,ch))
+legend('Final SQI')
+linkaxes(ax,'x');
+ {% endhighlight %}
+
+ 
+<p><b>References:</b></p>
+    <blockquote style="font-size:12px">Andreotti et al. 2017 Non-Invasive Fetal ECG Signal Quality Assessment for Multichannel Heart Rate Estimation. IEEE Trans. Biomed. Eng. (in press). <br>
+    Kanjilal, P. P., Palit, S., &amp; Saha, G. (1997). <a href="http://doi.org/10.1109/10.553712" data-toggle="tooltip" title="go to article" target="_blank">Fetal ECG extraction from single-channel maternal ECG using singular value decomposition.</a> <i>IEEE Trans. Biomed. Eng.</i>, 44(1), 51–9. <br>
+    Li, Q., Mark, R. G., &amp; Clifford, G. D. (2008). <a href="http://doi.org/10.1088/0967-3334/29/1/002" data-toggle="tooltip" title="go to article" target="_blank">Robust heart rate estimation from multiple asynchronous noisy sources using signal quality indices and a Kalman filter.</a> <i> Physiol. Meas.</i>, 29(1), 15-32.     
+    </blockquote>
+ 
+
+
+<div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span> Warning</div><div class="panel-body"> Make sure WFDB Toolbox is installed, as it is required for the <code>gqrs()</code> and <code>wqrs()</code> detectors. For more information see <a href="{{site.github.url}}/pages/install.html#install-wfdb"><span class="octicon octicon-globe"></span> FECGSYN dependencies</a>. </div></div>
+
+</section>  <hr>
+
 <!------------- Benchmarking --------->
 <section class="bs-docs-section">
-<h1 id="datext" class="page-header">Fetal QRS detection and FECG segmentation methods</h1>
+<h1 id="datext" class="page-header">Fetal QRS detection</h1>
 
 The following examples assume that the user already extracted FECG from your dataset, or using the previous examples. In any case, <kbd>pathdir</kbd> should contain the path to the directory containing original and extracted data. Here is a minimal working example to prepare your workspace for the following examples:
 
@@ -133,7 +228,6 @@ ch = 3;
 residual = FECGSYN_ts_extraction(out.mqrs,out.mixture(ch,:),'TS-CERUTTI',0,...
   NbCycles,'',out.param.fs);
 {% endhighlight %}
-
 
 
 <h2 id="fqrs">FQRS detection</h2>
@@ -182,7 +276,8 @@ stats=FECGSYN_benchFQRS(pathdir,ch,debug)
 <blockquote style="font-size:12px">Behar, J., Oster, J., &amp; Clifford, G. D. (2014). Combining and Benchmarking Methods of Foetal ECG Extraction Without Maternal or Scalp Electrode Data. Physiological Measurement, 35(8), 1569–1589.</blockquote>
 
 
-<h2 id="morpho">Morphological features</h2>
+
+<h2 id="morpho">Morphological Analysis</h2>
 
 <p>Analogous to the FQRS detection benchmark, morphological features can be evaluated using the <code>FECGSYN_benchMorph.m</code> function. The function can be summarized into the following steps:</p>
 
@@ -208,101 +303,10 @@ morph=FECGSYN_benchMorph(pathdir,ch,debug)
 <p><b>Reference:</b></p>
 <blockquote style="font-size:12px">Jane, R et al. 1997 Evaluation of An Automatic Threshold Based Detector of Waveform Limits in Holter ECG with the QT Database. Computers in Cardiology. </blockquote>
 
-</section> <hr>
-
-<!-------------Fetal SQI--------->
-<section class="bs-docs-section">
-<h1 id="fecgsqi" class="page-header">FECG Signal Quality Estimation</h1>
-
-<p>This example demonstrates the signal quality estimation proposed in Andreotti et al 2017. This can be used to select/merge multichannel extracted FECG information or e.g. in BSS techniques component selection.  </p>
-    
-<p>First, we modify the <a href="{{site.github.url}}/pages/examples.html#datagen1"><span class="octicon octicon-arrow-small-up"></span> initial example</a> by simulating a minute of data and modulating noise functions to a sinusoidal function and a constant function by setting the variable, as follows: </p>
-
-{% highlight matlab %}
-param.fs = 1000; % data generation at 1kHz
-param.n = 60*param.fs;
-param.SNRfm = -3; % fetal maternal SNR
-param.SNRmn = 8; % maternal to noise SNR
-param.ntype = {'MA'}; % adding muscular artifact type noise
-param.noise_fct = {arrayfun(@(x) 1+sin(5*pi*x),linspace(0,1,param.n)) 0.5}; % variable noise
-debug = 0; % debug level (skip it)
-out = run_ecg_generator(param,debug);
-{% endhighlight %}
-
-<p>Then extract a few channels of the produced simulation using for example the TSpca algorithm (Kanjilal <i>et al</i> 1997) using: </p>
-    
-{% highlight matlab %}
-NbCycles = 20;
-mixture = out.mixture([1 15 30],:);
-for j = 1:size(mixture,1)
-    residual(j,:) = FECGSYN_ts_extraction(out.mqrs,mixture(j,:),'TS-PCA',0,...
-    NbCycles,'',out.param.fs);
-end
-{% endhighlight %}
-    
-<p><b>Reference:</b></p>
-<blockquote style="font-size:12px">Andreotti et al. 2017 Non-Invasive Fetal ECG Signal Quality Assessment for Multichannel Heart Rate Estimation. IEEE Trans. Biomed. Eng. (in press). <br>
-    Kanjilal, P. P., Palit, S., &amp; Saha, G. (1997). <a href="http://doi.org/10.1109/10.553712" data-toggle="tooltip" title="go to article" target="_blank">Fetal ECG extraction from single-channel maternal ECG using singular value decomposition.</a> <i>IEEE Trans. Biomed. Eng.</i>, 44(1), 51–9.    
-    </blockquote>
-
-<h2 id="sqi1">Single channel, single SQI example</h2>
-    
-    <p>This example illustrates how to produce a single signal quality estimate for a single channel segment using the <i>bsqi</i> algorithm (Li <i>et al</i> 2008), which compares how similar the result of two different QRS detectors are.</p>
-    
-    {% highlight matlab %}
-    qrs1 = OSET_MaxSearch(residual(1,:),1.3/out.param.fs); % 2.3 Hz is the expected FHR parameter
-    qrs2 = jqrs_mod(residual(1,:),0.25,0.3,out.param.fs,''); % refractory period and threshold as parameters
-    sqi = bsqi(qrs1,qrs2,0.05,out.param.fs);
-    sprintf('SQI for segment was equal %2.2f',sqi)
-    {% endhighlight %}
-
-    
-    <p><b>Reference:</b></p>
-    <blockquote style="font-size:12px">Andreotti et al. 2017 Non-Invasive Fetal ECG Signal Quality Assessment for Multichannel Heart Rate Estimation. IEEE Trans. Biomed. Eng. (in press). <br>
-    Li, Q., Mark, R. G., &amp; Clifford, G. D. (2008). <a href="http://doi.org/10.1088/0967-3334/29/1/002" data-toggle="tooltip" title="go to article" target="_blank">Robust heart rate estimation from multiple asynchronous noisy sources using signal quality indices and a Kalman filter.</a> <i> Physiol. Meas.</i>, 29(1), 15-32.     
-    </blockquote>
-    
-<h2 id="sqi2">Multichannel SQI estimation</h2>    
-    
-    <p>Obviously, the previous example is suboptimal since we are estimating SQI for a complete 1 minute segment, during which we simulated a varying noise modulation. In the following example, the several SQI metrics used in Andreotti <i>et al</i> 2017 are applied. The example makes use of 5sec windows in calculating the different fetal SQI metrics for each channel. The results are saved in a table <code>sqi</code>. Further, the different metrics are then merged using the pre-trained Naive Bayes Classifier into one metric as follows:</p>
-    
-    {% highlight matlab %}
-    sqi = main_sqi_analysis(out.mqrs,out.mecg,mixture,residual,out.param.fs,'testrec');    
-    load('nbmodel.mat') % loading classifier
-    for ch = 1:max(sqi.channel)
-        idx = sqi.channel == ch;
-        features = sqi{idx,5:end}; % obtaining features
-        % estimate = nbmodel.predict(features);
-        scores = nbmodel.posterior(features);           
-        final_sqi(:,ch) =scores*[0 0.47 0.80 0.97 1]'; % coded values from Andreotti 2017
-    end
-    {% endhighlight %}
-    
-    <p>Where the columns of <code>final_sqi</code> represent the window-based SQI values for each of the available channels. The results for one of the channels (e.g. channel 2) can be plotted as:</p>
- 
-{% highlight matlab %}
-ch = 2;
-ax(1)=subplot(3,1,1);
-plot(mixture(ch,:),'Color',[0.8 0.8 0.8])
-hold on
-plot(residual(ch,:),'b')
-plot(qrs1,residual(ch,qrs1),'xr')
-legend('abdmECG','FECG','FQRS')
-
-ax(2)=subplot(3,1,2);
-sqiidx = [10 30 35 40]; % see variable "sqi" for more info
-plot(table2array(sqi(sqi.channel==ch,4)),table2array(sqi(sqi.channel==ch,sqiidx)))
-legend(sqi.Properties.VariableNames(sqiidx))
-
-ax(3)=subplot(3,1,3);
-plot(table2array(sqi(sqi.channel==ch,4)),final_sqi(:,ch))
-legend('Final SQI')
-linkaxes(ax,'x');
- {% endhighlight %}
-
 </section>  <hr>
 
-<div class="panel panel-warning"><div class="panel-heading"><span class="octicon octicon-alert"></span> Warning</div><div class="panel-body"> Make sure WFDB Toolbox is installed, as it is required for the <code>gqrs()</code> and <code>wqrs()</code> detectors. For more information see <a href="{{site.github.url}}/pages/install.html#install-wfdb"><span class="octicon octicon-globe"></span> FECGSYN dependencies</a>. </div></div>
+
+
 
 <!-- -----------WFDB FECGSYN------- -->
 <section class="bs-docs-section">

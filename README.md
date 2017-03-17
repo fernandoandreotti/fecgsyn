@@ -1,3 +1,3 @@
 # FECGSYN Website
 
-Visit: http://fernandoandreotti.github.io/fecgsyn/
+Visit: www.fecgsyn.com

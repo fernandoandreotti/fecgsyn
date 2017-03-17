@@ -18,6 +18,9 @@ function [fhr_final,fhr_estim,v_estim] = multichan_hr_KF(fhr,sqi,p,Q0,R0)
 %       fhr_estim:   Singlechannel FHR estimates
 %       v_estim:     Estimated innovation signal
 %
+% Reference:
+% Li, Qiao, Roger G. Mark, and Gari D. Clifford. "Robust heart rate estimation from multiple asynchronous noisy
+% sources using signal quality indices and a Kalman filter." Physiological measurement 29.1 (2008): 15.
 %
 % --
 % fecgsyn toolbox, version 1.2, March 2017

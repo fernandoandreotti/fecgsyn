@@ -13,36 +13,48 @@ function [fhr_final,fhr_estim,v_estim] = multichan_hr_KF(fhr,sqi,p,Q0,R0)
 %                   points used
 %       Q0:         Model error covariance matrix
 %       R0:         Observation error covariance matrix
-%       thres:      Signal quality threshold. Only FHR above this level are
-%                   considered
 % Output
 %       fhr_final:   Multichannel FHR estimate
 %       fhr_estim:   Singlechannel FHR estimates
 %       v_estim:     Estimated innovation signal
 %
 %
-% kf4cam toolbox, version 1.0, March 2015
+% --
+% fecgsyn toolbox, version 1.2, March 2017
 % Released under the GNU General Public License
 %
-% Copyright (C) 2014  Fernando Andreotti
-% TU Dresden, Dresden - Germany
-% fernando.andreotti@mailbox.tu-dresden.de
+% Copyright (C) 2017  Joachim Behar & Fernando Andreotti
+% Department of Engineering Science, University of Oxford
+% joachim.behar@oxfordalumni.org, fernando.andreotti@eng.ox.ac.uk
 %
-% Last updated : 22-03-2015
+% 
+% For more information visit: http://www.fecgsyn.com
+% 
+% Referencing this work
+% (SQI indices)
+% Andreotti, F., Gräßer, F., Malberg, H., & Zaunseder, S. (2017). Non-Invasive Fetal ECG Signal Quality Assessment for 
+% Multichannel Heart Rate Estimation. IEEE Trans. Biomed. Eng., (in press).
+%  
+% (FECGSYN Toolbox)
+% Behar, J., Andreotti, F., Zaunseder, S., Li, Q., Oster, J., & Clifford, G. D. (2014). An ECG Model for Simulating 
+% Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings. Physiol. Meas., 35(8), 1537–1550.
+% 
 %
+% Last updated : 15-03-2017
+% 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-%
+% 
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-%
+% 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
-%
+
 
 sqi(isnan(sqi)) = 10^-5; % replace NaNs for zeros
 switch nargin

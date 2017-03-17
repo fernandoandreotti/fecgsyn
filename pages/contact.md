@@ -14,4 +14,11 @@ published: true
 
 If you have any questions, suggestions or want to know more about _FECGSYN_, do not hesitate to [<span class="octicon octicon-mail"></span> contact us](mailto:fernando.andreotti@mailbox.tu-dresden.de;joachim.behar@oxfordalumni.org;fecgsyn@gmail.com)
 
+<form action="https://getsimpleform.com/messages?form_api_token=b39c93969c3ad640727d962e590c033d" method="post">
+  <!-- the redirect_to is optional, the form will redirect to the referrer on submission -->
+  <input type='hidden' name='redirect_to' value='<the complete return url e.g. http://www.fecgsyn.com/pages/thank-you.html>' />
+  <!-- all your input fields here.... -->
+  <input type='text' name='test' />
+  <input type='submit' value='Test form' />
+</form>
 

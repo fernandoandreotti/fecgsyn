@@ -12,7 +12,7 @@ function FECGSYN_benchFQRS_plot(stats,fls_orig)
 % FECGSYN_benchFQRS
 % 
 % --
-% fecgsyn toolbox, version 1.1, March 2016
+% fecgsyn toolbox, version 1.2, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti

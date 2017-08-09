@@ -22,7 +22,7 @@ function outstr = wfdb2fecgsyn(path,ch,varargin)
 % fecgsyn2wfdb
 %
 % --
-% fecgsyn toolbox, version 1.1, March 2016
+% fecgsyn toolbox, version 1.2, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti

@@ -27,7 +27,7 @@ function [qtint,th,qs,tends,tpeak,qrs] = FECGSYN_QTcalc(ann_types,ann_stamp,sign
 % FECGSYN_morpho_loop
 % 
 % --
-% fecgsyn toolbox, version 1.1, March 2016
+% fecgsyn toolbox, version 1.2, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti

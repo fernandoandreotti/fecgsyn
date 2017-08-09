@@ -13,7 +13,7 @@ function FECGSYN_benchMorph_plot(morph,fls_orig)
 % By default it makes use of gold-standard references of FQRS locations.
 %
 % --
-% fecgsyn toolbox, version 1.1, March 2016
+% fecgsyn toolbox, version 1.2, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti

@@ -8,7 +8,7 @@ function traj =  traject_generator(N,pos_i,pos_f,type)
 %   N      size of the noise to generate at fs (sampling frequency) [datapoint number]
 %   pos_i  initial position for trajectory [1x3 number array]
 %   pos_f  final position for trajectory [1x3 number array]
-%   type   type of trajectory to be build, e.g. 'none','linear', 'spline' or 'helix' [string]% fecgsyn toolbox, version 1.1, March 2016
+%   type   type of trajectory to be build, e.g. 'none','linear', 'spline' or 'helix' [string]% fecgsyn toolbox, version 1.2, March 2016
 %
 % output:
 %   traj   generated trajectory (Nx3 number matrix)

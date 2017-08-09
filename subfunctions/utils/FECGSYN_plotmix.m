@@ -5,7 +5,7 @@ function FECGSYN_plotmix(out)
 % It is useful in checking the results of data generation during debug.
 % 
 % 
-% fecgsyn toolbox, version 1.1, March 2016
+% fecgsyn toolbox, version 1.2, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
@@ -21,7 +21,7 @@ function FECGSYN_plotmix(out)
 % 
 % 
 % --
-% fecgsyn toolbox, version 1.1, March 2016
+% fecgsyn toolbox, version 1.2, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti

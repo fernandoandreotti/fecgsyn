@@ -20,7 +20,7 @@ function FECGSYN_genresults(path_orig,fs,ch,exp3,debug)
 % TODO
 % 
 % --
-% fecgsyn toolbox, version 1.1, March 2016
+% fecgsyn toolbox, version 1.2, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti

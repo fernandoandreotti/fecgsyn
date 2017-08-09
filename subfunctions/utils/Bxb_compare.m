@@ -33,7 +33,7 @@ function [F1,MAE,PPV,SE,TP,FN,FP] = Bxb_compare(refqrs, testqrs, acceptint)
 % 
 % 
 % --
-% fecgsyn toolbox, version 1.1, March 2016
+% fecgsyn toolbox, version 1.2, March 2016
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti

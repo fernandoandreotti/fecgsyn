@@ -36,7 +36,7 @@ function residual = FECGESN_lmsrls_canceller(ref_ecg,tar_ecg,fs,metStruct,debug)
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar
-% Oxford university, Intelligent Patient Monitoring Group
+% University of Oxford, Intelligent Patient Monitoring Group
 % joachim.behar@eng.ox.ac.uk
 %
 % Last updated : 22-07-2014

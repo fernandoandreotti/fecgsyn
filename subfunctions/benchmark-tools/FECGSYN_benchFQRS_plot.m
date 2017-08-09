@@ -12,12 +12,12 @@ function FECGSYN_benchFQRS_plot(stats,fls_orig)
 % FECGSYN_benchFQRS
 % 
 % --
-% fecgsyn toolbox, version 1.2, March 2016
+% fecgsyn toolbox, version 1.2, Jan 2017
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
-% Oxford university, Intelligent Patient Monitoring Group - Oxford 2014
-% joachim.behar@eng.ox.ac.uk, fernando.andreotti@mailbox.tu-dresden.de
+% University of Oxford, Intelligent Patient Monitoring Group - Oxford 2014
+% joachim.behar@eng.ox.ac.uk, fernando.andreotti@eng.ox.ac.uk
 %
 % 
 % For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/

@@ -19,7 +19,7 @@ function [necg,scalings] = FECGESN_normalise_ecg(ecg,start,stop)
 % Released under the GNU General Public License
 %
 % Copyright (C) 2014  Joachim Behar
-% Oxford university, Intelligent Patient Monitoring Group
+% University of Oxford, Intelligent Patient Monitoring Group
 % joachim.behar@eng.ox.ac.uk
 %
 % Last updated : 28-01-2014

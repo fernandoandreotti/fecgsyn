@@ -50,7 +50,7 @@ function [trained_esn,stateCollection,ESNpredictedOutput] = ...
 % minor syntax changes)
 %
 % Copyright (C) 2014  Joachim Behar
-% Oxford university, Intelligent Patient Monitoring Group
+% University of Oxford, Intelligent Patient Monitoring Group
 % joachim.behar@eng.ox.ac.uk
 %
 % Last updated : 24-02-2014

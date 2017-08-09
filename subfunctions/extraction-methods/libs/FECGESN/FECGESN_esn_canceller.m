@@ -28,7 +28,7 @@ function residual = FECGESN_esn_canceller(ref_ecg,tar_ecg,fs,esn,debug)
 %
 % Copyright (C) 2014  Joachim Behar
 % University of Oxford, Intelligent Patient Monitoring Group
-% joachim.behar@eng.ox.ac.uk
+% joachim.behar@oxfordalumni.org
 %
 % Last updated : 28-01-2014
 %

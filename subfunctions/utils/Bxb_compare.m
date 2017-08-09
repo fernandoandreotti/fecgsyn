@@ -38,7 +38,7 @@ function [F1,MAE,PPV,SE,TP,FN,FP] = Bxb_compare(refqrs, testqrs, acceptint)
 %
 % Copyright (C) 2014  Joachim Behar & Fernando Andreotti
 % University of Oxford, Intelligent Patient Monitoring Group - Oxford 2014
-% joachim.behar@eng.ox.ac.uk, fernando.andreotti@eng.ox.ac.uk
+% joachim.behar@oxfordalumni.org, fernando.andreotti@eng.ox.ac.uk
 %
 % 
 % For more information visit: https://www.physionet.org/physiotools/ipmcode/fecgsyn/

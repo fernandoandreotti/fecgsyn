@@ -18,7 +18,7 @@ function [y,e,W] = FECGESN_lms(u,tar,mu,nC)
 %
 % Copyright (C) 2014  Joachim Behar
 % University of Oxford, Intelligent Patient Monitoring Group
-% joachim.behar@eng.ox.ac.uk
+% joachim.behar@oxfordalumni.org
 %
 % Last updated : 28-01-2014
 %

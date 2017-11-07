@@ -137,7 +137,7 @@ while (loop)  % will quit as soon as complete signal is filtered
             % JADEICA (no restriction on number of sources)
             Bnew = jadeR(tmpdata,Ncomp); 
         case 'PCA'
-            [Bnew,~] = princomp(tmpdata');
+            [Bnew,~] = pca(tmpdata');
             Bnew = Bnew';            
         otherwise
             error('bss_extraction: Method not implemented')

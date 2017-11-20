@@ -99,10 +99,10 @@ hold off
 
 {% highlight matlab %}
 slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
-old_path=which('FECGSYNDB_datagen')
+old_path=which('FECGSYNDB_datagen');
 [~,old_path] = strtok(old_path(end:-1:1),slashchar);
- old_path = fliplr(old_path);
-pathdir = [old_path 'data' slashchar]; % path to test.mat
+old_path = fliplr(old_path);
+pathdir = [old_path 'ext_test' slashchar]; % path to test.mat
 wfdb = false; % true/false, data format in WFDB?
 narrowband = false;  % preprocessing filtering band
 ch = 3; % extract channel 3 of test data
@@ -157,8 +157,6 @@ end
     sprintf('SQI for segment was equal %2.2f',sqi)
     {% endhighlight %}
 
-    
-  
     
 <h2 id="sqi2">Multichannel SQI estimation</h2>    
     
@@ -226,15 +224,14 @@ The following examples assume that the user already extracted FECG from your dat
 
 {% highlight matlab %}
 slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
-old_path=which('FECGSYNDB_datagen')
+old_path=which('FECGSYNDB_datagen');
 [~,old_path] = strtok(old_path(end:-1:1),slashchar);
 old_path = fliplr(old_path);
-pathdir = [old_path 'data' slashchar]; % path to test.mat
-load([path 'test.mat'])% load test set
+load('test.mat')% load test set
 NbCycles = 20; % number of cycles used
 ch = 3;
 residual = FECGSYN_ts_extraction(out.mqrs,out.mixture(ch,:),'TS-CERUTTI',0,...
-  NbCycles,'',out.param.fs);
+     NbCycles,'',out.param.fs);
 {% endhighlight %}
 
 

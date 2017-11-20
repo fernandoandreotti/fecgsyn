@@ -73,8 +73,8 @@ REFRAC = .15;               % detector refractory period (in s)
 fqrs = cell(1,size(data,1));
 for j = 1:size(data,1) 
     fqrstmp = cell(1,ceil(size(data,2)/(60*fs)));
-    for l = 1:5
-        fqrstmp{l} = jqrs_mod(data(j,60*fs*(l-1)+1:60*fs*(l)),REFRAC,TH,fs) + 60*fs*(l-1);   
+    for l = 1:length(fqrstmp)
+        fqrstmp{l} = jqrs_mod(data(j,60*fs*(l-1)+1:min(length(data),60*fs*(l))),REFRAC,TH,fs) + 60*fs*(l-1);   
     end
     fqrs{j} = cell2mat(fqrstmp);
 end

@@ -66,9 +66,10 @@ FECGSYN_plotmix(out) % plots random channels of one of the created datasets
 
 <h2 id="tsc">Extraction using Template Subtraction</h2>
 
-<p>This minimalistic example makes use of the template subtraction (TS) method by Cerutti et al 1986, using the <code>FECGSYN_ts_extraction.m</code> function, using the <kbd>FECGGSYN_test.mat</kbd> examplary set. As input the function expects the maternal QRS locations (<code>mref</code>), abdominal signal (<code>mixture</code> - rows represent different channels), a predetermined number of cycles to use on the average maternal template (<code>NbCycles</code>) and sampling frequency used (<code>fs</code>). See the example:</p>
+<p>This minimalistic example makes use of the template subtraction (TS) method by Cerutti et al 1986, using the <code>FECGSYN_ts_extraction.m</code> function, using the <kbd>FECGSYN_test.mat</kbd> examplary set. As input the function expects the maternal QRS locations (<code>mref</code>), abdominal signal (<code>mixture</code> - rows represent different channels), a predetermined number of cycles to use on the average maternal template (<code>NbCycles</code>) and sampling frequency used (<code>fs</code>). See the example:</p>
 
 {% highlight matlab %}
+load('FECGSYN_test.mat')
 NbCycles = 20; % number of cycles used
 ch = 3;
 residual = FECGSYN_ts_extraction(out.mqrs,out.mixture(ch,:),'TS-CERUTTI',0,...
@@ -98,7 +99,8 @@ hold off
 <p>In this example, extraction using every method available is performed by applying the <code>FECGSYN_main_extract.m</code> script. The script accepts WFDB formatted data, as well as <code>.mat</code> files (following <em>FECGSYN</em>'s structure). In order to inform the function which format is used, the bool <code>wfdb</code> should be toggled to <em>true</em> or <em>false</em>. The function comes with to preset pre-processing bands (3-100 Hz or 0.5-100 Hz) which can be set with the argument <code>narrowband</code>. The function may be applied directly on the FECGSYNDB, as follows:</p>
 
 {% highlight matlab %}
-pathdir=which('FECGGSYN_test.mat');
+pathdir = fullfile(which('FECGSYN_test.mat'));
+pathdir = pathdir(1:end-16);
 wfdb = false; % true/false, data format in WFDB?
 narrowband = false;  % preprocessing filtering band
 ch = 3; % extract channel 3 of test data

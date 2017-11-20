@@ -98,7 +98,6 @@ hold off
 <p>In this example, extraction using every method available is performed by applying the <code>FECGSYN_main_extract.m</code> script. The script accepts WFDB formatted data, as well as <code>.mat</code> files (following <em>FECGSYN</em>'s structure). In order to inform the function which format is used, the bool <code>wfdb</code> should be toggled to <em>true</em> or <em>false</em>. The function comes with to preset pre-processing bands (3-100 Hz or 0.5-100 Hz) which can be set with the argument <code>narrowband</code>. The function may be applied directly on the FECGSYNDB, as follows:</p>
 
 {% highlight matlab %}
-slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
 pathdir=which('FECGGSYN_test.mat');
 wfdb = false; % true/false, data format in WFDB?
 narrowband = false;  % preprocessing filtering band

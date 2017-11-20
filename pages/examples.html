@@ -66,7 +66,7 @@ FECGSYN_plotmix(out) % plots random channels of one of the created datasets
 
 <h2 id="tsc">Extraction using Template Subtraction</h2>
 
-<p>This minimalistic example makes use of the template subtraction (TS) method by Cerutti et al 1986, using the <code>FECGSYN_ts_extraction.m</code> function, using the <kbd>test.mat</kbd> examplary set. As input the function expects the maternal QRS locations (<code>mref</code>), abdominal signal (<code>mixture</code> - rows represent different channels), a predetermined number of cycles to use on the average maternal template (<code>NbCycles</code>) and sampling frequency used (<code>fs</code>). See the example:</p>
+<p>This minimalistic example makes use of the template subtraction (TS) method by Cerutti et al 1986, using the <code>FECGSYN_ts_extraction.m</code> function, using the <kbd>FECGGSYN_test.mat</kbd> examplary set. As input the function expects the maternal QRS locations (<code>mref</code>), abdominal signal (<code>mixture</code> - rows represent different channels), a predetermined number of cycles to use on the average maternal template (<code>NbCycles</code>) and sampling frequency used (<code>fs</code>). See the example:</p>
 
 {% highlight matlab %}
 NbCycles = 20; % number of cycles used
@@ -99,10 +99,7 @@ hold off
 
 {% highlight matlab %}
 slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
-old_path=which('FECGSYNDB_datagen');
-[~,old_path] = strtok(old_path(end:-1:1),slashchar);
-old_path = fliplr(old_path);
-pathdir = [old_path 'ext_test' slashchar]; % path to test.mat
+pathdir=which('FECGGSYN_test.mat');
 wfdb = false; % true/false, data format in WFDB?
 narrowband = false;  % preprocessing filtering band
 ch = 3; % extract channel 3 of test data

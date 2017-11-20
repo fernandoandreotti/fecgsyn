@@ -69,9 +69,6 @@ FECGSYN_plotmix(out) % plots random channels of one of the created datasets
 <p>This minimalistic example makes use of the template subtraction (TS) method by Cerutti et al 1986, using the <code>FECGSYN_ts_extraction.m</code> function, using the <kbd>test.mat</kbd> examplary set. As input the function expects the maternal QRS locations (<code>mref</code>), abdominal signal (<code>mixture</code> - rows represent different channels), a predetermined number of cycles to use on the average maternal template (<code>NbCycles</code>) and sampling frequency used (<code>fs</code>). See the example:</p>
 
 {% highlight matlab %}
-old_path=which('FECGSYN_UI') % find path to FECGSYN
-slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
-load([old_path(1:end-12) slashchar 'data' slashchar 'test.mat']) % load set
 NbCycles = 20; % number of cycles used
 ch = 3;
 residual = FECGSYN_ts_extraction(out.mqrs,out.mixture(ch,:),'TS-CERUTTI',0,...
@@ -102,8 +99,9 @@ hold off
 
 {% highlight matlab %}
 slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
-old_path=which('FECGSYN_UI') % find path to FECGSYN
-pathdir = [old_path(1:end-12) slashchar 'data' slashchar]; % path to test.mat
+old_path=which('FECGSYNDB_datagen')
+[~,old_path] = fliplr(strtok(old_path(end:-1:1),slashchar));
+pathdir = [old_path 'data' slashchar]; % path to test.mat
 wfdb = false; % true/false, data format in WFDB?
 narrowband = false;  % preprocessing filtering band
 ch = 3; % extract channel 3 of test data
@@ -226,9 +224,10 @@ linkaxes(ax,'x');
 The following examples assume that the user already extracted FECG from your dataset, or using the previous examples. In any case, <kbd>pathdir</kbd> should contain the path to the directory containing original and extracted data. Here is a minimal working example to prepare your workspace for the following examples:
 
 {% highlight matlab %}
-old_path=which('FECGSYN_UI'); % find path to FECGSYN
 slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
-path = [old_path(1:end-12) slashchar 'data' slashchar];
+old_path=which('FECGSYNDB_datagen')
+[~,old_path] = fliplr(strtok(old_path(end:-1:1),slashchar));
+pathdir = [old_path 'data' slashchar]; % path to test.mat
 load([path 'test.mat'])% load test set
 NbCycles = 20; % number of cycles used
 ch = 3;

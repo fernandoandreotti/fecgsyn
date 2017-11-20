@@ -156,8 +156,6 @@ while (loop)  % will quit as soon as complete signal is filtered
     %Augment offsets
     ssamp = endsamp+1;
     endsamp = endsamp+blen;
-    
-
 end
 
 pad = max(cellfun(@(x) size(x,1),out_comps));

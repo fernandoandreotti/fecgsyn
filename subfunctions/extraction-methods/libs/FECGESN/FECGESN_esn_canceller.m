@@ -8,7 +8,7 @@ function residual = FECGESN_esn_canceller(ref_ecg,tar_ecg,fs,esn,debug)
 %   tar_ecg:            target ECG channels
 %   fs:                 sampling frequency
 %   esn:                Echo State Network structure. The same structure should be used for all
-%                       channels (by opposition to regenerating the network systematically for 
+%                       channels (by opposition to regenerating the network systematically for
 %                       each channel). See run_extraction for the structure
 %                       parameters.
 % ouput
@@ -41,8 +41,6 @@ function residual = FECGESN_esn_canceller(ref_ecg,tar_ecg,fs,esn,debug)
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
 % Public License for more details.
 
-close all;
-
 % == managing inputs
 if nargin<4; error('esn_canceller: wrong number of input arguments \n'); end;
 if size(ref_ecg,1)>size(ref_ecg,2); ref_ecg = ref_ecg'; end;
@@ -52,70 +50,65 @@ if size(tar_ecg,1)>size(tar_ecg,2); tar_ecg = tar_ecg'; end;
 TIME_INIT = 30; % time used for initialising the weights
 
 % == core function
-try
-    % == normalize the data
-    % assumes that the first 1 to 5sec are representative (no huge noise) for normalizaiton purposes.   
-    [input_norm,~]  = FECGESN_normalise_ecg(ref_ecg,1,5*fs);
-    [output_norm,~] = FECGESN_normalise_ecg(tar_ecg,1,5*fs);
+
+% == normalize the data
+% assumes that the first 1 to 5sec are representative (no huge noise) for normalizaiton purposes.
+[input_norm,~]  = FECGESN_normalise_ecg(ref_ecg,1,5*fs);
+[output_norm,~] = FECGESN_normalise_ecg(tar_ecg,1,5*fs);
+
+train_frac = TIME_INIT/(length(input_norm)/fs);
+
+% == apply esn
+if strcmp(esn.learningMode,'online')
+    % training readout using RLS (init but only 'training set')
+    nForgetPoints = 50; % discard the first ... points
+    [~,~,esn_out] = ESNTOOL_train_esn(input_norm,output_norm,esn,nForgetPoints,0);
+    residual = output_norm - esn_out;
+else
+    % training readout using ridge regression or pseudo inverse (train/test sets)
     
-    train_frac = TIME_INIT/(length(input_norm)/fs);
+    % split into train and test
+    [train_in,~] = ESNTOOL_split_train_test(input_norm,train_frac);
+    [train_out, ~] = ESNTOOL_split_train_test(output_norm,train_frac);
     
-    % == apply esn
-    if strcmp(esn.learningMode,'online')
-        % training readout using RLS (init but only 'training set')
-        nForgetPoints = 50; % discard the first ... points
-        [~,~,esn_out] = ESNTOOL_train_esn(input_norm,output_norm,esn,nForgetPoints,debug);
-        residual = output_norm - esn_out;
-    else
-        % training readout using ridge regression or pseudo inverse (train/test sets)
-
-        % split into train and test   
-        [train_in,~] = ESNTOOL_split_train_test(input_norm,train_frac);
-        [train_out,test_out] = ESNTOOL_split_train_test(output_norm,train_frac);
-
-        % find esn param using training sequence
-        nForgetPoints = 50 ; % discard the first ... points
-        [trainedEsn, ~] = ESNTOOL_train_esn(train_in,train_out,esn,nForgetPoints,debug); 
-
-        % now aplly trained esn to all the signal
-        nForgetPoints = 0;
-        esn_out = ESNTOOL_test_esn(input_norm,trainedEsn,nForgetPoints);
-        residual = output_norm-esn_out;
-    end
-catch ME
-    rethrow(ME);
-    for enb=1:length(ME.stack); disp(ME.stack(enb)); end;
-    residual = [];
+    % find esn param using training sequence
+    nForgetPoints = 50 ; % discard the first ... points
+    [trainedEsn, ~] = ESNTOOL_train_esn(train_in,train_out,esn,nForgetPoints,0);
+    
+    % now aplly trained esn to all the signal
+    nForgetPoints = 0;
+    esn_out = ESNTOOL_test_esn(input_norm,trainedEsn,nForgetPoints);
+    residual = output_norm-esn_out;
 end
 
-% == display train and test results
-if debug
-    nb_of_points = length(ref_ecg);
-    tm = 1/fs:1/fs:nb_of_points/fs;
 
-    close all;
-    % = plot normalized ref_ecg signals
-    ax(1) = subplot(311); 
-        plot(tm,input_norm(:,1),tm,output_norm,'r');
-        legend('MECG chest','ABD');
-    % = plot the ESN tar_ecg and the abdominal channel
-    if strcmp(esn.learningMode,'online')
-    ax(2) = subplot(312); 
-        hold on, plot(tm,tar_ecg,tm,esn_out,'r');
-        legend('ABD','ESN out'); ylabel('Amplitude');        
-    else
-    ax(2) = subplot(312); 
-        hold on, plot(tm(train_frac*nb_of_points+1:end),test_out,tm,esn_out,'r');
-        legend('ABD','ESN out'); ylabel('Amplitude');
-    end
-    ax(3) = subplot(313);
-    % = plot residual
-        plot(tm,residual);
-        ylabel('Residual amplitude'); xlabel('Time [s]');    
-    linkaxes(ax,'x'); 
-    xlim([1 nb_of_points/fs]); % remove first sec beause init of ESN = big artefact
-end
-
+% % == display train and test results
+% if debug
+%     nb_of_points = length(ref_ecg);
+%     tm = 1/fs:1/fs:nb_of_points/fs;
+%
+%     close all;
+%     % = plot normalized ref_ecg signals
+%     ax(1) = subplot(311);
+%         plot(tm,input_norm(:,1),tm,output_norm,'r');
+%         legend('MECG chest','ABD');
+%     % = plot the ESN tar_ecg and the abdominal channel
+%     if strcmp(esn.learningMode,'online')
+%     ax(2) = subplot(312);
+%         hold on, plot(tm,tar_ecg,tm,esn_out,'r');
+%         legend('ABD','ESN out'); ylabel('Amplitude');
+%     else
+%     ax(2) = subplot(312);
+%         hold on, plot(tm(train_frac*nb_of_points+1:end),test_out,tm,esn_out,'r');
+%         legend('ABD','ESN out'); ylabel('Amplitude');
+%     end
+%     ax(3) = subplot(313);
+%     % = plot residual
+%         plot(tm,residual);
+%         ylabel('Residual amplitude'); xlabel('Time [s]');
+%     linkaxes(ax,'x');
+%     xlim([1 nb_of_points/fs]); % remove first sec beause init of ESN = big artefact
+% end
 end
 
 

@@ -170,7 +170,7 @@ for i = 1:length(fls)
     %-------------------
     disp('ICA extracthion ..')
     loopsec = 60;   % in seconds
-    [residual,~,A] = FECGSYN_bss_extraction(mixture,'JADEICA',fs_new,loopsec,1);     %#ok<*ASGLU> % extract using IC
+    [residual,~,A] = FECGSYN_bss_extraction(mixture,'JADEICA',fs_new,loopsec,debug);     %#ok<*ASGLU> % extract using IC
     [fqrs,maxch] = FECGSYN_QRSmincompare(residual,fref,fs_new);     % detect QRS and channel with highest F1
     %== saving results
     save([filename '_JADEICA'],'maxch','residual','fqrs','fref','A')
@@ -180,7 +180,7 @@ for i = 1:length(fls)
     % PCA Principal Component Analysis
     % -------------------
     disp('PCA extraction ..')
-    [residual,~,A] = FECGSYN_bss_extraction(mixture,'PCA',fs_new,loopsec,0);     % extract using IC
+    [residual,~,A] = FECGSYN_bss_extraction(mixture,'PCA',fs_new,loopsec,debug);     % extract using IC
     [fqrs,maxch] = FECGSYN_QRSmincompare(residual,fref,fs_new);    % detect QRS and channel with highest F1
     % == saving results
     save([filename '_PCA'],'maxch','residual','fqrs','fref','A')
@@ -194,7 +194,7 @@ for i = 1:length(fls)
     NbCycles = 20;
     residual = zeros(size(mixture));
     for j = 1:length(ch)
-        residual(j,:) = FECGSYN_ts_extraction(mref,mixture(j,:),'TS-CERUTTI',0,...
+        residual(j,:) = FECGSYN_ts_extraction(mref,mixture(j,:),'TS-CERUTTI',debug,...
             NbCycles,'',fs_new);
     end
     [fqrs,maxch] = FECGSYN_QRSmincompare(residual,fref,fs_new);    % detect QRS and channel with highest F1
@@ -210,7 +210,7 @@ for i = 1:length(fls)
     NbPC = 2;
     residual = zeros(size(mixture));
     for j = 1:length(ch)
-        residual(j,:) = FECGSYN_ts_extraction(mref,mixture(j,:),'TS-PCA',0,...
+        residual(j,:) = FECGSYN_ts_extraction(mref,mixture(j,:),'TS-PCA',debug,...
             NbCycles,NbPC,fs_new);
     end
     [fqrs,maxch] = FECGSYN_QRSmincompare(residual,fref,fs_new);    % detect QRS and channel with highest F1

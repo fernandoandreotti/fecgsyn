@@ -145,19 +145,25 @@ switch method
         error('adaptfilt_extraction: Method not implemented.')
 end
 
+if debug
+    LINE_WIDTH = 2;
+    FONT_SIZE = 15;
+    nb_of_points = length(ecg_ref);
+    tm = 1/fs_new:1/fs_new:nb_of_points/fs_new;
+    figure('name',[method ' extraction']);
+    ax(1) = subplot(2,1,1); plot(tm,ecg_ref,'LineWidth',LINE_WIDTH);
+    hold on
+    plot(tm,ecg_ref'-ecg_res,'r','LineWidth',LINE_WIDTH);
+    legend('normalised reference ecg (chest ECG)','normalised target ecg (abdominal ECG)');
+    ax(2) = subplot(2,1,2); plot(tm,ecg_res,'r','LineWidth',LINE_WIDTH);
+    legend('residual - FECG');
+    set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
+    linkaxes(ax);
+end
+
+
 % upsample output
 ecg_res = resample(ecg_res,fs_orig,fs_new);
-
-
-% TODO: Debug mode
-
-
-
-
-
-
-
-
 
 
 

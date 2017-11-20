@@ -96,27 +96,6 @@ elseif strcmp(metStruct.method,'RLS')
     [y,residual] = RLSFilt(input_norm,output_norm);
 end
 
-
-
-% == debug
-if debug
-    LINE_WIDTH = 2;
-    FONT_SIZE = 15;
-    nb_of_points = length(ref_ecg);
-    tm = 1/fs:1/fs:nb_of_points/fs;
-    figure('name','lmsrls canceller');
-    ax(1) = subplot(311); plot(tm,input_norm,'LineWidth',LINE_WIDTH);
-    hold on, plot(tm,output_norm,'r','LineWidth',LINE_WIDTH);
-    legend('normalised reference ecg (chest ECG)','normalised target ecg (abdominal ECG)');
-    ax(2) = subplot(312); plot(tm,output_norm); hold on, plot(tm,y,'r','LineWidth',LINE_WIDTH);
-    legend('normalised target ecg (abdominal ECG)','predicted target ecg');
-    set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
-    ax(3) = subplot(313); plot(tm,residual,'r','LineWidth',LINE_WIDTH);
-    legend('residual - FECG');
-    set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
-    linkaxes(ax);
-end
-
 end
 
 

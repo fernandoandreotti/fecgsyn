@@ -11,19 +11,19 @@ function residual = FECGSYN_kf_extraction(peaks,ecg,debug,varargin)
 %       nbCycles:   number of cycles to use in order to build the mean MECG template
 %       fs:         sampling frequency (NOTE: this code is meant to work at 1kHz)
 %       smoothFlag: 0 for extraction using EKF and 1 for extraction using
-%                   the offline smoothing (EKS) 
+%                   the offline smoothing (EKS)
 % output
 %   residual:   residual containing the FECG
 %
 %
 % Reference
-% (Andreotti 2014) Andreotti, F., Riedl, M., Himmelsbach, T., Wedekind, D., 
-% Wessel, N., Stepan, H., … Zaunseder, S. (2014). Robust fetal ECG extraction and 
-% detection from abdominal leads. Physiol. Meas., 35(8), 1551–1567. 
-% 
-% (OSET) Sameni, R. (2010). The Open-Source Electrophysiological Toolbox (OSET). 
+% (Andreotti 2014) Andreotti, F., Riedl, M., Himmelsbach, T., Wedekind, D.,
+% Wessel, N., Stepan, H., … Zaunseder, S. (2014). Robust fetal ECG extraction and
+% detection from abdominal leads. Physiol. Meas., 35(8), 1551–1567.
+%
+% (OSET) Sameni, R. (2010). The Open-Source Electrophysiological Toolbox (OSET).
 % Retrieved from http://www.oset.ir
-% 
+%
 %
 % Examples:
 % TODO
@@ -33,7 +33,7 @@ function residual = FECGSYN_kf_extraction(peaks,ecg,debug,varargin)
 % FECGSYN_bss_extraction
 % FECGSYN_adaptfilt_extraction
 % FEGSYN_main_extract
-% 
+%
 % --
 % fecgsyn toolbox, version 1.2, March 2017
 % Released under the GNU General Public License
@@ -42,27 +42,27 @@ function residual = FECGSYN_kf_extraction(peaks,ecg,debug,varargin)
 % Department of Engineering Science, University of Oxford
 % joachim.behar@oxfordalumni.org, fernando.andreotti@eng.ox.ac.uk
 %
-% 
+%
 % For more information visit: http://www.fecgsyn.com
-% 
+%
 % Referencing this work
 %
-% Behar, J., Andreotti, F., Zaunseder, S., Li, Q., Oster, J., & Clifford, G. D. (2014). An ECG Model for Simulating 
+% Behar, J., Andreotti, F., Zaunseder, S., Li, Q., Oster, J., & Clifford, G. D. (2014). An ECG Model for Simulating
 % Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings. Physiol. Meas., 35(8), 1537–1550.
-% 
+%
 %
 % Last updated : 15-03-2017
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -133,19 +133,23 @@ residual = ecg - Xhat(2,:);
 
 % == debug
 if debug
-   FONT_SIZE = 15;
-   tm = 1/fs:1/fs:length(residual)/fs;
-   figure('name','MECG cancellation');
-   plot(tm,ecg,'LineWidth',3);
-   hold on, plot(tm,ecg-residual,'--k','LineWidth',3);
-   hold on, plot(tm,residual-1.5,'--r','LineWidth',3);
-   hold on, plot(tm(peaks),ecg(peaks),'+r','LineWidth',2);
-   
-   legend('mixture','template','residual','MQRS');
-   title('Template subtraction for extracting the FECG');
-   xlabel('Time [sec]'); ylabel('Amplitude [NU]')
-   set(gca,'FontSize',FONT_SIZE);
-   set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
+    LINE_WIDTH = 2;
+    FONT_SIZE = 15;
+    tm = 1/fs:1/fs:length(residual)/fs;
+    figure('name','EKF extraction');
+    ax(1) = subplot(2,1,1); plot(tm,ecg,'LineWidth',LINE_WIDTH);
+    hold on
+    plot(tm,ecg-residual,'r','LineWidth',LINE_WIDTH);
+    plot(tm(peaks),ecg(peaks),'+r','LineWidth',2);
+    legend('abdominal signal','estimated maternal signal');
+    ax(2) = subplot(2,1,2); plot(tm,residual,'r','LineWidth',LINE_WIDTH);
+    legend('residual - FECG');
+    set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
+    linkaxes(ax);
+    title('Template subtraction for extracting the FECG');
+    xlabel('Time [sec]'); ylabel('Amplitude [NU]')
+    set(gca,'FontSize',FONT_SIZE);
+    set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
 end
 
 end

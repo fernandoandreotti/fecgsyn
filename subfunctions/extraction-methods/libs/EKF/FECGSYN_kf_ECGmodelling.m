@@ -86,11 +86,12 @@ tmpsamp = 1:min(peaksidx(NbCycles)+300,length(x));
 phase_tmp = FECGSYN_kf_phasecalc(peaksidx(1:NbCycles),tmpsamp(end)); % phase calculation
 [ECGmean,ECGsd,meanphase] = FECGSYN_kf_templategen(x(tmpsamp),phase_tmp,NB_BINS); % mean ECG extraction
 
-if debug>1
+if debug
     % = phase calculation figure
     I = find(peaks);
     t = (0:length(x)-1)/fs;
-    figure;
+    figure('name','EKF template model')
+    subplot(5,1,1)
     plot(t,x*2*pi/max(x),'b');
     hold on
     plot(t(I),peaks(I)*2,'ro');
@@ -106,7 +107,7 @@ if debug>1
     %elements of THETA, RHO, and Z to three-dimensional Cartesian, or xyz coordinates.
     %The arrays THETA, RHO, and Z must be the same size (or any can be scalar).
     %The values in THETA must be in radians.
-    figure;
+    subplot(5,1,[2:3])
     plot3(X,Y,Z);
     grid;
     title('Phase-wrapped ECG');
@@ -137,6 +138,7 @@ scalex = zeros(scala,NB_BINS);
 bi = zeros(1,Nkernels);
 
 if debug
+    subplot(5,1,4)
     plot(meanphase,ECGmean,'Color',[0.7 0.7 0.7],'LineWidth',2)
     xlabel('Phase (rads.)');
     ylabel('Arbitrary units');
@@ -273,14 +275,14 @@ N = length(OptimumParams)/3;     %new number of Gaussian kernels
 
 % Plot final resultsNew Folder
 if debug && ~isempty(OptimumParams)
-    figure('units','normalized','outerposition',[0 0 1 1])
+    subplot(5,1,5)
     [Error,Model] = FECGSYN_kf_ECGModelError(OptimumParams,ECGmean,meanphase);
     errorbar(meanphase,ECGmean,ECGsd/2);
     hold on;
     plot(meanphase,ECGmean,'r');
     plot(meanphase,Model,'m','linewidth',2)
     plot(meanphase,Error,'-g','linewidth',2);
-    plot(OptimumParams(2*N:end),1,'xr','LineWidth',2)
+    plot(OptimumParams(2*N:end),1.1.*max(ECGmean),'xr','LineWidth',2)
     legend('SD bar','Mean ECG','Gaussian Approx.','Error','Kernel position');%,'Gaussian');
     title(['N_k = ' num2str(N)]);
     xlabel('Phase (rads.)');

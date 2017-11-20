@@ -100,7 +100,8 @@ hold off
 {% highlight matlab %}
 slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
 old_path=which('FECGSYNDB_datagen')
-[~,old_path] = fliplr(strtok(old_path(end:-1:1),slashchar));
+[~,old_path] = strtok(old_path(end:-1:1),slashchar);
+ old_path = fliplr(old_path);
 pathdir = [old_path 'data' slashchar]; % path to test.mat
 wfdb = false; % true/false, data format in WFDB?
 narrowband = false;  % preprocessing filtering band
@@ -226,7 +227,8 @@ The following examples assume that the user already extracted FECG from your dat
 {% highlight matlab %}
 slashchar = char('/'*isunix + '\'*(~isunix)); % find out OS
 old_path=which('FECGSYNDB_datagen')
-[~,old_path] = fliplr(strtok(old_path(end:-1:1),slashchar));
+[~,old_path] = strtok(old_path(end:-1:1),slashchar);
+old_path = fliplr(old_path);
 pathdir = [old_path 'data' slashchar]; % path to test.mat
 load([path 'test.mat'])% load test set
 NbCycles = 20; % number of cycles used

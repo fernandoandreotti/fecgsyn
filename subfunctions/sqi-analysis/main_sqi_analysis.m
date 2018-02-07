@@ -9,8 +9,8 @@ function sqi = main_sqi_analysis(mref_all,mecg,mixture,residual,fs,varargin)
 %  fs           - sampling rate (in Hz)
 %  varargin     - optional name given to file, in case several recordings
 %                 are being evaluated. Introduces column in sqi table.
-% 
-% 
+%
+%
 % --
 % fecgsyn toolbox, version 1.2, March 2017
 % Released under the GNU General Public License
@@ -19,36 +19,36 @@ function sqi = main_sqi_analysis(mref_all,mecg,mixture,residual,fs,varargin)
 % Department of Engineering Science, University of Oxford
 % joachim.behar@oxfordalumni.org, fernando.andreotti@eng.ox.ac.uk
 %
-% 
+%
 % For more information visit: http://www.fecgsyn.com
-% 
+%
 % Referencing this work
 % (SQI indices)
-% Andreotti, F., Gräßer, F., Malberg, H., & Zaunseder, S. (2017). Non-Invasive Fetal ECG Signal Quality Assessment for 
+% Andreotti, F., Gräßer, F., Malberg, H., & Zaunseder, S. (2017). Non-Invasive Fetal ECG Signal Quality Assessment for
 % Multichannel Heart Rate Estimation. IEEE Trans. Biomed. Eng., (in press).
-%  
+%
 % (FECGSYN Toolbox)
-% Behar, J., Andreotti, F., Zaunseder, S., Li, Q., Oster, J., & Clifford, G. D. (2014). An ECG Model for Simulating 
+% Behar, J., Andreotti, F., Zaunseder, S., Li, Q., Oster, J., & Clifford, G. D. (2014). An ECG Model for Simulating
 % Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings. Physiol. Meas., 35(8), 1537–1550.
-% 
+%
 %
 % Last updated : 15-03-2017
-% 
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-if isempty(varargin{:})
+if isempty(varargin)
     name = 'unnamed_file';
 else
     name = varargin{1};
@@ -64,8 +64,6 @@ NCHAN = size(mixture,1);
 LEN = size(mixture,2);
 
 
-
-
 sqi_table = table;
 tline = 1; % table line
 win = win0*fs;
@@ -75,7 +73,7 @@ fqrs_sav = cell(NDET*NCHAN,1);
 % Loop through segments
 k = 1;
 seg = 1;
-while k < LEN-win
+while k <= LEN-win+1
     fqrs_ann = cell(NCHAN,NDET); % Local detections
     for ch = 1:NCHAN
         % Shift window through data
@@ -113,11 +111,11 @@ while k < LEN-win
         % DanTompkins
         fqrs_ann{ch,3} = pantompkins_qrs(res_wfdb,fs_wfdb);        % making suitable for FECG faster heart rate
         % gqrs from WFDB
-        if isunix
-            system(['gqrs -r ' recordName ' -f 0 -s 0']);
-        else
-            gqrs(recordName)
-        end
+        %         if isunix
+        %             system(['gqrs -r ' recordName ' -f 0 -s 0']);
+        %         else
+        gqrs(recordName)
+        %         end
         try
             fqrs_ann{ch,4} = rdann(recordName,'qrs');
             fqrs_ann{ch,4} = 2.*fqrs_ann{ch,4}';
@@ -126,18 +124,18 @@ while k < LEN-win
         end
         
         % wqrs
-        if isunix
-            system(['wqrs -r ' recordName ' -p 50 -R']);
-        else
-            wqrs(recordName)
-        end
+        %         if isunix
+        %             system(['wqrs -r ' recordName ' -p 50 -R']);
+        %         else
+        wqrs(recordName)
+        %         end
         try
             fqrs_ann{ch,5} = rdann(recordName,'wqrs');
             fqrs_ann{ch,5} = 2.*fqrs_ann{ch,4}';
         catch
             fqrs_ann{ch,5} = NaN;
         end
-        fqrs_ann{ch,5} = 2.*fqrs_ann{ch,5}';                
+        fqrs_ann{ch,5} = 2.*fqrs_ann{ch,5}';
         delete([recordName '.*'])
         clear tm res_wfdb I fs_wfdb gain
         %         markers = {'o','x','s','d','^','v','>','<','p','h','+','*','.'};

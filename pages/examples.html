@@ -166,9 +166,8 @@ end
     for ch = 1:max(sqi.channel)
         idx = sqi.channel == ch;
         features = sqi{idx,5:end}; % obtaining features
-        % estimate = nbmodel.predict(features);
-        scores = nbmodel.posterior(features);           
-        final_sqi(:,ch) =scores*[0 0.47 0.80 0.97 1]'; % coded values from Andreotti 2017
+        [estimate,scores] = nbmodel.predict(features);           
+        final_sqi(:,ch) =scores*nbmodel.ClassNames; % get continues value based on posterior probabilites
     end
     {% endhighlight %}
     

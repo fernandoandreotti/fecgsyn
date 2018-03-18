@@ -234,10 +234,10 @@ residual = FECGSYN_ts_extraction(out.mqrs,out.mixture(ch,:),'TS-CERUTTI',0,...
 
 <h2 id="fqrs">FQRS detection</h2>
 
-<p>Single channel FQRS detection can be performed on extracted signals using the <code>qrs_detect.m</code> function by Behar et al 2014. The detector is a simple offline implementation of the Pan &amp; Tompkins algorithm, adapted for FECG (i.e. the refractory period is shorter than for adult ECG). The function returns the FQRS locations, given a <code>signal</code>, threshold level (<code>thr</code>, same unit as signal amplitude), refractory period (<code>refrac</code>, in s) and sampling frequency (<code>fs</code>, in Hz). It is called as <code>fqrs = qrs_detect(signal,thr,refrac,fs)</code>. The following example can be used subsequently to the <a href="{{site.github.url}}/pages/examples.html#tsc"><span class="octicon octicon-arrow-small-up"></span> Simple TSc Extraction Example</a>:</p>
+<p>Single channel FQRS detection can be performed on extracted signals using the <code>jqrs_mod.m</code> function by Behar et al 2014. The detector is a simple offline implementation of the Pan &amp; Tompkins algorithm, adapted for FECG (i.e. the refractory period is shorter than for adult ECG). The function returns the FQRS locations, given a <code>signal</code>, threshold level (<code>thr</code>, same unit as signal amplitude), refractory period (<code>refrac</code>, in s) and sampling frequency (<code>fs</code>, in Hz). It is called as <code>fqrs = jqrs_mod(signal,thr,refrac,fs)</code>. The following example can be used subsequently to the <a href="{{site.github.url}}/pages/examples.html#tsc"><span class="octicon octicon-arrow-small-up"></span> Simple TSc Extraction Example</a>:</p>
 
 {% highlight matlab %}
-fqrs = qrs_detect(residual,0.25,0.100,250,[],[],1); % performs single channel FQRS detection
+fqrs = jqrs_mod(residual,0.25,0.100,250,[],[],1); % performs single channel FQRS detection
 {% endhighlight %}
 
 <p>The function <code>Bxb_compare.m</code>, based on Physionet's <code>bxb()</code>, enables the assessment on FQRS detection accuracy, in terms of F1-measure (<code>F1</code>), mean absolute error (<code>MAE</code> - a distance measure), positive predictive value (<code>PPV</code>), sensitivity (<code>SE</code>), number of true positives (<code>TP</code>), false negatives (<code>FN</code>) and false positives (<code>FP</code>). As input the reference (<code>out.fqrs{1}</code>) and test FQRS locations (<code>fqrs</code>) sould be provided, along with an acceptance interval (<code>acceptint</code> - in samples).</p>

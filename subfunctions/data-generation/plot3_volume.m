@@ -66,17 +66,19 @@ function plot3_volume(vols)
 
 
 % == checking inputs
-if nargin<1; error('plot3_volume: wrong number of input argument \n'); end;
-if isempty(vols.fheart); error('plot3_volume: vols.fheart is empty \n'); end;
-if isempty(vols.mheart); error('plot3_volume: vols.mheart is empty \n'); end;
-if isempty(vols.elpos); error('plot3_volume: vols.elpos is empty \n'); end;
-if isempty(vols.Rf); error('plot3_volume: vols.Rf vis empty \n'); end;
-if isempty(vols.Rm); error('plot3_volume: vols.Rm is empty \n'); end;
+if nargin<1; error('plot3_volume: wrong number of input argument \n'); end
+if isempty(vols.mheart); error('plot3_volume: vols.mheart is empty \n'); end
+if isempty(vols.elpos); error('plot3_volume: vols.elpos is empty \n'); end
+if isempty(vols.Rm); error('plot3_volume: vols.Rm is empty \n'); end
 
 % == general
 HEART_SIZE = 0.07; % normalised heart size
 FONT_SIZE  = 20;
-NB_FOETUSES = length(vols.fheart);
+if exist('vols.fheart','var')
+    NB_FOETUSES = length(vols.fheart);
+else
+    NB_FOETUSES = 0;
+end
 NB_ELECTRODES = size(vols.elpos,1);
 CYLINDER_RADIUS = 0.5;
 BASE_ANGLE = 90;

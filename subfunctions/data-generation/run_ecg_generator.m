@@ -466,9 +466,9 @@ col = [1,0,0; % red
 
 LINE_WIDTH = 3;
 FONT_SIZE = 15;
-NB_EL2PLOT = 3; % number of electodes to plot
-PACE = 2;
-if NB_EL2PLOT<NB_EL2PLOT*PACE
+NB_EL2PLOT = min(3,size(out.mixture,1)); % number of electodes to plot
+PACE = 1;
+if NB_EL2PLOT<=NB_EL2PLOT*PACE
     compt = 0;
     tm = 1/out.param.fs:1/out.param.fs:out.param.n/out.param.fs;
     ax = zeros(NB_EL2PLOT,1);
@@ -482,7 +482,7 @@ if NB_EL2PLOT<NB_EL2PLOT*PACE
     set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
     linkaxes(ax,'x');
 else
-    error('not enough input channel for plotting with default configuration \n');
+    warning('not enough input channel for plotting with default configuration \n');
 end
 
 if debug>1
@@ -528,7 +528,7 @@ if debug>2
     
     LegCell = cell(NB_FOETUSES+1,1);
     GAIN_F = 1;
-    if NB_EL2PLOT<NB_EL2PLOT*PACE
+    if NB_EL2PLOT<=NB_EL2PLOT*PACE
         compt = 0;
         tm = 1/out.param.fs:1/out.param.fs:out.param.n/out.param.fs;
         ax = zeros(NB_EL2PLOT,1);
@@ -548,7 +548,7 @@ if debug>2
         set(findall(gcf,'type','text'),'fontSize',FONT_SIZE);
         linkaxes(ax,'x');
     else
-        error('not enough input channel for plotting with default configuration \n');
+        warning('not enough input channel for plotting with default configuration \n');
     end
 end
 

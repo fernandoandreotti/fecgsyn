@@ -163,7 +163,7 @@ for cc=1:2
 end
 
 % == produce third channel using PCA
-[~,pc] = princomp(noise_ar);
+[~,pc] = pca(noise_ar);
 noise_ar(:,3) = pc(:,1)/std(pc(:,1));
 
 % == Generating projection matrix (here implying no translation of dipole)

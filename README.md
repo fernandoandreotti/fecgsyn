@@ -1,3 +1,5 @@
+[![license](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](./LICENSE)
+
 # _FECGSYN_ toolbox, version 1.2, March 2017
 
 ### Open-source platform for reproducible NI-FECG research

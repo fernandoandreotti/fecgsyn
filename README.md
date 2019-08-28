@@ -14,14 +14,14 @@
 ## Authors
 
 _FECGSYN_ is the product of a collaboration between the Department of Engineering Science, University of Oxford (DES-OX), the Institute of Biomedical Engineering, TU Dresden (IBMT-TUD) and the Biomedical Engineering Faculty at the Technion Israel Institute of Technology (BME-IIT). The authors are:
-- Joachim Behar (DES-OX,BME-IIT)
-- Fernando Andreotti (DES-OX,IBMT-TUD)
-- Julien Oster (DES-OX)
-- Sebastian Zaunseder (IBMT-TUD) 
-- Gari D. Clifford (DES-OX)
+- Joachim Behar
+- Fernando Andreotti
+- Julien Oster
+- Sebastian Zaunseder
+- Gari D. Clifford
 
 
-Contacts: joachim.behar@oxfordalumni.org & fernando.andreotti@eng.ox.ac.uk
+Contacts: jbehar@technion.ac.il & fernando.andreotti@eng.ox.ac.uk
 
 
 ## History

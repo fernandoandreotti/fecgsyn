@@ -24,6 +24,9 @@ Different VCG models from different individuals are availabe, including ectopic 
 Translatory and rotatory motion of dipole sources is implemented. This improvement allow the modelling of fetal/maternal respiratory movements and fetal/noise movements inside the volume conductor; 
 </li>    
 <li>
+Import 3D anatomic models and generate lead field matrices for an asymmetric volume conductor;    
+</li>    
+<li>
 Different SNRs were assigned to each source, meaning each fetus/noise could have distinct strengths;    
 </li>    
 <li>
@@ -55,6 +58,28 @@ simulating maternal-foetal activity mixtures on abdominal ECG recordings.</a>
             }<br>
         </div>
   </div> </div>
+  
+<p>If you are using <em>FECGSYN's</em> asymmetric volume conductor modeling capability, please reference the following article:</p>
+    
+    <div class="panel panel-primary">
+<div class="panel-heading"><span class="octicon octicon-book"></span> Reference</div>
+<div class="panel-body">      
+    Keenan E., Karmakar C K. and Palaniswami M., 
+<a href="https://iopscience.iop.org/article/10.1088/1361-6579/aae305" target="_blank">The effects of asymmetric volume conductor modeling on non-invasive fetal ECG extraction.</a> <i>Physiol Meas</i> <b>39(10)</b>, pp. 105013, 2018.
+            <button class="btn btn-primary btn-xs" data-bootbox="my-content3">bibtex</button>
+        <div id="my-content3" class="hidden" title="Keenan et al 2018">
+            @article{Keenan2018,<br>
+            title = {The effects of asymmetric volume conductor modeling on non-invasive fetal {ECG} extraction},<br>
+            author = {Keenan, Emerson and Karmakar, Chandan Kumar and Palaniswami, Marimuthu}, <br>
+            number = {10}, <br>
+            volume = {39}, <br>
+            pages = {105013},<br>
+            journal = {Physiological Measurement}, <br>
+            year = {2018}<br>
+            }<br>
+        </div>
+  </div> </div>
+</section>
 
 <h3 id="back">History</h3>
   
@@ -104,7 +129,7 @@ by Sameni et al. is part of the OSET toolbox, also available online in MATLAB (<
 </div>        
 <div class="row">
   <div class="col-sm-4"></div>
-  <div class="col-sm-4">TS-PCA (TSpca) <br>(<a href="#Kanjilal997"><span class="octicon octicon-file-symlink-file"></span> Kanjilal997</a> | <a href="#Behar2014cinc"><span class="octicon octicon-file-symlink-file"></span> Behar2014cinc</a>)</div>
+  <div class="col-sm-4">TS-PCA (TSpca) <br>(<a href="#Kanjilal1997"><span class="octicon octicon-file-symlink-file"></span> Kanjilal1997</a> | <a href="#Behar2014cinc"><span class="octicon octicon-file-symlink-file"></span> Behar2014cinc</a>)</div>
   <div class="col-sm-4"></div>
 </div>        
 <div class="row">
@@ -230,8 +255,12 @@ The following table refers to algorithms and toolboxes used during the developme
           <td>Jane, R., Blasi, A., Garcia, J., & Laguna, P. (1997). <a href="http://doi.org/10.1109/CIC.1997.647889" data-toggle="tooltip" title="go to article" target="_blank">Evaluation of an automatic threshold based detector of waveform limits in Holter ECG with the QT database.</a> In Computers in Cardiology, pp. 295–298.</td>
         </tr>
           <tr>
-          <td><a id="Kanjilal997">Kanjilal997</a></td>
+          <td><a id="Kanjilal1997">Kanjilal1997</a></td>
           <td>Kanjilal, P. P., Palit, S., & Saha, G. (1997). <a href="http://doi.org/10.1109/10.553712" data-toggle="tooltip" title="go to article" target="_blank">Fetal ECG extraction from single-channel maternal ECG using singular value decomposition.</a> <i>IEEE Trans. Biomed. Eng.</i>, 44(1), 51–9. <b>(Implementation by <a href="#Behar2014cinc">Behar2014cinc</a>)</b> </td>
+        </tr>
+        <tr>
+          <td><a id="Keenan2018">Keenan2018</a></td>
+          <td>Keenan E., Karmakar C K. & Palaniswami M., (2018). <a href="https://iopscience.iop.org/article/10.1088/1361-6579/aae305" data-toggle="tooltip" title="go to article" target="_blank">The effects of asymmetric volume conductor modeling on non-invasive fetal ECG extraction.</a> <i>Physiol Meas</i>, <b>39(10)</b>, 105013.</td>
         </tr>
          <tr>
          <td><a id="Lathauwer1995">Lathauwer1995</a></td>

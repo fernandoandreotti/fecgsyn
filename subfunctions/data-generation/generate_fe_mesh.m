@@ -55,15 +55,22 @@ function model = generate_fe_mesh(model)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %
+if isunix
+    slashchar = '/';
+elseif ispc
+    slashchar = '\';
+else
+    error('Platform currently not supported');
+end
 
 conf = FECGSYN_check_platform();
 
 if ispc
    clear tempdir
-   setenv('TEMP',char(strcat(conf.fecgsynpath,'data\temp\',model.name,'\'))); 
+   setenv('TEMP',char(strcat(conf.fecgsynpath,'data',slashchar,'temp',slashchar,model.name,slashchar))); 
 elseif isunix
    clear tempdir
-   setenv('TMP',char(strcat(conf.fecgsynpath,'data\temp\',model.name,'\'))); 
+   setenv('TMP',char(strcat(conf.fecgsynpath,'data',slashchar,'temp',slashchar,model.name,slashchar))); 
 else
     error('Platform not supported');
 end
@@ -93,18 +100,12 @@ pAmniotic = [model.compartments.amniotic_fluid.mesh.innerpoint model.compartment
 pAbdo = [model.compartments.maternal_abdomen.mesh.innerpoint model.compartments.maternal_abdomen.meshsize];
 
 if isempty(model.compartments.vernix.mesh.tri) % No vernix present
-    vertices = struct('fetus',fetusPos,'amnioticFluid',amnioticPos,'maternalAbdomen',abdoPos);
-    faces = struct('fetus',fetusTri,'amnioticFluid',amnioticTri,'maternalAbdomen',abdoTri);
     c = [c(1) c(3) c(3) c(4)];
     regions = [pFetus; pAmniotic; pAbdo];
-    vernixPos = [];
-    vernixTri = [];
     [fullV,fullF]=mergemesh(fetusPos,fetusTri,amnioticPos,amnioticTri,...
                         abdoPos,abdoTri); 
 else % Vernix present
-    [vernixPos, vernixTri] = FECGSYN_read_off(strcat(model.folder, conf.slashchar, model.name, conf.slashchar, model.name, '_vernix_', model.compartments.vernix.mesh.tri, '.off'));
-    vertices = struct('fetus',fetusPos,'amnioticFluid',amnioticPos,'maternalAbdomen',abdoPos,'vernix',vernixPos);
-    faces = struct('fetus',fetusTri,'amnioticFluid',amnioticTri,'maternalAbdomen',abdoTri,'vernix',vernixTri);
+    [vernixPos, vernixTri] = FECGSYN_read_off(strcat(model.folder, conf.slashchar, model.name, conf.slashchar, model.name, '_vernix_', model.compartments.vernix.mesh.tri, '.off'));   
     pVernix = [model.compartments.vernix.mesh.innerpoint model.compartments.vernix.meshsize];
     regions = [pFetus; pVernix; pAmniotic; pAbdo];
     [fetusAndVernixPos,fetusAndVernixTri]= FECGSYN_join_nodes(fetusPos,fetusTri,...
@@ -114,7 +115,7 @@ else % Vernix present
 end
 
 %% Compute tetrahedralization using iso2mesh
-[node,elem,face]=surf2mesh(fullV,fullF,[],[],1,[],regions,[]);
+[node,elem, ~]=surf2mesh(fullV,fullF,[],[],1,[],regions,[]);
 faceRegions = elem(:,5);
 
 %% Fix region labels for no vernix case
@@ -129,7 +130,6 @@ end
 elem=meshreorient(node,elem(:,1:4)); % Ensure all elements are oriented
                                    %consistently   
 elem = [elem faceRegions];         
-
 abdoIndex = sensors(:,2);
 abdoSensors = abdoPos(abdoIndex,:);
 

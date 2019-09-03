@@ -69,8 +69,6 @@ if readCount~=4 || fetalSourceData(1) ~= 'F'
 end
 fetalSource = reshape(fetalSourceData(2:4),1,3);
 
-readSuccess = true;
 fclose(fid);
-
 
 end

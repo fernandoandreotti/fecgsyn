@@ -49,7 +49,7 @@ no_models_found_str = ['There are no anatomic models available in your fecgsyn d
 anatomic_models_path = [conf.fecgsynpath 'data' conf.slashchar 'anatomic_models' conf.slashchar];
 
 % Print error if no anatomic_models directory exists
-if ~exist(anatomic_models_path)
+if ~exist(anatomic_models_path, 'dir')
     error(no_models_found_str);
 end
 

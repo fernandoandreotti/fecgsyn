@@ -66,7 +66,6 @@ if readCount~=2*numSensors
 end
 
 sensors = reshape(sensorsData, 2, readCount/2)';
-readSuccess = true;
 fclose(fid);
 
 end

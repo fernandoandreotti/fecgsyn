@@ -1,7 +1,6 @@
 function conf = FECGSYN_check_platform()
 % function conf = FECGSYN_check_platform()
-% Checks the current platform and returns 
-% operating configuration
+% Checks the current platform and returns operating configuration
 %
 % outputs:
 %   conf: Struct of operating configuration
@@ -25,7 +24,7 @@ function conf = FECGSYN_check_platform()
 % Physiol Meas 39(10), pp. 105013, 2018.
 % 
 %
-% Last updated : 30-08-2019
+% Last updated : 05-09-2019
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -39,7 +38,7 @@ function conf = FECGSYN_check_platform()
 % 
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
-%mfmtPath = '';
+%
 
 if isunix
     slashchar = '/';
@@ -57,6 +56,6 @@ for i=1:length(pathParts)-3
     fecgsynpath = strcat(fecgsynpath, pathParts{i}, slashchar);
 end
 
-conf = struct('fecgsynpath',fecgsynpath,'slashchar',slashchar);
+conf = struct('fecgsynpath', fecgsynpath, 'slashchar', slashchar);
 
 end

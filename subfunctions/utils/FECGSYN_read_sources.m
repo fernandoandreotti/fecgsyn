@@ -1,5 +1,5 @@
 function [maternalSource, fetalSource] = FECGSYN_read_sources(filename) 
-% sensors = FECGSYN_read_sources(filename) 
+% [maternalSource, fetalSource] = FECGSYN_read_sources(filename) 
 % Reads in the selected .sources file
 %
 % inputs:
@@ -26,7 +26,7 @@ function [maternalSource, fetalSource] = FECGSYN_read_sources(filename)
 % Physiol Meas 39(10), pp. 105013, 2018.
 % 
 %
-% Last updated : 30-08-2019
+% Last updated : 05-09-2019
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

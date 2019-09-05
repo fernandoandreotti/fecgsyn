@@ -1,8 +1,8 @@
 function plot_asymmetric_mixture(out, model)
-% function plot_asymmetric_mixture(model)
-% Plots the source and sensor positions for an asymmetric volume 
+% function plot_asymmetric_mixture(out, model)
+% Plots the source and sensor positions for the asymmetric volume 
 % conductor model and the generated maternal and fetal signals at each 
-% sensor position according to the vectorcardiogram models in out
+% sensor position according to the vectorcardiogram models in 'out'
 %
 % inputs:
 %   out: outputs of the run_ecg_generator function containing the ecg
@@ -37,7 +37,7 @@ function plot_asymmetric_mixture(out, model)
 % Physiol Meas 39(10), pp. 105013, 2018.
 % 
 %
-% Last updated : 30-08-2019
+% Last updated : 05-09-2019
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@ function plot_asymmetric_mixture(out, model)
 
 conf = FECGSYN_check_platform();
 
+%% Read in models, sources and sensors
 [fetusPos, fetusTri] = FECGSYN_read_off(strcat(model.folder, conf.slashchar, model.name, conf.slashchar, model.name, '_', model.compartments.fetus.mesh.tri, '.off'));
 [amnioticPos, amnioticTri] = FECGSYN_read_off(strcat(model.folder, conf.slashchar, model.name, conf.slashchar, model.name, '_', model.compartments.amniotic_fluid.mesh.tri, '.off'));
 [abdoPos, abdoTri] = FECGSYN_read_off(strcat(model.folder, conf.slashchar, model.name, conf.slashchar, model.name, '_', model.compartments.maternal_abdomen.mesh.tri, '.off'));
@@ -64,6 +65,7 @@ sensors = FECGSYN_read_sensors(strcat(model.folder, conf.slashchar, model.name, 
 sources = struct('fetal',fetalSource,'maternal',maternalSource);
 plotConfig = struct('sourcesOn',true,'sensorsOn',true);
 
+%% Check if vernix is present
 if isempty(model.compartments.vernix.mesh.tri) % No vernix present
     vertices = struct('fetus',fetusPos,'amnioticFluid',amnioticPos,'maternalAbdomen',abdoPos);
     faces = struct('fetus',fetusTri,'amnioticFluid',amnioticTri,'maternalAbdomen',abdoTri);

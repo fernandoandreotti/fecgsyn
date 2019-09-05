@@ -6,7 +6,7 @@ function  sensors = FECGSYN_read_sensors(filename)
 %   filename: string - filename of input file
 %
 % outputs:
-%   sensors: n x 2 - Number and node index of sensors in maternal abdomen mesh
+%   sensors: n x 2 - Sensor number and node index in maternal abdomen mesh
 %
 % --
 % fecgsyn toolbox, version 1.3-alpha, August 2019
@@ -25,7 +25,7 @@ function  sensors = FECGSYN_read_sensors(filename)
 % Physiol Meas 39(10), pp. 105013, 2018.
 % 
 %
-% Last updated : 30-08-2019
+% Last updated : 05-09-2019
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ if  mod(numSensors,1) ~= 0
 end
 
 % Read in sensors data
-% 1 char identifier + x,y,z coordinates
+% Sensor number and node index in maternal abdomen mesh
 [sensorsData,readCount] = fscanf(fid,'%f %f\n', 2*numSensors);
 if readCount~=2*numSensors
      error('Sensors file contains invalid data.');

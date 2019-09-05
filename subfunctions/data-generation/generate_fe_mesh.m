@@ -1,6 +1,6 @@
 function model = generate_fe_mesh(model)
 % function model = generate_fe_mesh(model)
-% Reads anatomic model data from the input .mat file
+% Generate finite element mesh from input model
 %
 % inputs:
 %   model: Struct of anatomic model
@@ -40,7 +40,7 @@ function model = generate_fe_mesh(model)
 % Physiol Meas 39(10), pp. 105013, 2018.
 % 
 %
-% Last updated : 30-08-2019
+% Last updated : 05-09-2019
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -55,26 +55,20 @@ function model = generate_fe_mesh(model)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %
-if isunix
-    slashchar = '/';
-elseif ispc
-    slashchar = '\';
-else
-    error('Platform currently not supported');
-end
 
 conf = FECGSYN_check_platform();
 
 if ispc
    clear tempdir
-   setenv('TEMP',char(strcat(conf.fecgsynpath,'data',slashchar,'temp',slashchar,model.name,slashchar))); 
+   setenv('TEMP',char(strcat(conf.fecgsynpath, 'data', conf.slashchar, 'temp', conf.slashchar, model.name, conf.slashchar))); 
 elseif isunix
    clear tempdir
-   setenv('TMP',char(strcat(conf.fecgsynpath,'data',slashchar,'temp',slashchar,model.name,slashchar))); 
+   setenv('TMP',char(strcat(conf.fecgsynpath, 'data', conf.slashchar, 'temp', conf.slashchar, model.name, conf.slashchar))); 
 else
     error('Platform not supported');
 end
 
+%% Read in models, sources and sensors
 [fetusPos, fetusTri] = FECGSYN_read_off(strcat(model.folder, conf.slashchar, model.name, conf.slashchar, model.name, '_', model.compartments.fetus.mesh.tri, '.off'));
 [amnioticPos, amnioticTri] = FECGSYN_read_off(strcat(model.folder, conf.slashchar, model.name, conf.slashchar, model.name, '_', model.compartments.amniotic_fluid.mesh.tri, '.off'));
 [abdoPos, abdoTri] = FECGSYN_read_off(strcat(model.folder, conf.slashchar, model.name, conf.slashchar, model.name, '_', model.compartments.maternal_abdomen.mesh.tri, '.off'));
@@ -99,19 +93,17 @@ pFetus = [model.compartments.fetus.mesh.innerpoint model.compartments.fetus.mesh
 pAmniotic = [model.compartments.amniotic_fluid.mesh.innerpoint model.compartments.amniotic_fluid.meshsize];
 pAbdo = [model.compartments.maternal_abdomen.mesh.innerpoint model.compartments.maternal_abdomen.meshsize];
 
+%% Check if vernix is present
 if isempty(model.compartments.vernix.mesh.tri) % No vernix present
     c = [c(1) c(3) c(3) c(4)];
     regions = [pFetus; pAmniotic; pAbdo];
-    [fullV,fullF]=mergemesh(fetusPos,fetusTri,amnioticPos,amnioticTri,...
-                        abdoPos,abdoTri); 
+    [fullV,fullF] = mergemesh(fetusPos,fetusTri,amnioticPos,amnioticTri,abdoPos,abdoTri); 
 else % Vernix present
     [vernixPos, vernixTri] = FECGSYN_read_off(strcat(model.folder, conf.slashchar, model.name, conf.slashchar, model.name, '_vernix_', model.compartments.vernix.mesh.tri, '.off'));   
     pVernix = [model.compartments.vernix.mesh.innerpoint model.compartments.vernix.meshsize];
     regions = [pFetus; pVernix; pAmniotic; pAbdo];
-    [fetusAndVernixPos,fetusAndVernixTri]= FECGSYN_join_nodes(fetusPos,fetusTri,...
-                                           vernixPos,vernixTri);                             
-    [fullV,fullF]=mergemesh(fetusAndVernixPos,fetusAndVernixTri,amnioticPos,amnioticTri,...
-                            abdoPos,abdoTri); 
+    [fetusAndVernixPos,fetusAndVernixTri]= FECGSYN_join_nodes(fetusPos,fetusTri,vernixPos,vernixTri);                             
+    [fullV,fullF]=mergemesh(fetusAndVernixPos,fetusAndVernixTri,amnioticPos,amnioticTri,abdoPos,abdoTri); 
 end
 
 %% Compute tetrahedralization using iso2mesh
@@ -128,12 +120,12 @@ if isempty(model.compartments.vernix.mesh.tri) % No vernix present
 end
 
 elem=meshreorient(node,elem(:,1:4)); % Ensure all elements are oriented
-                                   %consistently   
+                                     % consistently   
 elem = [elem faceRegions];         
 abdoIndex = sensors(:,2);
 abdoSensors = abdoPos(abdoIndex,:);
 
-% Create output finite element mesh structure
+%% Create output finite element mesh structure
 model.fem = struct();
 model.fem.pos = node;
 model.fem.tet = elem(:,1:4);

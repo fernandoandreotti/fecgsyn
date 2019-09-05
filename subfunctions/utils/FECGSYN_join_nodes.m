@@ -33,7 +33,7 @@ function [vertices,faces] = FECGSYN_join_nodes(vert1,face1,vert2,face2)
 % Physiol Meas 39(10), pp. 105013, 2018.
 % 
 %
-% Last updated : 30-08-2019
+% Last updated 05-09-2019
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ nFace2 = size(face2,1);
 vertices = vert1;
 faces = face1;
 indexMap = zeros(nVert2,1);
-nDuplicates = 0;
+
 for i=1:nVert2
     vertIndex = -1;
     for j=1:nVert1
@@ -71,7 +71,6 @@ for i=1:nVert2
        end
     end
     if (vertIndex > 0)
-        nDuplicates = nDuplicates+1;
         indexMap(i) = vertIndex;
     else
         vertices = [vertices; vert2(i,:)];

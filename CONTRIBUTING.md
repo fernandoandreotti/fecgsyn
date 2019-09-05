@@ -9,7 +9,7 @@ There are many ways to contribute to the _FECGSYN_:
 
   * **Fork it** Feel free to fork the repository on the  project's main page
   + **Create a pull request** We welcome novel algorithms and improvements to the <em>FECGSYN</em> toolbox. We strongly believe that open-source is the way to go with NI-FECG analysis.
-  + **Eeww bugs!** In case you in encounter a bug and cannot figure out the solution, please have a look on the opened issues before creating a new bug issue
+  + **Eeww bugs!** In case you encounter a bug and cannot figure out the solution, please have a look on the opened issues before creating a new bug issue
   + **Pitch in your new ideas** for future releases by suggesting an enhancement
 
 
@@ -37,6 +37,9 @@ The current version of the <em>FECGSYN</em> was developed thanks to the followin
 - Mohsan Alvi
 - Reza Sameni
 - Sebastian Zaunseder
+- Emerson Keenan
+- Chandan Karmakar
+- Marimuthu Palaniswami
 
     
   

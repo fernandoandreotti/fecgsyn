@@ -11,15 +11,6 @@ function plot_fe_mesh(model)
 %       model.name = name of anatomic model
 %       model.fem = finite element mesh ready for solver
 %
-% outputs:
-%   model: Struct of anatomic model
-%       model.header = information on anatomic model type
-%       model.compartments = struct array of model compartments
-%       model.variants =  struct array of model variants
-%       model.folder = folder of anatomic model
-%       model.name = name of anatomic model
-%       model.fem = finite element mesh ready for solver
-%
 % --
 % fecgsyn toolbox, version 1.3-alpha, August 2019
 % Released under the GNU General Public License
@@ -37,7 +28,7 @@ function plot_fe_mesh(model)
 % Physiol Meas 39(10), pp. 105013, 2018.
 % 
 %
-% Last updated : 30-08-2019
+% Last updated : 05-09-2019
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -57,9 +48,7 @@ no_fem_str = ['There is no finite element mesh in the input model.' newline ...
         'Try running the following code before calling plot_fe_mesh' newline ...
         'model = generate_fe_mesh(model)'];
 
-    % Print error if no model does not contain a finite element mesh
-
-
+%% Print error if model does not contain a finite element mesh
 if ~isfield(model,'fem')
     error(no_fem_str);
 end

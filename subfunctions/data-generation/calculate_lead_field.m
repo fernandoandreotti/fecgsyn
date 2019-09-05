@@ -1,6 +1,6 @@
 function model = calculate_lead_field(model)
 % function model = calculate_lead_field(model)
-% Reads anatomic model data from the input .mat file
+% Calculate lead field matrix from input model
 %
 % inputs:
 %   model: Struct of anatomic model
@@ -43,7 +43,7 @@ function model = calculate_lead_field(model)
 % Physiol Meas 39(10), pp. 105013, 2018.
 % 
 %
-% Last updated : 30-08-2019
+% Last updated : 05-09-2019
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -75,7 +75,7 @@ for ii=1:nsens
     sens.label{ii} = sprintf('vertex%03d', ii);
 end
 
-% Remove fields before passing to solver
+% Remove fields from model before passing to solver
 model.fem = rmfield(model.fem,'sensors');
 model.fem  = rmfield(model.fem,'sources');
 model.fem  = rmfield(model.fem,'conductivity');
@@ -84,7 +84,6 @@ model.fem  = rmfield(model.fem,'conductivity');
 headmodel = ft_headmodel_simbio(model.fem,'conductivity',conductivity);
 headmodel.unit = 'mm';
 [headmodel, ~] = ft_prepare_vol_sens(headmodel,sens);
-
 lf = ft_compute_leadfield(ft_sources,sens,headmodel);
 
 % Add fields to model after returning from solver

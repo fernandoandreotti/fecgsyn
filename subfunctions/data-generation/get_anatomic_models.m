@@ -24,7 +24,7 @@ function models = get_anatomic_models()
 % Physiol Meas 39(10), pp. 105013, 2018.
 % 
 %
-% Last updated : 30-08-2019
+% Last updated : 05-09-2019
 % 
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -97,8 +97,7 @@ for i=1:num_mat_files
         header = temp.header;
         if (isfield(header, 'filetype'))
             if strcmp('FECGSYN ANATOMIC MODEL',header.filetype)
-                models = setfield(models,fieldname,...
-                    struct('folder',mat_files{2,i}.folder,'name',name));
+                models = setfield(models, fieldname, struct('folder', mat_files{2,i}.folder, 'name', name));
             end
        end
     end

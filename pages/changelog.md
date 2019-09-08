@@ -8,6 +8,15 @@ priority: 4
 
 Here is a list of changes made on each version of the <em>FECGSYN</em> simulator.
 
+- **v1.3-pre-release : 2019.09.05**<br>
+Asymmetric volume conductor modeling code added by @emersonkeenan
+  - **Features**
+    - Import 3D anatomic models as presented in Keenan et al 2018
+    - Set vernix caseosa distribution and thickness in predefined regions
+    - Generate finite element mesh from 3D models using Iso2Mesh with compartment specific mesh size and conductivity
+    - Calculate lead field matrices using FieldTrip-Simbio pipeline
+    - Simulate ECG signals at chosen sensor positions
+
 - **v1.2 : 2017.03.13** <br>
   Update to include novel fetal signal quality metrics
   - **Features**
@@ -38,5 +47,3 @@ Here is a list of changes made on each version of the <em>FECGSYN</em> simulator
     - Calibration routine for differen SNR levels
     - Example containing patho-physiological events
     - @mohsalvi developed GUI for easy use    
-  
-  

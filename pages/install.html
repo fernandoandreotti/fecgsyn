@@ -44,7 +44,7 @@ FECGSYN_plotmix(out)
 
 Further examples are available  <a href="{{site.github.url}}/pages/examples.html"><span class="octicon octicon-globe"></span> here</a>.
    
- <h3 id="install-wfdb">Dependencies</h3>
+ <h3 id="install-wfdb">WFDB</h3>
  
   <p>If you are working with WFDB format, the WFDB Toolbox for Matlab/Octave (<a href="https://physionet.org/physiotools/matlab/wfdb-app-matlab/" target="_blank"><span class="octicon octicon-globe"></span> available here</a>) should be installed.</p>
   
@@ -60,6 +60,21 @@ Further examples are available  <a href="{{site.github.url}}/pages/examples.html
  [filestr,status] = urlwrite(wfdb_url,'wfdb-app-toolbox-0-9-9.zip'); %Octave users may have to download manually unzip('wfdb-app-toolbox-0-9-9.zip');
  cd wfdb-app-toolbox-0-9-9;cd mcode
  addpath(pwd);savepath
+{% endhighlight %}</li>
+</ol>
+
+ <h3 id="install-models">Anatomic models</h3>
+ 
+  <p>If you are using <em>FECGSYN's</em> asymmetric volume conductor modeling capability, a set of pre-processed anatomic models can be installed. Please read the license conditions for these models (<a href="https://github.com/emersonkeenan/fecgsyn-anatomic-models" target="_blank"><span class="octicon octicon-globe"></span> available here</a>) before following the instructions below:</p>
+  
+ <ol>
+ <li>Open MATLAB</li>
+ <li>Go to the directory where you have installed the <em>FECGSYN</em> toolbox with  <kbd>cd dirname</kbd> </li>
+ <li>Type (or copy and paste) the following commands into the MATLAB window:<br><br>
+  {% highlight matlab %}
+ cd data; anatomic_models_url='https://github.com/emersonkeenan/fecgsyn-anatomic-models/archive/master.zip';
+ websave('anatomic_models.zip',anatomic_models_url); unzip('anatomic_models.zip','anatomic_models'); 
+ delete 'anatomic_models.zip'; cd anatomic_models; movefile fecgsyn-anatomic-models-master femonum; 
 {% endhighlight %}</li>
 </ol>
  

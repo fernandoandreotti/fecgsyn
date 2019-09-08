@@ -6,3 +6,5 @@
 GUI/*.mat
 _site/
 testset/
+data/anatomic_models/
+data/temp/

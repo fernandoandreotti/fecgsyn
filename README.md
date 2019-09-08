@@ -1,6 +1,6 @@
 [![license](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](./LICENSE)
 
-# _FECGSYN_ toolbox, version 1.2, March 2017
+# _FECGSYN_ toolbox, version 1.3-alpha, August 2019
 
 ### Open-source platform for reproducible NI-FECG research
 
@@ -13,12 +13,15 @@
 
 ## Authors
 
-_FECGSYN_ is the product of a collaboration between the Department of Engineering Science, University of Oxford (DES-OX), the Institute of Biomedical Engineering, TU Dresden (IBMT-TUD) and the Biomedical Engineering Faculty at the Technion Israel Institute of Technology (BME-IIT). The authors are:
+_FECGSYN_ is the product of a collaboration between the Department of Engineering Science, University of Oxford (DES-OX), the Institute of Biomedical Engineering, TU Dresden (IBMT-TUD), the Department of Electrical and Electronic Engineering, University of Melbourne (EEE-UOM) and the Biomedical Engineering Faculty at the Technion Israel Institute of Technology (BME-IIT). The authors are:
 - Joachim Behar
 - Fernando Andreotti
 - Julien Oster
 - Sebastian Zaunseder
 - Gari D. Clifford
+- Emerson Keenan
+- Chandan Karmakar
+- Marimuthu Palaniswami
 
 
 Contacts: jbehar@technion.ac.il & fernando.andreotti@eng.ox.ac.uk
@@ -44,14 +47,17 @@ maternal and foetal ECG signals. EURASIP Journal on Advances in Signal Processin
 ## References
 
 
-When using the _FECGSYN_ please refer to:
+When using _FECGSYN_ please reference at least one of the following articles:
 
-Behar, Joachim, Fernando Andreotti, Sebastian Zaunseder, Qiao Li, Julien Oster, and Gari D Clifford. 2014. 
-"An ECG Model for Simulating Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings." _Physiol Meas_ **35(8)**, pp.1537-50, 2014.
+1. Behar, Joachim, Fernando Andreotti, Sebastian Zaunseder, Qiao Li, Julien Oster, and Gari D Clifford. 2014. "An ECG Model for Simulating Maternal-Foetal Activity Mixtures on Abdominal ECG Recordings." _Physiol Meas_ **35(8)**, pp.1537-50, 2014.
 
-Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms. _Physiol Meas_ **37(5)**, pp. 627-648, 2016.
+and/or
 
+2. Andreotti F., Behar J., Zaunseder S.,Oster J. and Clifford G D., An Open-Source Framework for Stress-Testing Non-Invasive Foetal ECG Extraction Algorithms. _Physiol Meas_ **37(5)**, pp. 627-648, 2016.
 
+If you are using _FECGSYN's_ asymmetric volume conductor modeling capability, please reference the following article:
+
+3. Keenan E., Karmakar C K. and Palaniswami M., The effects of asymmetric volume conductor modeling on non-invasive fetal ECG extraction. _Physiol Meas_ **39(10)**, pp. 105013, 2018.
 
 ## License
 
@@ -85,6 +91,9 @@ This toolbox makes use of several other pre-existing open source algorithms list
 - _arrow.m_, by Dr. Erik A. Johnson, [available here](https://uk.mathworks.com/matlabcentral/fileexchange/278-arrow), (BSD license)
 - _fwhm.m_, v1.2, by Patrick Egan, [available here](http://uk.mathworks.com/matlabcentral/fileexchange/10590-fwhm), (BSD license)
 - _pcorr2.m_, by Peter Rydesäter, [available here](https://uk.mathworks.com/matlabcentral/fileexchange/4012-prcorr2-10-times-faster-correlation-coef) (BSD license)
+- _FieldTrip: The MATLAB toolbox for MEG and EEG analysis_, v20190828, by Robert Oostenveld, Pascal Fries, Eric Maris, and Jan-Mathijs Schoffelen, [available here](https://github.com/fieldtrip/fieldtrip) (licensed under GNU GPL 2.0)
+- _Iso2Mesh_, v1.9.0-1, Qianqian Fang, [available here](https://github.com/fangq/iso2mesh) (licensed under GNU GPL 2.0)
 
 Not provided with package, ocasionally required, see [install instructions](http://fernandoandreotti.github.io/fecgsyn/pages/install.html):
 - **WFDB Toolbox for MATLAB and Octave**, v.0.9.9, by Dr. Ikaro Silva, [available here](https://www.physionet.org/physiotools/matlab/wfdb-app-matlab/) (licensed under GNU GPL 2.0)
+- **Pre-processed anatomic models**, by Emerson Keenan, [available here](https://github.com/emersonkeenan/fecgsyn-anatomic-models) (licensed under CC BY-NC-SA 2.0 FR)

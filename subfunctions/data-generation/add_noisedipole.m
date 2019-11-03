@@ -163,7 +163,11 @@ for cc=1:2
 end
 
 % == produce third channel using PCA
-[~,pc] = pca(noise_ar);
+if exist('OCTAVE_VERSION', 'builtin') || verLessThan('matlab', '8.4') % check if using octave or Matlab older than v2014b
+    [~,pc] = princomp(noise_ar);
+else
+    [~,pc] = pca(noise_ar);
+end
 noise_ar(:,3) = pc(:,1)/std(pc(:,1));
 
 % == Generating projection matrix (here implying no translation of dipole)

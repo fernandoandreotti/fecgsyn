@@ -74,7 +74,7 @@ if isempty(vols.Rm); error('plot3_volume: vols.Rm is empty \n'); end
 % == general
 HEART_SIZE = 0.07; % normalised heart size
 FONT_SIZE  = 20;
-if exist('vols.fheart','var')
+if isfield(vols, 'fheart')
     NB_FOETUSES = length(vols.fheart);
 else
     NB_FOETUSES = 0;
